@@ -5,11 +5,13 @@ import java.util.List;
 
 public class Question {
 
+    private int id; //better not to have this...
     private int indexer;
     private String question;
     private List<Answer> answers;
 
-    public Question(String question, List<String> answers){
+    public Question(int id, String question, List<String> answers){
+        this.id = id;
         this.indexer = 0;
         this.question = question;
         this.answers = new LinkedList<>();
@@ -29,7 +31,7 @@ public class Question {
 
     public void addAnswer(String answer){
         this.answers.add(new Answer(indexer, answer));
-        this.indexer ++;
+        this.indexer++;
     }
 
     public void removeAnswer(int index){
@@ -60,4 +62,8 @@ public class Question {
     public List<Answer> getAnswers() {
         return answers;
     }
+
+    public int getId () { return id; }
+
+    public void setId (int id) { this.id = id; }
 }
