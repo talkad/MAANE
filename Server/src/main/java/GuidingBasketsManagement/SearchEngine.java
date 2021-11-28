@@ -28,11 +28,16 @@ public class SearchEngine {
     public Response<List<GuidingBasketDTO>> search(String query, String[] labels){
         List<GuidingBasketDTO> toReturn = new LinkedList<>();
 
-        for(GuidingBasket basket: baskets){
-            for(String label: labels){
-                if (basket.getLabels().contains(label)){
-                    toReturn.add(new GuidingBasketDTO(basket));
-                    break;
+        System.out.println("THE FUCK " + baskets.size());
+        if(labels != null && query != null){
+            for(GuidingBasket basket: baskets){
+                System.out.println("CURRENT: " + basket.getTitle());
+                for(String label: labels){
+                    if (basket.getLabels().contains(label)){
+                        System.out.println("GOT IN WITH: " + label);
+                        toReturn.add(new GuidingBasketDTO(basket));
+                        break;
+                    }
                 }
             }
         }
@@ -45,8 +50,18 @@ public class SearchEngine {
         }
     }
 
+    private boolean idExists(String id){
+        for (GuidingBasket basket: baskets){
+            if(basket.getBasketID().equals(id)){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public Response<Boolean> addBasket(GuidingBasketDTO dto, String newID){
-        if(dto != null){
+        if(dto != null && newID != null && !idExists(newID)){
             dto.setBasketID(newID);
             instance.baskets.add(new GuidingBasket(dto));
             return new Response<>(true, false, null);
@@ -111,8 +126,11 @@ public class SearchEngine {
                 if(action == 0){
                     return selected.addLabel(label);
                 }
-                else{
+                else if (action == 1){
                     return selected.removeLabel(label);
+                }
+                else{
+                    return new Response<>(false, true, "Invalid action");
                 }
             }
             return new Response<>(false, true, "The selected basket does not exist");

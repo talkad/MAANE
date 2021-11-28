@@ -11,7 +11,7 @@ public class GuidingBasket {
     String basketID;
     String title;
     String description;
-    List<String> labels;
+    List<String> labels; // TODO: Save baskets in lowercase
     // TODO: how would we save the file?
 
     public GuidingBasket(String basketID ,String title, String description, String[] labels) { //TODO: should we pass labels as an array or List?
