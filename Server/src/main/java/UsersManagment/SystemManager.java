@@ -2,11 +2,15 @@ package UsersManagment;
 
 import CommonClasses.Response;
 
-public class SystemManager extends User{
+import java.util.Vector;
 
-//    public SystemManager(String username) {
-//        this.name = username
-//    }
+public class SystemManager extends User{
+    public SystemManager(String username, UserStateEnum userStateEnum) {
+        this.state = userStateEnum;
+        this.name = username;
+        this.schools = new Vector<>();//todo unlikely to stick around
+        this.appointments = new Appointment();//todo unlikely to stick around
+    }
 
     @Override
     public Response<Boolean> registerUser(String username, String password, UserStateEnum registerUserStateEnum) {

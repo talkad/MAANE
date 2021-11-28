@@ -19,6 +19,15 @@ public class UserController {
         this.security = Security.getInstance();
         this.connectedUsers = new ConcurrentHashMap<>();
         this.registeredUsers = new ConcurrentHashMap<>();
+        adminBoot("shaked", "cohen");
+    }
+
+    public Map<String, User> getConnectedUsers() {
+        return this.connectedUsers;
+    }
+
+    public Map<String, Pair<User, String>> getRegisteredUsers() {
+        return this.registeredUsers;
     }
 
     private static class CreateSafeThreadSingleton {
@@ -40,6 +49,32 @@ public class UserController {
         user.setName(guestName);
         connectedUsers.put(guestName, user);
         return new Response<>(guestName, false, "added guest");
+    }
+
+    public Response<String> login(String currUser, String userToLogin, String password){
+        User user;
+        if (connectedUsers.containsKey(currUser)) {
+            if (currUser.startsWith("Guest")){
+                if (this.isValidUser(userToLogin, security.sha256(password))) {
+                    connectedUsers.remove(currUser);
+                    user = registeredUsers.get(userToLogin).getFirst();
+                    connectedUsers.put(userToLogin, user);
+                    return new Response<>(userToLogin, false, "successfully Logged in");
+                } else {
+                    return new Response<>(currUser, true, "Failed to login user");
+                }
+            }
+            else {
+                return new Response<>(null, true, "error: user must disconnect before trying to login");
+            }
+        }
+        else {
+            return new Response<>(null, true, "User not connected");
+        }
+    }
+
+    public boolean isValidUser(String username, String password){
+        return registeredUsers.containsKey(username) && registeredUsers.get(username).getSecond().equals(security.sha256(password));
     }
 
     public Response<String> logout(String name) {
@@ -96,5 +131,11 @@ public class UserController {
         else{
             return new Response<>(null, true, "User not connected");
         }
+    }
+
+    public void adminBoot(String username, String password) {
+        User user = new SystemManager(username, UserStateEnum.SYSTEM_MANAGER);
+        registeredUsers.put(username, new Pair<>(user, security.sha256(password)));
+
     }
 }
