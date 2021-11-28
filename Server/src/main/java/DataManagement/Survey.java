@@ -1,4 +1,4 @@
-package SurveyManagement;
+package DataManagement;
 
 public class Survey {
 }
