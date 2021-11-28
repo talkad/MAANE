@@ -1,8 +1,7 @@
-package GuidingBaskets;
+package GuidingBasketsManagement;
 
 import CommonClasses.Response;
 
-import java.util.LinkedList;
 import java.util.List;
 
 public class GuidingBasketController {

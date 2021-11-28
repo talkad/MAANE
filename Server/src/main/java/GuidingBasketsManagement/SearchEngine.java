@@ -1,8 +1,7 @@
-package GuidingBaskets;
+package GuidingBasketsManagement;
 
 import CommonClasses.Response;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;

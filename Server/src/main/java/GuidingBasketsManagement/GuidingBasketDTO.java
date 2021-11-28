@@ -1,7 +1,5 @@
-package GuidingBaskets;
+package GuidingBasketsManagement;
 
-import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 public class GuidingBasketDTO {
