@@ -8,19 +8,34 @@ import java.util.List;
 
 public class GuidingBasket {
 
-    int basketID;
+    String basketID;
     String title;
     String description;
     List<String> labels;
     // TODO: how would we save the file?
 
-    public GuidingBasket(int basketID ,String title, String description, String[] labels) { //TODO: should we pass labels as array or List?
+    public GuidingBasket(String basketID ,String title, String description, String[] labels) { //TODO: should we pass labels as an array or List?
         this.basketID = basketID;
         this.title = title;
         this.description = description;
 
         this.labels = new LinkedList<>();
         this.labels.addAll(Arrays.asList(labels));
+    }
+
+    public GuidingBasket(GuidingBasketDTO dto){
+        this.basketID = dto.getBasketID();
+        this.title = dto.getTitle();
+        this.description = dto.getDescription();
+        this.labels = dto.getLabels();
+    }
+
+    public String getBasketID() {
+        return basketID;
+    }
+
+    public void setBasketID(String basketID) {
+        this.basketID = basketID;
     }
 
     public String getTitle() {
