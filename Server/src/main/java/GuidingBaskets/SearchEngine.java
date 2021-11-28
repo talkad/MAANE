@@ -24,8 +24,26 @@ public class SearchEngine {
         return instance;
     }
 
+    // TODO: for now we ignore the query
+    // TODO: also for now we ignore "sub office" id
     public Response<List<GuidingBasketDTO>> search(String query, String[] labels){
-        return null;
+        List<GuidingBasketDTO> toReturn = new LinkedList<>();
+
+        for(GuidingBasket basket: baskets){
+            for(String label: labels){
+                if (basket.getLabels().contains(label)){
+                    toReturn.add(new GuidingBasketDTO(basket));
+                    break;
+                }
+            }
+        }
+
+        if (toReturn.size() == 0){
+            return new Response<>(null, true, "No basket matches the search");
+        }
+        else{
+            return new Response<>(toReturn, false, null);
+        }
     }
 
     public Response<Boolean> addBasket(GuidingBasketDTO dto, String newID){

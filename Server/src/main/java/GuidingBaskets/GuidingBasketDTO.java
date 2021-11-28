@@ -18,6 +18,13 @@ public class GuidingBasketDTO {
         this.labels = labels;
     }
 
+    public GuidingBasketDTO(GuidingBasket basket){
+        this.basketID = basket.getBasketID();
+        this.title = basket.getTitle();
+        this.description = basket.getDescription();
+        this.labels = basket.getLabels();
+    }
+
     public String getBasketID() {
         return basketID;
     }
