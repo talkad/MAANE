@@ -60,4 +60,9 @@ public class Question {
     public List<Answer> getAnswers() {
         return answers;
     }
+
+    public Answer getAnswer(int index) {
+        return this.answers.get(index);
+    }
+
 }
