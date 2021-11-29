@@ -1,7 +1,6 @@
 package UnitTesting.DataManagement;
 
-import DataManagement.FaultDetector.FaultDetector;
-import org.junit.Assert;
+import Domain.DataManagement.FaultDetector.FaultDetector;
 import org.junit.Before;
 import org.junit.Test;
 

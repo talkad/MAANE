@@ -1,9 +1,8 @@
 package TestComponent.UnitTesting.UserComponentTests;
 
-import UsersManagment.UserController;
-import UsersManagment.UserStateEnum;
+import Domain.UsersManagment.UserController;
+import Domain.UsersManagment.UserStateEnum;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 public class UserControllerTest {
