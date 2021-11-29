@@ -1,4 +1,4 @@
-package Domain.GuidingBasketsManagement.tests;
+package UnitTesting.GuidingBaskets;
 
 import Domain.CommonClasses.Response;
 import Domain.GuidingBasketsManagement.GuidingBasket;
