@@ -3,6 +3,7 @@ package Domain.UsersManagment;
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -74,7 +75,7 @@ public class UserController {
     }
 
     public boolean isValidUser(String username, String password){
-        return registeredUsers.containsKey(username) && registeredUsers.get(username).getSecond().equals(security.sha256(password));
+        return registeredUsers.containsKey(username) && registeredUsers.get(username).getSecond().equals(password);
     }
 
     public Response<String> logout(String name) {
@@ -131,6 +132,30 @@ public class UserController {
         else{
             return new Response<>(null, true, "User not connected");
         }
+    }
+
+    public Response<Boolean> assignSchoolsToUser(String currUser, String userToAssign, List<Integer> schools){
+        Response<Boolean> response;
+        if (connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            if(registeredUsers.containsKey(userToAssign)) {
+                response = user.assignSchoolsToUser(userToAssign, schools);
+                if (!response.isFailure() && connectedUsers.containsKey(userToAssign)) {
+                    connectedUsers.get(userToAssign).schools.addAll(schools);//todo remove duplicates
+                }
+                return response;
+            }
+            else{
+                return new Response<>(false, true, "User is not in the system");
+            }
+        }
+        else{
+            return new Response<>(null, true, "User not connected");
+        }
+    }
+
+    public User getUser(String user){
+        return this.registeredUsers.get(user).getFirst();//todo bad temp function
     }
 
     public void adminBoot(String username, String password) {

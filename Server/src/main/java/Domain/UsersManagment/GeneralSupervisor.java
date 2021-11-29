@@ -2,13 +2,14 @@ package Domain.UsersManagment;
 
 import Domain.CommonClasses.Response;
 
+import java.util.List;
 import java.util.Vector;
 
 public class GeneralSupervisor extends User{
     public GeneralSupervisor(String username, UserStateEnum userStateEnum) {
-        this.state = userStateEnum;//todo shit
+        this.state = userStateEnum;
         this.name = username;
-        this.schools = new Vector<>();//todo maybe just represent school id's
+        this.schools = new Vector<>();
         this.appointments = new Appointment();    }
 
     @Override
@@ -19,5 +20,10 @@ public class GeneralSupervisor extends User{
     @Override
     public Response<Boolean> removeUser(String username) {
         return new Response<>(false, true, "user is not allowed to remove users");
+    }
+
+    @Override
+    public Response<Boolean> assignSchoolsToUser(String userToAssign, List<Integer> schools) {
+        return null;//todo
     }
 }

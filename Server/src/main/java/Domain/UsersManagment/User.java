@@ -9,21 +9,22 @@ public abstract class User {
 
     protected UserStateEnum state;
     protected String name;
-    protected List<Integer> schools;//todo school as list/map?
+    protected List<Integer> schools;
     protected Appointment appointments;
 //    private MonthlyReport monthlyReport; //todo monthly reports history??
 //    private WorkPlan workPlan;
+    //private String workField;
 
     public User() {
         this.state = UserStateEnum.GUEST;
-        this.schools = new Vector<>();//todo maybe just represent school id's
+        this.schools = new Vector<>();
         this.appointments = new Appointment();
     }
 
     public User(String username, UserStateEnum userStateEnum) {
-        this.state = userStateEnum;//todo shit
+        this.state = userStateEnum;
         this.name = username;
-        this.schools = new Vector<>();//todo maybe just represent school id's
+        this.schools = new Vector<>();
         this.appointments = new Appointment();
 
     }
@@ -53,8 +54,21 @@ public abstract class User {
 
     public void setName(String name){ this.name = name;}
 
+    public List<Integer> getSchools() {
+        return schools;
+    }
+
+    public void setSchools(List<Integer> schools) {
+        this.schools = schools;
+    }
+
+    public Appointment getAppointments(){
+        return this.appointments;//todo maybe different for users without appointments
+    }
+
     public abstract Response<Boolean> registerUser(String username, String password, UserStateEnum registerUserStateEnum);
 
     public abstract Response<Boolean> removeUser(String username);
 
+    public abstract Response<Boolean> assignSchoolsToUser(String userToAssign, List<Integer> schools);
 }

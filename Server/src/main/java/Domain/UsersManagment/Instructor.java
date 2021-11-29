@@ -2,6 +2,7 @@ package Domain.UsersManagment;
 
 import Domain.CommonClasses.Response;
 
+import java.util.List;
 import java.util.Vector;
 
 public class Instructor extends User{
@@ -23,5 +24,10 @@ public class Instructor extends User{
     @Override
     public Response<Boolean> removeUser(String username) {
         return new Response<>(false, true, "user is not allowed to remove users");
+    }
+
+    @Override
+    public Response<Boolean> assignSchoolsToUser(String userToAssign, List<Integer> schools) {
+        return new Response<>(false, true, "user is not allowed to assign schools to users");
     }
 }
