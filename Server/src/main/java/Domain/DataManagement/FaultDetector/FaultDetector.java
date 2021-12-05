@@ -1,9 +1,8 @@
 package Domain.DataManagement.FaultDetector;
 
+import Domain.CommonClasses.Pair;
 import Domain.DataManagement.FaultDetector.Rules.Rule;
-import Domain.DataManagement.Pair;
 import Domain.DataManagement.Survey;
-
 import java.util.LinkedList;
 import java.util.List;
 

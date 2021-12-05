@@ -1,27 +1,28 @@
 package Domain.CommonClasses;
 
-public class Pair <T, U>{
-    private T first;
-    private U second;
+public class Pair<K,V> {
 
-    public Pair(T first, U second) {
+    private K first;
+    private V second;
+
+    public Pair(K first, V second) {
         this.first = first;
         this.second = second;
     }
 
-    public T getFirst() {
+    public K getFirst() {
         return first;
     }
 
-    public void setFirst(T first) {
+    public void setFirst(K first) {
         this.first = first;
     }
 
-    public U getSecond() {
+    public V getSecond() {
         return second;
     }
 
-    public void setSecond(U second) {
+    public void setSecond(V second) {
         this.second = second;
     }
 }
