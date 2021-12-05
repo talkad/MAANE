@@ -1,5 +1,7 @@
 package Domain.DataManagement;
 
+import Domain.CommonClasses.Response;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -10,49 +12,54 @@ public class Question {
     private String question;
     private List<Answer> answers;
 
-    public Question(int id, String question, List<String> answers){
+    public Question(int id, String question){
         this.id = id;
         this.indexer = 0;
         this.question = question;
         this.answers = new LinkedList<>();
-
-        for(String answer: answers){
-            addAnswer(answer);
-        }
     }
 
-    public void setQuestion(String question) {
-        this.question = question;
-    }
+    public Response<Integer> addAnswer(String answer){
 
-    public void updateAnswer(int index, String answer){
-        this.answers.get(index).setAns(answer);
-    }
+        if(answer.length() == 0)
+            return new Response<>(-1, true, "answer cannot be empty");
 
-    public void addAnswer(String answer){
         this.answers.add(new Answer(indexer, answer));
-        this.indexer++;
+        return new Response<>(indexer++, true, "answer cannot be empty");
     }
 
-    public void removeAnswer(int index){
-        Answer currentAns;
-        this.answers.remove(index);
+    public Response<Boolean> removeAnswer (int answerID){
+        Answer answer;
+
+        if(answers.size() <= answerID)
+            return new Response<>(false, true, "answer doesn't exist");
+
+        this.answers.remove(answerID);
 
         // update the index of the following answers
-        for(int i = index; i < this.answers.size(); i++){
-            currentAns = this.answers.get(i);
-            currentAns.setId(currentAns.getId() - 1);
+        for(int i = answerID; i < this.answers.size(); i++){
+            answer = this.answers.get(i);
+            answer.setId(answer.getId() - 1);
         }
+        indexer--;
 
-        this.indexer --;
+        return new Response<>(true, false, "removed question successfully");
     }
 
-    public void markAnswer(int index){
-        answers.get(index).markAnswer();
+    public Response<Boolean> markAnswer(int answerID){
+        if(answers.size() <= answerID)
+            return new Response<>(false, true, "answer doesn't exist");
+
+        answers.get(answerID).markAnswer();
+        return new Response<>(true, false, "answer marked successfully");
     }
 
-    public void cancelAnswer(int index){
-        answers.get(index).cancelAnswer();
+    public Response<Boolean> cancelAnswer(int answerID){
+        if(answers.size() <= answerID)
+            return new Response<>(false, true, "answer doesn't exist");
+
+        answers.get(answerID).cancelAnswer();
+        return new Response<>(true, false, "answer canceled successfully");
     }
 
     public String getQuestion() {
