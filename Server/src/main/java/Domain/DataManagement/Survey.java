@@ -73,7 +73,7 @@ public class Survey {
         return questions.get(questionID).addAnswer(answer);
     }
 
-    public Response<Boolean> removeQuestion (int questionID, int answerID){
+    public Response<Boolean> removeAnswer (int questionID, int answerID){
         if(questions.size() <= questionID)
             return new Response<>(false, true, "question doesn't exist");
 

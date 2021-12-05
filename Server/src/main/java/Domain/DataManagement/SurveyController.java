@@ -50,4 +50,36 @@ public class SurveyController {
         return null;
     }
 
+    public Response<Integer> addQuestion (int id, String questionText){
+
+        if(!surveys.containsKey(id))
+            return new Response<>(-1, true, "the survey doesn't exists");
+
+        return surveys.get(id).addQuestion(questionText);
+    }
+
+    public Response<Boolean> removeQuestion(int id, int questionID){
+
+        if(!surveys.containsKey(id))
+            return new Response<>(false, true, "the survey doesn't exists");
+
+        return surveys.get(id).removeQuestion(questionID);
+    }
+
+    public Response<Integer> addAnswer (int id, int questionID, String answer){
+
+        if(!surveys.containsKey(id))
+            return new Response<>(-1, true, "the survey doesn't exists");
+
+        return surveys.get(id).addAnswer(questionID, answer);
+    }
+
+    public Response<Boolean> removeAnswer (int id, int questionID, int answerID){
+
+        if(!surveys.containsKey(id))
+            return new Response<>(false, true, "the survey doesn't exists");
+
+        return surveys.get(id).removeAnswer(questionID, answerID);
+    }
+
 }
