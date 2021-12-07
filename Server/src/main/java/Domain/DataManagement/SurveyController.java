@@ -3,8 +3,11 @@ package Domain.DataManagement;
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.FaultDetector.FaultDetector;
+import Domain.DataManagement.FaultDetector.Rules.Rule;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class SurveyController {
@@ -82,6 +85,36 @@ public class SurveyController {
             return new Response<>(false, true, "the survey doesn't exists");
 
         return surveys.get(id).getFirst().removeAnswer(questionID, answerID);
+    }
+
+    public Response<Boolean> addRule(String username, int id, Rule rule, String description){
+        // call userController and check if @username can
+
+        if(!surveys.containsKey(id))
+            return new Response<>(false, true, "The survey doesn't exists");
+
+        return surveys.get(id).getSecond().addRule(rule, description);
+    }
+
+    public Response<Boolean> removeRule(String username, int id, int index){
+        // call userController and check if @username can
+
+        if(!surveys.containsKey(id))
+            return new Response<>(false, true, "The survey doesn't exists");
+
+        return surveys.get(id).getSecond().removeRule(index);
+    }
+
+    public Response<List<String>> detectFault(String username, int id){
+        Pair<Survey, FaultDetector> pairSurvey;
+
+        // call userController and check if @username can
+
+        if(!surveys.containsKey(id))
+            return new Response<>(null, true, "The survey doesn't exists");
+
+        pairSurvey = surveys.get(id);
+        return pairSurvey.getSecond().detectFault(pairSurvey.getFirst());
     }
 
 }
