@@ -74,7 +74,22 @@ public class Appointment {//todo go over entire class and fit it to what we need
         return false;
     }
 
+    public Response<Boolean> assignSchoolsToUser(String userToAssign, List<Integer> schools){
+        if(this.userAppointments.containsKey(userToAssign)){
+            this.userAppointments.get(userToAssign).addAll(schools);//todo remove duplicated schools maybe make it a set
+            return new Response<>(true, false, "successfully assigned the schools to the user " + userToAssign);
+        }
+        return new Response<>(true, false, "user was not appointed by you");//todo better errmsg
+    }
+
     public boolean contains(String appointee){
         return this.userAppointments.containsKey(appointee);
+    }
+
+    public List<Integer> getSchools(String appointee){
+        if(contains(appointee)){
+            return userAppointments.get(appointee);//todo add schools to appointee list schools
+        }
+        return new Vector<>();//todo error
     }
 }

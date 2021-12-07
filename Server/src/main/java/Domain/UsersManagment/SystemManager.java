@@ -2,6 +2,7 @@ package Domain.UsersManagment;
 
 import Domain.CommonClasses.Response;
 
+import java.util.List;
 import java.util.Vector;
 
 public class SystemManager extends User{
@@ -14,10 +15,15 @@ public class SystemManager extends User{
 
     @Override
     public Response<Boolean> registerUser(String username, String password, UserStateEnum registerUserStateEnum) {
-        return new Response<>(true, false, "successfully registered a new user");
+        return new Response<>(true, false, "successfully registered a new user");//todo assign
     }
 
     public Response<Boolean> removeUser(String username){
         return new Response<>(true, false, "successfully removed the user");//todo remove all that users responsibility?
+    }
+
+    @Override
+    public Response<Boolean> assignSchoolsToUser(String userToAssign, List<Integer> schools) {
+        return null;//todo
     }
 }

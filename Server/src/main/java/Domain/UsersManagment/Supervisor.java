@@ -2,15 +2,16 @@ package Domain.UsersManagment;
 
 import Domain.CommonClasses.Response;
 
+import java.util.List;
 import java.util.Vector;
 
 public class Supervisor extends Instructor{
 
     public Supervisor(String username, UserStateEnum userStateEnum) {
         super();
-        this.state = userStateEnum;//todo shit
+        this.state = userStateEnum;
         this.name = username;
-        this.schools = new Vector<>();//todo maybe just represent school id's
+        this.schools = new Vector<>();
         this.appointments = new Appointment();
     }
 
@@ -37,6 +38,17 @@ public class Supervisor extends Instructor{
         }
         else {
             return new Response<>(false, true, " the user " + username + " was not assigned by you");
+        }
+    }
+
+    @Override
+    public Response<Boolean> assignSchoolsToUser(String userToAssign, List<Integer> schools) {
+        if(appointments.contains(userToAssign)){
+            UserController.getInstance().getUser(userToAssign).schools.addAll(schools);//todo remove duplicates
+            return appointments.assignSchoolsToUser(userToAssign, schools);
+        }
+        else{
+            return new Response<>(false, true, " the user " + userToAssign + " was not assigned by you");
         }
     }
 }
