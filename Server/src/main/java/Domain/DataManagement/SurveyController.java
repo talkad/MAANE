@@ -6,13 +6,20 @@ import Domain.DataManagement.FaultDetector.FaultDetector;
 import Domain.DataManagement.FaultDetector.Rules.Rule;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 public class SurveyController {
     private Map<Integer, Pair<Survey, FaultDetector>> surveys;
     private int indexer;
+
+    private static class CreateSafeThreadSingleton {
+        private static final SurveyController INSTANCE = new SurveyController();
+    }
+
+    public static SurveyController getInstance() {
+        return SurveyController.CreateSafeThreadSingleton.INSTANCE;
+    }
 
     public SurveyController(){
         surveys = new HashMap<>();
