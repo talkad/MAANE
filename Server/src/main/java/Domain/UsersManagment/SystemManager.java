@@ -15,7 +15,7 @@ public class SystemManager extends User{
 
     @Override
     public Response<Boolean> registerUser(String username, String password, UserStateEnum registerUserStateEnum) {
-        return new Response<>(true, false, "successfully registered a new user");
+        return new Response<>(true, false, "successfully registered a new user");//todo assign
     }
 
     public Response<Boolean> removeUser(String username){

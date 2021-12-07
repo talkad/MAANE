@@ -24,6 +24,6 @@ public class GeneralSupervisor extends User{
 
     @Override
     public Response<Boolean> assignSchoolsToUser(String userToAssign, List<Integer> schools) {
-        return null;//todo
+        return new Response<>(false, true, "user is not allowed to assign schools to users");
     }
 }

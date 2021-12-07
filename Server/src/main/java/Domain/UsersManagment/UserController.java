@@ -120,7 +120,7 @@ public class UserController {
             Response<Boolean> response = user.removeUser(userToRemove);
             if(!response.isFailure()){
                 if(registeredUsers.containsKey(userToRemove)){
-                    registeredUsers.remove(userToRemove);
+                    registeredUsers.remove(userToRemove);//todo disconnect user from the system?
                     return response;
                 }
                 else{
