@@ -1,6 +1,7 @@
 package Domain.DataManagement.FaultDetector;
 
 import Domain.CommonClasses.Pair;
+import Domain.CommonClasses.Response;
 import Domain.DataManagement.FaultDetector.Rules.Rule;
 import Domain.DataManagement.Survey;
 import java.util.LinkedList;
@@ -14,19 +15,25 @@ public class FaultDetector {
         this.rules = new LinkedList<>();
     }
 
-    public FaultDetector(List<Pair<Rule, String>> rules) {
-        this.rules = rules;
-    }
+    public Response<Boolean> addRule(Rule rule, String description){
 
-    public void addRule(Rule rule, String description){
+        if(description.length() == 0)
+            return new Response<>(false, true, "description cannot be empty");
+
         rules.add(new Pair<>(rule, description));
+        return new Response<>(true, false, "rule added successfully");
     }
 
-    public void removeRule(int index){
+    public Response<Boolean> removeRule(int index){
+
+        if(index >= rules.size())
+            return new Response<>(false, true, "index out of bounds");
+
         rules.remove(index);
+        return new Response<>(true, false, "rule removed successfully");
     }
 
-    public List<String> detectFault(Survey survey){
+    public Response<List<String>> detectFault(Survey survey){
         List<String> faults = new LinkedList<>();
 
         for(Pair<Rule, String> rule: rules){
@@ -34,6 +41,6 @@ public class FaultDetector {
                 faults.add(rule.getSecond());
         }
 
-        return faults;
+        return new Response<>(faults, false, "details");
     }
 }

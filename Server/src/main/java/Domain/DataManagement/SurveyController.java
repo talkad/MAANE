@@ -1,12 +1,14 @@
 package Domain.DataManagement;
 
+import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
+import Domain.DataManagement.FaultDetector.FaultDetector;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class SurveyController {
-    private Map<Integer, Survey> surveys;
+    private Map<Integer, Pair<Survey, FaultDetector>> surveys;
     private int indexer;
 
     public SurveyController(){
@@ -21,7 +23,7 @@ public class SurveyController {
         if(surveyRes.isFailure())
             return new Response<>(-1, true, surveyRes.getErrMsg());
 
-        surveys.put(indexer, surveyRes.getResult());
+        surveys.put(indexer, new Pair<>(surveyRes.getResult(), new FaultDetector()));
 
         return new Response<>(indexer++, false, "new survey created successfully");
     }
@@ -42,7 +44,7 @@ public class SurveyController {
         if(!surveys.containsKey(id))
             return new Response<>(null, true, "The survey doesn't exists");
 
-        return new Response<>(surveys.get(id), false, "The survey removed successfully ");
+        return new Response<>(surveys.get(id).getFirst(), false, "The survey removed successfully ");
     }
 
     public Response<Survey> publishSurvey(String username){
@@ -55,7 +57,7 @@ public class SurveyController {
         if(!surveys.containsKey(id))
             return new Response<>(-1, true, "the survey doesn't exists");
 
-        return surveys.get(id).addQuestion(questionText);
+        return surveys.get(id).getFirst().addQuestion(questionText);
     }
 
     public Response<Boolean> removeQuestion(int id, int questionID){
@@ -63,7 +65,7 @@ public class SurveyController {
         if(!surveys.containsKey(id))
             return new Response<>(false, true, "the survey doesn't exists");
 
-        return surveys.get(id).removeQuestion(questionID);
+        return surveys.get(id).getFirst().removeQuestion(questionID);
     }
 
     public Response<Integer> addAnswer (int id, int questionID, String answer){
@@ -71,7 +73,7 @@ public class SurveyController {
         if(!surveys.containsKey(id))
             return new Response<>(-1, true, "the survey doesn't exists");
 
-        return surveys.get(id).addAnswer(questionID, answer);
+        return surveys.get(id).getFirst().addAnswer(questionID, answer);
     }
 
     public Response<Boolean> removeAnswer (int id, int questionID, int answerID){
@@ -79,7 +81,7 @@ public class SurveyController {
         if(!surveys.containsKey(id))
             return new Response<>(false, true, "the survey doesn't exists");
 
-        return surveys.get(id).removeAnswer(questionID, answerID);
+        return surveys.get(id).getFirst().removeAnswer(questionID, answerID);
     }
 
 }
