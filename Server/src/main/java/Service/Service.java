@@ -9,6 +9,14 @@ import java.util.List;
 
 public class Service implements IService{
 
+    private static class CreateSafeThreadSingleton {
+        private static final Service INSTANCE = new Service();
+    }
+
+    public static Service getInstance() {
+        return Service.CreateSafeThreadSingleton.INSTANCE;
+    }
+
     @Override
     public Response<Integer> createSurvey(String username, String title) {
         return SurveyController.getInstance().createSurvey(username, title);
