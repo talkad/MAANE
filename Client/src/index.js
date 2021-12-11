@@ -4,11 +4,42 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-import Login from './Pages/Login.js'
+import {BrowserRouter} from "react-router-dom";
+import {ThemeProvider, createTheme, } from "@mui/material/styles";
+import {} from "@mui/material/colors"
+
+import { CacheProvider } from "@emotion/react";
+import createCache from "@emotion/cache";
+import rtlPlugin from 'stylis-plugin-rtl';
+
+const theme = createTheme({
+    palette: {
+        primary: {
+            main: '#ff4400'
+        },
+        secondary: {
+            main: '#0066ff'
+        }
+    },
+    direction: 'rtl',
+})
+
+const cacheRtl = createCache({
+    key: "muirtl",
+    stylisPlugins: [rtlPlugin]
+});
 
 ReactDOM.render(
   <React.StrictMode>
-      <Login/>
+      <BrowserRouter>
+          {/*wrapper for ltr*/}
+          <CacheProvider value={cacheRtl}>
+              {/*wrapper for theme*/}
+              <ThemeProvider theme={theme}>
+                  <App/>
+              </ThemeProvider>
+          </CacheProvider>
+      </BrowserRouter>
   </React.StrictMode>,
   document.getElementById('root')
 );

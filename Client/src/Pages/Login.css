@@ -3,10 +3,12 @@
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
+    margin-top: 8vh;
 }
 
 .Login-form {
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 25ch;
 }

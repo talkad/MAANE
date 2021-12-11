@@ -5,98 +5,83 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import {FormControl, IconButton, InputAdornment, InputLabel, Input,} from "@mui/material";
+import {Alert, IconButton, InputAdornment,} from "@mui/material";
 
 export default function Login(){
-    const [values, setValues] = useState({
-        username: '',
-        password: '',
-        showPassword: false,
-    });
+    const [showPassword, setShowPassword] = useState(false)
+    const [showError, setShowError] = useState(false)
+    const [errorMessage, setErrorMessage] = useState('');
 
-    const handleChange = (prop) => (event) => {
-        setValues({ ...values, [prop]: event.target.value });
-    };
+    const header_string = 'מענ"ה'
+    const username_label_string  = "שם משתמש"
+    const password_label_string  = "סיסמה"
+    const login_button_string  = "כניסה"
 
-    const handleClickShowPassword = () => {
-        setValues({
-            ...values,
-            showPassword: !values.showPassword,
-        });
-    };
-
-    const handleMouseDownPassword = (event) => {
+    const handleSubmit = (event) => {
         event.preventDefault();
-    };
+        const data = new FormData(event.currentTarget);
+
+        if(data.get('username') === '' || data.get('password') === ''){
+            setShowError(true);
+            setErrorMessage('נא למלא את כל השדות')
+        }
+        else{
+            setShowError(false);
+        }
+
+        // TODO: send the data
+    }
 
     return (
-        <Box className="Login">
-            <h1>מענ"ה</h1>
-            <Box
-                className="Login-form"
-                component="form"
-                sx={{
-                    '& > :not(style)': { m: 1, width: '25ch' },
-                }}
-                noValidate
-                autoComplete="off">
-
-                <InputLabel dir='rtl' sx={{textAlign: 'right', display: 'block',
-                    float: 'right', paddingBottom: '0'}}><b>שם משתמש:</b></InputLabel>
-                <FormControl dir='rtl' sx={{ m: 1, width: '25ch', }} variant="standard">
-                    <Input
-                        type='text'
-                        value={values.username}
-                        onChange={handleChange('username')}
-                    />
-                </FormControl>
-
-
-                <InputLabel dir='rtl' sx={{textAlign: 'right', display: 'block',
-                    float: 'right', paddingBottom: '0'}}><b>סיסמה:</b></InputLabel>
-                <FormControl dir='rtl' sx={{ m: 1, width: '25ch', }} variant="standard">
-                    <Input
-                        type={values.showPassword ? 'text' : 'password'}
-                        value={values.password}
-                        onChange={handleChange('password')}
-                        endAdornment={
-                            <InputAdornment position="start">
+        <div className="Login">
+            <h1>{header_string}</h1>
+            <Box className="Login-form" component="form" onSubmit={handleSubmit} noValidate sx={{mt: 1}}>
+                <TextField
+                    error={showError}
+                    margin="normal"
+                    variant="standard"
+                    required
+                    fullWidth
+                    id="username"
+                    label={username_label_string }
+                    name="username"
+                    autoComplete="username"
+                    autoFocus
+                />
+                <TextField
+                    error={showError}
+                    margin="normal"
+                    variant="standard"
+                    required
+                    fullWidth
+                    name="password"
+                    label={password_label_string}
+                    type={showPassword ? 'text' : 'password'}
+                    id="password"
+                    autoComplete="current-password"
+                    InputProps={{
+                        endAdornment: (
+                            <InputAdornment position="end">
                                 <IconButton
-                                    aria-label="toggle password visibility"
-                                    onClick={handleClickShowPassword}
-                                    onMouseDown={handleMouseDownPassword}
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    onMouseDown={(event) => event.preventDefault()}
                                 >
-                                    {values.showPassword ? <VisibilityOff /> : <Visibility />}
+                                    {showPassword ? <VisibilityOff /> : <Visibility />}
                                 </IconButton>
                             </InputAdornment>
-                        }
-                    />
-                </FormControl>
-                {/*<FormControl variant="standard">*/}
-                {/*    <InputLabel>סיסמה</InputLabel>*/}
-                {/*    <OutlinedInput>*/}
-                {/*        type={values.showPassword ? 'text' : 'password'}*/}
-                {/*        value={values.password}*/}
-                {/*        onChange={handleChange('password')}*/}
-                {/*        endAdornment={*/}
-                {/*        <InputAdornment position='end'>*/}
-                {/*            <IconButton*/}
-                {/*                onClick={handleClickShowPassword}*/}
-                {/*                onMouseDown={handleMouseDownPassword}*/}
-                {/*            >{values.showPassword ? <VisibilityOff/> : <Visibility/>}*/}
-                {/*            </IconButton>*/}
-                {/*        </InputAdornment>*/}
-                {/*    }*/}
-                {/*    label='password'*/}
-                {/*    </OutlinedInput>*/}
-                {/*</FormControl>*/}
-
-                <Button variant="outlined">כניסה</Button>
+                        ),
+                    }}
+                />
+                {showError && <Alert severity="error">{errorMessage}</Alert>}
+                <Button
+                    type="submit"
+                    fullWidth
+                    variant="contained"
+                    sx={{ mt: 3, mb: 2 }}
+                >
+                    {login_button_string}
+                </Button>
             </Box>
-            <Box>
-
-            </Box>
-        </Box>
-
+        </div>
     );
 }
