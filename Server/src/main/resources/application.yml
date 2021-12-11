@@ -1,13 +1,13 @@
-spring:
-  datasource:
-    password: none
-    url: url-of-db
-    username: root
-  jpa:
-    hibernate:
-      ddl-auto: create
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
-        format_sql: true
-    show-sql: true
+#spring:
+#  datasource:
+#    password: none
+#    url: url-of-db
+#    username: root
+#  jpa:
+#    hibernate:
+#      ddl-auto: create
+#    properties:
+#      hibernate:
+#        dialect: org.hibernate.dialect.MySQL8Dialect
+#        format_sql: true
+#    show-sql: true

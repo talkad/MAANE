@@ -1,5 +1,7 @@
 package Communication;
 
+import Communication.Model.Instructor;
+import Communication.Repo.Repo;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,10 +14,10 @@ public class ServerApplication {
         SpringApplication.run(ServerApplication.class, args);
     }
 
-    @Bean
-    CommandLineRunner run(){
-        return args -> {
-          // initiate db for example
-        };
-    }
+//    @Bean
+//    CommandLineRunner run(Repo repo){
+//        return args -> {
+//          repo.add(new Instructor("tal@post", "tal"));
+//        };
+//    }
 }
