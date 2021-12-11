@@ -1,6 +1,12 @@
 package Domain.CommonClasses;
 
-// Immutable Response object
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Data;
+import lombok.experimental.SuperBuilder;
+
+@Data
+@SuperBuilder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Response<T> {
 
     private final T result;
@@ -11,8 +17,6 @@ public class Response<T> {
         this.result = result;
         this.isFailure = isFailure;
         this.errMsg = errMsg;
-
-        //TODO: LogWriter(isFailure, errMsg);
     }
 
     public T getResult() {

@@ -54,7 +54,7 @@ public class SurveyController {
         if(!surveys.containsKey(id))
             return new Response<>(null, true, "The survey doesn't exists");
 
-        return new Response<>(surveys.get(id).getFirst(), false, "The survey removed successfully ");
+        return new Response<>(surveys.get(id).getFirst(), false, "received survey successfully ");
     }
 
     public Response<Survey> publishSurvey(String username){
