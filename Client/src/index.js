@@ -31,15 +31,15 @@ const cacheRtl = createCache({
 
 ReactDOM.render(
   <React.StrictMode>
-      <BrowserRouter>
-          {/*wrapper for ltr*/}
-          <CacheProvider value={cacheRtl}>
-              {/*wrapper for theme*/}
-              <ThemeProvider theme={theme}>
-                  <App/>
-              </ThemeProvider>
-          </CacheProvider>
-      </BrowserRouter>
+      {/*wrapper for ltr*/}
+      <CacheProvider value={cacheRtl}>
+          {/*wrapper for theme*/}
+          <ThemeProvider theme={theme}>
+              <BrowserRouter>
+              <App/>
+              </BrowserRouter>
+          </ThemeProvider>
+      </CacheProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );
