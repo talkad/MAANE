@@ -1,14 +1,12 @@
-package Service;
+package Service.Interfaces;
 
-import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
-import Domain.DataManagement.FaultDetector.FaultDetector;
 import Domain.DataManagement.FaultDetector.Rules.Rule;
 import Domain.DataManagement.Survey;
 
 import java.util.List;
 
-public interface IService {
+public interface SurveyService {
 
     // Data Management Module
     Response<Integer> createSurvey(String username, String title);

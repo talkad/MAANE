@@ -4,6 +4,7 @@ import Domain.CommonClasses.Response;
 import Domain.DataManagement.FaultDetector.Rules.Rule;
 import Domain.DataManagement.Survey;
 import Domain.DataManagement.SurveyController;
+import Service.Interfaces.SurveyService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,14 +14,14 @@ import java.util.List;
 @Service
 @Transactional
 @Slf4j
-public class ServerService implements IService{
+public class SurveyServiceImpl implements SurveyService {
 
     private static class CreateSafeThreadSingleton {
-        private static final ServerService INSTANCE = new ServerService();
+        private static final SurveyServiceImpl INSTANCE = new SurveyServiceImpl();
     }
 
-    public static ServerService getInstance() {
-        return ServerService.CreateSafeThreadSingleton.INSTANCE;
+    public static SurveyServiceImpl getInstance() {
+        return SurveyServiceImpl.CreateSafeThreadSingleton.INSTANCE;
     }
 
     @Override
