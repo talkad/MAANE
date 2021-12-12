@@ -1,12 +1,12 @@
-package Domain.DataManagement;
+package Domain.DataManagement.AnswerState;
 
-public class Answer {
+public class AnswerSingleChoice {
 
     private int id;
     private String answer;
     private boolean isSelected;
 
-    public Answer(int id, String answer) {
+    public AnswerSingleChoice(int id, String answer) {
         this.id = id;
         this.answer = answer;
         this.isSelected = false;
