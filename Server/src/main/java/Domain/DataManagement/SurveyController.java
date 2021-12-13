@@ -11,6 +11,7 @@ import java.util.Map;
 
 public class SurveyController {
     private Map<Integer, Pair<Survey, FaultDetector>> surveys;
+    // separate survey to sub domains
     private int indexer;
 
     private static class CreateSafeThreadSingleton {

@@ -2,16 +2,14 @@ package Domain.DataManagement.AnswerState;
 
 import Domain.CommonClasses.Response;
 
+import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 public class AnswerOpen implements Answer{
 
-    private String answer;
-    private final AnswerType type;
+    private AnswerType type;
 
-    public AnswerOpen(String answer, AnswerType type) {
-        this.answer = answer;
+    public AnswerOpen(AnswerType type) {
         this.type = type;
     }
 
@@ -26,11 +24,22 @@ public class AnswerOpen implements Answer{
     }
 
     @Override
-    public Response<List<String>> getAnswers() {
+    public Response<Collection<String>> getAnswers() {
         return new Response<>(new LinkedList<>(), true, "wrong answer type");
     }
 
-//    @Override
+    @Override
+    public Response<AnswerType> getType() {
+        return new Response<>(type, false, "OK");
+    }
+
+    @Override
+    public Response<Boolean> defineType(AnswerType type) {
+        this.type = type;
+        return new Response<>(true, false, "OK");
+    }
+
+    //    @Override
 //    public Response<Boolean> fillAnswer(String answer) {
 //        if(type == VERBAL_ANSWER)
 //        {

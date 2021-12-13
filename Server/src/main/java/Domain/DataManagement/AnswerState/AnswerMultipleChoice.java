@@ -2,15 +2,20 @@ package Domain.DataManagement.AnswerState;
 
 import Domain.CommonClasses.Response;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
+import static Domain.DataManagement.AnswerState.AnswerType.MULTIPLE_CHOICE;
 
 public class AnswerMultipleChoice implements Answer{
 
-    private List<String> answers;
+    private Map<Integer, String> answers;
+    private int indexer;
 
     public AnswerMultipleChoice() {
-        this.answers = new LinkedList<>();
+        this.indexer = 0;
+        this.answers = new HashMap<>();
     }
 
     @Override
@@ -19,7 +24,7 @@ public class AnswerMultipleChoice implements Answer{
         if(answer.length() == 0)
             return new Response<>(false, true, "answer cannot be empty");
 
-        this.answers.add(answer);
+        this.answers.put(indexer++, answer);
         return new Response<>(false, true, "answer cannot be empty");
     }
 
@@ -35,8 +40,18 @@ public class AnswerMultipleChoice implements Answer{
     }
 
     @Override
-    public Response<List<String>> getAnswers() {
-        return new Response<>(answers, false, "OK");
+    public Response<Collection<String>> getAnswers() {
+        return new Response<>(answers.values(), false, "OK");
+    }
+
+    @Override
+    public Response<AnswerType> getType() {
+        return new Response<>(MULTIPLE_CHOICE, true, "wrong answer type");
+    }
+
+    @Override
+    public Response<Boolean> defineType(AnswerType type) {
+        return new Response<>(true, false, "OK");
     }
 
 
