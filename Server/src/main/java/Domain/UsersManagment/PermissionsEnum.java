@@ -7,7 +7,8 @@ public enum PermissionsEnum {
     /** Registered User **/
     LOGOUT,
 
-    ASSIGNSCHOOLSTOUSER,
-    REGISTERUSER,
-    REGISTERSUPERVISOR
+    ASSIGN_SCHOOLS_TO_USER,
+    REGISTER_USER,
+    REGISTER_SUPERVISOR,
+    REMOVE_USER
 }

@@ -9,9 +9,16 @@ public class Supervisor extends Instructor{
 
     public Supervisor() {
         super();
-        allowedFunctions.add(PermissionsEnum.ASSIGNSCHOOLSTOUSER);
-        allowedFunctions.add(PermissionsEnum.REGISTERUSER);
+        allowedFunctions.add(PermissionsEnum.ASSIGN_SCHOOLS_TO_USER);
+        allowedFunctions.add(PermissionsEnum.REGISTER_USER);
+        allowedFunctions.add(PermissionsEnum.REMOVE_USER);
     }
+
+    @Override
+    public boolean allowed(PermissionsEnum func, User user) {
+        return this.allowedFunctions.contains(func);
+    }
+
 
     @Override
     public UserStateEnum getStateEnum() {

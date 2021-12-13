@@ -92,44 +92,44 @@ public class UserController {
         return new Response<>(null, true, "User not connected");
     }
 
-    public Response<Boolean> registerUser(String currUser, String userToRegister, String password, UserStateEnum userStateEnum){
+    public Response<User> registerUser(String currUser, String userToRegister, String password, UserStateEnum userStateEnum){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             if (!userToRegister.startsWith("Guest")){
-                Response<Boolean> result = user.registerUser(userToRegister, userStateEnum);
+                Response<User> result = user.registerUser(userToRegister, userStateEnum);
                 if (!result.isFailure()) {
                     if (!registeredUsers.containsKey(userToRegister)) {
-                        registeredUsers.put(userToRegister, new Pair<>(user, security.sha256(password)));
-                        result = new Response<>(true, false, "Registration occurred");
+                        registeredUsers.put(userToRegister, new Pair<>(result.getResult(), security.sha256(password)));
+                        result = new Response<>(result.getResult(), false, "Registration occurred");
                     } else {
-                        return new Response<>(false, true, "username already exists");
+                        return new Response<>(null, true, "username already exists"); // null may be a problem
                     }
                 }
                 return result;
             }
-            else return new Response<>(false, true, "error: cannot register user starting with the name Guest");
+            else return new Response<>(null, true, "error: cannot register user starting with the name Guest");
         }
         else {
             return new Response<>(null, true, "User not connected");
         }
     }
 
-    public Response<Boolean> registerSupervisor(String currUser, String userToRegister, String password, UserStateEnum userStateEnum){
+    public Response<User> registerSupervisor(String currUser, String userToRegister, String password, UserStateEnum userStateEnum){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             if (!userToRegister.startsWith("Guest")){
-                Response<Boolean> result = user.registerSupervisor(userToRegister);
+                Response<User> result = user.registerSupervisor(userToRegister);
                 if (!result.isFailure()) {
                     if (!registeredUsers.containsKey(userToRegister)) {
-                        registeredUsers.put(userToRegister, new Pair<>(user, security.sha256(password)));
-                        result = new Response<>(true, false, "Registration occurred");
+                        registeredUsers.put(userToRegister, new Pair<>(result.getResult(), security.sha256(password)));
+                        result = new Response<>(result.getResult(), false, "Registration occurred");
                     } else {
-                        return new Response<>(false, true, "username already exists");
+                        return new Response<>(null, true, "username already exists"); // todo null may be a problem
                     }
                 }
                 return result;
             }
-            else return new Response<>(false, true, "error: cannot register user starting with the name Guest");
+            else return new Response<>(null, true, "error: cannot register user starting with the name Guest");
         }
         else {
             return new Response<>(null, true, "User not connected");

@@ -42,12 +42,13 @@ public class User {
             case INSTRUCTOR -> new Instructor();
             case SUPERVISOR -> new Supervisor();
             case GENERAL_SUPERVISOR -> new GeneralSupervisor();
+            case SYSTEM_MANAGER -> new SystemManager();
             default -> new Registered(); //this is a problem
         };
     }
 
     public Response<Boolean> logout() {
-        if(this.state.allowed(PermissionsEnum.LOGOUT, this) )
+        if(this.state.allowed(PermissionsEnum.LOGOUT, this))
             return new Response<>(true, false, "logged out successfully");
         return new Response<>(false, true, "Cannot logout without being logged in");
     }
@@ -71,50 +72,64 @@ public class User {
     }
 
     public Response<Boolean> assignSchoolsToUser(String userToAssign, List<Integer> schools) {
-        if(appointments.contains(userToAssign)){
-            for (Integer schoolId: schools) {
-                if(!UserController.getInstance().getUser(userToAssign).schools.contains(schoolId)){
-                    UserController.getInstance().getUser(userToAssign).schools.add(schoolId);
+        if(this.state.allowed(PermissionsEnum.ASSIGN_SCHOOLS_TO_USER, this)) {
+            if (appointments.contains(userToAssign)) {
+                for (Integer schoolId : schools) {
+                    if (!UserController.getInstance().getUser(userToAssign).schools.contains(schoolId)) {
+                        UserController.getInstance().getUser(userToAssign).schools.add(schoolId);
+                    }
                 }
+                return appointments.assignSchoolsToUser(userToAssign, schools);
+            } else {
+                return new Response<>(false, true, " the user " + userToAssign + " was not assigned by you");
             }
-            return appointments.assignSchoolsToUser(userToAssign, schools);
         }
-        else{
-            return new Response<>(false, true, " the user " + userToAssign + " was not assigned by you");
-        }
+        else return new Response<>(false, true, "user not allowed to assign schools to users");
     }
 
     public Response<Boolean> removeUser(String username) {
-        if(appointments.contains(username)) {
-            Response<Boolean> response = appointments.removeAppointment(username);
-            if (!response.isFailure()) {
-                return new Response<>(true, false, "successfully removed the user " + username);
+        if(this.state.allowed(PermissionsEnum.REMOVE_USER, this)) {
+            if (appointments.contains(username)) {
+                Response<Boolean> response = appointments.removeAppointment(username);
+                if (!response.isFailure()) {
+                    return new Response<>(true, false, "successfully removed the user " + username);
+                }
+                return response;
+            } else {
+                return new Response<>(false, true, " the user " + username + " was not assigned by you");
             }
-            return response;
         }
         else {
-            return new Response<>(false, true, " the user " + username + " was not assigned by you");
+            return new Response<>(false, true, "user not allowed to remove users");
         }
     }
 
-    public Response<Boolean> registerUser(String username, UserStateEnum registerUserStateEnum) {
-        if((registerUserStateEnum == UserStateEnum.INSTRUCTOR
-                || registerUserStateEnum == UserStateEnum.GENERAL_SUPERVISOR) && !appointments.contains(username)){
-            appointments.addAppointment(username);
-            return new Response<>(true, false, "user successfully assigned");
+    public Response<User> registerUser(String username, UserStateEnum registerUserStateEnum) {
+        if(this.state.allowed(PermissionsEnum.REGISTER_USER, this)) {
+            if ((registerUserStateEnum == UserStateEnum.INSTRUCTOR
+                    || registerUserStateEnum == UserStateEnum.GENERAL_SUPERVISOR) && !appointments.contains(username)) {
+                appointments.addAppointment(username);
+                return new Response<>(new User(username, registerUserStateEnum), false, "user successfully assigned");
+            } else {
+                return new Response<>(null, true, "failed to assign user");//todo maybe more informative error
+            }
         }
         else{
-            return new Response<>(false, true, "failed to assign user");//todo maybe more informative error
+            return new Response<>(null, true, "user not allowed to register users");
         }
     }
 
-    public Response<Boolean> registerSupervisor(String username) { //todo may combine with register user and to proper adjustments
-        if(!appointments.contains(username)){
-            appointments.addAppointment(username);
-            return new Response<>(true, false, "supervisor successfully assigned");
+    public Response<User> registerSupervisor(String username) { //todo may combine with register user and to proper adjustments
+        if(this.state.allowed(PermissionsEnum.REGISTER_SUPERVISOR, this)) {
+            if (!appointments.contains(username)) {
+                appointments.addAppointment(username);
+                return new Response<>(new User(username, UserStateEnum.SUPERVISOR), false, "supervisor successfully assigned");
+            } else {
+                return new Response<>(null, true, "failed to assign user");//todo maybe more informative error and null may be bad
+            }
         }
         else{
-            return new Response<>(false, true, "failed to assign user");//todo maybe more informative error
+            return new Response<>(null, true, "user not allowed to register supervisors");
         }
     }
 
