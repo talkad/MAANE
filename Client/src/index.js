@@ -17,7 +17,7 @@ import rtlPlugin from 'stylis-plugin-rtl';
 const theme = createTheme({ //TODO: figure the colors out
     palette: {
         background: {
-            default: '#FFDE03'
+            default: '#ffffff'
         },
         primary: {
             main: '#FFDE03'

@@ -14,13 +14,14 @@ export default function Survey(props) {
                 <Grid container spacing={2}>
                     <Grid item xs={9}>
                         <TextField
+                            color="secondary"
                             className="SurveyQuestion-text-field"
                             margin="normal"
                             variant="filled"
                             required
-                            id="title"
+                            id="question"
                             label={question_label_string}
-                            name="title"
+                            name="question"
                             autoFocus
                         />
                     </Grid>
