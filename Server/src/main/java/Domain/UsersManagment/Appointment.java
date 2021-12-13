@@ -76,7 +76,11 @@ public class Appointment {//todo go over entire class and fit it to what we need
 
     public Response<Boolean> assignSchoolsToUser(String userToAssign, List<Integer> schools){
         if(this.userAppointments.containsKey(userToAssign)){
-            this.userAppointments.get(userToAssign).addAll(schools);//todo remove duplicated schools maybe make it a set
+            for (Integer schoolId: schools) {
+                if(!this.userAppointments.get(userToAssign).contains(schoolId)){
+                    this.userAppointments.get(userToAssign).add(schoolId);
+                }
+            }
             return new Response<>(true, false, "successfully assigned the schools to the user " + userToAssign);
         }
         return new Response<>(true, false, "user was not appointed by you");//todo better errmsg

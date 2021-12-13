@@ -46,7 +46,7 @@ public class UserController {
 
     public Response<String> addGuest(){
         String guestName = "Guest" + availableId.getAndIncrement();
-        User user = new Guest(); //todo is this ok? originally was User()
+        User user = new User();
         user.setName(guestName);
         connectedUsers.put(guestName, user);
         return new Response<>(guestName, false, "added guest");
@@ -96,10 +96,32 @@ public class UserController {
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             if (!userToRegister.startsWith("Guest")){
-                Response<Boolean> result = user.registerUser(userToRegister, password, userStateEnum);
+                Response<Boolean> result = user.registerUser(userToRegister, userStateEnum);
                 if (!result.isFailure()) {
                     if (!registeredUsers.containsKey(userToRegister)) {
-                        registeredUsers.put(userToRegister, new Pair<>(user.inferUserState(userToRegister, userStateEnum), security.sha256(password)));
+                        registeredUsers.put(userToRegister, new Pair<>(user, security.sha256(password)));
+                        result = new Response<>(true, false, "Registration occurred");
+                    } else {
+                        return new Response<>(false, true, "username already exists");
+                    }
+                }
+                return result;
+            }
+            else return new Response<>(false, true, "error: cannot register user starting with the name Guest");
+        }
+        else {
+            return new Response<>(null, true, "User not connected");
+        }
+    }
+
+    public Response<Boolean> registerSupervisor(String currUser, String userToRegister, String password, UserStateEnum userStateEnum){
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            if (!userToRegister.startsWith("Guest")){
+                Response<Boolean> result = user.registerSupervisor(userToRegister);
+                if (!result.isFailure()) {
+                    if (!registeredUsers.containsKey(userToRegister)) {
+                        registeredUsers.put(userToRegister, new Pair<>(user, security.sha256(password)));
                         result = new Response<>(true, false, "Registration occurred");
                     } else {
                         return new Response<>(false, true, "username already exists");
@@ -141,7 +163,11 @@ public class UserController {
             if(registeredUsers.containsKey(userToAssign)) {
                 response = user.assignSchoolsToUser(userToAssign, schools);
                 if (!response.isFailure() && connectedUsers.containsKey(userToAssign)) {
-                    connectedUsers.get(userToAssign).schools.addAll(schools);//todo remove duplicates
+                    for (Integer schoolId: schools) {
+                        if(!connectedUsers.get(userToAssign).schools.contains(schoolId)){
+                            connectedUsers.get(userToAssign).schools.add(schoolId);
+                        }
+                    }
                 }
                 return response;
             }
@@ -159,8 +185,7 @@ public class UserController {
     }
 
     public void adminBoot(String username, String password) {
-        User user = new SystemManager(username, UserStateEnum.SYSTEM_MANAGER);
+        User user = new User(username, UserStateEnum.SYSTEM_MANAGER);
         registeredUsers.put(username, new Pair<>(user, security.sha256(password)));
-
     }
 }
