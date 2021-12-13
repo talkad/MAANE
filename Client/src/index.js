@@ -4,6 +4,8 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+import CssBaseline from "@mui/material/CssBaseline";
+
 import {BrowserRouter} from "react-router-dom";
 import {ThemeProvider, createTheme, } from "@mui/material/styles";
 import {} from "@mui/material/colors"
@@ -12,14 +14,17 @@ import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
 import rtlPlugin from 'stylis-plugin-rtl';
 
-const theme = createTheme({
+const theme = createTheme({ //TODO: figure the colors out
     palette: {
+        background: {
+            default: '#FFDE03'
+        },
         primary: {
-            main: '#ff4400'
+            main: '#FFDE03'
         },
         secondary: {
-            main: '#0066ff'
-        }
+            main: '#0336FF'
+        },
     },
     direction: 'rtl',
 })
@@ -35,8 +40,9 @@ ReactDOM.render(
       <CacheProvider value={cacheRtl}>
           {/*wrapper for theme*/}
           <ThemeProvider theme={theme}>
+              <CssBaseline/>
               <BrowserRouter>
-              <App/>
+                <App/>
               </BrowserRouter>
           </ThemeProvider>
       </CacheProvider>

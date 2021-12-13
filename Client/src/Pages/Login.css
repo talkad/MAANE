@@ -11,4 +11,9 @@
     flex-direction: column;
     align-items: center;
     width: 25ch;
+    margin: 30px;
+}
+
+. Login-paper {
+    width: fit-content;
 }
