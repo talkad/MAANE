@@ -2,7 +2,7 @@ import './App.css';
 import { Routes, Route } from "react-router-dom";
 import Login from "./Pages/Login";
 import React from "react";
-import Survey from "./Pages/Survey";
+import Survey from "./Pages/Survey/Survey";
 
 
 
@@ -15,7 +15,7 @@ function App() {
           <Route
               path="*"
               element={
-                  <main style={{ padding: "1rem" }}>
+                  <main style={{ padding: "1rem" }}> {/*todo: make this page prettier */}
                       <p>דף זה אינו קיים</p>
                   </main>
               }
