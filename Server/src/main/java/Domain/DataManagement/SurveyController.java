@@ -124,4 +124,11 @@ public class SurveyController {
         return pairSurvey.getSecond().detectFault(pairSurvey.getFirst());
     }
 
+    public Response<List<String>> getGoals(int index){
+        //get yehadim from users module
+        // check with shaked the implementation
+        //TODO: that
+        return null;
+    }
+
 }

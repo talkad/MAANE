@@ -1,9 +1,6 @@
 package Domain.DataManagement;
 
-import Domain.CommonClasses.Response;
 import Domain.DataManagement.AnswerState.Answer;
-import Domain.DataManagement.AnswerState.AnswerSingleChoice;
-import java.util.List;
 
 public class Question {
 

@@ -7,18 +7,9 @@ import java.util.List;
 
 public interface Answer {
 
-    Response<Integer> addAnswer(String answer);
+    Response<Boolean> addAnswer(String answer);
     Response<Boolean> removeAnswer (int answerID);
 
-    Response<Boolean> markAnswer(int answerID);
+    Response<List<String>> getAnswers();
 
-    Response<Boolean> cancelAnswer(int answerID);
-
-    Response<List<AnswerSingleChoice>> getAnswers();
-
-    Response<AnswerSingleChoice> getAnswer(int index);
-
-    Response<String> getAnswer();
-
-    Response<Boolean> fillAnswer(String answer);
 }
