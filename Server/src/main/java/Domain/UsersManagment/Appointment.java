@@ -57,14 +57,8 @@ public class Appointment {//todo go over entire class and fit it to what we need
         return response;
     }
 
-    public Response<List<String>> getAppointees(String name){//todo should return all assigned users by this user
+    public Response<List<String>> getAppointees(){//todo should return all assigned users by this user
         return new Response<>(new Vector<>(this.userAppointments.keySet()), false, "");
-//        Response<List<Integer>> response;
-//        if(this.userAppointments.containsKey(name)){
-//            response = new Response<>(this.userAppointments.get(name), false, "");
-//        }
-//        else response = new Response<>(new Vector<>(), true, "No appointments for given store");
-//        return response;
     }
 
     public boolean contains(String appointee, int schoolId){
@@ -95,5 +89,9 @@ public class Appointment {//todo go over entire class and fit it to what we need
             return userAppointments.get(appointee);//todo add schools to appointee list schools
         }
         return new Vector<>();//todo error
+    }
+
+    public Map<String, List<Integer>> getUserAppointments(){
+        return this.userAppointments;
     }
 }

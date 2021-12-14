@@ -15,7 +15,8 @@ public class User {
     protected Appointment appointments;
 //    private MonthlyReport monthlyReport; //todo monthly reports history??
 //    private WorkPlan workPlan;
-    //private String workField;
+//    private String workField;
+    //todo add more details like phone number and such
 
     public User() {
         this.state = new Guest();
@@ -87,7 +88,7 @@ public class User {
         else return new Response<>(false, true, "user not allowed to assign schools to users");
     }
 
-    public Response<Boolean> removeUser(String username) {
+    public Response<Boolean> removeUser(String username) { //todo can a user even be appointed twice? if so needs to be removed from all personal that he was appointed by
         if(this.state.allowed(PermissionsEnum.REMOVE_USER, this)) {
             if (appointments.contains(username)) {
                 Response<Boolean> response = appointments.removeAppointment(username);
@@ -133,4 +134,37 @@ public class User {
         }
     }
 
+    public Response<String> fillMonthlyReport(String currUser) {
+        if (this.state.allowed(PermissionsEnum.FILL_MONTHLY_REPORT, this)) {
+            return null; //todo unimplemented error
+        }
+        return null; //todo unimplemented error
+    }
+
+    public Response<Boolean> changePassword(String userToChangePassword, String newPassword) {
+        if (this.state.allowed(PermissionsEnum.CHANGE_PASSWORD, this)) {
+            return new Response<>(true, false,"successfully password changed");
+        }
+        else{
+            return new Response<>(false, true, "user not allowed to change password");
+        }
+    }
+
+    public Response<String> viewInstructorsDetails() {
+        if (this.state.allowed(PermissionsEnum.VIEW_INSTRUCTORS_INFO, this)) {
+            Response<List<String>> instructors = appointments.getAppointees();
+            StringBuilder instructorDetails = new StringBuilder(); //todo maybe make it a list??
+            for (String instructor: instructors.getResult()) {
+                instructorDetails.append(UserController.getInstance().getUser(instructor).getInfo());
+            }
+            return new Response<>(instructorDetails.toString(), false, "successfully generated instructors details");
+        }
+        else{
+            return new Response<>("", true, "user not allowed to view instructor info");
+        }
+    }
+
+    public String getInfo() {
+        return this.name + " " + this.schools.toString(); //todo generate proper tostring
+    }
 }

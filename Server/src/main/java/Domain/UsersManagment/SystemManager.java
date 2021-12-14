@@ -9,6 +9,10 @@ public class SystemManager extends Registered{
     public SystemManager() {
         super();
         allowedFunctions.add(PermissionsEnum.REGISTER_SUPERVISOR);
+        allowedFunctions.add(PermissionsEnum.REMOVE_USER);
+        allowedFunctions.add(PermissionsEnum.ASSIGN_SCHOOLS_TO_USER);
+        allowedFunctions.add(PermissionsEnum.REGISTER_USER);
+        allowedFunctions.add(PermissionsEnum.CHANGE_PASSWORD);
     }
 
     @Override

@@ -184,6 +184,51 @@ public class UserController {
         return this.registeredUsers.get(user).getFirst();//todo bad temp function
     }
 
+    public Response<String> fillMonthlyReport(String currUser){
+        if (connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            Response<String> response = user.fillMonthlyReport(currUser);
+            return response;
+        }
+        else{
+            return new Response<>(null, true, "User not connected");//todo bad null res
+        }
+    }
+
+    public Response<Boolean> changePassword(String currUser, String userToChangePassword,String newPassword, String confirmPassword){
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            if(newPassword.equals(confirmPassword)) {
+                if (registeredUsers.containsKey(userToChangePassword)) {
+                    Response<Boolean> res = user.changePassword(userToChangePassword, newPassword);
+                    if(!res.isFailure()){
+                        registeredUsers.get(userToChangePassword).setSecond(security.sha256(newPassword));
+                    }
+                    return res;
+                }
+                else {
+                    return new Response<>(false, true, "cannot change a password to a user not in the system");
+                }
+            }
+            else {
+                return new Response<>(false, true, "new password does not match the confirmed password");
+            }
+        }
+        else {
+            return new Response<>(null, true, "User not connected");
+        }
+    }
+
+    public Response<String> viewInstructorsDetails(String currUser) {
+        if (connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            return user.viewInstructorsDetails();
+        }
+        else {
+            return new Response<>(null, true, "User not connected");
+        }
+    }
+
     public void adminBoot(String username, String password) {
         User user = new User(username, UserStateEnum.SYSTEM_MANAGER);
         registeredUsers.put(username, new Pair<>(user, security.sha256(password)));

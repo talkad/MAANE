@@ -12,6 +12,8 @@ public class Supervisor extends Instructor{
         allowedFunctions.add(PermissionsEnum.ASSIGN_SCHOOLS_TO_USER);
         allowedFunctions.add(PermissionsEnum.REGISTER_USER);
         allowedFunctions.add(PermissionsEnum.REMOVE_USER);
+        allowedFunctions.add(PermissionsEnum.VIEW_INSTRUCTORS_INFO);
+
     }
 
     @Override
