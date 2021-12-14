@@ -1,12 +1,56 @@
 import React, { useState } from "react";
 import './SurveryQuestion.css'
-import {Grid, Paper} from "@mui/material";
+import {FormControlLabel, Grid, MenuItem, Paper, Radio, RadioGroup, Select} from "@mui/material";
+import FormControl from '@mui/material/FormControl';
 import TextField from "@mui/material/TextField";
+import IconButton from '@mui/material/IconButton';
+import DeleteIcon from '@mui/icons-material/Delete';
+import Button from "@mui/material/Button";
 
 export default function Survey(props) {
-    const [id, setID] = useState(props.id);
+    const [selection, setSelection] = useState('multiple');
+    const [multipleAnswersID, setMultipleAnswersID] = useState(0);
+    const [multipleAnswers, setMultipleAnswers] = useState([])
 
-    const question_label_string = 'שאלה'
+    const question_label_string = 'שאלה';
+    const answer_label_string = 'תשובה';
+    const multiple_item_string = 'בחירה מרובה';
+    const multiple_add_string = 'הוסף/י תשובה'
+    const open_item_string = 'פתוחה';
+    const open_number_item_string = 'מספרית';
+
+    const handleQuestionChange = (event) => {
+        props.modify(props.id, 'type', event.target.value);
+    }
+
+    const handleChange = (event) => {
+        setSelection(event.target.value);
+        props.modify(props.id, 'type', selection);
+    }
+
+    const delete_question = () => {
+        props.delete(props.id)
+    }
+
+    const handleAnswerChange = (event) => {
+        props.modify(props.id, 'answers', event.target.value, event.target.id);
+    }
+
+    const add_answer = () => {
+        multipleAnswers.push(<TextField
+            id={multipleAnswersID.toString()}
+            color="secondary"
+            className="SurveyQuestion-text-field"
+            margin="normal"
+            variant="standard"
+            required
+            label={answer_label_string}
+            onChange={handleAnswerChange}
+        />);
+        setMultipleAnswers([...multipleAnswers]);
+
+        setMultipleAnswersID(multipleAnswersID+1);
+    }
 
     return (
         <div className="SurveyQuestion">
@@ -23,13 +67,50 @@ export default function Survey(props) {
                             label={question_label_string}
                             name="question"
                             autoFocus
+                            onChange={handleQuestionChange}
                         />
                     </Grid>
-                    <Grid item xs={3}>
-                        hello there
+                    <Grid item xs={2}>
+                        <FormControl  sx={{ m: 1, minWidth: 80 }}>
+                            <Select
+                                value={selection}
+                                onChange={handleChange}
+                            >
+                                {/*todo: add an icon to each option*/}
+                                <MenuItem value={'multiple'}>{multiple_item_string}</MenuItem>
+                                <MenuItem value={'open'}>{open_item_string}</MenuItem>
+                                <MenuItem value={'open-number'}>{open_number_item_string}</MenuItem>
+                            </Select>
+                        </FormControl>
                     </Grid>
-                </Grid>
+                    <Grid item xs={1}>
+                        <IconButton onClick={delete_question} aria-label="delete">
+                            <DeleteIcon />
+                        </IconButton>
+                    </Grid>
+                    {selection === 'multiple' &&
+                        <Grid item xs={12}>
+                                {/*TODO: make the option to delete*/}
+                                <RadioGroup column>
+                                    {multipleAnswers.map(x => <FormControlLabel disabled value={'idk'} control={<Radio />} label={x}/>)}
+                                    <FormControlLabel disabled value={'idk'} control={<Radio />} label={<Button onClick={() => add_answer()} variant="text" color="secondary">{multiple_add_string}</Button>}/>
+                                </RadioGroup>
 
+                            <br/>
+                        </Grid>
+                    }
+                    {(selection === 'open' || selection === 'open-number')  &&
+                    <Grid sx={{alignItems: 'center'}} item xs={12}>
+                        <TextField
+                            color="secondary"
+                            className="SurveyQuestion-text-field"
+                            margin="normal"
+                            variant="standard"
+                            disabled
+                            label={answer_label_string}
+                        />
+                    </Grid>}
+                </Grid>
             </Paper>
         </div>
     )

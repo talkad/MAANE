@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import Login from "./Pages/Login";
 import React from "react";
 import Survey from "./Pages/Survey/Survey";
+import Test from "./Pages/Test";
 
 
 
@@ -12,6 +13,7 @@ function App() {
       <Routes>
           <Route path='/' element={<Login/>}/>
           <Route path='survey' element={<Survey/>}/>
+          <Route path='test' element={<Test/>}/>
           <Route
               path="*"
               element={
