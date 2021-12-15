@@ -63,6 +63,8 @@ public class SurveyController {
         return new Response<>(true, false, "the answer added successfully");
     }
 
+    // get survey
+
 //    public Response<Boolean> removeSurvey(String username, int id){
 //        // call userController and check if @username can be removed
 //
@@ -137,16 +139,21 @@ public class SurveyController {
 //        return surveys.get(id).getSecond().removeRule(index);
 //    }
 
-    public Response<List<String>> detectFault(String username, int id){
-        Pair<Survey, FaultDetector> pairSurvey;
+    public Response<List<List<String>>> detectFault(String username, int id){
+        List<List<String>> faults = new LinkedList<>();
+        FaultDetector faultDetector;
 
         // call userController and check if @username can
 
         if(!surveys.containsKey(id))
             return new Response<>(null, true, "The survey doesn't exists");
 
-        pairSurvey = surveys.get(id);
-        return pairSurvey.getSecond().detectFault(pairSurvey.getFirst());
+        faultDetector = surveys.get(id).getSecond();
+
+        for(SurveyAnswers ans: answers.get(id))
+            faults.add(faultDetector.detectFault(ans).getResult());
+
+        return new Response<>(faults, false, "faults detected");
     }
 
     public Response<List<String>> getGoals(int index){

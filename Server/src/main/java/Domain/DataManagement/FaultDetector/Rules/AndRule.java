@@ -1,6 +1,6 @@
 package Domain.DataManagement.FaultDetector.Rules;
 
-import Domain.DataManagement.Survey;
+import Domain.DataManagement.SurveyAnswers;
 
 import java.util.List;
 
@@ -13,10 +13,10 @@ public class AndRule implements Rule{
     }
 
     @Override
-    public boolean apply(Survey survey) {
+    public boolean apply(SurveyAnswers answers) {
 
         for(Rule rule: rules){
-            if(!rule.apply(survey))
+            if(!rule.apply(answers))
                 return false;
         }
 

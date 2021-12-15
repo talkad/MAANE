@@ -47,6 +47,7 @@ public class SurveyServiceImpl implements SurveyService {
 
         return res;
     }
+
 //
 //    @Override
 //    public Response<Boolean> removeSurvey(String username, int id) {
@@ -157,8 +158,8 @@ public class SurveyServiceImpl implements SurveyService {
 //    }
 
     @Override
-    public Response<List<String>> detectFault(String username, int id) {
-        Response<List<String>> res = SurveyController.getInstance().detectFault(username, id);
+    public Response<List<List<String>>> detectFault(String username, int id) {
+        Response<List<List<String>>> res = SurveyController.getInstance().detectFault(username, id);
 
         if(res.isFailure())
             log.error("failed to detect faults in survey {}", id);

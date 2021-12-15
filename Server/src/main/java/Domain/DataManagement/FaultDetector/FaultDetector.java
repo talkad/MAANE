@@ -3,7 +3,8 @@ package Domain.DataManagement.FaultDetector;
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.FaultDetector.Rules.Rule;
-import Domain.DataManagement.Survey;
+import Domain.DataManagement.SurveyAnswers;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -33,11 +34,11 @@ public class FaultDetector {
         return new Response<>(true, false, "rule removed successfully");
     }
 
-    public Response<List<String>> detectFault(Survey survey){
+    public Response<List<String>> detectFault(SurveyAnswers answers){
         List<String> faults = new LinkedList<>();
 
         for(Pair<Rule, String> rule: rules){
-            if(rule.getFirst().apply(survey))
+            if(rule.getFirst().apply(answers))
                 faults.add(rule.getSecond());
         }
 

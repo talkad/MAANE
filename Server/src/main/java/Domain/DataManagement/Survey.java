@@ -4,9 +4,9 @@ import Communication.DTOs.SurveyDTO;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.AnswerState.AnswerType;
 
-import java.util.List;
 import java.time.Year;
 import java.util.LinkedList;
+import java.util.List;
 
 import static Domain.DataManagement.AnswerState.AnswerType.NUMERIC_ANSWER;
 import static Domain.DataManagement.AnswerState.AnswerType.VERBAL_ANSWER;

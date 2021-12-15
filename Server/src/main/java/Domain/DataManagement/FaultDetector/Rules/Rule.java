@@ -1,8 +1,8 @@
 package Domain.DataManagement.FaultDetector.Rules;
 
-import Domain.DataManagement.Survey;
+import Domain.DataManagement.SurveyAnswers;
 
 public interface Rule {
 
-    public boolean apply(Survey survey);
+    boolean apply(SurveyAnswers answers);
 }

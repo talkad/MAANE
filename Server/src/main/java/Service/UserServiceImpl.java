@@ -1,7 +1,8 @@
 package Service;
 
 import Domain.CommonClasses.Response;
-import Domain.UsersManagment.*;
+import Domain.UsersManagment.UserController;
+import Domain.UsersManagment.UserStateEnum;
 import Service.Interfaces.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

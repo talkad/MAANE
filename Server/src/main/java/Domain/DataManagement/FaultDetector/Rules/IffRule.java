@@ -1,6 +1,7 @@
 package Domain.DataManagement.FaultDetector.Rules;
 
-import Domain.DataManagement.Survey;
+
+import Domain.DataManagement.SurveyAnswers;
 
 public class IffRule implements Rule{
     private Rule firstSide, secondSide;
@@ -11,7 +12,7 @@ public class IffRule implements Rule{
     }
 
     @Override
-    public boolean apply(Survey survey) {
-        return firstSide.apply(survey) == secondSide.apply(survey);
+    public boolean apply(SurveyAnswers answers) {
+        return firstSide.apply(answers) == secondSide.apply(answers);
     }
 }

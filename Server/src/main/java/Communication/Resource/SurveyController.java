@@ -7,6 +7,7 @@ import Service.Interfaces.SurveyService;
 import Service.SurveyServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.Map;
 
@@ -94,7 +95,7 @@ public class SurveyController {
 //    }
 
     @GetMapping("/detectFault/{username}-{id}")
-    public ResponseEntity<Response<List<String>>> detectFault(@PathVariable("username") String username, @PathVariable("id") int id){
+    public ResponseEntity<Response<List<List<String>>>> detectFault(@PathVariable("username") String username, @PathVariable("id") int id){
         return ResponseEntity.ok(
                 service.detectFault(username, id)
         );
