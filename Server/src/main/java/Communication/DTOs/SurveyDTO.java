@@ -1,10 +1,13 @@
 package Communication.DTOs;
 
 import Domain.DataManagement.AnswerState.AnswerType;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-//add annotations
+@NoArgsConstructor
+@AllArgsConstructor
 public class SurveyDTO {
 
     private String title;

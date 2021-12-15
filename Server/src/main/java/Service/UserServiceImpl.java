@@ -10,9 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 @Slf4j
-
-//TODO: i only added function i think need to be in service, check later with shaked i its ok
-
 public class UserServiceImpl implements UserService {
     private static class CreateSafeThreadSingleton {
         private static final UserServiceImpl INSTANCE = new UserServiceImpl();
