@@ -8,28 +8,13 @@ import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
-public class SurveyDTO {
+public class SurveyAnswersDTO {
 
     private int id;
-    private String title;
-    private String description;
-    private List<String> questions;
-    private List<List<String>> answers;
+    private List<String> answers;
     private List<AnswerType> types;
 
-    public String getTitle() {
-        return title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public List<String> getQuestions() {
-        return questions;
-    }
-
-    public List<List<String>> getAnswers() {
+    public List<String> getAnswers() {
         return answers;
     }
 

@@ -1,5 +1,6 @@
 package Communication.Resource;
 
+import Communication.DTOs.SurveyAnswersDTO;
 import Communication.DTOs.SurveyDTO;
 import Domain.CommonClasses.Response;
 import Service.Interfaces.SurveyService;
@@ -19,6 +20,13 @@ public class SurveyController {
     public ResponseEntity<Response<Integer>> createSurvey(@RequestBody Map<String, Object> body){
         return ResponseEntity.ok(
                 service.createSurvey((String)body.get("username"), (SurveyDTO) body.get("surveyDTO"))
+        );
+    }
+
+    @PostMapping("/submitAnswers")
+    public ResponseEntity<Response<Boolean>> addAnswers(@RequestBody SurveyAnswersDTO answers){
+        return ResponseEntity.ok(
+                service.addAnswers(answers)
         );
     }
 

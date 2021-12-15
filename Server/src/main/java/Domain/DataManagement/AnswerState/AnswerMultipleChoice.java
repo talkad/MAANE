@@ -54,5 +54,4 @@ public class AnswerMultipleChoice implements Answer{
         return new Response<>(true, false, "OK");
     }
 
-
 }

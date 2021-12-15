@@ -3,7 +3,6 @@ package Domain.DataManagement.AnswerState;
 import Domain.CommonClasses.Response;
 
 import java.util.Collection;
-import java.util.List;
 
 
 public interface Answer {
@@ -17,4 +16,5 @@ public interface Answer {
     Response<AnswerType> getType();
 
     Response<Boolean> defineType(AnswerType type);
+
 }

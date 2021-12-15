@@ -1,18 +1,19 @@
 package Domain.DataManagement;
 
+import Communication.DTOs.SurveyAnswersDTO;
 import Communication.DTOs.SurveyDTO;
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.FaultDetector.FaultDetector;
-import Domain.DataManagement.FaultDetector.Rules.Rule;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 public class SurveyController {
     private Map<Integer, Pair<Survey, FaultDetector>> surveys;
-    // separate survey to sub domains
+    private Map<Integer, List<SurveyAnswers>> answers;
     private int indexer;
 
     private static class CreateSafeThreadSingleton {
@@ -24,6 +25,7 @@ public class SurveyController {
     }
 
     public SurveyController(){
+        answers = new HashMap<>();
         surveys = new HashMap<>();
         indexer = 0;
     }
@@ -38,7 +40,27 @@ public class SurveyController {
 
         surveys.put(indexer, new Pair<>(surveyRes.getResult(), new FaultDetector()));
 
+        // call to publish
+
         return new Response<>(indexer++, false, "new survey created successfully");
+    }
+
+    public Response<Boolean> addAnswers(SurveyAnswersDTO answersDTO){
+
+        SurveyAnswers answer = new SurveyAnswers();
+        Response<Boolean> answerRes = answer.addAnswers(answersDTO);
+
+        if(answerRes.isFailure())
+            return new Response<>(false, true, answerRes.getErrMsg());
+
+        if(answers.containsKey(answersDTO.getId()))
+            answers.put(answersDTO.getId(), new LinkedList<>());
+
+        List<SurveyAnswers> ans = answers.get(answersDTO.getId());
+        ans.add(answer);
+        answers.put(answersDTO.getId(), ans);
+
+        return new Response<>(true, false, "the answer added successfully");
     }
 
 //    public Response<Boolean> removeSurvey(String username, int id){

@@ -1,5 +1,6 @@
 package Service.Interfaces;
 
+import Communication.DTOs.SurveyAnswersDTO;
 import Communication.DTOs.SurveyDTO;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.FaultDetector.Rules.Rule;
@@ -11,6 +12,8 @@ public interface SurveyService {
 
     // Data Management Module
     Response<Integer> createSurvey(String username, SurveyDTO surveyDTO);
+
+    Response<Boolean> addAnswers(SurveyAnswersDTO answersDTO);
 
 //    Response<Boolean> removeSurvey(String username, int id);
 //

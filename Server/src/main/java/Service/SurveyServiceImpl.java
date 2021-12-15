@@ -1,9 +1,8 @@
 package Service;
 
+import Communication.DTOs.SurveyAnswersDTO;
 import Communication.DTOs.SurveyDTO;
 import Domain.CommonClasses.Response;
-import Domain.DataManagement.FaultDetector.Rules.Rule;
-import Domain.DataManagement.Survey;
 import Domain.DataManagement.SurveyController;
 import Service.Interfaces.SurveyService;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +32,18 @@ public class SurveyServiceImpl implements SurveyService {
             log.error("{} failed to create new survey", username);
         else
             log.info("{} created new survey with title: {}", username, surveyDTO.getTitle());
+
+        return res;
+    }
+
+    @Override
+    public Response<Boolean> addAnswers(SurveyAnswersDTO answersDTO) {
+        Response<Boolean> res = SurveyController.getInstance().addAnswers(answersDTO);
+
+        if(res.isFailure())
+            log.error("failed to add answers");
+        else
+            log.info("added answers successfully");
 
         return res;
     }
