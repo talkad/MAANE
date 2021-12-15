@@ -92,11 +92,11 @@ public class UserController {
         return new Response<>(null, true, "User not connected");
     }
 
-    public Response<User> registerUser(String currUser, String userToRegister, String password, UserStateEnum userStateEnum){
+    public Response<User> registerUser(String currUser, String userToRegister, String password, UserStateEnum userStateEnum, String workField, String firstName, String lastName, String email, String phoneNumber, String city){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             if (!userToRegister.startsWith("Guest")){
-                Response<User> result = user.registerUser(userToRegister, userStateEnum);
+                Response<User> result = user.registerUser(userToRegister, userStateEnum, workField, firstName, lastName, email, phoneNumber, city);
                 if (!result.isFailure()) {
                     if (!registeredUsers.containsKey(userToRegister)) {
                         registeredUsers.put(userToRegister, new Pair<>(result.getResult(), security.sha256(password)));
@@ -114,35 +114,14 @@ public class UserController {
         }
     }
 
-    public Response<User> registerSupervisor(String currUser, String userToRegister, String password, UserStateEnum userStateEnum){
-        if(connectedUsers.containsKey(currUser)) {
-            User user = connectedUsers.get(currUser);
-            if (!userToRegister.startsWith("Guest")){
-                Response<User> result = user.registerSupervisor(userToRegister);
-                if (!result.isFailure()) {
-                    if (!registeredUsers.containsKey(userToRegister)) {
-                        registeredUsers.put(userToRegister, new Pair<>(result.getResult(), security.sha256(password)));
-                        result = new Response<>(result.getResult(), false, "Registration occurred");
-                    } else {
-                        return new Response<>(null, true, "username already exists"); // todo null may be a problem
-                    }
-                }
-                return result;
-            }
-            else return new Response<>(null, true, "error: cannot register user starting with the name Guest");
-        }
-        else {
-            return new Response<>(null, true, "User not connected");
-        }
-    }
-
     public Response<Boolean> removeUser(String currUser, String userToRemove) {
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             Response<Boolean> response = user.removeUser(userToRemove);
             if(!response.isFailure()){
                 if(registeredUsers.containsKey(userToRemove)){
-                    registeredUsers.remove(userToRemove);//todo disconnect user from the system?
+                    registeredUsers.remove(userToRemove);
+                    connectedUsers.remove(userToRemove);//todo check that user was disconnected from the system
                     return response;
                 }
                 else{
@@ -156,18 +135,46 @@ public class UserController {
         }
     }
 
-    public Response<Boolean> assignSchoolsToUser(String currUser, String userToAssign, List<Integer> schools){
+    public Response<Boolean> assignSchoolsToUser(String currUser, String userToAssignName, List<Integer> schools){
         Response<Boolean> response;
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
-            if(registeredUsers.containsKey(userToAssign)) {
-                response = user.assignSchoolsToUser(userToAssign, schools);
-                if (!response.isFailure() && connectedUsers.containsKey(userToAssign)) {
-                    for (Integer schoolId: schools) {
-                        if(!connectedUsers.get(userToAssign).schools.contains(schoolId)){
-                            connectedUsers.get(userToAssign).schools.add(schoolId);
-                        }
+            if(registeredUsers.containsKey(userToAssignName)) {
+                response = user.assignSchoolsToUser(userToAssignName, schools);
+                if(!response.isFailure()){
+                    User userToAssignSchools = registeredUsers.get(userToAssignName).getFirst();
+                    userToAssignSchools.addSchools(schools);
+                    if(connectedUsers.containsKey(userToAssignName)){
+                        userToAssignSchools = connectedUsers.get(userToAssignName);
+                        userToAssignSchools.addSchools(schools);
                     }
+                }
+                return response;
+            }
+            else{
+                return new Response<>(false, true, "User is not in the system");
+            }
+        }
+        else{
+            return new Response<>(null, true, "User not connected");
+        }
+    }
+
+    public Response<Boolean> removeSchoolsFromUser(String currUser, String userToRemoveSchoolsName, List<Integer> schools){
+        Response<Boolean> response;
+        if (connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            if(registeredUsers.containsKey(userToRemoveSchoolsName)) {
+                response = user.removeSchoolsFromUser(userToRemoveSchoolsName, schools);
+                if(!response.isFailure()){
+                   User userToRemoveSchools = registeredUsers.get(userToRemoveSchoolsName).getFirst();
+                   userToRemoveSchools.removeSchools(schools);
+                   if(connectedUsers.containsKey(userToRemoveSchoolsName)){
+                       userToRemoveSchools = connectedUsers.get(userToRemoveSchoolsName);
+                       for (Integer schoolId: schools) {
+                           userToRemoveSchools.schools.remove(schoolId);
+                       }
+                   }
                 }
                 return response;
             }
@@ -200,7 +207,7 @@ public class UserController {
             User user = connectedUsers.get(currUser);
             if(newPassword.equals(confirmPassword)) {
                 if (registeredUsers.containsKey(userToChangePassword)) {
-                    Response<Boolean> res = user.changePassword(userToChangePassword, newPassword);
+                    Response<Boolean> res = user.changePassword();
                     if(!res.isFailure()){
                         registeredUsers.get(userToChangePassword).setSecond(security.sha256(newPassword));
                     }
@@ -222,10 +229,39 @@ public class UserController {
     public Response<String> viewInstructorsDetails(String currUser) {
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
-            return user.viewInstructorsDetails();
+            StringBuilder instructorDetails = new StringBuilder(); //todo maybe make it a list??
+            Response<List<String>> instructorListRes = user.viewInstructorsDetails();
+            if(!instructorListRes.isFailure()){
+                for (String instructor: instructorListRes.getResult()) {
+                    User ins = registeredUsers.get(instructor).getFirst();
+                    instructorDetails.append(ins.getInfo());
+                }
+                return new Response<>(instructorDetails.toString(), false, "successfully generated instructors details");
+            }
+            return new Response<>("", true, instructorListRes.getErrMsg());
         }
         else {
             return new Response<>(null, true, "User not connected");
+        }
+    }
+
+    public Response<Integer> createSurvey(String currUser, int surveyId) {
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            return user.createSurvey(surveyId);
+        }
+        else {
+            return new Response<>(-1, true, "User not connected"); //todo make sure -1 is not a problem
+        }
+    }
+
+    public Response<Integer> removeSurvey(String currUser, int surveyId) {
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            return user.removeSurvey(surveyId);
+        }
+        else {
+            return new Response<>(-1, true, "User not connected"); //todo make sure -1 is not a problem
         }
     }
 

@@ -58,7 +58,7 @@ public class Appointment {//todo go over entire class and fit it to what we need
     }
 
     public Response<List<String>> getAppointees(){//todo should return all assigned users by this user
-        return new Response<>(new Vector<>(this.userAppointments.keySet()), false, "");
+        return new Response<>(new Vector<>(this.userAppointments.keySet()), false, "successfully generated instructors details");
     }
 
     public boolean contains(String appointee, int schoolId){
@@ -93,5 +93,15 @@ public class Appointment {//todo go over entire class and fit it to what we need
 
     public Map<String, List<Integer>> getUserAppointments(){
         return this.userAppointments;
+    }
+
+    public Response<Boolean> removeSchoolsFromUser(String userToRemoveSchools, List<Integer> schools) {
+        if(this.userAppointments.containsKey(userToRemoveSchools)){
+            for (Integer schoolId: schools) {
+                this.userAppointments.get(userToRemoveSchools).remove(schoolId);
+            }
+            return new Response<>(true, false, "successfully removed the schools from the user " + userToRemoveSchools);
+        }
+        return new Response<>(true, false, "user was not appointed by you");//todo better errmsg
     }
 }

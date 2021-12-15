@@ -10,9 +10,12 @@ public class Supervisor extends Instructor{
     public Supervisor() {
         super();
         allowedFunctions.add(PermissionsEnum.ASSIGN_SCHOOLS_TO_USER);
+        allowedFunctions.add(PermissionsEnum.REMOVE_SCHOOLS_FROM_USER);
         allowedFunctions.add(PermissionsEnum.REGISTER_USER);
         allowedFunctions.add(PermissionsEnum.REMOVE_USER);
         allowedFunctions.add(PermissionsEnum.VIEW_INSTRUCTORS_INFO);
+        allowedFunctions.add(PermissionsEnum.CREATE_SURVEY);
+        allowedFunctions.add(PermissionsEnum.REMOVE_SURVEY);
 
     }
 
