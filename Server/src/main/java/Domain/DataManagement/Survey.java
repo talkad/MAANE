@@ -169,4 +169,12 @@ public class Survey {
     public int getIndex() {
         return index;
     }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }

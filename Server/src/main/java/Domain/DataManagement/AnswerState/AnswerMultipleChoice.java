@@ -2,9 +2,7 @@ package Domain.DataManagement.AnswerState;
 
 import Domain.CommonClasses.Response;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static Domain.DataManagement.AnswerState.AnswerType.MULTIPLE_CHOICE;
 
@@ -40,8 +38,8 @@ public class AnswerMultipleChoice implements Answer{
     }
 
     @Override
-    public Response<Collection<String>> getAnswers() {
-        return new Response<>(answers.values(), false, "OK");
+    public Response<List<String>> getAnswers() {
+        return new Response<>(new LinkedList<>(answers.values()), false, "OK");
     }
 
     @Override

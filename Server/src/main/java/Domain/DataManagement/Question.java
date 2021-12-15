@@ -3,9 +3,8 @@ package Domain.DataManagement;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.AnswerState.Answer;
 import Domain.DataManagement.AnswerState.AnswerType;
-
-import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 public class Question {
 
@@ -39,7 +38,7 @@ public class Question {
         return answer.defineType(type);
     }
 
-    public Response<Collection<String>> getAnswers() {
+    public Response<List<String>> getAnswers() {
         if(answer == null)
             return new Response<>(new LinkedList<>(), true, "answer wasn't initiated");
 

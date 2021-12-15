@@ -1,4 +1,4 @@
-package Communication.Resource;
+package Communication.DTOs.Resource;
 
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.UserStateEnum;

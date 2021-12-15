@@ -2,7 +2,7 @@ package Domain.DataManagement.AnswerState;
 
 import Domain.CommonClasses.Response;
 
-import java.util.Collection;
+import java.util.List;
 
 
 public interface Answer {
@@ -11,7 +11,7 @@ public interface Answer {
 
     Response<Boolean> removeAnswer (int answerID);
 
-    Response<Collection<String>> getAnswers();
+    Response<List<String>> getAnswers();
 
     Response<AnswerType> getType();
 

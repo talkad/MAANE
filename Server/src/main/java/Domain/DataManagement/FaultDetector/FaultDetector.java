@@ -10,18 +10,14 @@ import java.util.List;
 
 public class FaultDetector {
 
-    private List<Pair<Rule, String>> rules;
+    private List<Pair<Rule, Integer>> rules;
 
     public FaultDetector() {
         this.rules = new LinkedList<>();
     }
 
-    public Response<Boolean> addRule(Rule rule, String description){
-
-        if(description.length() == 0)
-            return new Response<>(false, true, "description cannot be empty");
-
-        rules.add(new Pair<>(rule, description));
+    public Response<Boolean> addRule(Rule rule, int goalID){
+        rules.add(new Pair<>(rule, goalID));
         return new Response<>(true, false, "rule added successfully");
     }
 
@@ -34,10 +30,10 @@ public class FaultDetector {
         return new Response<>(true, false, "rule removed successfully");
     }
 
-    public Response<List<String>> detectFault(SurveyAnswers answers){
-        List<String> faults = new LinkedList<>();
+    public Response<List<Integer>> detectFault(SurveyAnswers answers){
+        List<Integer> faults = new LinkedList<>();
 
-        for(Pair<Rule, String> rule: rules){
+        for(Pair<Rule, Integer> rule: rules){
             if(rule.getFirst().apply(answers))
                 faults.add(rule.getSecond());
         }

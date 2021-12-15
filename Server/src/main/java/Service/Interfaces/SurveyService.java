@@ -3,6 +3,7 @@ package Service.Interfaces;
 import Communication.DTOs.SurveyAnswersDTO;
 import Communication.DTOs.SurveyDTO;
 import Domain.CommonClasses.Response;
+import Domain.DataManagement.FaultDetector.Rules.Rule;
 
 import java.util.List;
 
@@ -12,6 +13,10 @@ public interface SurveyService {
     Response<Integer> createSurvey(String username, SurveyDTO surveyDTO);
 
     Response<Boolean> addAnswers(SurveyAnswersDTO answersDTO);
+
+    Response<SurveyDTO> getSurvey(int surveyID);
+
+    Response<Boolean> addRule(String username, int surveyID, Rule rule, int goalID);
 
 //    Response<Boolean> removeSurvey(String username, int id);
 //
@@ -31,7 +36,7 @@ public interface SurveyService {
 //
 //    Response<Boolean> removeRule(String username, int id, int index);
 
-    Response<List<List<String>>> detectFault(String username, int id);
+    Response<List<List<String>>> detectFault(String username, int surveyID);
 
 
 }

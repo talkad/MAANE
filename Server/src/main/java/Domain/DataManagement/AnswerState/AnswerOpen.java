@@ -4,6 +4,7 @@ import Domain.CommonClasses.Response;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 public class AnswerOpen implements Answer{
 
@@ -24,7 +25,7 @@ public class AnswerOpen implements Answer{
     }
 
     @Override
-    public Response<Collection<String>> getAnswers() {
+    public Response<List<String>> getAnswers() {
         return new Response<>(new LinkedList<>(), true, "wrong answer type");
     }
 

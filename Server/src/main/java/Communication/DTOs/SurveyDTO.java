@@ -40,4 +40,28 @@ public class SurveyDTO {
     public int getId() {
         return id;
     }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setQuestions(List<String> questions) {
+        this.questions = questions;
+    }
+
+    public void setAnswers(List<List<String>> answers) {
+        this.answers = answers;
+    }
+
+    public void setTypes(List<AnswerType> types) {
+        this.types = types;
+    }
 }

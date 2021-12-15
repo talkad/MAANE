@@ -4,7 +4,9 @@ import Communication.DTOs.SurveyAnswersDTO;
 import Communication.DTOs.SurveyDTO;
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
+import Domain.DataManagement.AnswerState.AnswerType;
 import Domain.DataManagement.FaultDetector.FaultDetector;
+import Domain.DataManagement.FaultDetector.Rules.Rule;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -63,86 +65,61 @@ public class SurveyController {
         return new Response<>(true, false, "the answer added successfully");
     }
 
-    // get survey
+    public Response<SurveyDTO> getSurvey(int id){
+        Survey survey;
+        SurveyDTO surveyDTO = new SurveyDTO();
+        List<String> questions = new LinkedList<>();
+        List<List<String>> ans = new LinkedList<>();
+        List<AnswerType> types = new LinkedList<>();
 
-//    public Response<Boolean> removeSurvey(String username, int id){
-//        // call userController and check if @username can be removed
-//
-//        if(!surveys.containsKey(id))
-//            return new Response<>(false, true, "The survey doesn't exists");
-//
-//        surveys.remove(id);
-//        //update the controller
-//
-//        return new Response<>(true, false, "The survey removed successfully ");
-//    }
-//
-//    public Response<Survey> getSurvey(int id){
-//        if(!surveys.containsKey(id))
-//            return new Response<>(null, true, "The survey doesn't exists");
-//
-//        return new Response<>(surveys.get(id).getFirst(), false, "received survey successfully ");
-//    }
-//
-//    public Response<Survey> publishSurvey(String username){
-//        // return call to userController that notify a new survey
-//        return null;
-//    }
-//
-//    public Response<Integer> addQuestion (int id, String questionText){
-//
-//        if(!surveys.containsKey(id))
-//            return new Response<>(-1, true, "the survey doesn't exists");
-//
-//        return surveys.get(id).getFirst().addQuestion(questionText);
-//    }
-//
-//    public Response<Boolean> removeQuestion(int id, int questionID){
-//
-//        if(!surveys.containsKey(id))
-//            return new Response<>(false, true, "the survey doesn't exists");
-//
-//        return surveys.get(id).getFirst().removeQuestion(questionID);
-//    }
-//
-//    public Response<Integer> addAnswer (int id, int questionID, String answer){
-//
-//        if(!surveys.containsKey(id))
-//            return new Response<>(-1, true, "the survey doesn't exists");
-//
-//        return surveys.get(id).getFirst().addAnswer(questionID, answer);
-//    }
-//
-//    public Response<Boolean> removeAnswer (int id, int questionID, int answerID){
-//
-//        if(!surveys.containsKey(id))
-//            return new Response<>(false, true, "the survey doesn't exists");
-//
-//        return surveys.get(id).getFirst().removeAnswer(questionID, answerID);
-//    }
-//
-//    public Response<Boolean> addRule(String username, int id, Rule rule, String description){
-//        // call userController and check if @username can
-//
-//        if(!surveys.containsKey(id))
-//            return new Response<>(false, true, "The survey doesn't exists");
-//
-//        return surveys.get(id).getSecond().addRule(rule, description);
-//    }
-//
-//    public Response<Boolean> removeRule(String username, int id, int index){
-//        // call userController and check if @username can
-//
-//        if(!surveys.containsKey(id))
-//            return new Response<>(false, true, "The survey doesn't exists");
-//
-//        return surveys.get(id).getSecond().removeRule(index);
-//    }
+        if(!surveys.containsKey(id))
+            return new Response<>(surveyDTO, true, "id is out of bound");
+
+        survey = surveys.get(id).getFirst();
+
+        surveyDTO.setId(id);
+        surveyDTO.setTitle(survey.getTitle());
+        surveyDTO.setDescription(survey.getDescription());
+
+        for(Question question: survey.getQuestions()){
+            questions.add(question.getQuestion());
+            types.add(question.getType().getResult());
+            ans.add(question.getAnswers().getResult());
+        }
+
+        surveyDTO.setAnswers(ans);
+        surveyDTO.setTypes(types);
+        surveyDTO.setQuestions(questions);
+
+        return new Response<>(surveyDTO, false, "OK");
+    }
+
+    public Response<Boolean> addRule(String username, int id, Rule rule, int goalID){
+        Pair<Survey, FaultDetector> surveyPair;
+        FaultDetector faultDetector;
+
+        // check if username is supervisor
+
+        if(!surveys.containsKey(id))
+            return new Response<>(false, true, "id is out of bound");
+
+        surveyPair =surveys.get(id);
+        faultDetector = surveyPair.getSecond();
+        faultDetector.addRule(rule, goalID);
+
+        surveys.put(id, new Pair<>(surveyPair.getFirst(), faultDetector));
+
+        return new Response<>(true, false, "OK");
+    }
 
     public Response<List<List<String>>> detectFault(String username, int id){
         List<List<String>> faults = new LinkedList<>();
         FaultDetector faultDetector;
+        // TODO get from userController all the goals of a certain username
+        Map<Integer, String> goals;
+        List<String> currentFaults;
 
+        // TODO
         // call userController and check if @username can
 
         if(!surveys.containsKey(id))
@@ -150,17 +127,17 @@ public class SurveyController {
 
         faultDetector = surveys.get(id).getSecond();
 
-        for(SurveyAnswers ans: answers.get(id))
-            faults.add(faultDetector.detectFault(ans).getResult());
+        for(SurveyAnswers ans: answers.get(id)){
+            currentFaults = new LinkedList<>();
+
+            for(Integer fault: faultDetector.detectFault(ans).getResult())
+                currentFaults.add(currentFaults.get(fault));
+
+            faults.add(currentFaults);
+        }
 
         return new Response<>(faults, false, "faults detected");
     }
 
-    public Response<List<String>> getGoals(int index){
-        //get yehadim from users module
-        // check with shaked the implementation
-        //TODO: that
-        return null;
-    }
 
 }
