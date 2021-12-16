@@ -4,7 +4,6 @@ import Domain.CommonClasses.Response;
 
 import java.util.List;
 import java.util.Vector;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class User {
 
@@ -99,10 +98,10 @@ public class User {
     }
 
     public Appointment getAppointments(){
-        return this.appointments; //todo maybe different for users without appointments
+        return this.appointments;
     }
 
-    public Response<Boolean> assignSchoolsToUser(String userToAssign, List<Integer> schools) {//todo remove schools should be according to index not value
+    public Response<Boolean> assignSchoolsToUser(String userToAssign, List<Integer> schools) {
         if(this.state.allowed(PermissionsEnum.ASSIGN_SCHOOLS_TO_USER, this)) {
             if (appointments.contains(userToAssign)) {
                 return appointments.assignSchoolsToUser(userToAssign, schools);
@@ -131,13 +130,23 @@ public class User {
         }
     }
 
-    public Response<User> registerUser(String username, UserStateEnum registerUserStateEnum, String workField, String firstName, String lastName, String email, String phoneNumber, String city) {
+    public Response<User> registerUser(String username, UserStateEnum registerUserStateEnum, String firstName, String lastName, String email, String phoneNumber, String city) {
         if(this.state.allowed(PermissionsEnum.REGISTER_USER, this) && (registerUserStateEnum == UserStateEnum.INSTRUCTOR
             || registerUserStateEnum == UserStateEnum.GENERAL_SUPERVISOR) && !appointments.contains(username)) {
             appointments.addAppointment(username);
             return new Response<>(new User(username, registerUserStateEnum, this.workField, firstName, lastName, email, phoneNumber, city), false, "user successfully assigned");//todo split to 2 functions cause only admin can define work field?
         }
-        else if(this.state.allowed(PermissionsEnum.REGISTER_SUPERVISOR, this) && (registerUserStateEnum == UserStateEnum.SUPERVISOR)){
+//        else if(this.state.allowed(PermissionsEnum.REGISTER_SUPERVISOR, this) && (registerUserStateEnum == UserStateEnum.SUPERVISOR) && !appointments.contains(username)){
+//            appointments.addAppointment(username);
+//            return new Response<>(new User(username, UserStateEnum.SUPERVISOR, workField, firstName, lastName, email, phoneNumber, city), false, "supervisor successfully assigned");
+//        }
+        else{
+            return new Response<>(null, true, "user not allowed to register users");
+        }
+    }
+
+    public Response<User> registerSupervisor(String username, UserStateEnum registerUserStateEnum, String workField, String firstName, String lastName, String email, String phoneNumber, String city) {
+        if(this.state.allowed(PermissionsEnum.REGISTER_SUPERVISOR, this) && (registerUserStateEnum == UserStateEnum.SUPERVISOR) && !appointments.contains(username)){
             appointments.addAppointment(username);
             return new Response<>(new User(username, UserStateEnum.SUPERVISOR, workField, firstName, lastName, email, phoneNumber, city), false, "supervisor successfully assigned");
         }
@@ -226,6 +235,24 @@ public class User {
             if(!this.schools.contains(i)){
                 this.schools.add(i);
             }
+        }
+    }
+
+    public Response<String> getGoals() {//todo this and add goals are pretty much the same maybe call this function structure goal_management
+        if(this.state.allowed(PermissionsEnum.GET_GOALS, this)){
+            return new Response<>(this.workField, false, "successfully acquired work field");
+        }
+        else {
+            return new Response<>("", true, "user not allowed to get goals");
+        }
+    }
+
+    public Response<String> addGoals() {
+        if(this.state.allowed(PermissionsEnum.ADD_GOALS, this)){
+            return new Response<>(this.workField, false, "user allowed to add goals");
+        }
+        else {
+            return new Response<>("", true, "user not allowed to add goals");
         }
     }
 }

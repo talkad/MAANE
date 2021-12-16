@@ -12,11 +12,13 @@ public enum PermissionsEnum {
 
     /** Supervisor User **/
     ASSIGN_SCHOOLS_TO_USER,
-    REGISTER_USER, //todo add to admin separately?
+    REGISTER_USER,
     VIEW_INSTRUCTORS_INFO,
     CREATE_SURVEY,
     REMOVE_SURVEY,
     REMOVE_SCHOOLS_FROM_USER,
+    GET_GOALS,
+    ADD_GOALS,
 
     /** System Manager User **/
     REGISTER_SUPERVISOR,

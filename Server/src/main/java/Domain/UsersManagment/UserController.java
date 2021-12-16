@@ -13,6 +13,7 @@ public class UserController {
     private Map<String, User> connectedUsers;
     private Map<String, Pair<User, String>> registeredUsers;
     private Security security;
+    private GoalsManagement goalsManagement;
 
 
     private UserController() {
@@ -20,6 +21,7 @@ public class UserController {
         this.security = Security.getInstance();
         this.connectedUsers = new ConcurrentHashMap<>();
         this.registeredUsers = new ConcurrentHashMap<>();
+        this.goalsManagement = GoalsManagement.getInstance();
         adminBoot("shaked", "cohen");
     }
 
@@ -92,23 +94,42 @@ public class UserController {
         return new Response<>(null, true, "User not connected");
     }
 
-    public Response<User> registerUser(String currUser, String userToRegister, String password, UserStateEnum userStateEnum, String workField, String firstName, String lastName, String email, String phoneNumber, String city){
+    public Response<User> registerUser(String currUser, String userToRegister, String password, UserStateEnum userStateEnum, String firstName, String lastName, String email, String phoneNumber, String city){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
-            if (!userToRegister.startsWith("Guest")){
-                Response<User> result = user.registerUser(userToRegister, userStateEnum, workField, firstName, lastName, email, phoneNumber, city);
+            if (!userToRegister.startsWith("Guest") && !registeredUsers.containsKey(userToRegister)){
+                Response<User> result = user.registerUser(userToRegister, userStateEnum, firstName, lastName, email, phoneNumber, city);
                 if (!result.isFailure()) {
-                    if (!registeredUsers.containsKey(userToRegister)) {
-                        registeredUsers.put(userToRegister, new Pair<>(result.getResult(), security.sha256(password)));
-                        result = new Response<>(result.getResult(), false, "Registration occurred");
-                    } else {
-                        return new Response<>(null, true, "username already exists"); // null may be a problem
-                    }
+                    registeredUsers.put(userToRegister, new Pair<>(result.getResult(), security.sha256(password)));
+                    result = new Response<>(result.getResult(), false, "Registration occurred");
                 }
                 return result;
             }
-            else return new Response<>(null, true, "error: cannot register user starting with the name Guest");
+            else {
+                return new Response<>(null, true, "username already exists"); // null may be a problem
+            }
         }
+        else {
+            return new Response<>(null, true, "User not connected");
+        }
+    }
+
+    public Response<User> registerSupervisor(String currUser, String userToRegister, String password, UserStateEnum userStateEnum, String workField, String firstName, String lastName, String email, String phoneNumber, String city){
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            if (!userToRegister.startsWith("Guest") && !registeredUsers.containsKey(userToRegister)){
+                Response<User> result = user.registerSupervisor(userToRegister, userStateEnum, workField, firstName, lastName, email, phoneNumber, city);
+                if (!result.isFailure()) {
+                    registeredUsers.put(userToRegister, new Pair<>(result.getResult(), security.sha256(password)));
+                    result = new Response<>(result.getResult(), false, "Registration occurred");
+                    goalsManagement.addGoalsField(workField);
+                }
+                return result;
+            }
+            else {
+                return new Response<>(null, true, "username already exists"); // null may be a problem
+            }
+            }
         else {
             return new Response<>(null, true, "User not connected");
         }
@@ -262,6 +283,38 @@ public class UserController {
         }
         else {
             return new Response<>(-1, true, "User not connected"); //todo make sure -1 is not a problem
+        }
+    }
+
+    public Response<List<Goal>> getGoals(String currUser){
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            Response<String> res = user.getGoals();
+            if(!res.isFailure()){
+                return goalsManagement.getGoals(res.getResult());
+            }
+            else{
+                return new Response<>(null, true, res.getErrMsg());
+            }
+        }
+        else {
+            return new Response<>(null, true, "User not connected"); //todo make sure null is not a problem
+        }
+    }
+
+    public Response<Boolean> addGoals(String currUser, List<Goal> goalList){
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            Response<String> res = user.addGoals();
+            if(!res.isFailure()){
+                return goalsManagement.addGoalsToField(res.getResult(), goalList);
+            }
+            else{
+                return new Response<>(null, true, res.getErrMsg());
+            }
+        }
+        else {
+            return new Response<>(null, true, "User not connected"); //todo make sure null is not a problem
         }
     }
 

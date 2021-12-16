@@ -1,10 +1,5 @@
 package Domain.UsersManagment;
 
-import Domain.CommonClasses.Response;
-
-import java.util.List;
-import java.util.Vector;
-
 public class Supervisor extends Instructor{
 
     public Supervisor() {
@@ -16,6 +11,9 @@ public class Supervisor extends Instructor{
         allowedFunctions.add(PermissionsEnum.VIEW_INSTRUCTORS_INFO);
         allowedFunctions.add(PermissionsEnum.CREATE_SURVEY);
         allowedFunctions.add(PermissionsEnum.REMOVE_SURVEY);
+        allowedFunctions.add(PermissionsEnum.ADD_GOALS);
+        allowedFunctions.add(PermissionsEnum.GET_GOALS);
+
 
     }
 
