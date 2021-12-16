@@ -21,10 +21,6 @@ public class Survey {
     private int version; // usually the version will be the current year
     private int indexer;
 
-    public Question getQuestion(int index){
-        return this.questions.get(index);
-    }
-
 
     private Survey (int index, String title, String description){
         this.title = title;
@@ -46,6 +42,7 @@ public class Survey {
     }
 
     public static Response<Survey> createSurvey(int index, SurveyDTO surveyDTO){
+        AnswerType type;
         Response<Integer> questionRes;
         Response<Boolean> answerRes;
         Response<Survey> surveyRes = createSurvey(index, surveyDTO.getTitle(), surveyDTO.getDescription());
@@ -55,12 +52,13 @@ public class Survey {
             return surveyRes;
 
         for(int i = 0; i < surveyDTO.getQuestions().size(); i++){
-            questionRes = survey.addQuestion(surveyDTO.getQuestions().get(i));
+            type = surveyDTO.getTypes().get(i);
+            questionRes = survey.addQuestion(surveyDTO.getQuestions().get(i), type);
 
             if(questionRes.isFailure())
                 return new Response<>(null, true, questionRes.getErrMsg());
 
-            switch(surveyDTO.getTypes().get(i)){
+            switch(type){
                 case MULTIPLE_CHOICE:
                     for(String ans: surveyDTO.getAnswers().get(i)){
                         answerRes = survey.addAnswer(questionRes.getResult(), ans);
@@ -90,12 +88,12 @@ public class Survey {
     }
 
 
-    public Response<Integer> addQuestion (String questionText){
+    public Response<Integer> addQuestion (String questionText, AnswerType type){
 
         if(questionText.length() == 0)
             return new Response<>(-1, true, "question cannot be empty");
 
-        Question question = new Question(indexer, questionText);
+        Question question = new Question(indexer, questionText, type);
         questions.add(question);
 
         return new Response<>(indexer++, false, "added question successfully");
@@ -140,6 +138,13 @@ public class Survey {
             return new Response<>(false, true, "question doesn't exist");
 
         return questions.get(questionID).removeAnswer(answerID);
+    }
+
+    public Response<Question> getQuestion(int index){
+        if(index >= questions.size())
+            return new Response<>(null, true, "index out of bound");
+
+        return new Response<>(this.questions.get(index), false, "OK");
     }
 
     public int getVersion() {

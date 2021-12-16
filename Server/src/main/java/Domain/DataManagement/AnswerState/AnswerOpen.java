@@ -40,26 +40,5 @@ public class AnswerOpen implements Answer{
         return new Response<>(true, false, "OK");
     }
 
-    //    @Override
-//    public Response<Boolean> fillAnswer(String answer) {
-//        if(type == VERBAL_ANSWER)
-//        {
-//            this.answer = answer;
-//            return new Response<>(true, false, "legal answer");
-//        }
-//        else{
-//
-//            try{ // check if integer
-//                int num = Integer.parseInt(answer);
-//                this.answer = answer;
-//
-//                return new Response<>(true, false, "legal answer");
-//            }catch (NumberFormatException e){
-//                return new Response<>(false, true, "illegal number format");
-//            }
-//        }
-//
-//    }
-
 
 }

@@ -23,7 +23,7 @@ public class AnswerMultipleChoice implements Answer{
             return new Response<>(false, true, "answer cannot be empty");
 
         this.answers.put(indexer++, answer);
-        return new Response<>(false, true, "answer cannot be empty");
+        return new Response<>(true, false, "added answer successfully");
     }
 
     @Override
