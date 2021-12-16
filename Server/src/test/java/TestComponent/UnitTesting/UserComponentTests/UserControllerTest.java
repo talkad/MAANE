@@ -147,9 +147,9 @@ public class UserControllerTest { //todo reset tests
         goalList.add(new Goal(2, "goal2", "goal2"));
         goalList.add(new Goal(3, "goal3", "goal3"));
         userController.addGoals(supervisorName, goalList);
-        for (Goal goal: userController.getGoals(supervisorName).getResult()) {
-            System.out.println(goal.toString());
-        }
+//        for (Goal goal: userController.getGoals(supervisorName).getResult()) {
+//            System.out.println(goal.toString());
+//        }
         Assert.assertTrue(userController.getGoals(supervisorName).getResult().size() == 3);
     }
 
