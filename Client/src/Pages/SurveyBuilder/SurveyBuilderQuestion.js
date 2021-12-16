@@ -7,7 +7,7 @@ import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Button from "@mui/material/Button";
 
-export default function SurveyBuilder(props) {
+export default function SurveyQuestionBuilder(props) {
     const [selection, setSelection] = useState('multiple');
     const [multipleAnswersID, setMultipleAnswersID] = useState(0);
     const [multipleAnswers, setMultipleAnswers] = useState([])

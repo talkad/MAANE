@@ -1,8 +1,9 @@
 import './App.css';
 import { Routes, Route } from "react-router-dom";
-import Login from "./Pages/Login";
+import Login from "./Pages/Credentials/Login";
 import React from "react";
 import SurveyBuilder from "./Pages/SurveyBuilder/SurveyBuilder";
+import RegisterUsers from "./Pages/Credentials/RegisterUsers";
 
 
 
@@ -11,6 +12,7 @@ function App() {
     <div dir="rtl" className="App">
       <Routes>
           <Route path='/' element={<Login/>}/>
+          <Route path='registerUsers' element={<RegisterUsers/>}/>
           <Route path='createSurvey' element={<SurveyBuilder/>}/>
           <Route
               path="*"

@@ -5,6 +5,7 @@ import TextField from "@mui/material/TextField";
 import SurveyQuestion from "./SurveyBuilderQuestion";
 import Button from "@mui/material/Button";
 import { TransitionGroup } from 'react-transition-group';
+import SurveyQuestionBuilder from "./SurveyBuilderQuestion";
 
 export default function SurveyBuilder(){
     const [showError, setShowError] = useState(false)
@@ -37,7 +38,7 @@ export default function SurveyBuilder(){
         questions.push(
             {
                 id: questionID,
-                element: <SurveyQuestion id={questionID} modify={modify_question} delete={delete_question} delete_answer={delete_question_answer}/>,
+                element: <SurveyQuestionBuilder id={questionID} modify={modify_question} delete={delete_question} delete_answer={delete_question_answer}/>,
                 question: '',
                 type: 'multiple',
                 answers: [],
