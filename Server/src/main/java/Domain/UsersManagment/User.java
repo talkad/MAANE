@@ -68,13 +68,21 @@ public class User {
     }
 
     private UserState inferUserType(UserStateEnum userStateEnum) {
-        return switch (userStateEnum) {
-            case INSTRUCTOR -> new Instructor();
-            case SUPERVISOR -> new Supervisor();
-            case GENERAL_SUPERVISOR -> new GeneralSupervisor();
-            case SYSTEM_MANAGER -> new SystemManager();
-            default -> new Registered(); //this is a problem
-        };
+        UserState state;
+
+        switch (userStateEnum) {
+            case INSTRUCTOR:
+                state = new Instructor();
+            case SUPERVISOR:
+            case GENERAL_SUPERVISOR:
+                state = new GeneralSupervisor();
+            case SYSTEM_MANAGER:
+                state = new SystemManager();
+            default:
+                state = new Registered(); //this is a problem
+        }
+
+        return state;
     }
 
     public Response<Boolean> logout() {

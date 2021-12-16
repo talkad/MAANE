@@ -1,6 +1,8 @@
 package Service;
 
+import Communication.DTOs.UserDTO;
 import Domain.CommonClasses.Response;
+import Domain.UsersManagment.User;
 import Domain.UsersManagment.UserController;
 import Domain.UsersManagment.UserStateEnum;
 import Service.Interfaces.UserService;
@@ -69,13 +71,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Response<Boolean> registerUser(String currUser, String userToRegister, String password, UserStateEnum userStateEnum) {
-        Response<Boolean> res = UserController.getInstance().registerUser(currUser, userToRegister, password, userStateEnum);
+    public Response<User> registerUser(UserDTO user) {
+        Response<User> res = UserController.getInstance().registerUser(user.getCurrUser(), user.getUserToRegister(), user.getPassword(),
+                user.getUserStateEnum(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getPhoneNumber(), user.getCity());
 
         if(res.isFailure())
-            log.error("failed to register user {}", userToRegister);
+            log.error("failed to register user {}", user.getUserToRegister());
         else
-            log.info("user {} registered successfully", userToRegister);
+            log.info("user {} registered successfully", user.getUserToRegister());
 
         return res;
     }

@@ -1,6 +1,8 @@
 package Service.Interfaces;
 
+import Communication.DTOs.UserDTO;
 import Domain.CommonClasses.Response;
+import Domain.UsersManagment.User;
 import Domain.UsersManagment.UserStateEnum;
 
 public interface UserService {
@@ -10,6 +12,6 @@ public interface UserService {
     Response<String> login(String currUser, String userToLogin, String password);
     Response<String> logout(String name);
 
-    Response<Boolean> registerUser(String currUser, String userToRegister, String password, UserStateEnum userStateEnum);
+    Response<User> registerUser(UserDTO user);
     Response<Boolean> removeUser(String currUser, String userToRemove);
 }

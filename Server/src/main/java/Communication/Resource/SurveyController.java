@@ -1,4 +1,4 @@
-package Communication.DTOs.Resource;
+package Communication.Resource;
 
 import Communication.DTOs.SurveyAnswersDTO;
 import Communication.DTOs.SurveyDTO;
