@@ -55,7 +55,13 @@ public class SurveyController {
         if(answerRes.isFailure())
             return new Response<>(false, true, answerRes.getErrMsg());
 
-        if(answers.containsKey(answersDTO.getId()))
+        if(!surveys.containsKey(answersDTO.getId()))
+            return new Response<>(false, true, "cannot answer to a not exists survey");
+
+        if(surveys.get(answersDTO.getId()).getFirst().getQuestions().size() != answersDTO.getTypes().size())
+            return new Response<>(false, true, "number of answers cannot be different from number of questions");
+
+        if(!answers.containsKey(answersDTO.getId()))
             answers.put(answersDTO.getId(), new LinkedList<>());
 
         List<SurveyAnswers> ans = answers.get(answersDTO.getId());
@@ -139,5 +145,10 @@ public class SurveyController {
         return new Response<>(faults, false, "faults detected");
     }
 
-
+    // for testing purpose only
+    public void clearCache(){
+        surveys.clear();
+        answers.clear();
+        indexer = 0;
+    }
 }
