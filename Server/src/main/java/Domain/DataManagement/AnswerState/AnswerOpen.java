@@ -2,7 +2,6 @@ package Domain.DataManagement.AnswerState;
 
 import Domain.CommonClasses.Response;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 

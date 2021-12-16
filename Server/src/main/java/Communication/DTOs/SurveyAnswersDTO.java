@@ -25,4 +25,12 @@ public class SurveyAnswersDTO {
     public int getId() {
         return id;
     }
+
+    public void setAnswers(List<String> answers) {
+        this.answers = answers;
+    }
+
+    public void setTypes(List<AnswerType> types) {
+        this.types = types;
+    }
 }

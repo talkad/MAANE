@@ -2,7 +2,10 @@ package Domain.DataManagement.AnswerState;
 
 import Domain.CommonClasses.Response;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import static Domain.DataManagement.AnswerState.AnswerType.MULTIPLE_CHOICE;
 

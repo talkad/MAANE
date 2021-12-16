@@ -5,6 +5,7 @@ import Domain.DataManagement.AnswerState.Answer;
 import Domain.DataManagement.AnswerState.AnswerMultipleChoice;
 import Domain.DataManagement.AnswerState.AnswerOpen;
 import Domain.DataManagement.AnswerState.AnswerType;
+
 import java.util.List;
 
 import static Domain.DataManagement.AnswerState.AnswerType.NUMERIC_ANSWER;

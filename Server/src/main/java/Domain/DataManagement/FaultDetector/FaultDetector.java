@@ -18,6 +18,7 @@ public class FaultDetector {
 
     public Response<Boolean> addRule(Rule rule, int goalID){
         rules.add(new Pair<>(rule, goalID));
+        
         return new Response<>(true, false, "rule added successfully");
     }
 

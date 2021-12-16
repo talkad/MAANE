@@ -45,8 +45,10 @@ public class SurveyAnswers {
         switch (type){
             case MULTIPLE_CHOICE:
             case NUMERIC_ANSWER:
-                if(isNumeric(answer))
-                    answers.put(indexer++, new Pair<>(type, answer));
+                if(!isNumeric(answer))
+                    return new Response<>(false, true, "answer is not a number");
+
+                answers.put(indexer++, new Pair<>(type, answer));
                 return new Response<>(true, false, "OK");
             case VERBAL_ANSWER:
                 answers.put(indexer++, new Pair<>(type, answer));

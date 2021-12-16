@@ -3,7 +3,6 @@ package UnitTesting.DataManagement;
 import Communication.DTOs.SurveyDTO;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.AnswerState.AnswerType;
-import Domain.DataManagement.FaultDetector.FaultDetector;
 import Domain.DataManagement.Survey;
 import org.junit.Assert;
 import org.junit.Before;
