@@ -1,29 +1,29 @@
 package Domain.UsersManagment;
 
-import Domain.CommonClasses.Response;
 
 import java.util.List;
+import java.util.Vector;
 
-public class Guest extends User{
+public class Guest extends UserState{
+    private final List<PermissionsEnum> allowedFunctions;
 
     public Guest(){
-        //this.allowedFunctions = new Vector<>();
-        //this.allowedFunctions.add(PermissionsEnum.REGISTER);
+        this.allowedFunctions = new Vector<>();
+        this.allowedFunctions.add(PermissionsEnum.LOGIN);
     }
 
     @Override
-    public Response<Boolean> registerUser(String username, String password, UserStateEnum registerUserStateEnum) {
-        return new Response<>(false, true, "user is not allowed to register users");
+    public boolean allowed(PermissionsEnum func, User user) {
+        return this.allowedFunctions.contains(func);
     }
 
     @Override
-    public Response<Boolean> removeUser(String username) {
-        return new Response<>(false, true, "user is not allowed to remove users");
+    public boolean allowed(PermissionsEnum func, User user, int schoolId) {
+        return false;
     }
 
     @Override
-    public Response<Boolean> assignSchoolsToUser(String userToAssign, List<Integer> schools) {
-        return new Response<>(false, true, "user is not allowed to assign schools to users");
+    public UserStateEnum getStateEnum() {
+        return UserStateEnum.GUEST;
     }
-
 }

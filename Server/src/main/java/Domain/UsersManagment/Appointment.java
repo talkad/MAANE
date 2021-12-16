@@ -57,14 +57,8 @@ public class Appointment {//todo go over entire class and fit it to what we need
         return response;
     }
 
-    public Response<List<String>> getAppointees(String name){//todo should return all assigned users by this user
-        return new Response<>(new Vector<>(this.userAppointments.keySet()), false, "");
-//        Response<List<Integer>> response;
-//        if(this.userAppointments.containsKey(name)){
-//            response = new Response<>(this.userAppointments.get(name), false, "");
-//        }
-//        else response = new Response<>(new Vector<>(), true, "No appointments for given store");
-//        return response;
+    public Response<List<String>> getAppointees(){//todo should return all assigned users by this user
+        return new Response<>(new Vector<>(this.userAppointments.keySet()), false, "successfully generated instructors details");
     }
 
     public boolean contains(String appointee, int schoolId){
@@ -76,7 +70,11 @@ public class Appointment {//todo go over entire class and fit it to what we need
 
     public Response<Boolean> assignSchoolsToUser(String userToAssign, List<Integer> schools){
         if(this.userAppointments.containsKey(userToAssign)){
-            this.userAppointments.get(userToAssign).addAll(schools);//todo remove duplicated schools maybe make it a set
+            for (Integer schoolId: schools) {
+                if(!this.userAppointments.get(userToAssign).contains(schoolId)){
+                    this.userAppointments.get(userToAssign).add(schoolId);
+                }
+            }
             return new Response<>(true, false, "successfully assigned the schools to the user " + userToAssign);
         }
         return new Response<>(true, false, "user was not appointed by you");//todo better errmsg
@@ -91,5 +89,19 @@ public class Appointment {//todo go over entire class and fit it to what we need
             return userAppointments.get(appointee);//todo add schools to appointee list schools
         }
         return new Vector<>();//todo error
+    }
+
+    public Map<String, List<Integer>> getUserAppointments(){
+        return this.userAppointments;
+    }
+
+    public Response<Boolean> removeSchoolsFromUser(String userToRemoveSchools, List<Integer> schools) {
+        if(this.userAppointments.containsKey(userToRemoveSchools)){
+            for (Integer schoolId: schools) {
+                this.userAppointments.get(userToRemoveSchools).remove(schoolId);
+            }
+            return new Response<>(true, false, "successfully removed the schools from the user " + userToRemoveSchools);
+        }
+        return new Response<>(true, false, "user was not appointed by you");//todo better errmsg
     }
 }

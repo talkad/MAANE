@@ -1,33 +1,25 @@
 package Domain.UsersManagment;
 
-import Domain.CommonClasses.Response;
 
-import java.util.List;
-import java.util.Vector;
+public class Instructor extends Registered{
 
-public class Instructor extends User{
+    public Instructor() {
+        super();
+    }
 
-
-    public Instructor(String username, UserStateEnum userStateEnum) {
-        this.state = userStateEnum;
-        this.name = username;
-        this.schools = new Vector<>();
-        this.appointments = new Appointment();    }
-
-    public Instructor() {} //todo for supervisor super
 
     @Override
-    public Response<Boolean> registerUser(String username, String password, UserStateEnum registerUserStateEnum) {
-        return new Response<>(false, true, "user is not allowed to register users");
+    public boolean allowed(PermissionsEnum func, User user) {
+        return this.allowedFunctions.contains(func);
     }
 
     @Override
-    public Response<Boolean> removeUser(String username) {
-        return new Response<>(false, true, "user is not allowed to remove users");
+    public boolean allowed(PermissionsEnum func, User user, int schoolId) {
+        return this.allowedFunctions.contains(func);
     }
 
     @Override
-    public Response<Boolean> assignSchoolsToUser(String userToAssign, List<Integer> schools) {
-        return new Response<>(false, true, "user is not allowed to assign schools to users");
+    public UserStateEnum getStateEnum() {
+        return UserStateEnum.INSTRUCTOR;
     }
 }

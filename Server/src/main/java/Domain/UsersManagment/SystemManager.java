@@ -1,29 +1,29 @@
 package Domain.UsersManagment;
 
-import Domain.CommonClasses.Response;
 
-import java.util.List;
-import java.util.Vector;
-
-public class SystemManager extends User{
-    public SystemManager(String username, UserStateEnum userStateEnum) {
-        this.state = userStateEnum;
-        this.name = username;
-        this.schools = new Vector<>();//todo unlikely to stick around
-        this.appointments = new Appointment();//todo unlikely to stick around
+public class SystemManager extends Registered{
+    public SystemManager() {
+        super();
+        allowedFunctions.add(PermissionsEnum.REGISTER_SUPERVISOR);
+        allowedFunctions.add(PermissionsEnum.REMOVE_USER);
+        allowedFunctions.add(PermissionsEnum.ASSIGN_SCHOOLS_TO_USER);
+        allowedFunctions.add(PermissionsEnum.REGISTER_USER);
+        allowedFunctions.add(PermissionsEnum.CHANGE_PASSWORD);
     }
 
     @Override
-    public Response<Boolean> registerUser(String username, String password, UserStateEnum registerUserStateEnum) {
-        return new Response<>(true, false, "successfully registered a new user");//todo assign
-    }
-
-    public Response<Boolean> removeUser(String username){
-        return new Response<>(true, false, "successfully removed the user");//todo remove all that users responsibility?
+    public boolean allowed(PermissionsEnum func, User user) {
+        return this.allowedFunctions.contains(func);
     }
 
     @Override
-    public Response<Boolean> assignSchoolsToUser(String userToAssign, List<Integer> schools) {
-        return null;//todo
+    public boolean allowed(PermissionsEnum permission, User user, int schoolId) {
+        return user.getSchools().contains(schoolId);
     }
+
+    @Override
+    public UserStateEnum getStateEnum(){
+        return UserStateEnum.SYSTEM_MANAGER;
+    }
+
 }
