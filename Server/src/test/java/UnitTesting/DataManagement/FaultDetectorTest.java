@@ -1,125 +1,151 @@
-//package UnitTesting.DataManagement;
-//
-//import Domain.DataManagement.FaultDetector.FaultDetector;
-//import Domain.DataManagement.FaultDetector.Rules.*;
-//import Domain.DataManagement.Survey;
-//import org.junit.Assert;
-//import org.junit.Before;
-//import org.junit.Test;
-//
-//import java.util.Arrays;
-//import java.util.LinkedList;
-//import java.util.List;
-//
-//
-//public class FaultDetectorTest {
-//
-//    private FaultDetector detector;
-//    private Survey survey;
-//
-//    @Before
-//    public void setUp(){
-//        detector = new FaultDetector();
-//        survey = new Survey();
-//
-//        /*
-//        definition for a survey containing to questions with to answers both.
-//        for the first question the first answer is marked
-//        and for the second question the second answer is marked
-//         */
-//        survey.addQuestion("que1",null);
-//        survey.getQuestion(0).addAnswer("ans1");
-//        survey.getQuestion(0).addAnswer("ans2");
-//        survey.getQuestion(0).markAnswer(0);
-//
-//        survey.addQuestion("que2",null);
-//        survey.getQuestion(1).addAnswer("ans1");
-//        survey.getQuestion(1).addAnswer("ans2");
-//        survey.getQuestion(1).markAnswer(1);
-//    }
-//
-//    @Test
-//    public void legalSurveyNoRules(){
-//        List<String> faults = detector.detectFault(survey);
-//
-//        Assert.assertEquals(0, faults.size());
-//    }
-//
-//    @Test
-//    public void legalSurveyWithRules(){
-//        List<Rule> baseRules = new LinkedList<>();
-//        baseRules.add(new BaseRule(0, 0));
-//        baseRules.add(new BaseRule(1, 0));
-//
-//        detector.addRule(new AndRule(baseRules), "description1");
-//
-//        List<String> faults = detector.detectFault(survey);
-//
-//        Assert.assertEquals(0, faults.size());
-//    }
-//
-//    @Test
-//    public void illegalSurveyWithRulesAnd(){
-//        List<Rule> baseRules = new LinkedList<>();
-//        baseRules.add(new BaseRule(0, 0));
-//        baseRules.add(new BaseRule(1, 1));
-//
-//        detector.addRule(new AndRule(baseRules), "description1");
-//
-//        List<String> faults = detector.detectFault(survey);
-//
-//        Assert.assertEquals(1, faults.size());
-//    }
-//
-//    @Test
-//    public void illegalSurveyWithRulesOr(){
-//        List<Rule> baseRules = new LinkedList<>();
-//        baseRules.add(new BaseRule(0, 0));
-//        baseRules.add(new BaseRule(1, 0));
-//
-//        detector.addRule(new OrRule(baseRules), "description1");
-//
-//        List<String> faults = detector.detectFault(survey);
-//
-//        Assert.assertEquals(1, faults.size());
-//    }
-//
-//    @Test
-//    public void illegalSurveyWithRulesImply(){
-//        detector.addRule(new ImplyRule(new BaseRule(0, 0), new BaseRule(1,1)), "description1");
-//        detector.addRule(new ImplyRule(new BaseRule(0, 1), new BaseRule(1,0)), "description2");
-//
-//        List<String> faults = detector.detectFault(survey);
-//
-//        Assert.assertEquals(2, faults.size());
-//    }
-//
-//    @Test
-//    public void illegalSurveyWithRulesIff(){
-//        detector.addRule(new IffRule(new BaseRule(0, 0), new BaseRule(1,1)), "description1");
-//        detector.addRule(new ImplyRule(new BaseRule(0, 0), new BaseRule(1,0)), "description2");
-//
-//        List<String> faults = detector.detectFault(survey);
-//
-//        Assert.assertEquals(1, faults.size());
-//    }
-//
-//    @Test
-//    public void illegalSurveyWithRulesComplex(){
-//        List<Rule> baseRules = new LinkedList<>();
-//        baseRules.add(new BaseRule(0, 0));
-//        baseRules.add(new BaseRule(1, 0));
-//
-//        List<Rule> rules = new LinkedList<>();
-//        rules.add(new AndRule(baseRules));
-//        rules.add(new BaseRule(1, 1));
-//
-//        detector.addRule(new OrRule(rules), "description1");
-//
-//        List<String> faults = detector.detectFault(survey);
-//
-//        Assert.assertEquals(1, faults.size());
-//    }
-//
-//
-//}
+package UnitTesting.DataManagement;
+
+import Communication.DTOs.SurveyAnswersDTO;
+import Domain.CommonClasses.Response;
+import Domain.DataManagement.AnswerState.AnswerType;
+import Domain.DataManagement.FaultDetector.FaultDetector;
+import Domain.DataManagement.FaultDetector.Rules.*;
+import Domain.DataManagement.SurveyAnswers;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
+import static Domain.DataManagement.AnswerState.AnswerType.*;
+import static Domain.DataManagement.FaultDetector.Rules.Comparison.GREATER_THEN;
+import static Domain.DataManagement.FaultDetector.Rules.Comparison.LESS_THEN;
+
+
+public class FaultDetectorTest {
+
+    private FaultDetector detector;
+    private SurveyAnswers answers;
+    private SurveyAnswersDTO answersDTO1, answersDTO2;
+
+
+    @Before
+    public void setUp(){
+        detector = new FaultDetector();
+        answers = new SurveyAnswers();
+
+        // legal answers
+        answersDTO1 = new SurveyAnswersDTO();
+
+        List<String> answers1 = Arrays.asList("30", "1", "3");
+        List<AnswerType> types1 = Arrays.asList(NUMERIC_ANSWER, MULTIPLE_CHOICE, MULTIPLE_CHOICE);
+
+        answersDTO1.setAnswers(answers1);
+        answersDTO1.setTypes(types1);
+
+        // illegal answers
+        answersDTO2 = new SurveyAnswersDTO();
+
+        List<String> answers2 = Arrays.asList("a", "b", "c");
+        List<AnswerType> types2 = Arrays.asList(VERBAL_ANSWER, NUMERIC_ANSWER, MULTIPLE_CHOICE);
+
+        answersDTO2.setAnswers(answers2);
+        answersDTO2.setTypes(types2);
+    }
+
+    @Test
+    public void createAnswersSuccess(){
+        Response<Boolean> res = answers.addAnswers(answersDTO1);
+        Assert.assertFalse(res.isFailure());
+    }
+
+    @Test
+    public void createAnswersFailure(){
+        Response<Boolean> res = answers.addAnswers(answersDTO2);
+        Assert.assertTrue(res.isFailure());
+    }
+
+    @Test
+    public void baseNumericRule(){
+        answers.addAnswers(answersDTO1);
+        detector.addRule(new NumericBaseRule(0, GREATER_THEN, 28), 0);
+        detector.addRule(new NumericBaseRule(0, GREATER_THEN, 32), 1);
+        detector.addRule(new NumericBaseRule(0, LESS_THEN, 32), 2);
+
+        Assert.assertEquals(2, detector.detectFault(answers).getResult().size());
+    }
+
+    @Test
+    public void baseMultipleChoiceRule(){
+        answers.addAnswers(answersDTO1);
+        detector.addRule(new MultipleChoiceBaseRule(1, 1), 0);
+        detector.addRule(new MultipleChoiceBaseRule(1, 3), 1);
+        detector.addRule(new MultipleChoiceBaseRule(2, 3), 2);
+
+        Assert.assertEquals(2, detector.detectFault(answers).getResult().size());
+    }
+
+
+    @Test
+    public void illegalSurveyWithRulesAnd(){
+        List<Rule> rules1 = new LinkedList<>();
+        List<Rule> rules2 = new LinkedList<>();
+        answers.addAnswers(answersDTO1);
+
+        rules1.add(new MultipleChoiceBaseRule(1, 1));
+        rules1.add(new NumericBaseRule(0, GREATER_THEN, 28));
+
+        rules2.add(new MultipleChoiceBaseRule(1, 1));
+        rules2.add(new NumericBaseRule(0, GREATER_THEN, 32));
+
+        detector.addRule(new AndRule(rules1),  0);
+        detector.addRule(new AndRule(rules2),  0);
+
+        Assert.assertEquals(1, detector.detectFault(answers).getResult().size());
+    }
+
+    @Test
+    public void illegalSurveyWithRulesOr(){
+        List<Rule> rules1 = new LinkedList<>();
+        List<Rule> rules2 = new LinkedList<>();
+        answers.addAnswers(answersDTO1);
+
+        rules1.add(new MultipleChoiceBaseRule(1, 2));
+        rules1.add(new NumericBaseRule(0, LESS_THEN, 28));
+
+        rules2.add(new MultipleChoiceBaseRule(1, 1));
+        rules2.add(new NumericBaseRule(0, GREATER_THEN, 32));
+
+        detector.addRule(new OrRule(rules1),  0);
+        detector.addRule(new OrRule(rules2),  0);
+
+        Assert.assertEquals(1, detector.detectFault(answers).getResult().size());
+    }
+
+    @Test
+    public void illegalSurveyWithRulesImply(){
+        answers.addAnswers(answersDTO1);
+        detector.addRule(new ImplyRule(new NumericBaseRule(0, GREATER_THEN, 28), new MultipleChoiceBaseRule(1, 1)), 0);
+        detector.addRule(new ImplyRule(new NumericBaseRule(0, GREATER_THEN, 28), new MultipleChoiceBaseRule(1, 2)), 1);
+
+        Assert.assertEquals(1, detector.detectFault(answers).getResult().size());
+    }
+
+    @Test
+    public void illegalSurveyWithRulesIff(){
+        answers.addAnswers(answersDTO1);
+        detector.addRule(new IffRule(new NumericBaseRule(0, GREATER_THEN, 28), new MultipleChoiceBaseRule(1, 1)), 0);
+        detector.addRule(new IffRule(new NumericBaseRule(0, GREATER_THEN, 28), new MultipleChoiceBaseRule(1, 2)), 1);
+
+        Assert.assertEquals(1, detector.detectFault(answers).getResult().size());
+    }
+
+    @Test
+    public void illegalSurveyWithRulesComplex(){
+        answers.addAnswers(answersDTO1);
+        detector.addRule(new ImplyRule(new NumericBaseRule(0, GREATER_THEN, 28), new MultipleChoiceBaseRule(1, 1)), 0);
+        detector.addRule(new IffRule(new NumericBaseRule(0, GREATER_THEN, 28), new MultipleChoiceBaseRule(1, 1)), 0);
+
+        Assert.assertEquals(2, detector.detectFault(answers).getResult().size());
+
+    }
+
+
+}

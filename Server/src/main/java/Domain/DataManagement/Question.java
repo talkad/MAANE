@@ -1,80 +1,70 @@
 package Domain.DataManagement;
 
 import Domain.CommonClasses.Response;
+import Domain.DataManagement.AnswerState.Answer;
+import Domain.DataManagement.AnswerState.AnswerMultipleChoice;
+import Domain.DataManagement.AnswerState.AnswerOpen;
+import Domain.DataManagement.AnswerState.AnswerType;
 
-import java.util.LinkedList;
 import java.util.List;
+
+import static Domain.DataManagement.AnswerState.AnswerType.NUMERIC_ANSWER;
+import static Domain.DataManagement.AnswerState.AnswerType.VERBAL_ANSWER;
 
 public class Question {
 
-    private int id; //better not to have this...
-    private int indexer;
+    private int id;
     private String question;
-    private List<Answer> answers;
+    private Answer answer;
 
-    public Question(int id, String question){
+    public Question(int id, String question, AnswerType type){
         this.id = id;
-        this.indexer = 0;
         this.question = question;
-        this.answers = new LinkedList<>();
+
+        initAnswerType(type);
     }
 
-    public Response<Integer> addAnswer(String answer){
-
-        if(answer.length() == 0)
-            return new Response<>(-1, true, "answer cannot be empty");
-
-        this.answers.add(new Answer(indexer, answer));
-        return new Response<>(indexer++, true, "answer cannot be empty");
-    }
-
-    public Response<Boolean> removeAnswer (int answerID){
-        Answer answer;
-
-        if(answers.size() <= answerID)
-            return new Response<>(false, true, "answer doesn't exist");
-
-        this.answers.remove(answerID);
-
-        // update the index of the following answers
-        for(int i = answerID; i < this.answers.size(); i++){
-            answer = this.answers.get(i);
-            answer.setId(answer.getId() - 1);
+    private void initAnswerType(AnswerType type) {
+        switch (type){
+            case VERBAL_ANSWER:
+                answer = new AnswerOpen(VERBAL_ANSWER);
+                break;
+            case NUMERIC_ANSWER:
+                answer = new AnswerOpen(NUMERIC_ANSWER);
+                break;
+            case MULTIPLE_CHOICE:
+                answer = new AnswerMultipleChoice();
+                break;
         }
-        indexer--;
-
-        return new Response<>(true, false, "removed question successfully");
     }
 
-    public Response<Boolean> markAnswer(int answerID){
-        if(answers.size() <= answerID)
-            return new Response<>(false, true, "answer doesn't exist");
-
-        answers.get(answerID).markAnswer();
-        return new Response<>(true, false, "answer marked successfully");
+    public Response<Boolean> addAnswer(String ans) {
+        return answer.addAnswer(ans);
     }
 
-    public Response<Boolean> cancelAnswer(int answerID){
-        if(answers.size() <= answerID)
-            return new Response<>(false, true, "answer doesn't exist");
+    public Response<Boolean> removeAnswer(int answerID) {
+        return answer.removeAnswer(answerID);
+    }
 
-        answers.get(answerID).cancelAnswer();
-        return new Response<>(true, false, "answer canceled successfully");
+    public Response<Boolean> defineType(AnswerType type) {
+        return answer.defineType(type);
+    }
+
+    public Response<List<String>> getAnswers() {
+        return answer.getAnswers();
+    }
+
+    public Response<AnswerType> getType() {
+        return answer.getType();
     }
 
     public String getQuestion() {
         return question;
     }
 
-    public List<Answer> getAnswers() {
-        return answers;
-    }
-
-    public Answer getAnswer(int index) {
-        return this.answers.get(index);
-    }
-
     public int getId () { return id; }
 
     public void setId (int id) { this.id = id; }
+
+    public void setQuestion (String question) { this.question = question; }
 }

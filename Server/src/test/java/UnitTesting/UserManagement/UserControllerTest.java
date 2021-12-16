@@ -1,4 +1,4 @@
-package TestComponent.UnitTesting.UserComponentTests;
+package UnitTesting.UserManagement;
 
 import Domain.UsersManagment.UserController;
 import Domain.UsersManagment.UserStateEnum;

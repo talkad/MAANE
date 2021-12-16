@@ -1,39 +1,44 @@
 package Domain.DataManagement.FaultDetector;
 
 import Domain.CommonClasses.Pair;
+import Domain.CommonClasses.Response;
 import Domain.DataManagement.FaultDetector.Rules.Rule;
-import Domain.DataManagement.Survey;
+import Domain.DataManagement.SurveyAnswers;
+
 import java.util.LinkedList;
 import java.util.List;
 
 public class FaultDetector {
 
-    private List<Pair<Rule, String>> rules;
+    private List<Pair<Rule, Integer>> rules;
 
     public FaultDetector() {
         this.rules = new LinkedList<>();
     }
 
-    public FaultDetector(List<Pair<Rule, String>> rules) {
-        this.rules = rules;
+    public Response<Boolean> addRule(Rule rule, int goalID){
+        rules.add(new Pair<>(rule, goalID));
+        
+        return new Response<>(true, false, "rule added successfully");
     }
 
-    public void addRule(Rule rule, String description){
-        rules.add(new Pair<>(rule, description));
-    }
+    public Response<Boolean> removeRule(int index){
 
-    public void removeRule(int index){
+        if(index >= rules.size())
+            return new Response<>(false, true, "index out of bounds");
+
         rules.remove(index);
+        return new Response<>(true, false, "rule removed successfully");
     }
 
-    public List<String> detectFault(Survey survey){
-        List<String> faults = new LinkedList<>();
+    public Response<List<Integer>> detectFault(SurveyAnswers answers){
+        List<Integer> faults = new LinkedList<>();
 
-        for(Pair<Rule, String> rule: rules){
-            if(rule.getFirst().apply(survey))
+        for(Pair<Rule, Integer> rule: rules){
+            if(rule.getFirst().apply(answers))
                 faults.add(rule.getSecond());
         }
 
-        return faults;
+        return new Response<>(faults, false, "details");
     }
 }
