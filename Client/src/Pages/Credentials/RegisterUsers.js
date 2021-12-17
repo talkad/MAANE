@@ -32,11 +32,14 @@ export default function RegisterUsers(){
     const [roleChoiceEnum, setRoleChoiceEnum] = useState(roles[0]['roleEnum']);
     const [roleChoice, setRoleChoice] = useState(roles[0]['role'])
 
-    const header_string = 'רישום משתמשים'
-    const username_label_string = 'שם משתמש'
-    const password_label_string = 'סיסמה'
-    const register_button_string = 'בצע/י רישום'
-    const work_field_button_string = 'תחום'
+    const header_string = 'רישום משתמשים';
+    const username_label_string = 'שם משתמש';
+    const password_label_string = 'סיסמה';
+    const register_button_string = 'בצע/י רישום';
+    const work_field_button_string = 'תחום';
+    const select_label_string = 'תפקיד';
+    const select_helper_text_string = 'תפקיד המשתמש הנרשם';
+    const supervisor_string = 'מפקח/ת'
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -107,14 +110,14 @@ export default function RegisterUsers(){
                         <Select
                             labelId="role-select-helper-label"
                             value={roleChoiceEnum}
-                            label="תפקיד"
+                            label={select_label_string}
                             onChange={handleChange}
                         >
                             {roles.map(x => <MenuItem value={x['roleEnum']}>{x['role']}</MenuItem>)}
                         </Select>
-                        <FormHelperText>תפקיד המשתמש הנרשם</FormHelperText>
+                        <FormHelperText>{select_helper_text_string}</FormHelperText>
                     </FormControl>
-                    {roleChoice === 'מפקח/ת' &&
+                    {roleChoice === supervisor_string &&
                         <TextField
                             color="secondary"
                             error={showError}
