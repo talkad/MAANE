@@ -116,10 +116,13 @@ public class UserController {
 
     public Response<User> registerSupervisor(String currUser, String userToRegister, String password, UserStateEnum userStateEnum, String workField, String firstName, String lastName, String email, String phoneNumber, String city){
         if(connectedUsers.containsKey(currUser)) {
+            System.out.println("1");
             User user = connectedUsers.get(currUser);
             if (!userToRegister.startsWith("Guest") && !registeredUsers.containsKey(userToRegister)){
+                System.out.println("2");
                 Response<User> result = user.registerSupervisor(userToRegister, userStateEnum, workField, firstName, lastName, email, phoneNumber, city);
                 if (!result.isFailure()) {
+                    System.out.println("3");
                     registeredUsers.put(userToRegister, new Pair<>(result.getResult(), security.sha256(password)));
                     result = new Response<>(result.getResult(), false, "Registration occurred");
                     goalsManagement.addGoalsField(workField);
@@ -273,6 +276,16 @@ public class UserController {
         }
         else {
             return new Response<>(-1, true, "User not connected"); //todo make sure -1 is not a problem
+        }
+    }
+
+    public Response<Boolean> hasCreatedSurvey(String currUser, int surveyId) {
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            return user.hasCreatedSurvey(surveyId);
+        }
+        else {
+            return new Response<>(false, true, "User not connected"); //todo make sure -1 is not a problem
         }
     }
 
