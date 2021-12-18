@@ -263,4 +263,14 @@ public class User {
             return new Response<>("", true, "user not allowed to add goals");
         }
     }
+
+    public Response<Boolean> isSupervisor() {
+        if(this.state.getStateEnum() == UserStateEnum.SUPERVISOR)
+        {
+            return new Response<>(true, false, "user is supervisor");
+        }
+        else {
+            return new Response<>(false, true, "user is not a supervisor");
+        }
+    }
 }

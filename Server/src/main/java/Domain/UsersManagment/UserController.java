@@ -318,6 +318,16 @@ public class UserController {
         }
     }
 
+     public Response<Boolean> isSupervisor(String currUser){
+         if(connectedUsers.containsKey(currUser)) {
+             User user = connectedUsers.get(currUser);
+             return user.isSupervisor();
+         }
+         else {
+             return new Response<>(null, true, "User not connected"); //todo make sure null is not a problem
+         }
+     }
+
     public void adminBoot(String username, String password) {
         User user = new User(username, UserStateEnum.SYSTEM_MANAGER);
         registeredUsers.put(username, new Pair<>(user, security.sha256(password)));
