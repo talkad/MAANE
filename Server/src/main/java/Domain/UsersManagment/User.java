@@ -73,11 +73,16 @@ public class User {
         switch (userStateEnum) {
             case INSTRUCTOR:
                 state = new Instructor();
+                break;
             case SUPERVISOR:
+                state = new Supervisor();
+                break;
             case GENERAL_SUPERVISOR:
                 state = new GeneralSupervisor();
+                break;
             case SYSTEM_MANAGER:
                 state = new SystemManager();
+                break;
             default:
                 state = new Registered(); //this is a problem
         }
@@ -154,7 +159,8 @@ public class User {
     }
 
     public Response<User> registerSupervisor(String username, UserStateEnum registerUserStateEnum, String workField, String firstName, String lastName, String email, String phoneNumber, String city) {
-        if(this.state.allowed(PermissionsEnum.REGISTER_SUPERVISOR, this) && (registerUserStateEnum == UserStateEnum.SUPERVISOR) && !appointments.contains(username)){
+        if(this.state.allowed(PermissionsEnum.REGISTER_SUPERVISOR, this) /*&& (registerUserStateEnum == UserStateEnum.SUPERVISOR) && !appointments.contains(username)*/){
+            System.out.println("4");
             appointments.addAppointment(username);
             return new Response<>(new User(username, UserStateEnum.SUPERVISOR, workField, firstName, lastName, email, phoneNumber, city), false, "supervisor successfully assigned");
         }
@@ -261,6 +267,26 @@ public class User {
         }
         else {
             return new Response<>("", true, "user not allowed to add goals");
+        }
+    }
+
+    public Response<Boolean> isSupervisor() {
+        if(this.state.getStateEnum() == UserStateEnum.SUPERVISOR)
+        {
+            return new Response<>(true, false, "user is supervisor");
+        }
+        else {
+            return new Response<>(false, false, "user is not a supervisor");
+        }
+    }
+
+    public Response<Boolean> hasCreatedSurvey(int surveyId) {
+        if(this.state.getStateEnum() == UserStateEnum.SUPERVISOR)
+        {
+            return new Response<>(this.surveys.contains(surveyId), false, "user is supervisor");
+        }
+        else {
+            return new Response<>(false, true, "user is not a supervisor");
         }
     }
 }
