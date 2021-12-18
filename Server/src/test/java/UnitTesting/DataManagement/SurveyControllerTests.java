@@ -8,7 +8,7 @@ import Domain.DataManagement.FaultDetector.Rules.Comparison;
 import Domain.DataManagement.FaultDetector.Rules.MultipleChoiceBaseRule;
 import Domain.DataManagement.FaultDetector.Rules.NumericBaseRule;
 import Domain.DataManagement.SurveyController;
-import Domain.UsersManagment.User;
+import Domain.UsersManagment.Goal;
 import Domain.UsersManagment.UserController;
 import Domain.UsersManagment.UserStateEnum;
 import org.junit.Assert;
@@ -66,16 +66,23 @@ public class SurveyControllerTests {
     public void surveyCreationSuccess(){
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
-        String adminName = userController.login(guestName, "Tal", "Kadosh").getResult();
-        Response<User> res = userController.registerSupervisor(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR,"tech","", "", "", "", "");
+        String adminName = userController.login(guestName, "shaked", "cohen").getResult();
+        userController.registerSupervisor(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR,"tech","", "", "", "", "");
         String newGuestName = userController.logout(adminName).getResult();
-        String supervisorName = userController.login(newGuestName, "Dvorit", "Dvorit").getResult();
+        userController.login(newGuestName, "Dvorit", "Dvorit");
 
         Assert.assertFalse(surveyController.createSurvey("Dvorit", surveyDTO).isFailure());
     }
 
     @Test
     public void addAnswerSuccess(){
+        UserController userController = UserController.getInstance();
+        String guestName = userController.addGuest().getResult();
+        String adminName = userController.login(guestName, "shaked", "cohen").getResult();
+        userController.registerSupervisor(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR,"tech","", "", "", "", "");
+        String newGuestName = userController.logout(adminName).getResult();
+        userController.login(newGuestName, "Dvorit", "Dvorit");
+
         surveyController.createSurvey("Dvorit", surveyDTO);
         Assert.assertFalse(surveyController.addAnswers(answersDTO1).isFailure());
     }
@@ -89,15 +96,28 @@ public class SurveyControllerTests {
     @Test
     public void faultDetectionSuccess(){
         Response<List<List<String>>> faults;
+
+        UserController userController = UserController.getInstance();
+        String guestName = userController.addGuest().getResult();
+        String adminName = userController.login(guestName, "shaked", "cohen").getResult();
+        userController.registerSupervisor(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR,"tech","", "", "", "", "");
+        String newGuestName = userController.logout(adminName).getResult();
+        userController.login(newGuestName, "Dvorit", "Dvorit");
+
         surveyController.createSurvey("Dvorit", surveyDTO);
         surveyController.addAnswers(answersDTO1);
         surveyController.addAnswers(answersDTO1);
 
         surveyController.addRule("Dvorit", 0, new NumericBaseRule(0, Comparison.GREATER_THEN, 28), 0);
         surveyController.addRule("Dvorit", 0, new MultipleChoiceBaseRule(1, 1), 1);
-        surveyController.addRule("Dvorit", 0, new MultipleChoiceBaseRule(2, 1), 2);
+        surveyController.addRule("Dvorit", 0, new MultipleChoiceBaseRule(2, 2), 2);
 
-        // TODO continue when shaked's implementation is ready
+        UserController.getInstance().addGoals("Dvorit", Arrays.asList(new Goal(0, "goal0", "goal0", 1),
+                                                                                new Goal(1, "goal1", "goal1", 1),
+                                                                                new Goal(2, "goal2", "goal2", 1)));
+        faults = surveyController.detectFault("Dvorit", 0);
+
+        Assert.assertTrue(faults.getResult().size() == 2 && faults.getResult().get(0).size() == 3);
 
     }
 }
