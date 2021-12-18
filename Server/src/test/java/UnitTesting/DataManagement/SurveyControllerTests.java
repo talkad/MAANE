@@ -8,6 +8,9 @@ import Domain.DataManagement.FaultDetector.Rules.Comparison;
 import Domain.DataManagement.FaultDetector.Rules.MultipleChoiceBaseRule;
 import Domain.DataManagement.FaultDetector.Rules.NumericBaseRule;
 import Domain.DataManagement.SurveyController;
+import Domain.UsersManagment.User;
+import Domain.UsersManagment.UserController;
+import Domain.UsersManagment.UserStateEnum;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -61,6 +64,13 @@ public class SurveyControllerTests {
 
     @Test
     public void surveyCreationSuccess(){
+        UserController userController = UserController.getInstance();
+        String guestName = userController.addGuest().getResult();
+        String adminName = userController.login(guestName, "Tal", "Kadosh").getResult();
+        Response<User> res = userController.registerSupervisor(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR,"tech","", "", "", "", "");
+        String newGuestName = userController.logout(adminName).getResult();
+        String supervisorName = userController.login(newGuestName, "Dvorit", "Dvorit").getResult();
+
         Assert.assertFalse(surveyController.createSurvey("Dvorit", surveyDTO).isFailure());
     }
 

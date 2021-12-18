@@ -7,6 +7,8 @@ import Domain.CommonClasses.Response;
 import Domain.DataManagement.AnswerState.AnswerType;
 import Domain.DataManagement.FaultDetector.FaultDetector;
 import Domain.DataManagement.FaultDetector.Rules.Rule;
+import Domain.UsersManagment.Goal;
+import Domain.UsersManagment.UserController;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -33,16 +35,28 @@ public class SurveyController {
     }
 
     public Response<Integer> createSurvey(String username, SurveyDTO surveyDTO){
+        Response<Integer> permissionRes;
+        Response<Survey> surveyRes;
 
-        // call userController and check if @username can create survey
-        Response<Survey> surveyRes = Survey.createSurvey(indexer, surveyDTO);
+        permissionRes = UserController.getInstance().createSurvey(username, indexer);
 
-        if(surveyRes.isFailure())
+        if(permissionRes.isFailure())
+            return new Response<>(-1, true, permissionRes.getErrMsg());
+
+        surveyRes = Survey.createSurvey(indexer, surveyDTO);
+
+        if(surveyRes.isFailure()) {
+            Response<Integer> res = UserController.getInstance().removeSurvey(username, indexer);
+
+            if(res.isFailure())
+                return res;
+
             return new Response<>(-1, true, surveyRes.getErrMsg());
+        }
 
         surveys.put(indexer, new Pair<>(surveyRes.getResult(), new FaultDetector()));
 
-        // call to publish
+        UserController.getInstance().notifySurveyCreation(username, indexer);
 
         return new Response<>(indexer++, false, "new survey created successfully");
     }
@@ -103,8 +117,10 @@ public class SurveyController {
     public Response<Boolean> addRule(String username, int id, Rule rule, int goalID){
         Pair<Survey, FaultDetector> surveyPair;
         FaultDetector faultDetector;
+        Response<Boolean> legalAdd = UserController.getInstance().hasCreatedSurvey(username, id);
 
-        // check if username is supervisor
+        if(!legalAdd.getResult())
+            return new Response<>(false, true, username + "does not created survey " + id);
 
         if(!surveys.containsKey(id))
             return new Response<>(false, true, "id is out of bound");
@@ -121,12 +137,12 @@ public class SurveyController {
     public Response<List<List<String>>> detectFault(String username, int id){
         List<List<String>> faults = new LinkedList<>();
         FaultDetector faultDetector;
-        // TODO get from userController all the goals of a certain username
-        Map<Integer, String> goals;
+        List<Goal> goals = UserController.getInstance().getGoals(username).getResult();
         List<String> currentFaults;
+        Response<Boolean> legalAdd = UserController.getInstance().hasCreatedSurvey(username, id);
 
-        // TODO
-        // call userController and check if @username can
+        if(!legalAdd.getResult())
+            return new Response<>(null, true, username + "does not created survey " + id);
 
         if(!surveys.containsKey(id))
             return new Response<>(null, true, "The survey doesn't exists");
@@ -137,7 +153,7 @@ public class SurveyController {
             currentFaults = new LinkedList<>();
 
             for(Integer fault: faultDetector.detectFault(ans).getResult())
-                currentFaults.add(currentFaults.get(fault));
+                currentFaults.add(goals.get(fault).getTitle());
 
             faults.add(currentFaults);
         }

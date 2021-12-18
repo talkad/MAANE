@@ -275,7 +275,7 @@ public class UserController {
             return user.createSurvey(surveyId);
         }
         else {
-            return new Response<>(-1, true, "User not connected"); //todo make sure -1 is not a problem
+            return new Response<>(-1, true, "User not connected");
         }
     }
 
@@ -345,4 +345,9 @@ public class UserController {
         User user = new User(username, UserStateEnum.SYSTEM_MANAGER);
         registeredUsers.put(username, new Pair<>(user, security.sha256(password)));
     }
+
+    public void notifySurveyCreation(String username, int indexer) {
+        // todo - publisher and subscribers
+    }
+
 }
