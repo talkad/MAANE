@@ -298,7 +298,7 @@ public class UserController {
             }
         }
         else {
-            return new Response<>(null, true, "User not connected"); //todo make sure null is not a problem
+            return new Response<>(null, true, "User not connected");
         }
     }
 

@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-@RestController
 @RequestMapping("/User")
 public class FixedUserController {
     private static final UserServiceImpl service = UserServiceImpl.getInstance();
