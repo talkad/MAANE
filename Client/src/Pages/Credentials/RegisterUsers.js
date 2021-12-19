@@ -9,6 +9,7 @@ import Box from "@mui/material/Box";
 import FormControl from "@mui/material/FormControl";
 
 // TODO: random number just for it to work. check the real enums
+// TODO: once there are permission implemented have a different select for a system manager and a supervisor
 const roles = [
     {
         roleEnum: 0,
@@ -16,7 +17,7 @@ const roles = [
     },
     {
         roleEnum: 1,
-        role: 'רכז/ת',
+        role: 'מפקח/ת כללי/ת',
     },
     {
         roleEnum: 2,

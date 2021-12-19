@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import './SurveryBuilderQuestion.css'
-import {FormControlLabel, Grid, MenuItem, Paper, Radio, RadioGroup, Select} from "@mui/material";
+import {FormControlLabel, Grid, MenuItem, Paper, Radio, RadioGroup, Select, Tooltip} from "@mui/material";
 import FormControl from '@mui/material/FormControl';
 import TextField from "@mui/material/TextField";
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Button from "@mui/material/Button";
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 
 export default function SurveyQuestionBuilder(props) {
     const [selection, setSelection] = useState('multiple');
@@ -18,6 +19,8 @@ export default function SurveyQuestionBuilder(props) {
     const multiple_add_string = 'הוסף/י תשובה'
     const open_item_string = 'פתוחה';
     const open_number_item_string = 'מספרית';
+    const question_title_tooltip_string = 'מחיקת שאלה';
+    const answer_title_tooltip_string = 'מחיקת תשובה';
 
     const handleQuestionChange = (event) => {
         props.modify(props.id, 'question', event.target.value);
@@ -96,9 +99,11 @@ export default function SurveyQuestionBuilder(props) {
                         </FormControl>
                     </Grid>
                     <Grid item xs={1}>
-                        <IconButton onClick={delete_question} aria-label="delete">
-                            <DeleteIcon />
-                        </IconButton>
+                        <Tooltip title={question_title_tooltip_string}>
+                            <IconButton onClick={delete_question} aria-label="delete">
+                                <DeleteIcon />
+                            </IconButton>
+                        </Tooltip>
                     </Grid>
                     {selection === 'multiple' &&
                         <Grid item xs={12}>
@@ -109,9 +114,11 @@ export default function SurveyQuestionBuilder(props) {
                                                     <FormControlLabel disabled value={'idk'} control={<Radio />} label={x[1]}/>
                                                 </Grid>
                                                 <Grid item xs={1}>
-                                                    <IconButton onClick={() => delete_answer(x[0])} aria-label="delete">
-                                                        <DeleteIcon />
-                                                    </IconButton>
+                                                    <Tooltip title={answer_title_tooltip_string}>
+                                                        <IconButton onClick={() => delete_answer(x[0])} aria-label="delete">
+                                                            <RemoveCircleOutlineIcon color="warning" />
+                                                        </IconButton>
+                                                    </Tooltip>
                                                 </Grid>
                                             </Grid>
                                         )}
