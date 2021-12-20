@@ -141,7 +141,7 @@ public class UserController {
             User user = connectedUsers.get(currUser);
             Response<User> response = user.updateInfo(firstName, lastName, email, phoneNumber, city);
             if(!response.isFailure()){
-                registeredUsers.get(currUser).setFirst(user);
+                //todo check if this is required when adding DAL - registeredUsers.get(currUser).setFirst(user);
                 return new Response<>(true, false, response.getErrMsg());
             }
             else {
@@ -303,13 +303,13 @@ public class UserController {
         }
     }
 
-    public Response<Integer> createSurvey(String currUser, int surveyId) {
+    public Response<Boolean> createSurvey(String currUser, int surveyId) {
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             return user.createSurvey(surveyId);
         }
         else {
-            return new Response<>(-1, true, "User not connected"); //todo make sure -1 is not a problem
+            return new Response<>(false, true, "User not connected"); //todo make sure -1 is not a problem
         }
     }
 
@@ -323,13 +323,13 @@ public class UserController {
         }
     }
 
-    public Response<Integer> removeSurvey(String currUser, int surveyId) {
+    public Response<Boolean> removeSurvey(String currUser, int surveyId) {
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             return user.removeSurvey(surveyId);
         }
         else {
-            return new Response<>(-1, true, "User not connected"); //todo make sure -1 is not a problem
+            return new Response<>(false, true, "User not connected"); //todo make sure -1 is not a problem
         }
     }
 

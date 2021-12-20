@@ -212,23 +212,23 @@ public class User {
         return this.username + " " + this.schools.toString(); //todo generate proper tostring
     }
 
-    public Response<Integer> createSurvey(int surveyId) {
+    public Response<Boolean> createSurvey(int surveyId) {
         if(this.state.allowed(Permissions.CREATE_SURVEY, this)){
             this.surveys.add(surveyId);
-            return new Response<>(surveyId, false, "user is allowed to create survey");
+            return new Response<>(true, false, "user is allowed to create survey");
         }
         else {
-            return new Response<>(surveyId, false, "user not allowed to create survey");
+            return new Response<>(false, false, "user not allowed to create survey");
         }
     }
 
-    public Response<Integer> removeSurvey(int surveyId) {
+    public Response<Boolean> removeSurvey(int surveyId) {
         if(this.state.allowed(Permissions.REMOVE_SURVEY, this)){
             this.surveys.remove(Integer.valueOf(surveyId));
-            return new Response<>(surveyId, false, "user is allowed to remove survey");
+            return new Response<>(true, false, "user is allowed to remove survey");
         }
         else {
-            return new Response<>(surveyId, false, "user not allowed to remove survey");
+            return new Response<>(false, false, "user not allowed to remove survey");
         }
     }
 
