@@ -116,13 +116,10 @@ public class UserController {
 
     public Response<User> registerSupervisor(String currUser, String userToRegister, String password, UserStateEnum userStateEnum, String workField, String firstName, String lastName, String email, String phoneNumber, String city){
         if(connectedUsers.containsKey(currUser)) {
-            System.out.println("1");
             User user = connectedUsers.get(currUser);
             if (!userToRegister.startsWith("Guest") && !registeredUsers.containsKey(userToRegister)){
-                System.out.println("2");
                 Response<User> result = user.registerSupervisor(userToRegister, userStateEnum, workField, firstName, lastName, email, phoneNumber, city);
                 if (!result.isFailure()) {
-                    System.out.println("3");
                     registeredUsers.put(userToRegister, new Pair<>(result.getResult(), security.sha256(password)));
                     result = new Response<>(result.getResult(), false, "Registration occurred");
                     goalsManagement.addGoalsField(workField);
@@ -212,7 +209,7 @@ public class UserController {
     }
 
     public User getUser(String user){
-        return this.registeredUsers.get(user).getFirst();//todo bad temp function
+        return this.registeredUsers.get(user).getFirst();//todo temp function for tests
     }
 
     public Response<String> fillMonthlyReport(String currUser){
@@ -231,8 +228,8 @@ public class UserController {
             User user = connectedUsers.get(currUser);
             if(newPassword.equals(confirmPassword)) {
                 if (registeredUsers.containsKey(userToChangePassword)) {
-                    Response<Boolean> res = user.changePassword();
-                    if(!res.isFailure()){
+                    Response<Boolean> res = user.changePassword(userToChangePassword);
+                    if(res.getResult()){
                         registeredUsers.get(userToChangePassword).setSecond(security.sha256(newPassword));
                     }
                     return res;

@@ -28,7 +28,7 @@ public class UserControllerTest { //todo reset tests
         String guestName = userController.addGuest().getResult();
         String adminName = userController.login(guestName, "shaked", "cohen").getResult();
         Response<User> res = userController.registerSupervisor(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR,"tech","", "", "", "", "");
-        System.out.println(res.isFailure());
+        //System.out.println(res.isFailure());
         String newGuestName = userController.logout(adminName).getResult();
         Response<String> supervisorName = userController.login(newGuestName, "sup1", "sup1");
         Assert.assertTrue(userController.getConnectedUsers().containsKey("sup1"));
@@ -133,6 +133,21 @@ public class UserControllerTest { //todo reset tests
         Response<String> res = userController.login(newGuestName, "sup1", "sup111");
         Assert.assertFalse(res.isFailure());
         Assert.assertTrue(userController.getRegisteredUsers().get("sup1").getSecond().equals(security.sha256("sup111")));
+    }
+
+    @Test
+    public void changePasswordToInstructor() {
+        UserController userController = UserController.getInstance();
+        String guestName = userController.addGuest().getResult();
+        String adminName = userController.login(guestName, "shaked", "cohen").getResult();
+        userController.registerSupervisor(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "tech", "", "", "", "", "");
+        String newGuestName = userController.logout(adminName).getResult();
+        userController.login(newGuestName, "sup1", "sup1");
+        userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "", "", "");
+        userController.changePassword("sup1", "ins1", "ins111", "ins111");
+        newGuestName = userController.logout("sup1").getResult();
+        userController.login(newGuestName, "ins1", "ins111");
+        Assert.assertTrue(userController.getConnectedUsers().containsKey("ins1"));
     }
 
     @Test

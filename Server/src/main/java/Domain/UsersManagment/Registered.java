@@ -5,20 +5,20 @@ import java.util.Vector;
 
 public class Registered extends UserState {
 
-    protected final List<PermissionsEnum> allowedFunctions;
+    protected final List<Permissions> allowedFunctions;
 
     public Registered() {
         this.allowedFunctions = new Vector<>();
-        this.allowedFunctions.add(PermissionsEnum.LOGOUT);
+        this.allowedFunctions.add(Permissions.LOGOUT);
     }
 
     @Override
-    public boolean allowed(PermissionsEnum func, User user) {
+    public boolean allowed(Permissions func, User user) {
         return this.allowedFunctions.contains(func);
     }
 
     @Override
-    public boolean allowed(PermissionsEnum permission, User user, int schoolId) {
+    public boolean allowed(Permissions permission, User user, int schoolId) {
         return user.getSchools().contains(schoolId);
     }
 

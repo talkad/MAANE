@@ -1,6 +1,6 @@
 package Domain.UsersManagment;
 
-public enum PermissionsEnum {
+public enum Permissions {
     /** Guest **/
     LOGIN,
 

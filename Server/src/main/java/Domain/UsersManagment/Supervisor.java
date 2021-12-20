@@ -4,21 +4,23 @@ public class Supervisor extends Instructor{
 
     public Supervisor() {
         super();
-        allowedFunctions.add(PermissionsEnum.ASSIGN_SCHOOLS_TO_USER);
-        allowedFunctions.add(PermissionsEnum.REMOVE_SCHOOLS_FROM_USER);
-        allowedFunctions.add(PermissionsEnum.REGISTER_USER);
-        allowedFunctions.add(PermissionsEnum.REMOVE_USER);
-        allowedFunctions.add(PermissionsEnum.VIEW_INSTRUCTORS_INFO);
-        allowedFunctions.add(PermissionsEnum.CREATE_SURVEY);
-        allowedFunctions.add(PermissionsEnum.REMOVE_SURVEY);
-        allowedFunctions.add(PermissionsEnum.ADD_GOALS);
-        allowedFunctions.add(PermissionsEnum.GET_GOALS);
+        allowedFunctions.add(Permissions.ASSIGN_SCHOOLS_TO_USER);
+        allowedFunctions.add(Permissions.REMOVE_SCHOOLS_FROM_USER);
+        allowedFunctions.add(Permissions.REGISTER_USER);
+        allowedFunctions.add(Permissions.REMOVE_USER);
+        allowedFunctions.add(Permissions.VIEW_INSTRUCTORS_INFO);
+        allowedFunctions.add(Permissions.CREATE_SURVEY);
+        allowedFunctions.add(Permissions.REMOVE_SURVEY);
+        allowedFunctions.add(Permissions.ADD_GOALS);
+        allowedFunctions.add(Permissions.GET_GOALS);
+        allowedFunctions.add(Permissions.CHANGE_PASSWORD);
+
 
 
     }
 
     @Override
-    public boolean allowed(PermissionsEnum func, User user) {
+    public boolean allowed(Permissions func, User user) {
         return this.allowedFunctions.contains(func);
     }
 
