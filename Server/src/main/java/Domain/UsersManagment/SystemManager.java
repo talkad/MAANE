@@ -8,7 +8,7 @@ public class SystemManager extends Registered{
         allowedFunctions.add(Permissions.REMOVE_USER);
         allowedFunctions.add(Permissions.ASSIGN_SCHOOLS_TO_USER);
         allowedFunctions.add(Permissions.REGISTER_USER);
-        allowedFunctions.add(Permissions.CHANGE_PASSWORD);
+        allowedFunctions.add(Permissions.CHANGE_PASSWORD_TO_USER);
     }
 
     @Override

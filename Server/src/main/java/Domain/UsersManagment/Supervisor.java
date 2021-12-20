@@ -13,10 +13,7 @@ public class Supervisor extends Instructor{
         allowedFunctions.add(Permissions.REMOVE_SURVEY);
         allowedFunctions.add(Permissions.ADD_GOALS);
         allowedFunctions.add(Permissions.GET_GOALS);
-        allowedFunctions.add(Permissions.CHANGE_PASSWORD);
-
-
-
+        allowedFunctions.add(Permissions.CHANGE_PASSWORD_TO_USER);
     }
 
     @Override

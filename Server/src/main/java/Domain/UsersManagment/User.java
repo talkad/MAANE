@@ -8,7 +8,7 @@ import java.util.Vector;
 public class User {
 
     protected UserState state;
-    protected String name;
+    protected String username;
     protected String firstName;
     protected String lastName;
     protected String email;
@@ -39,7 +39,7 @@ public class User {
     }
 
     public User(String username) {
-        this.name = username;
+        this.username = username;
         this.appointments = new Appointment();
         this.schools = new Vector<>();
         this.surveys = new Vector<>();
@@ -47,7 +47,7 @@ public class User {
 
     public User(String username, UserStateEnum userStateEnum) {
         this.state = inferUserType(userStateEnum);
-        this.name = username;
+        this.username = username;
         this.appointments = new Appointment();
         this.schools = new Vector<>();
         this.surveys = new Vector<>();
@@ -55,7 +55,7 @@ public class User {
 
     public User(String username, UserStateEnum userStateEnum, String workField,String firstName, String lastName, String email, String phoneNumber, String city) {
         this.state = inferUserType(userStateEnum);
-        this.name = username;
+        this.username = username;
         this.workField = workField;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -96,11 +96,11 @@ public class User {
         return new Response<>(false, true, "Cannot logout without being logged in");
     }
 
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return username;
     }
 
-    public void setName(String name){ this.name = name;}
+    public void setUsername(String username){ this.username = username;}
 
     public List<Integer> getSchools() {
         return schools;
@@ -175,8 +175,8 @@ public class User {
         return null; //todo unimplemented error
     }
 
-    public Response<Boolean> changePassword(String userToChangePassword) {
-        if (this.state.allowed(Permissions.CHANGE_PASSWORD, this)) {
+    public Response<Boolean> changePasswordToUser(String userToChangePassword) {
+        if (this.state.allowed(Permissions.CHANGE_PASSWORD_TO_USER, this)) {
             if(this.state.getStateEnum() == UserStateEnum.SUPERVISOR && this.appointments.contains(userToChangePassword)){
                 return new Response<>(true, false,"successfully password changed");
             }
@@ -185,6 +185,15 @@ public class User {
             }
 
             return new Response<>(false, false, "user not allowed to change password to this user");        }
+        else {
+            return new Response<>(false, true, "user not allowed to change password");
+        }
+    }
+
+    public Response<Boolean> changePassword() {
+        if (this.state.allowed(Permissions.CHANGE_PASSWORD, this)) {
+            return new Response<>(true, false, "successfully password changed");
+        }
         else {
             return new Response<>(false, true, "user not allowed to change password");
         }
@@ -200,7 +209,7 @@ public class User {
     }
 
     public String getInfo() {
-        return this.name + " " + this.schools.toString(); //todo generate proper tostring
+        return this.username + " " + this.schools.toString(); //todo generate proper tostring
     }
 
     public Response<Integer> createSurvey(int surveyId) {
@@ -293,5 +302,79 @@ public class User {
         else {
             return new Response<>(false, true, "user is not a supervisor");
         }
+    }
+
+    public Response<User> updateInfo(String firstName, String lastName, String email, String phoneNumber, String city) {
+        if(this.state.allowed(Permissions.UPDATE_INFO, this)){
+            this.firstName = firstName;
+            this.lastName = lastName;
+            this.email = email;
+            this.phoneNumber = phoneNumber;
+            this.city = city;
+            return new Response<>(this, false, "successfully updated information");
+        }
+        else {
+            return new Response<>(null, true, "user not allowed to update information");
+        }
+    }
+
+    public UserState getState() {
+        return state;
+    }
+
+    public void setState(UserState state) {
+        this.state = state;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public void setAppointments(Appointment appointments) {
+        this.appointments = appointments;
+    }
+
+    public void setSurveys(List<Integer> surveys) {
+        this.surveys = surveys;
+    }
+
+    public void setWorkField(String workField) {
+        this.workField = workField;
     }
 }

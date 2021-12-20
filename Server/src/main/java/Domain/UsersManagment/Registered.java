@@ -10,6 +10,10 @@ public class Registered extends UserState {
     public Registered() {
         this.allowedFunctions = new Vector<>();
         this.allowedFunctions.add(Permissions.LOGOUT);
+        this.allowedFunctions.add(Permissions.CHANGE_PASSWORD);
+        this.allowedFunctions.add(Permissions.UPDATE_INFO);
+
+
     }
 
     @Override

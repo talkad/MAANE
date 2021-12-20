@@ -6,6 +6,8 @@ public enum Permissions {
 
     /** Registered User **/
     LOGOUT,
+    UPDATE_INFO,
+    CHANGE_PASSWORD,
 
     /** Instructor User **/
     FILL_MONTHLY_REPORT,
@@ -23,5 +25,5 @@ public enum Permissions {
     /** System Manager User **/
     REGISTER_SUPERVISOR,
     REMOVE_USER,
-    CHANGE_PASSWORD
+    CHANGE_PASSWORD_TO_USER
 }
