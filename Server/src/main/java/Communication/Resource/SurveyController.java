@@ -7,13 +7,14 @@ import Domain.DataManagement.FaultDetector.Rules.Rule;
 import Service.Interfaces.SurveyService;
 import Service.SurveyServiceImpl;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
 
-@RestController
-@RequestMapping("/Survey")
+@Controller
+@RequestMapping("/survey")
 public class SurveyController {
 
     private final SurveyService service = SurveyServiceImpl.getInstance();

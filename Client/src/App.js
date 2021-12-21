@@ -7,8 +7,11 @@ import RegisterUsers from "./Pages/Credentials/RegisterUsers";
 import Survey from "./Pages/Survey/Survey";
 import WorkPlan from "./Pages/WorkPlan/WorkPlan";
 import ManageUsers from "./Pages/ManageUsers/ManageUsers";
+import Connection from "./Communication/Connection.js"
 
 // TODO: prevent users from going through the site by entering paths in the url
+
+Connection.setConnection();
 
 function App() {
 
@@ -16,12 +19,12 @@ function App() {
   return (
     <div dir="rtl" className="App">
       <Routes>
-          <Route path="/" element={<Login/>}/>
-          <Route path="registerUsers" element={<RegisterUsers/>}/>
-          <Route path="createSurvey" element={<SurveyBuilder/>}/>
-          <Route path="survey" element={<Survey/>}/>
-          <Route path="workPlan" element={<WorkPlan/>}/>
-          <Route path="manageUsers" element={<ManageUsers/>}/>
+          <Route path="user/login" element={<Login/>}/>
+          <Route path="user/registerUsers" element={<RegisterUsers/>}/>
+          <Route path="survey/createSurvey" element={<SurveyBuilder/>}/>
+          <Route path="survey/survey" element={<Survey/>}/>
+          <Route path="user/workPlan" element={<WorkPlan/>}/>
+          <Route path="user/manageUsers" element={<ManageUsers/>}/>
           <Route
               path="*"
               element={

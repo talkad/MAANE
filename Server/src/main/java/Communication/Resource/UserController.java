@@ -4,15 +4,30 @@ import Communication.DTOs.UserDTO;
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.User;
 import Service.UserServiceImpl;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-@RestController
-@RequestMapping("/User")
-public class FixedUserController {
+@Controller
+@RequestMapping("/user")
+public class UserController {
     private static final UserServiceImpl service = UserServiceImpl.getInstance();
+
+    @GetMapping("/startup")
+    public ResponseEntity<Response<String>> startup(){
+//        HttpHeaders responseHeaders = new HttpHeaders();
+//        responseHeaders.set("Access-Control-Allow-Origin","*");
+
+        return ResponseEntity.ok()
+                .body(service.addGuest());
+//        return ResponseEntity.ok(
+//
+//                service.addGuest()
+//        ).headers;
+    }
 
     @PostMapping("/removeGuest")
     public ResponseEntity<Response<String>> removeGuest(@RequestBody Map<String, String> body){

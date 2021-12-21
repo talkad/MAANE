@@ -1,11 +1,21 @@
 package Domain.UsersManagment;
 
 public enum UserStateEnum {
-    GUEST,
-    REGISTERED,
-    INSTRUCTOR,
-    SUPERVISOR,
-    COORDINATOR,
-    GENERAL_SUPERVISOR,
-    SYSTEM_MANAGER
+    GUEST("GUEST"),
+    REGISTERED("REGISTERED"),
+    INSTRUCTOR("INSTRUCTOR"),
+    SUPERVISOR("SUPERVISOR"),
+    COORDINATOR("COORDINATOR"),
+    GENERAL_SUPERVISOR("GENERAL_SUPERVISOR"),
+    SYSTEM_MANAGER("SYSTEM_MANAGER");
+
+    private final String state;
+
+    UserStateEnum(String type){
+        this.state = type;
+    }
+
+    public String getState(){
+        return this.state;
+    }
 }

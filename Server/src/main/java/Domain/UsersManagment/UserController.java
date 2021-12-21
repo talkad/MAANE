@@ -51,6 +51,8 @@ public class UserController {
         User user = new User();
         user.setName(guestName);
         connectedUsers.put(guestName, user);
+        System.out.println("guest name is " + guestName);
+
         return new Response<>(guestName, false, "added guest");
     }
 
