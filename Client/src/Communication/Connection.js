@@ -32,18 +32,6 @@ class Connection{
         return this.#instance;
     }
 
-    static setConnection(){
-
-    }
-
-    setUsername(username){
-        this.username = username;
-    }
-
-    getUsername(){
-        return this.username;
-    }
-
     sendGET(url, callback){
         this.axios_instance.get(url)
             .then(function (response) {

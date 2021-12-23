@@ -8,12 +8,16 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import {Alert, FormHelperText, IconButton, InputAdornment, InputLabel, MenuItem, Paper, Select,} from "@mui/material";
 import FormControl from "@mui/material/FormControl";
 import Connection from "../../Communication/Connection";
+import { useNavigate } from 'react-router-dom'
+import UserInfo from "../../User/UserInfo";
 
 export default function Login(){
+    const [username, setUsername] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [showError, setShowError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [loaded, setLoaded] = useState(false);
+    const navigate = useNavigate();
 
     const header_string = 'מענ"ה'
     const username_label_string  = "שם משתמש"
@@ -31,7 +35,29 @@ export default function Login(){
       }, []);
 
     const loginCallback = (data) => {
-        console.log(data)
+        if(data.failure){
+            setShowError(true);
+            setErrorMessage('שם משתמש או סיסמה לא נכונים');
+        }
+        else{
+            UserInfo.getInstance().setUsername(username);
+            const type = data.result;
+            UserInfo.getInstance().setType(type);
+            if (type === "INSTRUCTOR"){
+                navigate('user/workPlan');
+            }
+            else if(type === "SUPERVISOR"){
+                navigate('user/manageUsers');
+            }
+            else if(type === "SYSTEM_MANAGER"){
+                document.location.href = window.location.origin + '/user/ManageUsers';
+            }
+            else if(type === "GENERAL_SUPERVISOR"){
+                navigate('user/InfoViewer');
+            }
+
+        }
+
     }
 
     const handleSubmit = (event) => {
@@ -40,10 +66,11 @@ export default function Login(){
 
         if(data.get('username') === '' || data.get('password') === ''){
             setShowError(true);
-            setErrorMessage('נא למלא את כל השדות')
+            setErrorMessage('נא למלא את כל השדות');
         }
         else{
             setShowError(false);
+            setUsername(data.get('username'));
             Connection.getInstance().login({
                 "currUser": Connection.getInstance().getUsername(),
                 "userToLogin": data.get('username'),

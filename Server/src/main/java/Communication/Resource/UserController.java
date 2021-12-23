@@ -1,23 +1,22 @@
 package Communication.Resource;
 
-import Communication.DTOs.LoginDTO;
 import Communication.DTOs.UserDTO;
 import Domain.CommonClasses.Response;
+import Domain.UsersManagment.UserStateEnum;
 import Domain.UsersManagment.User;
 import Service.UserServiceImpl;
-import lombok.extern.java.Log;
+import com.google.gson.Gson;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
+import java.util.Properties;
 
 @Controller
 @RequestMapping("/user")
 public class UserController {
     private static final UserServiceImpl service = UserServiceImpl.getInstance();
+    private Gson gson = new Gson();
 
     @GetMapping("/startup")
     public ResponseEntity<Response<String>> startup(){
@@ -29,49 +28,69 @@ public class UserController {
                 .body(service.addGuest());
     }
 
-//    @PostMapping("/login")
     @RequestMapping(value = "/login", method = RequestMethod.POST, consumes = "text/plain")
-    public ResponseEntity<Response<String>> login(@RequestBody String currUser){
+    public ResponseEntity<Response<String>> login(@RequestBody String body){
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("Access-Control-Allow-Origin","*");
 
-        System.out.println("hello there");
-        System.out.println(currUser);
-        System.out.println("general kenobi");
+        Properties p = gson.fromJson(body, Properties.class);
 
         return ResponseEntity.ok()
                 .headers(responseHeaders)
-                .body(service.login("a", "a", "a"));
+                .body(service.login((String)p.get("currUser"),  (String)p.get("userToLogin"), (String)p.get("password")));
     }
 
-    @PostMapping("/logout")
-    public ResponseEntity<Response<String>> logout(@RequestBody Map<String, String> body){
+    @RequestMapping(value = "/logout", method = RequestMethod.POST, consumes = "text/plain")
+    public ResponseEntity<Response<String>> logout(@RequestBody String body){
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("Access-Control-Allow-Origin","*");
 
+        Properties p = gson.fromJson(body, Properties.class);
+
         return ResponseEntity.ok()
                 .headers(responseHeaders)
-                .body(service.logout(body.get("name")));
+                .body(service.logout((String)p.get("name")));
     }
 
-    @PostMapping("/registerUser")
-    public ResponseEntity<Response<User>> registerUser(@RequestBody UserDTO userDTO) {
+    @RequestMapping(value = "/registerUser", method = RequestMethod.POST, consumes = "text/plain")
+    public ResponseEntity<Response<User>> registerUser(@RequestBody String body) {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("Access-Control-Allow-Origin", "*");
 
+        Properties p = gson.fromJson(body, Properties.class);
+        UserDTO user = new UserDTO((String)p.get("currUser"), (String)p.get("userToRegister"), (String)p.get("password"), enumState((String)p.get("userStateEnum")),
+                (String)p.get("firstName"), (String)p.get("lastName"), (String)p.get("email"), (String)p.get("phoneNumber"), (String)p.get("city"));
+
         return ResponseEntity.ok()
                 .headers(responseHeaders)
-                .body(service.registerUser(userDTO));
+                .body(service.registerUser(user));
     }
 
-    public ResponseEntity<Response<Boolean>> removeUser(@RequestBody Map<String, String> body){
+    @RequestMapping(value = "/removeUser", method = RequestMethod.POST, consumes = "text/plain")
+    public ResponseEntity<Response<Boolean>> removeUser(@RequestBody String body){
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("Access-Control-Allow-Origin", "*");
 
+        Properties p = gson.fromJson(body, Properties.class);
+
         return ResponseEntity.ok()
                 .headers(responseHeaders)
-                .body(service.removeUser(body.get("currUser"), body.get("userToRemove")));
+                .body(service.removeUser((String)p.get("currUser"), (String)p.get("userToRemove")));
 
     }
 
+    private UserStateEnum enumState(String userState){
+        switch(userState){
+            case "INSTRUCTOR":
+                return UserStateEnum.INSTRUCTOR;
+            case "SUPERVISOR":
+                return UserStateEnum.SUPERVISOR;
+            case "GENERAL_SUPERVISOR":
+                return UserStateEnum.GENERAL_SUPERVISOR;
+            case "SYSTEM_MANAGER":
+                return UserStateEnum.SYSTEM_MANAGER;
+            default:
+                return UserStateEnum.GUEST;
+        }
+    }
 }
