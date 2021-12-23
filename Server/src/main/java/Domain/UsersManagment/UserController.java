@@ -36,6 +36,10 @@ public class UserController {
         return this.registeredUsers;
     }
 
+    public void assignWorkPlan(String instructor, WorkPlan workPlan) {
+        registeredUsers.get(instructor).getFirst().assignWorkPlan(workPlan);//todo validate and prevent errors
+    }
+
     private static class CreateSafeThreadSingleton {
         private static final UserController INSTANCE = new UserController();
     }

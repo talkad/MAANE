@@ -41,4 +41,15 @@ public class GoalsManagement {
         }
         return new Response<>(null, true, "work field: " + workField + " does not exists"); //todo cant really get here and make sure null not a problem
     }
+
+    public Response<Goal> getGoalByTitle(String workField, String title){
+        if(this.goals.containsKey(workField)){
+            for (Goal goal: this.goals.get(workField)) {
+                if(goal.getTitle().equals(title)){
+                    return new Response<>(goal, false, "goal found");
+                }
+            }
+        }
+        return new Response<>(null, true, "no such goal exists");
+    }
 }

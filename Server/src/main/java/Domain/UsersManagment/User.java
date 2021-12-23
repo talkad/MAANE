@@ -18,7 +18,7 @@ public class User {
     protected Appointment appointments;
     protected List<Integer> surveys;
 //    private MonthlyReport monthlyReport; //todo monthly reports history??
-//    private WorkPlan workPlan;
+    private WorkPlan workPlan;
     protected String workField;
 
 
@@ -393,5 +393,9 @@ public class User {
 
     public boolean isInstructor() {
         return this.getState().getStateEnum() == UserStateEnum.INSTRUCTOR;
+    }
+
+    public void assignWorkPlan(WorkPlan workPlan) {
+        this.workPlan = workPlan;//todo prevent errors
     }
 }
