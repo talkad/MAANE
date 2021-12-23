@@ -9,9 +9,11 @@ import WorkPlan from "./Pages/WorkPlan/WorkPlan";
 import ManageUsers from "./Pages/ManageUsers/ManageUsers";
 import Connection from "./Communication/Connection.js"
 import InfoViewer from "./Pages/GeneralSupervisorInfoViewer/InfoViewer";
-import {Divider, Drawer, List, ListItem, ListItemText} from "@mui/material";
+import {AppBar, Button, Divider, Drawer, List, ListItem, ListItemText, Toolbar} from "@mui/material";
 import UserInfo from "./User/UserInfo";
 import SurveyMenu from "./Pages/Survey/SurveyMenu";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
 
 // TODO: prevent users from going through the site by entering paths in the url
 // TODO: currently saving everything in local storage but IT IS NOT SAFE
@@ -51,14 +53,26 @@ function App() {
   return (
     <div dir="rtl" className="App">
         <div>
-            {!document.location.href.includes("login") && <Drawer
-                variant="permanent"
-                ModalProps={{
-                    keepMounted: true,
-                }}
-            >
-                {drawer_list}
-            </Drawer>}
+            <Box sx={{ flexGrow: 1 }}>
+                <AppBar color="background" position="fixed">
+                    <Toolbar variant="dense">
+                        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                        {/*    TODO: if i remove this empty thing then everything in the app bar vanishes*/}
+                        </Typography>
+                        {/*TODO: implement logout*/}
+                        <Button color="inherit">יציאה</Button>
+                    </Toolbar>
+                    {!document.location.href.includes("login") && <Drawer
+                        variant="permanent"
+                        ModalProps={{
+                            keepMounted: true,
+                        }}
+                    >
+                        {drawer_list}
+                    </Drawer>}
+                </AppBar>
+            </Box>
+
         </div>
         <div>
             <Routes>

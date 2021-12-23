@@ -131,7 +131,7 @@ export default function ManageUsers(){
     return (
         <div id="Manage-users">
             <h1>manage'em</h1>
-
+            <div><Button variant="outlined" color="secondary" onClick={() => document.location.href = window.location.origin + '/user/registerUsers'}>הוספת משתמש</Button></div>
             <TableContainer id="Manage-users-table" component={Paper}>
                 <Table aria-label="collapsible table">
                     <TableHead>
