@@ -9,12 +9,12 @@ public class Instructor extends Registered{
 
 
     @Override
-    public boolean allowed(PermissionsEnum func, User user) {
+    public boolean allowed(Permissions func, User user) {
         return this.allowedFunctions.contains(func);
     }
 
     @Override
-    public boolean allowed(PermissionsEnum func, User user, int schoolId) {
+    public boolean allowed(Permissions func, User user, int schoolId) {
         return this.allowedFunctions.contains(func);
     }
 

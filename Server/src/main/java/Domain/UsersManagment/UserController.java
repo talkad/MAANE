@@ -49,7 +49,7 @@ public class UserController {
     public Response<String> addGuest(){
         String guestName = "Guest" + availableId.getAndIncrement();
         User user = new User();
-        user.setName(guestName);
+        user.setUsername(guestName);
         connectedUsers.put(guestName, user);
         System.out.println("guest name is " + guestName);
 
@@ -88,7 +88,8 @@ public class UserController {
             if (!connectedUsers.get(name).logout().isFailure()) {
                 connectedUsers.remove(name);
                 response = addGuest();
-            } else {
+            }
+            else {
                 response = new Response<>(name, true, "User not permitted to logout");
             }
             return response;
@@ -118,13 +119,10 @@ public class UserController {
 
     public Response<User> registerSupervisor(String currUser, String userToRegister, String password, UserStateEnum userStateEnum, String workField, String firstName, String lastName, String email, String phoneNumber, String city){
         if(connectedUsers.containsKey(currUser)) {
-            System.out.println("1");
             User user = connectedUsers.get(currUser);
             if (!userToRegister.startsWith("Guest") && !registeredUsers.containsKey(userToRegister)){
-                System.out.println("2");
                 Response<User> result = user.registerSupervisor(userToRegister, userStateEnum, workField, firstName, lastName, email, phoneNumber, city);
                 if (!result.isFailure()) {
-                    System.out.println("3");
                     registeredUsers.put(userToRegister, new Pair<>(result.getResult(), security.sha256(password)));
                     result = new Response<>(result.getResult(), false, "Registration occurred");
                     goalsManagement.addGoalsField(workField);
@@ -136,6 +134,23 @@ public class UserController {
             }
             }
         else {
+            return new Response<>(null, true, "User not connected");
+        }
+    }
+
+    public Response<Boolean> updateInfo(String currUser, String firstName, String lastName, String email, String phoneNumber, String city){
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            Response<User> response = user.updateInfo(firstName, lastName, email, phoneNumber, city);
+            if(!response.isFailure()){
+                //todo check if this is required when adding DAL - registeredUsers.get(currUser).setFirst(user);
+                return new Response<>(true, false, response.getErrMsg());
+            }
+            else {
+                return new Response<>(false, true, response.getErrMsg());
+            }
+        }
+        else{
             return new Response<>(null, true, "User not connected");
         }
     }
@@ -214,7 +229,7 @@ public class UserController {
     }
 
     public User getUser(String user){
-        return this.registeredUsers.get(user).getFirst();//todo bad temp function
+        return this.registeredUsers.get(user).getFirst();//todo temp function for tests
     }
 
     public Response<String> fillMonthlyReport(String currUser){
@@ -228,13 +243,13 @@ public class UserController {
         }
     }
 
-    public Response<Boolean> changePassword(String currUser, String userToChangePassword,String newPassword, String confirmPassword){
+    public Response<Boolean> changePasswordToUser(String currUser, String userToChangePassword, String newPassword, String confirmPassword){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             if(newPassword.equals(confirmPassword)) {
                 if (registeredUsers.containsKey(userToChangePassword)) {
-                    Response<Boolean> res = user.changePassword();
-                    if(!res.isFailure()){
+                    Response<Boolean> res = user.changePasswordToUser(userToChangePassword);
+                    if(res.getResult()){
                         registeredUsers.get(userToChangePassword).setSecond(security.sha256(newPassword));
                     }
                     return res;
@@ -242,6 +257,25 @@ public class UserController {
                 else {
                     return new Response<>(false, true, "cannot change a password to a user not in the system");
                 }
+            }
+            else {
+                return new Response<>(false, true, "new password does not match the confirmed password");
+            }
+        }
+        else {
+            return new Response<>(null, true, "User not connected");
+        }
+    }
+
+    public Response<Boolean> changePassword(String currUser, String newPassword, String confirmPassword){
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            if(newPassword.equals(confirmPassword)) {
+                Response<Boolean> res = user.changePassword();
+                if(res.getResult()){
+                    registeredUsers.get(currUser).setSecond(security.sha256(newPassword));
+                }
+                return res;
             }
             else {
                 return new Response<>(false, true, "new password does not match the confirmed password");
@@ -287,7 +321,7 @@ public class UserController {
             return user.hasCreatedSurvey(surveyId);
         }
         else {
-            return new Response<>(false, true, "User not connected"); //todo make sure -1 is not a problem
+            return new Response<>(false, true, "User not connected");
         }
     }
 
@@ -297,7 +331,24 @@ public class UserController {
             return user.removeSurvey(surveyId);
         }
         else {
-            return new Response<>(-1, true, "User not connected"); //todo make sure -1 is not a problem
+            return new Response<>(-1, true, "User not connected");
+        }
+    }
+
+    public Response<Boolean> publishSurvey(String currUser){
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            Response<String> res = user.publishSurvey();
+            if(!res.isFailure()){
+                //todo publisher.notify(res.getResult())
+                return new Response<>(true, false, res.getErrMsg());
+            }
+            else{
+                return new Response<>(false, false, res.getErrMsg());
+            }
+        }
+        else {
+            return new Response<>(false, true, "User not connected");
         }
     }
 
@@ -333,10 +384,19 @@ public class UserController {
         }
     }
 
-     public Response<Boolean> isSupervisor(String currUser){
+    public Response<Boolean> isSupervisor(String currUser){
          if(connectedUsers.containsKey(currUser)) {
              User user = connectedUsers.get(currUser);
              return user.isSupervisor();
+         }
+         else {
+             return new Response<>(null, true, "User not connected"); //todo make sure null is not a problem
+         }
+     }
+
+    public Response<Boolean> verifyUser(String currUser, String password){
+         if(connectedUsers.containsKey(currUser)) {
+             return new Response<>(security.sha256(password).equals(registeredUsers.get(currUser).getSecond()), false, "");
          }
          else {
              return new Response<>(null, true, "User not connected"); //todo make sure null is not a problem
