@@ -1,10 +1,13 @@
 package Communication.Resource;
 
+import Communication.DTOs.LoginDTO;
 import Communication.DTOs.UserDTO;
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.User;
 import Service.UserServiceImpl;
+import lombok.extern.java.Log;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -21,53 +24,54 @@ public class UserController {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("Access-Control-Allow-Origin","*");
 
-        return ResponseEntity.ok().headers(responseHeaders)
+        return ResponseEntity.ok()
+                .headers(responseHeaders)
                 .body(service.addGuest());
-//        return ResponseEntity.ok(
-//
-//                service.addGuest()
-//        ).headers;
     }
 
-    @PostMapping("/removeGuest")
-    public ResponseEntity<Response<String>> removeGuest(@RequestBody Map<String, String> body){
-        return ResponseEntity.ok(
-                service.removeGuest(body.get("name"))
-        );
-    }
+//    @PostMapping("/login")
+    @RequestMapping(value = "/login", method = RequestMethod.POST, consumes = "text/plain")
+    public ResponseEntity<Response<String>> login(@RequestBody String currUser){
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("Access-Control-Allow-Origin","*");
 
-    @PostMapping("/addGuest")
-    public ResponseEntity<Response<String>> addGuest(){
-        return ResponseEntity.ok(
-                service.addGuest()
-        );
-    }
+        System.out.println("hello there");
+        System.out.println(currUser);
+        System.out.println("general kenobi");
 
-    @PostMapping("/login")
-    public ResponseEntity<Response<String>> login(@RequestBody Map<String, String> body){
-        return ResponseEntity.ok(
-                service.login(body.get("currUser"), body.get("userToLogin"), body.get("password"))
-        );
+        return ResponseEntity.ok()
+                .headers(responseHeaders)
+                .body(service.login("a", "a", "a"));
     }
 
     @PostMapping("/logout")
     public ResponseEntity<Response<String>> logout(@RequestBody Map<String, String> body){
-        return ResponseEntity.ok(
-                service.logout(body.get("name"))
-        );
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("Access-Control-Allow-Origin","*");
+
+        return ResponseEntity.ok()
+                .headers(responseHeaders)
+                .body(service.logout(body.get("name")));
     }
 
     @PostMapping("/registerUser")
-    public ResponseEntity<Response<User>> registerUser(@RequestBody UserDTO userDTO){
-        return ResponseEntity.ok(
-                service.registerUser(userDTO)
-        );
+    public ResponseEntity<Response<User>> registerUser(@RequestBody UserDTO userDTO) {
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("Access-Control-Allow-Origin", "*");
+
+        return ResponseEntity.ok()
+                .headers(responseHeaders)
+                .body(service.registerUser(userDTO));
     }
 
-    @PostMapping("/removeUser")
     public ResponseEntity<Response<Boolean>> removeUser(@RequestBody Map<String, String> body){
-        return ResponseEntity.ok(
-                service.removeUser(body.get("currUser"), body.get("userToRemove"))
-        );
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("Access-Control-Allow-Origin", "*");
+
+        return ResponseEntity.ok()
+                .headers(responseHeaders)
+                .body(service.removeUser(body.get("currUser"), body.get("userToRemove")));
+
     }
+
 }

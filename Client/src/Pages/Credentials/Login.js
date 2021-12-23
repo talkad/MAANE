@@ -23,13 +23,16 @@ export default function Login(){
     useEffect(() => {
         const callback = function(data) {
 
-            Connection.setUsername(data.result);
+            Connection.getInstance().setUsername(data.result);
             setLoaded(true);
           }
 
-          Connection.setUpUser(callback);
+          Connection.getInstance().setUpUser(callback);
       }, []);
 
+    const loginCallback = (data) => {
+        console.log(data)
+    }
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -41,9 +44,13 @@ export default function Login(){
         }
         else{
             setShowError(false);
+            Connection.getInstance().login({
+                "currUser": Connection.getInstance().getUsername(),
+                "userToLogin": data.get('username'),
+                "password": data.get('password')},
+                loginCallback);
         }
 
-        // TODO: send the data
     }
 
     return (
