@@ -18,10 +18,10 @@ public class UserController {
 
     @GetMapping("/startup")
     public ResponseEntity<Response<String>> startup(){
-//        HttpHeaders responseHeaders = new HttpHeaders();
-//        responseHeaders.set("Access-Control-Allow-Origin","*");
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("Access-Control-Allow-Origin","*");
 
-        return ResponseEntity.ok()
+        return ResponseEntity.ok().headers(responseHeaders)
                 .body(service.addGuest());
 //        return ResponseEntity.ok(
 //
