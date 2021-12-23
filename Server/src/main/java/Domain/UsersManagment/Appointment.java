@@ -9,17 +9,17 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Appointment {//todo go over entire class and fit it to what we need
 
-    private Map<String, List<Integer>> userAppointments;
+    private Map<String, List<String>> userAppointments;
 
     public Appointment() {
         this.userAppointments = new ConcurrentHashMap<>();
     }
 
-    public void addAppointment(String name, int schoolId){
+    public void addAppointment(String name, String schoolId){
         if(this.userAppointments.containsKey(name))
             this.userAppointments.get(name).add(schoolId);
         else{
-            List<Integer> appsList = new Vector<>();
+            List<String> appsList = new Vector<>();
             appsList.add(schoolId);
             this.userAppointments.put(name, appsList);
         }
@@ -68,9 +68,9 @@ public class Appointment {//todo go over entire class and fit it to what we need
         return false;
     }
 
-    public Response<Boolean> assignSchoolsToUser(String userToAssign, List<Integer> schools){
+    public Response<Boolean> assignSchoolsToUser(String userToAssign, List<String> schools){
         if(this.userAppointments.containsKey(userToAssign)){
-            for (Integer schoolId: schools) {
+            for (String schoolId: schools) {
                 if(!this.userAppointments.get(userToAssign).contains(schoolId)){
                     this.userAppointments.get(userToAssign).add(schoolId);
                 }
@@ -84,20 +84,20 @@ public class Appointment {//todo go over entire class and fit it to what we need
         return this.userAppointments.containsKey(appointee);
     }
 
-    public List<Integer> getSchools(String appointee){
+    public List<String> getSchools(String appointee){
         if(contains(appointee)){
             return userAppointments.get(appointee);//todo add schools to appointee list schools
         }
         return new Vector<>();//todo error
     }
 
-    public Map<String, List<Integer>> getUserAppointments(){
+    public Map<String, List<String>> getUserAppointments(){
         return this.userAppointments;
     }
 
-    public Response<Boolean> removeSchoolsFromUser(String userToRemoveSchools, List<Integer> schools) {
+    public Response<Boolean> removeSchoolsFromUser(String userToRemoveSchools, List<String> schools) {
         if(this.userAppointments.containsKey(userToRemoveSchools)){
-            for (Integer schoolId: schools) {
+            for (String schoolId: schools) {
                 this.userAppointments.get(userToRemoveSchools).remove(schoolId);
             }
             return new Response<>(true, false, "successfully removed the schools from the user " + userToRemoveSchools);

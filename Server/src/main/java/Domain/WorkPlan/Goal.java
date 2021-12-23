@@ -1,22 +1,25 @@
-package Domain.UsersManagment;
+package Domain.WorkPlan;
 
 public class Goal {
     private int goalId;
     private String title;
     private String description;
+    private int quarterly;
     private int weight;
 
-    public Goal(int goalId, String title, String description, int weight) {
+    public Goal(int goalId, String title, String description, int quarterly, int weight) {
         this.goalId = goalId;
         this.title = title;
         this.description = description;
+        this.quarterly = quarterly;
         this.weight = weight;
     }
 
-    public Goal(int goalId, String title, String description) {
+    public Goal(int goalId, String title, String description, int quarterly) {
         this.goalId = goalId;
         this.title = title;
         this.description = description;
+        this.quarterly = quarterly;
         this.weight = -1; //todo uninitialized
     }
 
@@ -53,6 +56,6 @@ public class Goal {
     }
 
     public String toString(){
-        return "goal id: " + this.goalId + " title: " + this.title + " description: " + this.description;
+        return "goal id: " + this.goalId + /*" title: " + this.title + " description: " + this.description +*/ "weight:  " + this.weight;
     }
 }

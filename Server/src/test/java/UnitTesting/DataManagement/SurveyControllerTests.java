@@ -8,7 +8,7 @@ import Domain.DataManagement.FaultDetector.Rules.Comparison;
 import Domain.DataManagement.FaultDetector.Rules.MultipleChoiceBaseRule;
 import Domain.DataManagement.FaultDetector.Rules.NumericBaseRule;
 import Domain.DataManagement.SurveyController;
-import Domain.UsersManagment.Goal;
+import Domain.WorkPlan.Goal;
 import Domain.UsersManagment.UserController;
 import Domain.UsersManagment.UserStateEnum;
 import org.junit.Assert;
@@ -112,9 +112,9 @@ public class SurveyControllerTests {
         surveyController.addRule("Dvorit", 0, new MultipleChoiceBaseRule(1, 1), 1);
         surveyController.addRule("Dvorit", 0, new MultipleChoiceBaseRule(2, 2), 2);
 
-        UserController.getInstance().addGoals("Dvorit", Arrays.asList(new Goal(0, "goal0", "goal0", 1),
-                                                                                new Goal(1, "goal1", "goal1", 1),
-                                                                                new Goal(2, "goal2", "goal2", 1)));
+        UserController.getInstance().addGoals("Dvorit", Arrays.asList(new Goal(0, "goal0", "goal0", 1,1),
+                                                                                new Goal(1, "goal1", "goal1", 1, 1),
+                                                                                new Goal(2, "goal2", "goal2", 1,1)));
         faults = surveyController.detectFault("Dvorit", 0);
 
         Assert.assertTrue(faults.getResult().size() == 2 && faults.getResult().get(0).size() == 3);

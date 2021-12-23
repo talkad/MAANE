@@ -7,7 +7,7 @@ import Domain.CommonClasses.Response;
 import Domain.DataManagement.AnswerState.AnswerType;
 import Domain.DataManagement.FaultDetector.FaultDetector;
 import Domain.DataManagement.FaultDetector.Rules.Rule;
-import Domain.UsersManagment.Goal;
+import Domain.WorkPlan.Goal;
 import Domain.UsersManagment.UserController;
 
 import java.util.HashMap;
@@ -34,7 +34,7 @@ public class SurveyController {
         indexer = 0;
     }
 
-    public Response<Integer> createSurvey(String username, SurveyDTO surveyDTO){
+    public Response<Integer> createSurvey(String username, SurveyDTO surveyDTO){//todo change for result instead of isfailure in your checks after converting to boolean
         Response<Integer> permissionRes;
         Response<Survey> surveyRes;
 
@@ -159,6 +159,31 @@ public class SurveyController {
         }
 
         return new Response<>(faults, false, "faults detected");
+    }
+
+    public Map<Integer, Pair<Survey, FaultDetector>> getSurveys() {
+        return surveys;
+    }
+
+    public void setSurveys(Map<Integer, Pair<Survey, FaultDetector>> surveys) {
+        this.surveys = surveys;
+    }
+
+    public Map<Integer, List<SurveyAnswers>> getAnswers() {
+        return answers;
+    }
+
+    public Response<List<SurveyAnswers>> getAnswersForSurvey(int surveyId) {
+        if(answers.containsKey(surveyId)) {
+            return new Response<>(answers.get(surveyId), false, "");
+        }
+        else{
+            return new Response<>(null, true, "survey doesn't exist");
+        }
+    }
+
+    public void setAnswers(Map<Integer, List<SurveyAnswers>> answers) {
+        this.answers = answers;
     }
 
     // for testing purpose only

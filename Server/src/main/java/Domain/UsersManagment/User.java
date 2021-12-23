@@ -14,22 +14,13 @@ public class User {
     protected String email;
     protected String phoneNumber;
     protected String city;
-    protected List<Integer> schools;
+    protected List<String> schools;
     protected Appointment appointments;
     protected List<Integer> surveys;
 //    private MonthlyReport monthlyReport; //todo monthly reports history??
 //    private WorkPlan workPlan;
     protected String workField;
 
-    //todo add to schools
-//    semel mossad
-//    manager
-//    manager phone
-//    coordinator of the work field name
-//    coordinator phone
-//    coordinator email
-//    school's city
-//    all the status info needs to be inserted as well
 
     public User() {
         this.state = new Guest();
@@ -102,11 +93,11 @@ public class User {
 
     public void setUsername(String username){ this.username = username;}
 
-    public List<Integer> getSchools() {
+    public List<String> getSchools() {
         return schools;
     }
 
-    public void setSchools(List<Integer> schools) {
+    public void setSchools(List<String> schools) {
         this.schools = schools;
     }
 
@@ -114,7 +105,7 @@ public class User {
         return this.appointments;
     }
 
-    public Response<Boolean> assignSchoolsToUser(String userToAssign, List<Integer> schools) {
+    public Response<Boolean> assignSchoolsToUser(String userToAssign, List<String> schools) {
         if(this.state.allowed(Permissions.ASSIGN_SCHOOLS_TO_USER, this)) {
             if (appointments.contains(userToAssign)) {
                 return appointments.assignSchoolsToUser(userToAssign, schools);
@@ -240,7 +231,7 @@ public class User {
         return this.workField;
     }
 
-    public Response<Boolean> removeSchoolsFromUser(String userToRemoveSchools, List<Integer> schools) {
+    public Response<Boolean> removeSchoolsFromUser(String userToRemoveSchools, List<String> schools) {
         if(this.state.allowed(Permissions.REMOVE_SCHOOLS_FROM_USER, this)) {
             if (appointments.contains(userToRemoveSchools)) {
                 return appointments.removeSchoolsFromUser(userToRemoveSchools, schools);
@@ -252,16 +243,16 @@ public class User {
         else return new Response<>(false, true, "user not allowed to remove schools from users");
     }
 
-    public void removeSchools(List<Integer> schools) {
-        for (Integer schoolId: schools) {
+    public void removeSchools(List<String> schools) {
+        for (String schoolId: schools) {
             this.schools.remove(schoolId);
         }
     }
 
-    public void addSchools(List<Integer> schools) {
-        for (Integer i: schools) {
-            if(!this.schools.contains(i)){
-                this.schools.add(i);
+    public void addSchools(List<String> schools) {
+        for (String school: schools) {
+            if(!this.schools.contains(school)){
+                this.schools.add(school);
             }
         }
     }
@@ -327,6 +318,15 @@ public class User {
         }
     }
 
+    public Response<String> generateSchedule() {
+        if (this.state.allowed(Permissions.GENERATE_WORK_PLAN, this)) {
+            return new Response<>(this.workField, false, "");
+        }
+        else {
+            return new Response<>(null, true, "user not allowed to generate work plan");
+        }
+    }
+
     public UserState getState() {
         return state;
     }
@@ -387,4 +387,11 @@ public class User {
         this.workField = workField;
     }
 
+    public Response<List<String>> getAppointees() {//todo maybe make response and verify
+        return this.appointments.getAppointees();
+    }
+
+    public boolean isInstructor() {
+        return this.getState().getStateEnum() == UserStateEnum.INSTRUCTOR;
+    }
 }

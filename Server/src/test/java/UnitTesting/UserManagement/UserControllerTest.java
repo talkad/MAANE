@@ -2,14 +2,21 @@ package UnitTesting.UserManagement;
 
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.*;
+import Domain.WorkPlan.Goal;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Vector;
 
 public class UserControllerTest { //todo reset tests
 
+    @Before
+    public void setup(){
+        UserController.getInstance().clearUsers();
+    }
 
     @Test
     public void loginAsSystemManagerSuccess(){
@@ -56,13 +63,13 @@ public class UserControllerTest { //todo reset tests
         guestName = userController.logout(adminName).getResult();
         userController.login(guestName, "sup1", "sup1");
         userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "", "", "");
-        List<Integer> schools = new Vector<>();
-        schools.add(1);
-        schools.add(2);
+        List<String> schools = new Vector<>();
+        schools.add("1");
+        schools.add("2");
         Response<Boolean> res =  userController.assignSchoolsToUser("sup1", "ins1", schools);
         Assert.assertTrue(userController.getRegisteredUsers().get("ins1").getFirst().getSchools().size() == 2);
-        Assert.assertTrue(userController.getRegisteredUsers().get("ins1").getFirst().getSchools().contains(1));
-        Assert.assertTrue(userController.getRegisteredUsers().get("ins1").getFirst().getSchools().contains(2));
+        Assert.assertTrue(userController.getRegisteredUsers().get("ins1").getFirst().getSchools().contains("1"));
+        Assert.assertTrue(userController.getRegisteredUsers().get("ins1").getFirst().getSchools().contains("2"));
     }
 
     @Test
@@ -74,16 +81,16 @@ public class UserControllerTest { //todo reset tests
         guestName = userController.logout(adminName).getResult();
         userController.login(guestName, "sup1", "sup1");
         userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "", "", "");
-        List<Integer> schools = new Vector<>();
-        schools.add(1);
-        schools.add(2);
+        List<String> schools = new Vector<>();
+        schools.add("1");
+        schools.add("2");
         userController.assignSchoolsToUser("sup1", "ins1", schools);
-        List<Integer> schoolsToRemoveList = new Vector<>();
-        schoolsToRemoveList.add(1);
+        List<String> schoolsToRemoveList = new Vector<>();
+        schoolsToRemoveList.add("1");
         userController.removeSchoolsFromUser("sup1", "ins1", schoolsToRemoveList);
         Assert.assertTrue(userController.getRegisteredUsers().get("ins1").getFirst().getSchools().size() == 1);
-        Assert.assertFalse(userController.getRegisteredUsers().get("ins1").getFirst().getSchools().contains(1));
-        Assert.assertTrue(userController.getRegisteredUsers().get("ins1").getFirst().getSchools().contains(2));
+        Assert.assertFalse(userController.getRegisteredUsers().get("ins1").getFirst().getSchools().contains("1"));
+        Assert.assertTrue(userController.getRegisteredUsers().get("ins1").getFirst().getSchools().contains("2"));
     }
 
     @Test
@@ -95,9 +102,9 @@ public class UserControllerTest { //todo reset tests
         guestName = userController.logout(adminName).getResult();
         userController.login(guestName, "sup1", "sup1");
         userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "", "", "");
-        List<Integer> schools = new Vector<>();
-        schools.add(1);
-        schools.add(2);
+        List<String> schools = new Vector<>();
+        schools.add("1");
+        schools.add("2");
         userController.assignSchoolsToUser("sup1", "ins1", schools);
         userController.removeUser("sup1", "ins1");
         Assert.assertFalse(userController.getRegisteredUsers().containsKey("ins1"));
@@ -184,9 +191,9 @@ public class UserControllerTest { //todo reset tests
         guestName = userController.logout(adminName).getResult();
         String supervisorName = userController.login(guestName, "sup1", "sup1").getResult();
         List<Goal> goalList = new Vector<>();
-        goalList.add(new Goal(1, "goal1", "goal1"));
-        goalList.add(new Goal(2, "goal2", "goal2"));
-        goalList.add(new Goal(3, "goal3", "goal3"));
+        goalList.add(new Goal(1, "goal1", "goal1", 1));
+        goalList.add(new Goal(2, "goal2", "goal2", 1));
+        goalList.add(new Goal(3, "goal3", "goal3", 1));
         userController.addGoals(supervisorName, goalList);
 //        for (Goal goal: userController.getGoals(supervisorName).getResult()) {
 //            System.out.println(goal.toString());

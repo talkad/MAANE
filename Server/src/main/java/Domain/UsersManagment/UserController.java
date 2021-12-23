@@ -2,9 +2,12 @@ package Domain.UsersManagment;
 
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
+import Domain.WorkPlan.Goal;
+import Domain.WorkPlan.GoalsManagement;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -39,6 +42,16 @@ public class UserController {
 
     public static UserController getInstance() {
         return UserController.CreateSafeThreadSingleton.INSTANCE;
+    }
+
+    public Response<String> generateSchedule(String currUser) {
+        if (connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            return user.generateSchedule();
+        }
+        else {
+            return new Response<>("", true, "user is not logged in");
+        }
     }
 
     public Response<String> removeGuest(String name) {
@@ -176,7 +189,7 @@ public class UserController {
         }
     }
 
-    public Response<Boolean> assignSchoolsToUser(String currUser, String userToAssignName, List<Integer> schools){
+    public Response<Boolean> assignSchoolsToUser(String currUser, String userToAssignName, List<String> schools){
         Response<Boolean> response;
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
@@ -201,7 +214,7 @@ public class UserController {
         }
     }
 
-    public Response<Boolean> removeSchoolsFromUser(String currUser, String userToRemoveSchoolsName, List<Integer> schools){
+    public Response<Boolean> removeSchoolsFromUser(String currUser, String userToRemoveSchoolsName, List<String> schools){
         Response<Boolean> response;
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
@@ -212,7 +225,7 @@ public class UserController {
                    userToRemoveSchools.removeSchools(schools);
                    if(connectedUsers.containsKey(userToRemoveSchoolsName)){
                        userToRemoveSchools = connectedUsers.get(userToRemoveSchoolsName);
-                       for (Integer schoolId: schools) {
+                       for (String schoolId: schools) {
                            userToRemoveSchools.schools.remove(schoolId);
                        }
                    }
@@ -228,8 +241,45 @@ public class UserController {
         }
     }
 
+    public Response<List<String>> getSchools(String currUser){//todo maybe add checks
+        User user = registeredUsers.get(currUser).getFirst();
+        return new Response<>(user.getSchools(), false, "");
+    }
+
+    public Response<List<String>> getAppointedInstructors(String currUser){
+        if (connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            Response<List<String>> appointeesRes = user.getAppointees();
+            if(!appointeesRes.isFailure()){
+                List<String> instructors = new Vector<>();
+                for (String appointee: appointeesRes.getResult()) {
+                    User u = registeredUsers.get(appointee).getFirst();
+                    if(u.isInstructor()){
+                        instructors.add(u.username);
+                    }
+                }
+                return new Response<>(instructors, false, "");
+            }
+            else {
+                return appointeesRes;
+            }
+        }
+        else{
+            return new Response<>(null, true, "User is not connected");
+        }
+    }
+
     public User getUser(String user){
         return this.registeredUsers.get(user).getFirst();//todo temp function for tests
+    }
+
+    public void clearUsers(){
+        this.availableId.set(1);
+        this.security = Security.getInstance();
+        this.connectedUsers = new ConcurrentHashMap<>();
+        this.registeredUsers = new ConcurrentHashMap<>();
+        this.goalsManagement = GoalsManagement.getInstance();
+        adminBoot("shaked", "cohen");
     }
 
     public Response<String> fillMonthlyReport(String currUser){
