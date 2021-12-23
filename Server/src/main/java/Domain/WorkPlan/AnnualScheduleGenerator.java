@@ -87,7 +87,7 @@ public class AnnualScheduleGenerator {
                 schoolsOfInstructor = userController.getSchools(instructor).getResult();
                 schoolsAndFaults = new ConcurrentHashMap<>();
                 for (String school: schoolsOfInstructor) {
-                    schoolFaults = surveyController.getFaults(surveyId, school).getResult();
+                    schoolFaults = surveyController.detectSchoolFault(supervisor, surveyId, school).getResult();
                     schoolsAndFaults.put(school, schoolFaults);
                 }
                 instructorWithProblemsForSchools.put(instructor, schoolsAndFaults);

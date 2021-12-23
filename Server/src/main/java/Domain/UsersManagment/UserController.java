@@ -64,7 +64,7 @@ public class UserController {
         User user = new User();
         user.setUsername(guestName);
         connectedUsers.put(guestName, user);
-        System.out.println("guest name is " + guestName);
+        //System.out.println("guest name is " + guestName);
 
         return new Response<>(guestName, false, "added guest");
     }
@@ -269,10 +269,12 @@ public class UserController {
         }
     }
 
+    //only for tests purposes
     public User getUser(String user){
-        return this.registeredUsers.get(user).getFirst();//todo temp function for tests
+        return this.registeredUsers.get(user).getFirst();
     }
 
+    //only for tests purposes
     public void clearUsers(){
         this.availableId.set(1);
         this.security = Security.getInstance();

@@ -75,6 +75,11 @@ public class SurveyController {
         if(surveys.get(answersDTO.getId()).getFirst().getQuestions().size() != answersDTO.getTypes().size())
             return new Response<>(false, true, "number of answers cannot be different from number of questions");
 
+        if(answersDTO.getSymbol().length() == 0)
+            return new Response<>(false, true, "School symbol cannot be empty string");
+
+        answer.setSymbol(answersDTO.getSymbol());
+
         if(!answers.containsKey(answersDTO.getId()))
             answers.put(answersDTO.getId(), new LinkedList<>());
 
@@ -184,6 +189,31 @@ public class SurveyController {
 
     public void setAnswers(Map<Integer, List<SurveyAnswers>> answers) {
         this.answers = answers;
+    }
+
+    public Response<List<String>> detectSchoolFault(String username, int id, String symbol){
+        FaultDetector faultDetector;
+        List<Goal> goals = UserController.getInstance().getGoals(username).getResult();
+        List<String> currentFaults = new LinkedList<>();;
+        Response<Boolean> legalAdd = UserController.getInstance().hasCreatedSurvey(username, id);
+
+        if(!legalAdd.getResult())
+            return new Response<>(null, true, username + "does not created survey " + id);
+
+        if(!surveys.containsKey(id))
+            return new Response<>(null, true, "The survey doesn't exists");
+
+        faultDetector = surveys.get(id).getSecond();
+
+        for(SurveyAnswers ans: answers.get(id)){
+
+            if(ans.getSymbol().equals(symbol)){
+                for(Integer fault: faultDetector.detectFault(ans).getResult())
+                    currentFaults.add(goals.get(fault).getTitle());
+            }
+        }
+
+        return new Response<>(currentFaults, false, "faults detected");
     }
 
     // for testing purpose only
