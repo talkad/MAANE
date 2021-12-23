@@ -213,7 +213,7 @@ public class User {
     }
 
     public Response<Boolean> createSurvey(int surveyId) {
-        if(this.state.allowed(Permissions.CREATE_SURVEY, this)){
+        if(this.state.allowed(Permissions.SURVEY_MANAGEMENT, this)){
             this.surveys.add(surveyId);
             return new Response<>(true, false, "user is allowed to create survey");
         }
@@ -223,7 +223,7 @@ public class User {
     }
 
     public Response<Boolean> removeSurvey(int surveyId) {
-        if(this.state.allowed(Permissions.REMOVE_SURVEY, this)){
+        if(this.state.allowed(Permissions.SURVEY_MANAGEMENT, this)){
             this.surveys.remove(Integer.valueOf(surveyId));
             return new Response<>(true, false, "user is allowed to remove survey");
         }
@@ -318,6 +318,15 @@ public class User {
         }
     }
 
+    public Response<String> publishSurvey() {
+        if(this.state.allowed(Permissions.SURVEY_MANAGEMENT, this)){
+            return new Response<>(this.workField, false, "successfully published survey");
+        }
+        else {
+            return new Response<>(null, true, "user not allowed to publish survey");
+        }
+    }
+
     public UserState getState() {
         return state;
     }
@@ -377,4 +386,5 @@ public class User {
     public void setWorkField(String workField) {
         this.workField = workField;
     }
+
 }

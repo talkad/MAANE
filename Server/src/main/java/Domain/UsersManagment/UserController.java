@@ -309,7 +309,7 @@ public class UserController {
             return user.createSurvey(surveyId);
         }
         else {
-            return new Response<>(false, true, "User not connected"); //todo make sure -1 is not a problem
+            return new Response<>(false, true, "User not connected");
         }
     }
 
@@ -319,7 +319,7 @@ public class UserController {
             return user.hasCreatedSurvey(surveyId);
         }
         else {
-            return new Response<>(false, true, "User not connected"); //todo make sure -1 is not a problem
+            return new Response<>(false, true, "User not connected");
         }
     }
 
@@ -329,7 +329,24 @@ public class UserController {
             return user.removeSurvey(surveyId);
         }
         else {
-            return new Response<>(false, true, "User not connected"); //todo make sure -1 is not a problem
+            return new Response<>(false, true, "User not connected");
+        }
+    }
+
+    public Response<Boolean> publishSurvey(String currUser){
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            Response<String> res = user.publishSurvey();
+            if(!res.isFailure()){
+                //todo publisher.notify(res.getResult())
+                return new Response<>(true, false, res.getErrMsg());
+            }
+            else{
+                return new Response<>(false, false, res.getErrMsg());
+            }
+        }
+        else {
+            return new Response<>(false, true, "User not connected");
         }
     }
 
