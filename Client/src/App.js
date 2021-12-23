@@ -10,10 +10,11 @@ import ManageUsers from "./Pages/ManageUsers/ManageUsers";
 import Connection from "./Communication/Connection.js"
 import InfoViewer from "./Pages/GeneralSupervisorInfoViewer/InfoViewer";
 import {Divider, Drawer, List, ListItem, ListItemText} from "@mui/material";
+import UserInfo from "./User/UserInfo";
+import SurveyMenu from "./Pages/Survey/SurveyMenu";
 
 // TODO: prevent users from going through the site by entering paths in the url
-
-Connection.setConnection();
+// TODO: currently saving everything in local storage but IT IS NOT SAFE
 
 function App() {
 
@@ -21,11 +22,29 @@ function App() {
         <div>
             <h2>מענ"ה</h2>
             <Divider/>
+            {window.sessionStorage.getItem('type') === "INSTRUCTOR" &&
+                <List>
+                    <ListItem button onClick={() => document.location.href = window.location.origin + '/user/workPlan'}>
+                        <ListItemText primary="בית" />
+                    </ListItem>
+                </List>}
+
+            {(window.sessionStorage.getItem('type') === "SUPERVISOR" || window.sessionStorage.getItem('type') === "SYSTEM_MANAGER") &&
             <List>
-                <ListItem button onClick={() => window.location.origin}>
+                <ListItem button onClick={() => document.location.href = window.location.origin + '/user/manageUsers'}>
                     <ListItemText primary="בית" />
                 </ListItem>
-            </List>
+                <ListItem button onClick={() => document.location.href = window.location.origin + '/survey'}>
+                    <ListItemText primary="סקרים" />
+                </ListItem>
+            </List>}
+
+            {window.sessionStorage.getItem('type') === "GENERAL_SUPERVISOR" &&
+            <List>
+                <ListItem button onClick={() => document.location.href = window.location.origin + '/user/InfoViewer'}>
+                    <ListItemText primary="בית" />
+                </ListItem>
+            </List>}
         </div>
 
   const page_does_not_exist_string = "דף זה אינו קיים"
@@ -45,11 +64,13 @@ function App() {
             <Routes>
                 <Route path="user/login" element={<Login/>}/>
                 <Route path="user/registerUsers" element={<RegisterUsers/>}/>
-                <Route path="survey/createSurvey" element={<SurveyBuilder/>}/>
-                <Route path="survey/survey" element={<Survey/>}/>
                 <Route path="user/workPlan" element={<WorkPlan/>}/>
                 <Route path="user/manageUsers" element={<ManageUsers/>}/>
                 <Route path="user/InfoViewer" element={<InfoViewer/>}/>
+                <Route exact path="/survey" element={<SurveyMenu />}/>
+                <Route path="survey/createSurvey" element={<SurveyBuilder/>}/>
+                {/*    TODO: change to survey/getSurvey=id (the one below)*/}
+                <Route path="survey/survey" element={<Survey/>}/>
                 <Route
                     path="*"
                     element={

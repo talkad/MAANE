@@ -4,7 +4,7 @@ import http from "http";
 
 
 class Connection{
-    static #instance;
+    static #instance = null;
 
     constructor() {
         const http = require('http');
@@ -25,7 +25,7 @@ class Connection{
     }
 
     static getInstance(){
-        if(!this.#instance){
+        if(this.#instance === null){
             this.#instance = new Connection();
         }
 

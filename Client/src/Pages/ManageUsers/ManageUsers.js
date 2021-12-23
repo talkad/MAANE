@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import './ManageUsers.css'
 
 import Table from '@mui/material/Table';
@@ -14,6 +14,8 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import Box from "@mui/material/Box";
 import {Avatar, Collapse, Divider, Grid, IconButton, List, ListItem, ListItemText} from "@mui/material";
 import Button from "@mui/material/Button";
+import UserInfo from "../../User/UserInfo";
+import Connection from "../../Communication/Connection";
 
 
 function createData(username, name, role, email, phoneNumber, city, schools) {
@@ -110,6 +112,11 @@ export default function ManageUsers(){
 
     const table_name_col_string = 'שם';
     const table_role_col_string = 'תפקיד';
+
+    useEffect(() => {
+        console.log("typeeeeeeee");
+        console.log(window.sessionStorage.getItem('type'));
+    }, []);
 
     const handleUserDeletion = (username) => {
         console.log('hi there');

@@ -17,7 +17,6 @@ export default function Login(){
     const [showError, setShowError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [loaded, setLoaded] = useState(false);
-    const navigate = useNavigate();
 
     const header_string = 'מענ"ה'
     const username_label_string  = "שם משתמש"
@@ -27,7 +26,8 @@ export default function Login(){
     useEffect(() => {
         const callback = function(data) {
 
-            Connection.getInstance().setUsername(data.result);
+            //UserInfo.getInstance().setUsername(data.result);
+            window.sessionStorage.setItem('username', data.result);
             setLoaded(true);
           }
 
@@ -40,20 +40,22 @@ export default function Login(){
             setErrorMessage('שם משתמש או סיסמה לא נכונים');
         }
         else{
-            UserInfo.getInstance().setUsername(username);
+            //UserInfo.getInstance().setUsername(username)
+            window.sessionStorage.setItem('username', username);
             const type = data.result;
-            UserInfo.getInstance().setType(type);
+            //UserInfo.getInstance().setType(type);
+            window.sessionStorage.setItem('type', type);
             if (type === "INSTRUCTOR"){
-                navigate('user/workPlan');
+                document.location.href = window.location.origin + '/user/workPlan';
             }
             else if(type === "SUPERVISOR"){
-                navigate('user/manageUsers');
+                document.location.href = window.location.origin + '/user/manageUsers';
             }
             else if(type === "SYSTEM_MANAGER"){
                 document.location.href = window.location.origin + '/user/ManageUsers';
             }
             else if(type === "GENERAL_SUPERVISOR"){
-                navigate('user/InfoViewer');
+                document.location.href = window.location.origin + '/user/InfoViewer';
             }
 
         }
@@ -70,9 +72,8 @@ export default function Login(){
         }
         else{
             setShowError(false);
-            setUsername(data.get('username'));
             Connection.getInstance().login({
-                "currUser": Connection.getInstance().getUsername(),
+                "currUser": window.sessionStorage.getItem('username'),
                 "userToLogin": data.get('username'),
                 "password": data.get('password')},
                 loginCallback);
@@ -82,7 +83,7 @@ export default function Login(){
 
     return (
         <div className="Login">
-            {!loaded ? <h1>wait</h1> : <div>
+            {loaded && <div>
                 <h1>{header_string}</h1>
                 <Paper className="Login-paper" elevation={3}>
                     <Box className="Login-form" component="form" onSubmit={handleSubmit} noValidate sx={{mt: 1, }}>

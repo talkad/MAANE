@@ -1,17 +1,16 @@
 
 
 class UserInfo{
-
-    static #instance;
+    static #instance = null;
 
 
     constructor() {
-        this.username = '';
-        this.type = '';
+        this.username = 'hello';
+        this.type = 'there';
     }
 
     static getInstance(){
-        if(!this.#instance){
+        if(this.#instance === null){
             this.#instance = new UserInfo();
         }
 
