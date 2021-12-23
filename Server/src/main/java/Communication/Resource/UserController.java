@@ -1,6 +1,7 @@
 package Communication.Resource;
 
 import Communication.ConnectionManager;
+import Communication.DTOs.EmptyUserDTO;
 import Communication.DTOs.UserDTO;
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.User;
@@ -8,6 +9,8 @@ import Service.UserServiceImpl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -20,13 +23,14 @@ public class UserController {
     private static final ConnectionManager connectionManager = ConnectionManager.getInstance();
     private static final UserServiceImpl service = UserServiceImpl.getInstance();
 
-    @GetMapping("/startup")
-    public ResponseEntity<Response<String>> startup(){
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Response<String> res = service.addGuest();
-        connectionManager.addNewConnection(auth.getPrincipal(), res.getResult());
+    @RequestMapping(value = "/startup", method = RequestMethod.GET)
+    public ResponseEntity<Response<String>> startup(@AuthenticationPrincipal EmptyUserDTO user){
 
-        System.out.println("----------------" + auth.getPrincipal());
+        SecurityContext auth = SecurityContextHolder.getContext();
+        Response<String> res = service.addGuest();
+//        connectionManager.addNewConnection(auth.getPrincipal(), res.getResult());
+
+        System.out.println("----------------" + auth);
 
         return ResponseEntity.ok(
                 res
@@ -35,12 +39,12 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<Response<String>> login(@RequestBody Map<String, String> body){
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Response<String> res = service.login(body.get("currUser"), body.get("userToLogin"), body.get("password"));
-        Response<Boolean> resUsername = connectionManager.setUsername(auth.getPrincipal(), res.getResult());
-
-        if(resUsername.isFailure())
-            System.out.println("----------------" + resUsername.getErrMsg());
+//        Response<Boolean> resUsername = connectionManager.setUsername(auth.getPrincipal(), res.getResult());
+//
+//        if(resUsername.isFailure())
+//            System.out.println("----------------" + resUsername.getErrMsg());
 
         return ResponseEntity.ok(
                 res
@@ -49,12 +53,12 @@ public class UserController {
 
     @PostMapping("/logout")
     public ResponseEntity<Response<String>> logout(@RequestBody Map<String, String> body){
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Response<String> res = service.logout(body.get("name"));
-        Response<Boolean> resUsername = connectionManager.removeConnection(auth.getPrincipal());
-
-        if(resUsername.isFailure())
-            System.out.println("----------------" + resUsername.getErrMsg());
+//        Response<Boolean> resUsername = connectionManager.removeConnection(auth.getPrincipal());
+//
+//        if(resUsername.isFailure())
+//            System.out.println("----------------" + resUsername.getErrMsg());
 
         return ResponseEntity.ok(
                 res

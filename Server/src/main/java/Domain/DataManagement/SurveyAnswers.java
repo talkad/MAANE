@@ -10,6 +10,7 @@ import java.util.Map;
 
 public class SurveyAnswers {
 
+    private String symbol;
     private Map<Integer, Pair<AnswerType, String>> answers;
     private int indexer;
 
@@ -70,6 +71,11 @@ public class SurveyAnswers {
         }
     }
 
+    public String getSymbol() {
+        return symbol;
+    }
 
-
+    public void setSymbol(String symbol) {
+        this.symbol = symbol;
+    }
 }
