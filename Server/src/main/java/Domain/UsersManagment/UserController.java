@@ -81,17 +81,17 @@ public class UserController {
                     connectedUsers.remove(currUser);
                     user = registeredUsers.get(userToLogin).getFirst();
                     connectedUsers.put(userToLogin, user);
-                    return new Response<>(userToLogin, false, "successfully Logged in");
+                    return new Response<>(user.state.getStateEnum().getState(), false, "successfully Logged in");
                 } else {
-                    return new Response<>(currUser, true, "Failed to login user");
+                    return new Response<>("no", true, "Failed to login user");
                 }
             }
             else {
-                return new Response<>(null, true, "error: user must disconnect before trying to login");
+                return new Response<>("no", true, "error: user must disconnect before trying to login");
             }
         }
         else {
-            return new Response<>(null, true, "User not connected");
+            return new Response<>("no", true, "User not connected");
         }
     }
 

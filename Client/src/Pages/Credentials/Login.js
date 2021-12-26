@@ -8,8 +8,11 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import {Alert, FormHelperText, IconButton, InputAdornment, InputLabel, MenuItem, Paper, Select,} from "@mui/material";
 import FormControl from "@mui/material/FormControl";
 import Connection from "../../Communication/Connection";
+import { useNavigate } from 'react-router-dom'
+import UserInfo from "../../User/UserInfo";
 
 export default function Login(){
+    const [username, setUsername] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [showError, setShowError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
@@ -23,7 +26,8 @@ export default function Login(){
     useEffect(() => {
         const callback = function(data) {
 
-            Connection.getInstance().setUsername(data.result);
+            //UserInfo.getInstance().setUsername(data.result);
+            window.sessionStorage.setItem('username', data.result);
             setLoaded(true);
           }
 
@@ -31,7 +35,31 @@ export default function Login(){
       }, []);
 
     const loginCallback = (data) => {
-        console.log(data)
+        if(data.failure){
+            setShowError(true);
+            setErrorMessage('שם משתמש או סיסמה לא נכונים');
+        }
+        else{
+            //UserInfo.getInstance().setUsername(username)
+            window.sessionStorage.setItem('username', username);
+            const type = data.result;
+            //UserInfo.getInstance().setType(type);
+            window.sessionStorage.setItem('type', type);
+            if (type === "INSTRUCTOR"){
+                document.location.href = window.location.origin + '/user/workPlan';
+            }
+            else if(type === "SUPERVISOR"){
+                document.location.href = window.location.origin + '/user/manageUsers';
+            }
+            else if(type === "SYSTEM_MANAGER"){
+                document.location.href = window.location.origin + '/user/ManageUsers';
+            }
+            else if(type === "GENERAL_SUPERVISOR"){
+                document.location.href = window.location.origin + '/user/InfoViewer';
+            }
+
+        }
+
     }
 
     const handleSubmit = (event) => {
@@ -40,12 +68,12 @@ export default function Login(){
 
         if(data.get('username') === '' || data.get('password') === ''){
             setShowError(true);
-            setErrorMessage('נא למלא את כל השדות')
+            setErrorMessage('נא למלא את כל השדות');
         }
         else{
             setShowError(false);
             Connection.getInstance().login({
-                "currUser": Connection.getInstance().getUsername(),
+                "currUser": window.sessionStorage.getItem('username'),
                 "userToLogin": data.get('username'),
                 "password": data.get('password')},
                 loginCallback);
@@ -55,7 +83,7 @@ export default function Login(){
 
     return (
         <div className="Login">
-            {!loaded ? <h1>wait</h1> : <div>
+            {loaded && <div>
                 <h1>{header_string}</h1>
                 <Paper className="Login-paper" elevation={3}>
                     <Box className="Login-form" component="form" onSubmit={handleSubmit} noValidate sx={{mt: 1, }}>
