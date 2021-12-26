@@ -21,29 +21,18 @@ export default function Login(){
     const login_button_string  = "כניסה"
 
     useEffect(() => {
-        const callback = function(response) {
-            var str = '';
-          
-            //another chunk of data has been received, so append it to `str`
-            response.on('data', function (chunk) {
-              str += chunk;
-            });
-          
-            //the whole response has been received, so we just print it out here
-            response.on('end', function () {
-                Connection.setUsername(str);
-            });
+        const callback = function(data) {
 
-            // response.on('error', function () {
-            //     console.log("got rejected :((((. like always :`(")
-            // })
-
+            Connection.getInstance().setUsername(data.result);
             setLoaded(true);
           }
 
-          Connection.setUpUser(callback);
+          Connection.getInstance().setUpUser(callback);
       }, []);
 
+    const loginCallback = (data) => {
+        console.log(data)
+    }
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -55,14 +44,18 @@ export default function Login(){
         }
         else{
             setShowError(false);
+            Connection.getInstance().login({
+                "currUser": Connection.getInstance().getUsername(),
+                "userToLogin": data.get('username'),
+                "password": data.get('password')},
+                loginCallback);
         }
 
-        // TODO: send the data
     }
 
     return (
         <div className="Login">
-            {!loaded ? <h1>wait ffs</h1> : <div>
+            {!loaded ? <h1>wait</h1> : <div>
                 <h1>{header_string}</h1>
                 <Paper className="Login-paper" elevation={3}>
                     <Box className="Login-form" component="form" onSubmit={handleSubmit} noValidate sx={{mt: 1, }}>

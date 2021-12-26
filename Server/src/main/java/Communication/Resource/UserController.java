@@ -1,97 +1,96 @@
 package Communication.Resource;
 
-import Communication.ConnectionManager;
-import Communication.DTOs.EmptyUserDTO;
 import Communication.DTOs.UserDTO;
 import Domain.CommonClasses.Response;
+import Domain.UsersManagment.UserStateEnum;
 import Domain.UsersManagment.User;
 import Service.UserServiceImpl;
+import com.google.gson.Gson;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
+import java.util.Properties;
 
 @Controller
 @RequestMapping("/user")
 public class UserController {
-    private static final ConnectionManager connectionManager = ConnectionManager.getInstance();
     private static final UserServiceImpl service = UserServiceImpl.getInstance();
+    private Gson gson = new Gson();
 
-    @RequestMapping(value = "/startup", method = RequestMethod.GET)
-    public ResponseEntity<Response<String>> startup(@AuthenticationPrincipal EmptyUserDTO user){
+    @GetMapping("/startup")
+    public ResponseEntity<Response<String>> startup(){
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("Access-Control-Allow-Origin","*");
 
-        SecurityContext auth = SecurityContextHolder.getContext();
-        Response<String> res = service.addGuest();
-//        connectionManager.addNewConnection(auth.getPrincipal(), res.getResult());
-
-        System.out.println("----------------" + auth);
-
-        return ResponseEntity.ok(
-                res
-        );
+        return ResponseEntity.ok()
+                .headers(responseHeaders)
+                .body(service.addGuest());
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<Response<String>> login(@RequestBody Map<String, String> body){
-//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Response<String> res = service.login(body.get("currUser"), body.get("userToLogin"), body.get("password"));
-//        Response<Boolean> resUsername = connectionManager.setUsername(auth.getPrincipal(), res.getResult());
-//
-//        if(resUsername.isFailure())
-//            System.out.println("----------------" + resUsername.getErrMsg());
+    @RequestMapping(value = "/login", method = RequestMethod.POST, consumes = "text/plain")
+    public ResponseEntity<Response<String>> login(@RequestBody String body){
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("Access-Control-Allow-Origin","*");
 
-        return ResponseEntity.ok(
-                res
-        );
+        Properties p = gson.fromJson(body, Properties.class);
+
+        return ResponseEntity.ok()
+                .headers(responseHeaders)
+                .body(service.login((String)p.get("currUser"),  (String)p.get("userToLogin"), (String)p.get("password")));
     }
 
-    @PostMapping("/logout")
-    public ResponseEntity<Response<String>> logout(@RequestBody Map<String, String> body){
-//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Response<String> res = service.logout(body.get("name"));
-//        Response<Boolean> resUsername = connectionManager.removeConnection(auth.getPrincipal());
-//
-//        if(resUsername.isFailure())
-//            System.out.println("----------------" + resUsername.getErrMsg());
+    @RequestMapping(value = "/logout", method = RequestMethod.POST, consumes = "text/plain")
+    public ResponseEntity<Response<String>> logout(@RequestBody String body){
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("Access-Control-Allow-Origin","*");
 
-        return ResponseEntity.ok(
-                res
-        );
+        Properties p = gson.fromJson(body, Properties.class);
+
+        return ResponseEntity.ok()
+                .headers(responseHeaders)
+                .body(service.logout((String)p.get("name")));
     }
 
-    @PostMapping("/registerUser")
-    public ResponseEntity<Response<User>> registerUser(@RequestBody UserDTO userDTO){
-        return ResponseEntity.ok(
-                service.registerUser(userDTO)
-        );
+    @RequestMapping(value = "/registerUser", method = RequestMethod.POST, consumes = "text/plain")
+    public ResponseEntity<Response<User>> registerUser(@RequestBody String body) {
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("Access-Control-Allow-Origin", "*");
+
+        Properties p = gson.fromJson(body, Properties.class);
+        UserDTO user = new UserDTO((String)p.get("currUser"), (String)p.get("userToRegister"), (String)p.get("password"), enumState((String)p.get("userStateEnum")),
+                (String)p.get("firstName"), (String)p.get("lastName"), (String)p.get("email"), (String)p.get("phoneNumber"), (String)p.get("city"));
+
+        return ResponseEntity.ok()
+                .headers(responseHeaders)
+                .body(service.registerUser(user));
     }
 
-    @PostMapping("/removeUser")
-    public ResponseEntity<Response<Boolean>> removeUser(@RequestBody Map<String, String> body){
-        return ResponseEntity.ok(
-                service.removeUser(body.get("currUser"), body.get("userToRemove"))
-        );
+    @RequestMapping(value = "/removeUser", method = RequestMethod.POST, consumes = "text/plain")
+    public ResponseEntity<Response<Boolean>> removeUser(@RequestBody String body){
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("Access-Control-Allow-Origin", "*");
+
+        Properties p = gson.fromJson(body, Properties.class);
+
+        return ResponseEntity.ok()
+                .headers(responseHeaders)
+                .body(service.removeUser((String)p.get("currUser"), (String)p.get("userToRemove")));
+
     }
 
-    // TODO- remove this functions?
-
-    //    @PostMapping("/removeGuest")
-//    public ResponseEntity<Response<String>> removeGuest(@RequestBody Map<String, String> body){
-//        return ResponseEntity.ok(
-//                service.removeGuest(body.get("name"))
-//        );
-//    }
-
-//    @PostMapping("/addGuest")
-//    public ResponseEntity<Response<String>> addGuest(){
-//        return ResponseEntity.ok(
-//                service.addGuest()
-//        );
-//    }
+    private UserStateEnum enumState(String userState){
+        switch(userState){
+            case "INSTRUCTOR":
+                return UserStateEnum.INSTRUCTOR;
+            case "SUPERVISOR":
+                return UserStateEnum.SUPERVISOR;
+            case "GENERAL_SUPERVISOR":
+                return UserStateEnum.GENERAL_SUPERVISOR;
+            case "SYSTEM_MANAGER":
+                return UserStateEnum.SYSTEM_MANAGER;
+            default:
+                return UserStateEnum.GUEST;
+        }
+    }
 }
