@@ -81,7 +81,7 @@ public class UserController {
                     connectedUsers.remove(currUser);
                     user = registeredUsers.get(userToLogin).getFirst();
                     connectedUsers.put(userToLogin, user);
-                    return new Response<>(user.state.getStateEnum().getState(), false, "successfully Logged in");
+                    return new Response<>(userToLogin, false, "successfully Logged in");
                 } else {
                     return new Response<>("no", true, "Failed to login user");
                 }

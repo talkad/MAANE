@@ -160,7 +160,7 @@ public class UserControllerTest { //todo reset tests
         String guestName = userController.addGuest().getResult();
         String adminName = userController.login(guestName, "shaked", "cohen").getResult();
         Response<User> res = userController.registerSupervisor(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR,"tech","", "", "", "", "");
-        System.out.println(res.isFailure());
+        //System.out.println(res.isFailure());
         guestName = userController.logout(adminName).getResult();
         Response<String> supervisorName = userController.login(guestName, "sup1", "sup1");
         userController.updateInfo("sup1", "1", "", "", "", "");

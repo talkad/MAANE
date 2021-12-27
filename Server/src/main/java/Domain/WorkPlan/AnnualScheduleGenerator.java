@@ -59,6 +59,18 @@ public class AnnualScheduleGenerator {
         return null; //todo
     }
 
+    public int indexOfMaxGoal(List<Pair<String, Goal>> goalsPriorityQueue){
+        Pair<String, Goal> maxGoal = goalsPriorityQueue.get(0);
+        int maxGoalIndex = 0;
+        for (Pair<String, Goal> schoolGoal : goalsPriorityQueue) {
+            if (schoolGoal.getSecond().getWeight() > maxGoal.getSecond().getWeight()) {
+                maxGoal = schoolGoal;
+                maxGoalIndex = goalsPriorityQueue.indexOf(schoolGoal);
+            }
+        }
+        return maxGoalIndex;
+    }
+
     public void algorithm(String supervisor, int surveyId, String workField, List<Goal> goals) {
         //1 - sort Goals by their weight (goal is per workfield)
         //2 - for every instructors under workField:
@@ -115,37 +127,19 @@ public class AnnualScheduleGenerator {
                 WorkPlan workPlan = new WorkPlan(2022);
                 List<Pair<String, Goal>> goalsPriorityQueue = new Vector<>();
                 for (String school : instructorWithProblemsForSchools.get(instructor).keySet()) {
-
                     if (instructorWithProblemsForSchools.get(instructor).get(school) != null && instructorWithProblemsForSchools.get(instructor).get(school).size() > 0) {
                         goalsPriorityQueue.add(new Pair<>(school, instructorWithProblemsForSchools.get(instructor).get(school).get(0)));
                         instructorWithProblemsForSchools.get(instructor).get(school).remove(0);
                     }
-
                 }
                 Pair<String, Goal> maxFirst;
-                int maxFirstIndex = 0;
                 Pair<String, Goal> maxSecond;
-                int maxSecondIndex = 0;
 
                 while (goalsPriorityQueue.size() > 0) {
                     if (goalsPriorityQueue.size() > 2) {
-                        maxFirst = goalsPriorityQueue.get(0);
-                        for (Pair<String, Goal> schoolGoal : goalsPriorityQueue) {
-                            if (schoolGoal.getSecond().getWeight() > maxFirst.getSecond().getWeight()) {
-                                maxFirst = schoolGoal;
-                                maxFirstIndex = goalsPriorityQueue.indexOf(schoolGoal);
-                            }
-                        }
-                        goalsPriorityQueue.remove(maxFirstIndex);
+                        maxFirst = goalsPriorityQueue.remove(indexOfMaxGoal(goalsPriorityQueue));
+                        maxSecond = goalsPriorityQueue.remove(indexOfMaxGoal(goalsPriorityQueue));
 
-                        maxSecond = goalsPriorityQueue.get(0);
-                        for (Pair<String, Goal> schoolGoal : goalsPriorityQueue) {
-                            if (schoolGoal.getSecond().getWeight() > maxSecond.getSecond().getWeight()) {
-                                maxSecond = schoolGoal;
-                                maxSecondIndex = goalsPriorityQueue.indexOf(schoolGoal);
-                            }
-                        }
-                        goalsPriorityQueue.remove(maxSecondIndex);
                         if (instructorWithProblemsForSchools.get(instructor).get(maxFirst.getFirst()) != null && instructorWithProblemsForSchools.get(instructor).get(maxFirst.getFirst()).size() > 0) {
                             goalsPriorityQueue.add(new Pair<>(maxFirst.getFirst(), instructorWithProblemsForSchools.get(instructor).get(maxFirst.getFirst()).get(0)));
                         }
