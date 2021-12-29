@@ -2,6 +2,7 @@ package Domain.WorkPlan;
 
 
 import Domain.CommonClasses.Response;
+import Domain.UsersManagment.Security;
 
 import java.util.List;
 import java.util.Map;
@@ -51,5 +52,33 @@ public class GoalsManagement {
             }
         }
         return new Response<>(null, true, "no such goal exists");
+    }
+
+    public Response<List<Goal>> getGoalsByTitles(String workField, List<String> titles){
+        List<Goal> goalsList = new Vector<>();
+        boolean titleNotFound;
+        if(this.goals.containsKey(workField)){
+            if(titles != null && titles.size() > 0) {
+                for (String title: titles) {
+                    titleNotFound = true;
+                    for (Goal goal : this.goals.get(workField)) {
+                        if (goal.getTitle().equals(title)) {
+                            goalsList.add(goal);
+                            titleNotFound = false;
+                            break;
+                        }
+                    }
+                    if(titleNotFound){
+                        return new Response<>(null, true, "one of the provided goals doesn't exist");
+                    }
+                }
+                return new Response<>(goalsList, false, "all titles found");
+            }//todo maybe add else and error
+        }
+        return new Response<>(null, true, "no such goal exists");
+    }
+
+    public void clearGoals(){
+        this.goals = new ConcurrentHashMap<>();
     }
 }

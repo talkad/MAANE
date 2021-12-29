@@ -79,15 +79,15 @@ public class AnnualScheduleGenerator {
         //5 - init listOfSchoolsWithFault
         //6 - for each school in listOfSchools:
         //7 - if (current school has fault):
-        //        listOfSchoolsWWithFault.add(school)
+        //        listOfSchoolsWithFault.add(school)
         //8 - while (listOfSchoolsWithFault is not empty): //todo fix 8
         //          schoolToSchedule = get school with highest goal weight
         //          schedule(school, instr, goal, workDay)
         //          listOfSchoolsWithFault.delete(school)
 
         //1
-        List<Goal> sortedGoals = new Vector<>(goals);//todo see if necessary
-        sortedGoals.sort(Comparator.comparing(Goal::getWeight).reversed());//todo see if necessary
+        //List<Goal> sortedGoals = new Vector<>(goals);//todo see if necessary probably not
+        //sortedGoals.sort(Comparator.comparing(Goal::getWeight).reversed());//todo see if necessary probably not
         //2
         Response<List<String>> instructorsRes = userController.getAppointedInstructors(supervisor); //get the supervisors instructors
         if (!instructorsRes.isFailure()) {
@@ -97,21 +97,30 @@ public class AnnualScheduleGenerator {
             //4 - 7
             List<String> schoolsOfInstructor;
             List<String> schoolFaults;
-            List<Goal> schoolFaultsGoals = new Vector<>();
+            List<Goal> schoolFaultsGoals;
 
             for (String instructor : instructors) { //2 - for every instructors under workField:
                 schoolsOfInstructor = userController.getSchools(instructor).getResult();
                 schoolsAndFaults = new ConcurrentHashMap<>();
                 for (String school : schoolsOfInstructor) { //4 - schools of this instructor
+                    schoolFaultsGoals = new Vector<>();//todo verify it doesnt get deleted from the map
                     schoolFaults = surveyController.detectSchoolFault(supervisor, surveyId, school).getResult();
-                    for (String goalFault : schoolFaults) { // faults of the school
-                        Response<Goal> goalRes = goalsManagement.getGoalByTitle(workField, goalFault);
-                        if (!goalRes.isFailure()) {
-                            schoolFaultsGoals.add(goalRes.getResult());
-                        } else {
-                            return; //todo error goal not existent
-                        }
+                    Response<List<Goal>> goalsRes = goalsManagement.getGoalsByTitles(workField, schoolFaults);
+                    if(!goalsRes.isFailure()){
+                        schoolFaultsGoals.addAll(goalsRes.getResult());
                     }
+                    else{
+                        return; //todo error goal not existent
+                    }
+
+//                    for (String goalFault : schoolFaults) { // faults of the school
+//                        Response<Goal> goalRes = goalsManagement.getGoalByTitle(workField, goalFault);
+//                        if (!goalRes.isFailure()) {
+//                            schoolFaultsGoals.add(goalRes.getResult());
+//                        } else {
+//                            return; //todo error goal not existent
+//                        }
+//                    }
                     schoolsAndFaults.put(school, schoolFaultsGoals);
                 }
                 instructorWithProblemsForSchools.put(instructor, schoolsAndFaults);
@@ -128,8 +137,7 @@ public class AnnualScheduleGenerator {
                 List<Pair<String, Goal>> goalsPriorityQueue = new Vector<>();
                 for (String school : instructorWithProblemsForSchools.get(instructor).keySet()) {
                     if (instructorWithProblemsForSchools.get(instructor).get(school) != null && instructorWithProblemsForSchools.get(instructor).get(school).size() > 0) {
-                        goalsPriorityQueue.add(new Pair<>(school, instructorWithProblemsForSchools.get(instructor).get(school).get(0)));
-                        instructorWithProblemsForSchools.get(instructor).get(school).remove(0);
+                        goalsPriorityQueue.add(new Pair<>(school, instructorWithProblemsForSchools.get(instructor).get(school).remove(0)));
                     }
                 }
                 Pair<String, Goal> maxFirst;
@@ -148,7 +156,7 @@ public class AnnualScheduleGenerator {
                         }
                         workPlan.insertActivityToFirstAvailableDate(maxFirst, maxSecond);
                     }
-                    else if (goalsPriorityQueue.size() == 1) {
+                    else {
                         workPlan.insertActivityToFirstAvailableDate(goalsPriorityQueue.get(0));
                         goalsPriorityQueue.remove(0);
                         //todo make sure you stop when you fill WorkPlan
@@ -168,15 +176,13 @@ public class AnnualScheduleGenerator {
         //5 - init listOfSchoolsWithFault
         //6 - for each school in listOfSchools:
         //7 - if (current school has fault):
-        //        listOfSchoolsWWithFault.add(school)
+        //        listOfSchoolsWithFault.add(school)
         //8 - while (listOfSchoolsWithFault is not empty): //todo fix 8
         //          schoolToSchedule = get school with highest goal weight
         //          schedule(school, instr, goal, workDay)
         //          listOfSchoolsWithFault.delete(school)
 
         //1
-        List<Goal> sortedGoals = new Vector<>(goals);//todo see if necessary
-        sortedGoals.sort(Comparator.comparing(Goal::getWeight).reversed());//todo see if necessary
         //2
         Response<List<String>> instructorsRes = userController.getAppointedInstructors(supervisor); //get the supervisors instructors
         if (!instructorsRes.isFailure()) {
@@ -186,21 +192,21 @@ public class AnnualScheduleGenerator {
             //4 - 7
             List<String> schoolsOfInstructor;
             List<String> schoolFaults;
-            List<Goal> schoolFaultsGoals = new Vector<>();
+            List<Goal> schoolFaultsGoals;
 
             for (String instructor : instructors) { //2 - for every instructors under workField:
                 schoolsOfInstructor = userController.getSchools(instructor).getResult();
                 schoolsAndFaults = new ConcurrentHashMap<>();
                 for (String school : schoolsOfInstructor) { //4 - schools of this instructor
+                    schoolFaultsGoals = new Vector<>();
 
                     schoolFaults = surveyController.detectSchoolFaultsMock(schoolFaultsMock, school).getResult();
-                    for (String goalFault : schoolFaults) { // faults of the school
-                        Response<Goal> goalRes = goalsManagement.getGoalByTitle(workField, goalFault);
-                        if (!goalRes.isFailure()) {
-                            schoolFaultsGoals.add(goalRes.getResult());
-                        } else {
-                            return; //todo error goal not existent
-                        }
+                    Response<List<Goal>> goalsRes = goalsManagement.getGoalsByTitles(workField, schoolFaults);
+                    if(!goalsRes.isFailure()){
+                        schoolFaultsGoals.addAll(goalsRes.getResult());
+                    }
+                    else{
+                        return; //todo error goal not existent
                     }
                     schoolsAndFaults.put(school, schoolFaultsGoals);
                 }
@@ -220,18 +226,15 @@ public class AnnualScheduleGenerator {
                 List<Pair<String, Goal>> goalsPriorityQueue = new Vector<>();
                 for (String school : instructorWithProblemsForSchools.get(instructor).keySet()) {
                     if (instructorWithProblemsForSchools.get(instructor).get(school) != null && instructorWithProblemsForSchools.get(instructor).get(school).size() > 0) {
-                        goalsPriorityQueue.add(new Pair<>(school, instructorWithProblemsForSchools.get(instructor).get(school).remove(0)));
-                        //instructorWithProblemsForSchools.get(instructor).get(school).remove(0);
+                        goalsPriorityQueue.add(new Pair<>(school, instructorWithProblemsForSchools.get(instructor).get(school).get(0)));
+                        instructorWithProblemsForSchools.get(instructor).get(school).remove(0);
                     }
                 }
-//                for (Pair<String, Goal> p: goalsPriorityQueue) {
-//                    System.out.println(p.getFirst() + " " + p.getSecond().getTitle());
-//                }
+
                 Pair<String, Goal> maxFirst;
                 Pair<String, Goal> maxSecond;
 
                 while (goalsPriorityQueue.size() > 0) {
-
                     if (goalsPriorityQueue.size() >= 2) {
                         maxFirst = goalsPriorityQueue.remove(indexOfMaxGoal(goalsPriorityQueue));
                         maxSecond = goalsPriorityQueue.remove(indexOfMaxGoal(goalsPriorityQueue));
@@ -247,8 +250,11 @@ public class AnnualScheduleGenerator {
                         }
                         workPlan.insertActivityToFirstAvailableDate(maxFirst, maxSecond);
                     }
-                    else if (goalsPriorityQueue.size() == 1) {
-                        workPlan.insertActivityToFirstAvailableDate(goalsPriorityQueue.get(0));
+                    else {
+                        if (instructorWithProblemsForSchools.get(instructor).get(goalsPriorityQueue.get(0).getFirst()).size() > 0) {
+                            goalsPriorityQueue.add(new Pair<>(goalsPriorityQueue.get(0).getFirst(), instructorWithProblemsForSchools.get(instructor).get(goalsPriorityQueue.get(0).getFirst()).remove(0)));
+                        }
+                        workPlan.insertActivityToFirstAvailableDate(goalsPriorityQueue.get(0));//todo check if activities are only from 1 school them they should be stacked 2 a day and not just 1
                         goalsPriorityQueue.remove(0);
                         //todo make sure you stop when you fill WorkPlan
                         //todo when finishing work plan assign it to the instructor

@@ -64,6 +64,6 @@ public class Goal {
     }
 
     public String toString(){
-        return "goal id: " + this.goalId + /*" title: " + this.title + " description: " + this.description +*/ " weight:  " + this.weight;
+        return /*"goal id: " + this.goalId + */" title: " + this.title + /*" description: " + this.description +*/ " weight:  " + this.weight;
     }
 }

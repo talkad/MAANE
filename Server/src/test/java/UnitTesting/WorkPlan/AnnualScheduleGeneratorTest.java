@@ -22,6 +22,7 @@ public class AnnualScheduleGeneratorTest {
 
     @Before
     public void setup(){
+        GoalsManagement.getInstance().clearGoals();
         UserController.getInstance().clearUsers();
         userController = UserController.getInstance();
         guestName = userController.addGuest().getResult();
@@ -53,7 +54,7 @@ public class AnnualScheduleGeneratorTest {
         school1Faults.add("2");
         List<String> school2Faults = new Vector<>();
         school2Faults.add("4");
-        school2Faults.add("2");
+        //school2Faults.add("2");
         schoolsAndFaults.add(new Pair<>("1", school1Faults));
         schoolsAndFaults.add(new Pair<>("2", school2Faults));
         String workField = userController.getUser(supervisorName).getWorkField();
