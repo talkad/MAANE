@@ -48,7 +48,7 @@ public class SurveyController {
 
         Properties p = gson.fromJson(body, Properties.class);
         //         SurveyAnswersDTO answers = new SurveyAnswersDTO(convertInteger((String)p.get("id")), p.get("answers"), p.get("types"));
-        SurveyAnswersDTO answers = null;//new SurveyAnswersDTO(convertInteger((String)p.get("id")), null, null);
+        SurveyAnswersDTO answers = null;// todo new SurveyAnswersDTO(convertInteger((String)p.get("id")), null, null);
 
         return ResponseEntity.ok()
                 .headers(responseHeaders)

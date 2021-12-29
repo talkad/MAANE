@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 public class WorkPlan {
-    TreeMap <String, String> calendar;
+    protected TreeMap <String, String> calendar;//todo is it weird to define as TreeMap for the base instead of Map = TreeMap?
 
     public WorkPlan(int year){
         this.calendar = GenerateCalendarForYear(year);
@@ -20,7 +20,7 @@ public class WorkPlan {
 
     public boolean insertActivityToFirstAvailableDate (Pair<String, Goal> input){
         //String todayDate = java.time.LocalDate.now().toString(); //example 2021-12-23
-        String activity = input.getSecond().getDescription();
+        String activity = "at school: "  + input.getFirst() + " goal title: " + input.getSecond().getTitle(); //todo originally was getDescription();
         String freeDate = "";
 
         for (String date: calendar.descendingKeySet()) {

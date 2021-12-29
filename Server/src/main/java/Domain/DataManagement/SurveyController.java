@@ -216,6 +216,15 @@ public class SurveyController {
         return new Response<>(currentFaults, false, "faults detected");
     }
 
+    public Response<List<String>> detectSchoolFaultsMock(List<Pair<String, List<String>>> schoolsAndFaults, String schoolId){
+        for (Pair<String, List<String>> schoolAndFaults: schoolsAndFaults)
+        {
+            if(schoolId.equals(schoolAndFaults.getFirst()))
+                return new Response<>(schoolAndFaults.getSecond(), false, "faults detected");
+        }
+        return null;
+    }
+
     // for testing purpose only
     public void clearCache(){
         surveys.clear();

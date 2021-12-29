@@ -9,6 +9,7 @@ public class User {
 
     protected UserState state;
     protected String username;
+    protected String workField;
     protected String firstName;
     protected String lastName;
     protected String email;
@@ -18,8 +19,7 @@ public class User {
     protected Appointment appointments;
     protected List<Integer> surveys;
 //    private MonthlyReport monthlyReport; //todo monthly reports history??
-    private WorkPlan workPlan;
-    protected String workField;
+    protected WorkPlan workPlan;
 
 
     public User() {
@@ -397,5 +397,9 @@ public class User {
 
     public void assignWorkPlan(WorkPlan workPlan) {
         this.workPlan = workPlan;//todo prevent errors
+    }
+
+    public WorkPlan getWorkPlan() {
+        return workPlan;
     }
 }
