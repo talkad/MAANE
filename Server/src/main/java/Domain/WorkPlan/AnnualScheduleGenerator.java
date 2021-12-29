@@ -104,24 +104,20 @@ public class AnnualScheduleGenerator {
                 schoolsAndFaults = new ConcurrentHashMap<>();
                 for (String school : schoolsOfInstructor) { //4 - schools of this instructor
                     schoolFaultsGoals = new Vector<>();//todo verify it doesnt get deleted from the map
-                    schoolFaults = surveyController.detectSchoolFault(supervisor, surveyId, school).getResult();
-                    Response<List<Goal>> goalsRes = goalsManagement.getGoalsByTitles(workField, schoolFaults);
-                    if(!goalsRes.isFailure()){
-                        schoolFaultsGoals.addAll(goalsRes.getResult());
+                    Response<List<String>> schoolFaultsRes = surveyController.detectSchoolFault(supervisor, surveyId, school);
+                    if(schoolFaultsRes.isFailure()) {
+                        return; //todo some error
                     }
-                    else{
-                        return; //todo error goal not existent
+                    schoolFaults = schoolFaultsRes.getResult();
+                    if(schoolFaults != null && schoolFaults.size() > 0) {
+                        Response<List<Goal>> goalsRes = goalsManagement.getGoalsByTitles(workField, schoolFaults);
+                        if (!goalsRes.isFailure()) {
+                            schoolFaultsGoals.addAll(goalsRes.getResult());
+                        } else {
+                            return; //todo error goal not existent
+                        }
+                        schoolsAndFaults.put(school, schoolFaultsGoals);
                     }
-
-//                    for (String goalFault : schoolFaults) { // faults of the school
-//                        Response<Goal> goalRes = goalsManagement.getGoalByTitle(workField, goalFault);
-//                        if (!goalRes.isFailure()) {
-//                            schoolFaultsGoals.add(goalRes.getResult());
-//                        } else {
-//                            return; //todo error goal not existent
-//                        }
-//                    }
-                    schoolsAndFaults.put(school, schoolFaultsGoals);
                 }
                 instructorWithProblemsForSchools.put(instructor, schoolsAndFaults);
             }
@@ -200,15 +196,19 @@ public class AnnualScheduleGenerator {
                 for (String school : schoolsOfInstructor) { //4 - schools of this instructor
                     schoolFaultsGoals = new Vector<>();
 
-                    schoolFaults = surveyController.detectSchoolFaultsMock(schoolFaultsMock, school).getResult();
-                    Response<List<Goal>> goalsRes = goalsManagement.getGoalsByTitles(workField, schoolFaults);
-                    if(!goalsRes.isFailure()){
-                        schoolFaultsGoals.addAll(goalsRes.getResult());
+                    Response<List<String>> schoolFaultsRes = surveyController.detectSchoolFaultsMock(schoolFaultsMock, school);
+                    if(schoolFaultsRes.isFailure())
+                        return; //todo some error
+                    schoolFaults = schoolFaultsRes.getResult();
+                    if(schoolFaults != null && schoolFaults.size() > 0) {
+                        Response<List<Goal>> goalsRes = goalsManagement.getGoalsByTitles(workField, schoolFaults);
+                        if (!goalsRes.isFailure()) {
+                            schoolFaultsGoals.addAll(goalsRes.getResult());
+                        } else {
+                            return; //todo error goal not existent
+                        }
+                        schoolsAndFaults.put(school, schoolFaultsGoals);
                     }
-                    else{
-                        return; //todo error goal not existent
-                    }
-                    schoolsAndFaults.put(school, schoolFaultsGoals);
                 }
                 instructorWithProblemsForSchools.put(instructor, schoolsAndFaults);
             }

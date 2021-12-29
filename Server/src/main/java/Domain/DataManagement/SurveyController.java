@@ -224,7 +224,7 @@ public class SurveyController {
                 return new Response<>(schoolAndFaults.getSecond(), false, "faults detected");
             }
         }
-        return null;
+        return new Response<>(null, false, "faults detected");
     }
 
     // for testing purpose only
