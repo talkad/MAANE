@@ -3,6 +3,7 @@ import '../SurveyBuilder/SurveyBuilder.css'
 import {Pagination, Paper, TextField} from "@mui/material";
 import Button from "@mui/material/Button";
 import SurveyQuestion from "./SurveyQuestion";
+import * as Space from 'react-spaces';
 
 const questionsPerPage = 5
 

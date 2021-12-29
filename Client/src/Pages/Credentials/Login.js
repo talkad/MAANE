@@ -16,7 +16,7 @@ export default function Login(){
     const [showPassword, setShowPassword] = useState(false);
     const [showError, setShowError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-    const [loaded, setLoaded] = useState(false);
+    const [loaded, setLoaded] = useState(true);
 
     const header_string = 'מענ"ה'
     const username_label_string  = "שם משתמש"
