@@ -1,7 +1,7 @@
 import './App.css';
 import { Routes, Route } from "react-router-dom";
 import Login from "./Pages/Credentials/Login";
-import React from "react";
+import React, {useEffect} from "react";
 import SurveyBuilder from "./Pages/SurveyBuilder/SurveyBuilder";
 import RegisterUsers from "./Pages/Credentials/RegisterUsers";
 import Survey from "./Pages/Survey/Survey";
@@ -26,20 +26,32 @@ import SurveyMenu from "./Pages/Survey/SurveyMenu";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import * as Space from 'react-spaces';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { useNavigate } from "react-router-dom";
+
+
+// ICONS
 import HomeIcon from '@mui/icons-material/Home';
+import PollIcon from '@mui/icons-material/Poll';
+import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
+import SummarizeIcon from '@mui/icons-material/Summarize';
 
 // TODO: prevent users from going through the site by entering paths in the url
 // TODO: currently saving everything in local storage but IT IS NOT SAFE
+// TODO: change the usage of document.location.href with the useNavigate hook (example in SurveyMenu.js) in the whole project
 
 
 function App(){
+    let navigate = useNavigate();
 
+    let type = "SYSTEM_MANAGER";
     const barWidth = "8%";
     const sidebarWidth = "15%";
     const page_does_not_exist_string = "דף זה אינו קיים";
     const logout_button_string = "יציאה";
 
+    useEffect(() => {
+        // TODO: put something in here
+    }, []);
 
     const drawer = (
         <Space.Fill>
@@ -50,12 +62,31 @@ function App(){
             <Space.Fill>
                 <Divider/>
                 {/*TODO: add onclick to the list buttons*/}
+                {/*TODO: show buttons based on permissions*/}
                 <List>
-                    <ListItem button>
+                    <ListItem button onClick={() => navigate(`user/home`, {replace: true})}>
                         <ListItemIcon>
                             <HomeIcon/>
                         </ListItemIcon>
                         <ListItemText primary="בית"/>
+                    </ListItem>
+                    <ListItem button onClick={() => navigate(`survey/menu`, {replace: true})}>
+                        <ListItemIcon>
+                            <PollIcon/>
+                        </ListItemIcon>
+                        <ListItemText primary="סקרים"/>
+                    </ListItem>
+                    <ListItem button>
+                        <ListItemIcon>
+                            <ShoppingBasketIcon/>
+                        </ListItemIcon>
+                        <ListItemText primary="סלי הדרכה"/>
+                    </ListItem>
+                    <ListItem button>
+                        <ListItemIcon>
+                            <SummarizeIcon/>
+                        </ListItemIcon>
+                        <ListItemText primary='דו"ח עבודה'/>
                     </ListItem>
                 </List>
             </Space.Fill>
@@ -99,17 +130,32 @@ function App(){
                             </Toolbar>
                         </AppBar>
                     </Space.Top>
-                    <Space.Fill centerContent="horizontalVertical">
+                    <Space.Fill>
                         <Routes>
-                            <Route path="user/login" element={<Login/>}/>
-                            <Route path="user/registerUsers" element={<RegisterUsers/>}/>
-                            <Route path="user/workPlan" element={<WorkPlan/>}/>
-                            <Route path="user/manageUsers" element={<ManageUsers/>}/>
-                            <Route path="user/InfoViewer" element={<InfoViewer/>}/>
-                            <Route exact path="/survey" element={<SurveyMenu />}/>
-                            <Route path="survey/createSurvey" element={<SurveyBuilder/>}/>
-                            {/*    TODO: change to survey/getSurvey=id (the one below)*/}
-                            <Route path="survey/survey" element={<Survey/>}/>
+                            {/*TODO: find a more elegant way for the permissions*/}
+                            <Route path="user">
+                                <Route path="login" element={<Login/>}/>
+
+                                {(type === "SUPERVISOR" || type === "SYSTEM_MANAGER") &&
+                                    <Route path="registerUsers" element={<RegisterUsers/>}/>}
+
+                                {(type === "SUPERVISOR" || type === "SYSTEM_MANAGER") &&
+                                    <Route path="home" element={<ManageUsers/>}/>}
+
+                                {type === "INSTRUCTOR" && <Route path="home" element={<WorkPlan/>}/>}
+                                {type === "GENERAL_SUPERVISOR" && <Route path="home" element={<InfoViewer/>}/>}
+
+                            {/*TODO: maybe put survey inside user?*/}
+                            </Route>
+                            {type === "SUPERVISOR" &&
+                                <Route path="survey">
+                                    <Route path="menu" element={<SurveyMenu />}/>
+                                    <Route path="createSurvey" element={<SurveyBuilder/>}/>
+                                    <Route path="getSurvey" element={<Survey/>}/>
+                                </Route>}
+
+                            {/*<Route exact path="survey" element={<SurveyMenu />}/>*/}
+
                             <Route
                                 path="*"
                                 element={

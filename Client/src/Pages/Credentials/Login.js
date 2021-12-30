@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom'
 import UserInfo from "../../User/UserInfo";
 
 // TODO: change to react-space
+// TODO: change the usage of document.location.href with the useNavigate hook (example in SurveyMenu.js)
 
 export default function Login(){
     const [username, setUsername] = useState('');
