@@ -13,23 +13,28 @@ public class WorkPlan {
         this.calendar = GenerateCalendarForYear(year);
     }
 
-    //todo: check
+    /*
+    Inserts 2 goals from 2 schools for same date
+     */
     public boolean insertActivityToFirstAvailableDate (Pair<String, Goal> input1, Pair<String, Goal> input2){
-        return insertActivityToFirstAvailableDate (input1) & insertActivityToFirstAvailableDate (input2);
+        //return insertActivityToFirstAvailableDate (input1) & insertActivityToFirstAvailableDate (input2);
+        String activity = "Activity " + input1.getSecond().getTitle() + " is scheduled for school " + input1.getFirst()
+                + "\n\t\t\t\t\t\t   Activity " + input2.getSecond().getTitle() + " is scheduled for school " + input2.getFirst() ;
+        String freeDate = findDate();
+
+        if (freeDate.equals("")) //no free date
+            return false;
+
+        insertActivity (freeDate, activity);
+        return true;
     }
 
+    /*
+    Gets a pair of <School name, Goal> and insert it to the first available date (not friday/saturday)
+     */
     public boolean insertActivityToFirstAvailableDate (Pair<String, Goal> input){
-        //String todayDate = java.time.LocalDate.now().toString(); //example 2021-12-23
-        String activity = "at school: "  + input.getFirst() + " goal title: " + input.getSecond().getTitle(); //todo originally was getDescription();
-        String freeDate = "";
-
-        for (String date: calendar.descendingKeySet()) {
-            if (calendar.get(date).equals("")) {
-                if (dayIsFridayOrSaturday(date))
-                    continue;
-                freeDate = date;
-            }
-        }
+        String activity = "Activity " + input.getSecond().getTitle() + " is scheduled for school " + input.getFirst();
+        String freeDate = findDate();
 
         if (freeDate.equals("")) //no free date
             return false;
@@ -42,9 +47,21 @@ public class WorkPlan {
         calendar.put(date, activity);
     }
 
+    private String findDate (){
+        String freeDate = "";
+        for (String date: calendar.descendingKeySet()) {
+            if (calendar.get(date).equals("")) {
+                if (dayIsFridayOrSaturday(date))
+                    continue;
+                freeDate = date;
+            }
+        }
+        return freeDate;
+    }
+
     public void printMe (){
         for (String key: calendar.keySet()) {
-            System.out.println("date: " + key + " activity: " + calendar.get(key));
+            System.out.println("Date: " + key + " Schedule: " + calendar.get(key));
         }
     }
 
@@ -97,3 +114,14 @@ public class WorkPlan {
         return ""+dayOfWeek;
     }
 }
+
+/* can be tested with:
+WorkPlan workPlan = new WorkPlan(2021);
+    Goal goal1 = new Goal(1, "a", "aa", 100);
+    Goal goal2 = new Goal(2, "b", "bb", 200);
+        workPlan.insertActivityToFirstAvailableDate(new Pair<>("school1", goal1), new Pair<>("school2", goal2));
+        workPlan.printMe();
+*/
+
+
+//String todayDate = java.time.LocalDate.now().toString(); //example 2021-12-23
