@@ -7,6 +7,8 @@ import Button from "@mui/material/Button";
 import { TransitionGroup } from 'react-transition-group';
 import SurveyQuestionBuilder from "./SurveyBuilderQuestion";
 
+// TODO: change to react-space
+
 export default function SurveyBuilder(){
     const [showError, setShowError] = useState(false)
     const [errorMessage, setErrorMessage] = useState('');

@@ -11,6 +11,8 @@ import Connection from "../../Communication/Connection";
 import { useNavigate } from 'react-router-dom'
 import UserInfo from "../../User/UserInfo";
 
+// TODO: change to react-space
+
 export default function Login(){
     const [username, setUsername] = useState('');
     const [showPassword, setShowPassword] = useState(false);

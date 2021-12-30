@@ -18,6 +18,8 @@ import UserInfo from "../../User/UserInfo";
 import Connection from "../../Communication/Connection";
 
 
+//TODO: change to react space
+
 function createData(username, name, role, email, phoneNumber, city, schools) {
     return {
         username,

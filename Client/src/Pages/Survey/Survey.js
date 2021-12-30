@@ -7,7 +7,7 @@ import * as Space from 'react-spaces';
 
 const questionsPerPage = 5
 
-
+// TODO: change to react space
 
 export default function Survey(){
     // TODO: remove this once we get the info from the server

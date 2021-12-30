@@ -35,7 +35,7 @@ import HomeIcon from '@mui/icons-material/Home';
 
 function App(){
 
-    const barWidth = "10%";
+    const barWidth = "8%";
     const sidebarWidth = "15%";
     const page_does_not_exist_string = "דף זה אינו קיים";
     const logout_button_string = "יציאה";
@@ -64,6 +64,7 @@ function App(){
 
     return (
         <div dir="rtl">
+            {/* TODO:  hide the sidebar and appbar when the user is not logged in*/}
             <Space.ViewPort >
                 <Space.Right size={sidebarWidth}>
                         <Drawer
