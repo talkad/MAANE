@@ -7,6 +7,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import FormControl from "@mui/material/FormControl";
+import Connection from "../../Communication/Connection";
 
 // TODO: random number just for it to work. check the real enums
 // TODO: once there are permission implemented have a different select for a system manager and a supervisor
@@ -42,6 +43,17 @@ export default function RegisterUsers(){
     const select_helper_text_string = 'תפקיד המשתמש הנרשם';
     const supervisor_string = 'מפקח/ת'
 
+    const registerCallback = (data) => {
+        if(data.failure){
+            setShowError(true);
+            setErrorMessage('ההרשמה נדחתה');
+        }
+        else{
+
+        }
+
+    }
+
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
@@ -52,6 +64,18 @@ export default function RegisterUsers(){
         }
         else{
             setShowError(false);
+            Connection.getInstance().register({
+                    // currUser: window.sessionStorage.getItem('username'),
+                    currUser: "shaked", // TODO: fix it to general scenario
+                    userToRegister: data.get('username'),
+                    password: data.get('password'),
+                    userStateEnum: "GUEST",
+                    firstName: "",
+                    lastName: "",
+                    email: "",
+                    phoneNumber: "",
+                    city: ""},
+                registerCallback);
         }
 
         // TODO: send the data

@@ -73,9 +73,9 @@ export default function Login(){
         else{
             setShowError(false);
             Connection.getInstance().login({
-                "currUser": window.sessionStorage.getItem('username'),
-                "userToLogin": data.get('username'),
-                "password": data.get('password')},
+                currUser: window.sessionStorage.getItem('username'),
+                userToLogin: data.get('username'),
+                password: data.get('password')},
                 loginCallback);
         }
 

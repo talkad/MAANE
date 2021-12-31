@@ -50,7 +50,7 @@ class Connection{
     }
 
     sendPOST(url, args, callback){
-        this.axios_instance.post(url, JSON.stringify(args))
+        this.axios_instance.post(url, args)
             .then(function (response) {
                 // handle success
                 console.log(response);
@@ -69,6 +69,10 @@ class Connection{
 
     login(args, callback){
         this.sendPOST('/user/login', args, callback)
+    }
+
+    register(args, callback){
+        this.sendPOST('/user/registerUser', args, callback)
     }
 }
 
