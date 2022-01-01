@@ -1,6 +1,7 @@
 package Domain.UsersManagment;
 
 import Domain.CommonClasses.Pair;
+import Domain.CommonClasses.Response;
 import Domain.WorkPlan.Goal;
 
 import java.time.LocalDate;
@@ -16,31 +17,31 @@ public class WorkPlan {
     /*
     Inserts 2 goals from 2 schools for same date
      */
-    public boolean insertActivityToFirstAvailableDate (Pair<String, Goal> input1, Pair<String, Goal> input2){
+    public Response<Boolean> insertActivityToFirstAvailableDate (Pair<String, Goal> input1, Pair<String, Goal> input2){
         //return insertActivityToFirstAvailableDate (input1) & insertActivityToFirstAvailableDate (input2);
         String activity = "Activity " + input1.getSecond().getTitle() + " is scheduled for school " + input1.getFirst()
                 + "\n\t\t\t\t\t\t   Activity " + input2.getSecond().getTitle() + " is scheduled for school " + input2.getFirst() ;
         String freeDate = findDate();
 
         if (freeDate.equals("")) //no free date
-            return false;
+            return new Response<>(false, true, "no free dates available");
 
         insertActivity (freeDate, activity);
-        return true;
+        return new Response<>(true, false, "");
     }
 
     /*
     Gets a pair of <School name, Goal> and insert it to the first available date (not friday/saturday)
      */
-    public boolean insertActivityToFirstAvailableDate (Pair<String, Goal> input){
+    public Response<Boolean> insertActivityToFirstAvailableDate (Pair<String, Goal> input){
         String activity = "Activity " + input.getSecond().getTitle() + " is scheduled for school " + input.getFirst();
         String freeDate = findDate();
 
         if (freeDate.equals("")) //no free date
-            return false;
+            return new Response<>(false, true, "no free dates available");
 
         insertActivity (freeDate, activity);
-        return true;
+        return new Response<>(true, false, "");
     }
 
     private void insertActivity (String date, String activity){
@@ -112,6 +113,10 @@ public class WorkPlan {
         calendar.setTime(myDate);
         int dayOfWeek = calendar.get(java.util.Calendar.DAY_OF_WEEK);
         return ""+dayOfWeek;
+    }
+
+    public TreeMap<String, String> getCalendar() {
+        return calendar;
     }
 }
 
