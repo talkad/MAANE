@@ -10,10 +10,10 @@ import Domain.DataManagement.FaultDetector.Rules.Rule;
 import Domain.WorkPlan.Goal;
 import Domain.UsersManagment.UserController;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class SurveyController {
     private Map<Integer, Pair<Survey, FaultDetector>> surveys;
@@ -29,18 +29,18 @@ public class SurveyController {
     }
 
     public SurveyController(){
-        answers = new HashMap<>();
-        surveys = new HashMap<>();
+        answers = new ConcurrentHashMap<>();
+        surveys = new ConcurrentHashMap<>();
         indexer = 0;
     }
 
-    public Response<Integer> createSurvey(String username, SurveyDTO surveyDTO){//todo change for result instead of isfailure in your checks after converting to boolean
+    public Response<Integer> createSurvey(String username, SurveyDTO surveyDTO){
         Response<Integer> permissionRes;
         Response<Survey> surveyRes;
 
         permissionRes = UserController.getInstance().createSurvey(username, indexer);
 
-        if(permissionRes.isFailure())
+        if(permissionRes.getResult() < 0)
             return new Response<>(-1, true, permissionRes.getErrMsg());
 
         surveyRes = Survey.createSurvey(indexer, surveyDTO);
@@ -168,10 +168,6 @@ public class SurveyController {
 
     public Map<Integer, Pair<Survey, FaultDetector>> getSurveys() {
         return surveys;
-    }
-
-    public void setSurveys(Map<Integer, Pair<Survey, FaultDetector>> surveys) {
-        this.surveys = surveys;
     }
 
     public Map<Integer, List<SurveyAnswers>> getAnswers() {

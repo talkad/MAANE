@@ -7,6 +7,7 @@ import Domain.DataManagement.AnswerState.AnswerType;
 import java.time.Year;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Vector;
 
 import static Domain.DataManagement.AnswerState.AnswerType.NUMERIC_ANSWER;
 import static Domain.DataManagement.AnswerState.AnswerType.VERBAL_ANSWER;
@@ -27,7 +28,7 @@ public class Survey {
         this.description = description;
         this.index = index;
         this.version = Year.now().getValue();
-        this.questions = new LinkedList<>();
+        this.questions = new Vector<>();
         this.indexer = 0;
     }
 
