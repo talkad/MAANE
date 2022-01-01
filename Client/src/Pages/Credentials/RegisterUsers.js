@@ -11,6 +11,8 @@ import Connection from "../../Communication/Connection";
 
 // TODO: random number just for it to work. check the real enums
 // TODO: once there are permission implemented have a different select for a system manager and a supervisor
+// TODO: change to react-space
+
 const roles = [
     {
         roleEnum: 0,

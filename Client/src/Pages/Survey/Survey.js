@@ -3,10 +3,11 @@ import '../SurveyBuilder/SurveyBuilder.css'
 import {Pagination, Paper, TextField} from "@mui/material";
 import Button from "@mui/material/Button";
 import SurveyQuestion from "./SurveyQuestion";
+import * as Space from 'react-spaces';
 
 const questionsPerPage = 5
 
-
+// TODO: change to react space
 
 export default function Survey(){
     // TODO: remove this once we get the info from the server
