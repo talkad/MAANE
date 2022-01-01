@@ -51,7 +51,7 @@ public class SurveyAnswers {
 
                 answers.put(indexer++, new Pair<>(type, answer));
                 return new Response<>(true, false, "OK");
-            case VERBAL_ANSWER:
+            case OPEN_ANSWER:
                 answers.put(indexer++, new Pair<>(type, answer));
                 return new Response<>(true, false, "OK");
         }

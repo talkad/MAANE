@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Vector;
 
 import static Domain.DataManagement.AnswerState.AnswerType.NUMERIC_ANSWER;
-import static Domain.DataManagement.AnswerState.AnswerType.VERBAL_ANSWER;
+import static Domain.DataManagement.AnswerState.AnswerType.OPEN_ANSWER;
 
 
 public class Survey {
@@ -69,8 +69,8 @@ public class Survey {
                     }
                     break;
 
-                case VERBAL_ANSWER:
-                    answerRes = survey.addOpenAnswer(questionRes.getResult(), VERBAL_ANSWER);
+                case OPEN_ANSWER:
+                    answerRes = survey.addOpenAnswer(questionRes.getResult(), OPEN_ANSWER);
 
                     if(answerRes.isFailure())
                         return new Response<>(null, true, answerRes.getErrMsg());

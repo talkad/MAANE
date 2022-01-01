@@ -9,7 +9,7 @@ import Domain.DataManagement.AnswerState.AnswerType;
 import java.util.List;
 
 import static Domain.DataManagement.AnswerState.AnswerType.NUMERIC_ANSWER;
-import static Domain.DataManagement.AnswerState.AnswerType.VERBAL_ANSWER;
+import static Domain.DataManagement.AnswerState.AnswerType.OPEN_ANSWER;
 
 public class Question {
 
@@ -26,8 +26,8 @@ public class Question {
 
     private void initAnswerType(AnswerType type) {
         switch (type){
-            case VERBAL_ANSWER:
-                answer = new AnswerOpen(VERBAL_ANSWER);
+            case OPEN_ANSWER:
+                answer = new AnswerOpen(OPEN_ANSWER);
                 break;
             case NUMERIC_ANSWER:
                 answer = new AnswerOpen(NUMERIC_ANSWER);

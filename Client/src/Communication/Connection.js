@@ -74,6 +74,10 @@ class Connection{
     register(args, callback){
         this.sendPOST('/user/registerUser', args, callback)
     }
+
+    createSurvey(args, callback){
+        this.sendPOST('/survey/createSurvey', args, callback)
+    }
 }
 
 export default Connection;

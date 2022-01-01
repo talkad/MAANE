@@ -1,7 +1,7 @@
 package Domain.DataManagement.AnswerState;
 
 public enum AnswerType {
-    VERBAL_ANSWER("VERBAL_ANSWER"),
+    OPEN_ANSWER("OPEN_ANSWER"),
     NUMERIC_ANSWER("NUMERIC_ANSWER"),
     MULTIPLE_CHOICE("MULTIPLE_CHOICE"),
     NONE("NONE");

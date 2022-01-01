@@ -44,7 +44,7 @@ public class FaultDetectorTest {
         answersDTO2 = new SurveyAnswersDTO();
 
         List<String> answers2 = Arrays.asList("a", "b", "c");
-        List<AnswerType> types2 = Arrays.asList(VERBAL_ANSWER, NUMERIC_ANSWER, MULTIPLE_CHOICE);
+        List<AnswerType> types2 = Arrays.asList(OPEN_ANSWER, NUMERIC_ANSWER, MULTIPLE_CHOICE);
 
         answersDTO2.setAnswers(answers2);
         answersDTO2.setTypes(types2);

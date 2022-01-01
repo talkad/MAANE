@@ -43,7 +43,7 @@ import SummarizeIcon from '@mui/icons-material/Summarize';
 function App(){
     let navigate = useNavigate();
 
-    let type = "SYSTEM_MANAGER";
+    let type = "SUPERVISOR";
     const barWidth = "8%";
     const sidebarWidth = "15%";
     const page_does_not_exist_string = "דף זה אינו קיים";

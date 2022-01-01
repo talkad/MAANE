@@ -6,6 +6,7 @@ import SurveyQuestion from "./SurveyBuilderQuestion";
 import Button from "@mui/material/Button";
 import { TransitionGroup } from 'react-transition-group';
 import SurveyQuestionBuilder from "./SurveyBuilderQuestion";
+import Connection from "../../Communication/Connection";
 
 // TODO: change to react-space
 
@@ -42,7 +43,7 @@ export default function SurveyBuilder(){
                 id: questionID,
                 element: <SurveyQuestionBuilder id={questionID} modify={modify_question} delete={delete_question} delete_answer={delete_question_answer}/>,
                 question: '',
-                type: 'multiple',
+                type: 'MULTIPLE_CHOICE',
                 answers: [],
             }
         )
@@ -91,7 +92,21 @@ export default function SurveyBuilder(){
     }
 
     const submit_survey = () => {
-        // TODO: send
+
+        Connection.getInstance().createSurvey({
+            username: "shaked",
+            surveyDTO: JSON.stringify({
+                id: -1,
+                title: "title",
+                description: "desc",
+                questions: ["question"],
+                answers: [["answer"]],
+                types: ["OPEN_ANSWER"],
+                // questions: questions.map(x => x.question),
+                // answers: questions.map(x => x.answers),
+                // types: questions.map(x => x.type),
+            })
+        })
     }
 
     return (

@@ -29,7 +29,7 @@ public class SurveyTest {
 
         List<String> questions1 = Arrays.asList("que1", "que2", "que3");
         List<List<String>> answers1 = Arrays.asList(new LinkedList<>(), new LinkedList<>(), Arrays.asList("1", "2"));
-        List<AnswerType> types1 = Arrays.asList(VERBAL_ANSWER, NUMERIC_ANSWER, MULTIPLE_CHOICE);;
+        List<AnswerType> types1 = Arrays.asList(OPEN_ANSWER, NUMERIC_ANSWER, MULTIPLE_CHOICE);;
 
         surveyDTO1.setId(-1);
         surveyDTO1.setTitle("title");
@@ -43,7 +43,7 @@ public class SurveyTest {
 
         List<String> questions2 = Arrays.asList("que1", "que2");
         List<List<String>> answers2 = Arrays.asList(new LinkedList<>(), Arrays.asList(""));
-        List<AnswerType> types2 = Arrays.asList(VERBAL_ANSWER, MULTIPLE_CHOICE);;
+        List<AnswerType> types2 = Arrays.asList(OPEN_ANSWER, MULTIPLE_CHOICE);;
 
         surveyDTO2.setId(-1);
         surveyDTO2.setTitle("title");

@@ -7,9 +7,9 @@ import Domain.CommonClasses.Response;
 import Domain.DataManagement.FaultDetector.Rules.*;
 import Service.Interfaces.SurveyService;
 import Service.SurveyServiceImpl;
+import com.google.gson.Gson;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -19,12 +19,15 @@ import java.util.Map;
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class SurveyController {
 
+    private final Gson gson = new Gson();
     private final SurveyService service = SurveyServiceImpl.getInstance();
 
-    @RequestMapping(value = "/create", method = RequestMethod.POST)
+    @RequestMapping(value = "/createSurvey", method = RequestMethod.POST)
     public ResponseEntity<Response<Integer>> createSurvey(@RequestBody Map<String, Object> body){
+        SurveyDTO surveyDTO = gson.fromJson((String)body.get("surveyDTO"), SurveyDTO.class);
+
         return ResponseEntity.ok(
-                service.createSurvey((String)body.get("username"), (SurveyDTO) body.get("surveyDTO"))
+                service.createSurvey((String)body.get("username"), surveyDTO)
         );
     }
 
@@ -42,7 +45,8 @@ public class SurveyController {
 
     @RequestMapping(value ="/addRule",  method = RequestMethod.POST)
     public ResponseEntity<Response<Boolean>> addRule(@RequestBody Map<String, Object> body){
-        Rule rule = RuleConverter((RuleDTO)body.get("rule"));
+        RuleDTO ruleDTO = gson.fromJson((String)body.get("rule"), RuleDTO.class);
+        Rule rule = RuleConverter(ruleDTO);
 
         if(rule == null)
             return ResponseEntity.ok()

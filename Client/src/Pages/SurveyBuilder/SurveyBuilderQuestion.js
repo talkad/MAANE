@@ -11,7 +11,7 @@ import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 // TODO: change to react-space
 
 export default function SurveyQuestionBuilder(props) {
-    const [selection, setSelection] = useState('multiple');
+    const [selection, setSelection] = useState('MULTIPLE_CHOICE');
     const [multipleAnswersID, setMultipleAnswersID] = useState(0);
     const [multipleAnswers, setMultipleAnswers] = useState([])
 
@@ -93,10 +93,11 @@ export default function SurveyQuestionBuilder(props) {
                                 value={selection}
                                 onChange={handleChange}
                             >
-                                {/*todo: add an icon to each option*/}
-                                <MenuItem value={'multiple'}>{multiple_item_string}</MenuItem>
-                                <MenuItem value={'open'}>{open_item_string}</MenuItem>
-                                <MenuItem value={'open-number'}>{open_number_item_string}</MenuItem>
+                                {/*todo: add an icon for each option*/}
+                                {/*TODO: change this to enums from strings*/}
+                                <MenuItem value={'MULTIPLE_CHOICE'}>{multiple_item_string}</MenuItem>
+                                <MenuItem value={'OPEN_ANSWER'}>{open_item_string}</MenuItem>
+                                <MenuItem value={'NUMERIC_ANSWER'}>{open_number_item_string}</MenuItem>
                             </Select>
                         </FormControl>
                     </Grid>
@@ -107,7 +108,7 @@ export default function SurveyQuestionBuilder(props) {
                             </IconButton>
                         </Tooltip>
                     </Grid>
-                    {selection === 'multiple' &&
+                    {selection === 'MULTIPLE_CHOICE' &&
                         <Grid item xs={12}>
                                 <RadioGroup column>
                                         {multipleAnswers.map(x =>
@@ -129,7 +130,7 @@ export default function SurveyQuestionBuilder(props) {
                             <br/>
                         </Grid>
                     }
-                    {(selection === 'open' || selection === 'open-number')  &&
+                    {(selection === 'OPEN_ANSWER' || selection === 'NUMERIC_ANSWER')  &&
                     <Grid sx={{alignItems: 'center'}} item xs={12}>
                         <TextField
                             color="secondary"
