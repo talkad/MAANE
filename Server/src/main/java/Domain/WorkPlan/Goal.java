@@ -23,6 +23,14 @@ public class Goal {
         this.weight = -1; //todo uninitialized
     }
 
+    public Goal(String title, int weight){  //for test purposes only
+        this.goalId = 1;
+        this.title = title;
+        this.description = "test";
+        this.quarterly = 1;
+        this.weight = weight;
+    }
+
     public String getTitle() {
         return title;
     }
@@ -56,6 +64,6 @@ public class Goal {
     }
 
     public String toString(){
-        return "goal id: " + this.goalId + /*" title: " + this.title + " description: " + this.description +*/ "weight:  " + this.weight;
+        return /*"goal id: " + this.goalId + */" title: " + this.title + /*" description: " + this.description +*/ " weight:  " + this.weight;
     }
 }

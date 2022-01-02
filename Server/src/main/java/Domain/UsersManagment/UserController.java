@@ -1,7 +1,9 @@
 package Domain.UsersManagment;
 
+import Communication.DTOs.SurveyDTO;
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
+import Domain.DataManagement.SurveyController;
 import Domain.WorkPlan.Goal;
 import Domain.WorkPlan.GoalsManagement;
 
@@ -17,6 +19,7 @@ public class UserController {
     private Map<String, Pair<User, String>> registeredUsers;
     private Security security;
     private GoalsManagement goalsManagement;
+    private SurveyController surveyController;
 
 
     private UserController() {
@@ -25,7 +28,8 @@ public class UserController {
         this.connectedUsers = new ConcurrentHashMap<>();
         this.registeredUsers = new ConcurrentHashMap<>();
         this.goalsManagement = GoalsManagement.getInstance();
-        adminBoot("shaked", "cohen");
+        this.surveyController = SurveyController.getInstance();
+        adminBoot("admin", "admin");
     }
 
     public Map<String, User> getConnectedUsers() {
@@ -73,7 +77,7 @@ public class UserController {
         return new Response<>(guestName, false, "added guest");
     }
 
-    public Response<String> login(String currUser, String userToLogin, String password){
+    public Response<Pair<String, UserStateEnum>> login(String currUser, String userToLogin, String password){
         User user;
         if (connectedUsers.containsKey(currUser)) {
             if (currUser.startsWith("Guest")){
@@ -81,22 +85,23 @@ public class UserController {
                     connectedUsers.remove(currUser);
                     user = registeredUsers.get(userToLogin).getFirst();
                     connectedUsers.put(userToLogin, user);
-                    return new Response<>(user.state.getStateEnum().getState(), false, "successfully Logged in");
-                } else {
-                    return new Response<>("no", true, "Failed to login user");
+                    return new Response<>(new Pair<>(userToLogin, user.getState().getStateEnum()), false, "successfully Logged in");
+                }
+                else {
+                    return new Response<>(null, true, "Failed to login user");//todo make sure null is ok with aviad/tal
                 }
             }
             else {
-                return new Response<>("no", true, "error: user must disconnect before trying to login");
+                return new Response<>(null, true, "error: user must disconnect before trying to login");
             }
         }
         else {
-            return new Response<>("no", true, "User not connected");
+            return new Response<>(null, true, "User not connected");
         }
     }
 
     public boolean isValidUser(String username, String password){
-        return registeredUsers.containsKey(username) && registeredUsers.get(username).getSecond().equals(password);
+        return registeredUsers.containsKey(username) && registeredUsers.get(username).getSecond().equals(password) && !connectedUsers.containsKey(username);
     }
 
     public Response<String> logout(String name) {
@@ -273,6 +278,27 @@ public class UserController {
         }
     }
 
+    public Response<List<String>> getAppointedUsers(String currUser){//todo test it
+        if (connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            Response<List<String>> appointeesRes = user.getAppointees();
+            if(!appointeesRes.isFailure()){
+                List<String> appointees = new Vector<>();
+                for (String appointee: appointeesRes.getResult()) {
+                    User u = registeredUsers.get(appointee).getFirst();
+                    appointees.add(u.getInfo());
+                }
+                return new Response<>(appointees, false, "");
+            }
+            else {
+                return appointeesRes;
+            }
+        }
+        else{
+            return new Response<>(null, true, "User is not connected");
+        }
+    }
+
     //only for tests purposes
     public User getUser(String user){
         return this.registeredUsers.get(user).getFirst();
@@ -285,7 +311,8 @@ public class UserController {
         this.connectedUsers = new ConcurrentHashMap<>();
         this.registeredUsers = new ConcurrentHashMap<>();
         this.goalsManagement = GoalsManagement.getInstance();
-        adminBoot("shaked", "cohen");
+        surveyController.clearCache();
+        adminBoot("admin", "admin");
     }
 
     public Response<String> fillMonthlyReport(String currUser){
@@ -466,6 +493,30 @@ public class UserController {
 
     public void notifySurveyCreation(String username, int indexer) {
         // todo - publisher and subscribers
+    }
+
+    public Response<List<SurveyDTO>> getSurveys(String currUser){
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            Response<List<Integer>> res = user.getSurveys();
+            if(!res.isFailure()){
+                List<SurveyDTO> surveyDTOList = new Vector<>();
+                for (Integer surveyId: res.getResult()) {
+                    SurveyDTO surveyDTO = new SurveyDTO();
+                    surveyDTO.setId(surveyId);
+                    surveyDTO.setTitle(surveyController.getSurvey(surveyId).getResult().getTitle());//todo make sure no fails although there shouldn't be any
+                    surveyDTO.setDescription(surveyController.getSurvey(surveyId).getResult().getDescription());//todo make sure no fails although there shouldn't be any
+                    surveyDTOList.add(surveyDTO);
+                }
+                return new Response<>(surveyDTOList, false, "successfully generated surveys details");
+            }
+            else{
+                return new Response<>(null, true, res.getErrMsg());
+            }
+        }
+        else {
+            return new Response<>(null, true, "User not connected"); //todo make sure null is not a problem
+        }
     }
 
 }

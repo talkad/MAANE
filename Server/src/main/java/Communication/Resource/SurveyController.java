@@ -33,6 +33,7 @@ public class SurveyController {
 
     @RequestMapping(value = "/submitAnswers", method = RequestMethod.POST)
     public ResponseEntity<Response<Boolean>> addAnswers(@RequestBody SurveyAnswersDTO answers){
+
         return ResponseEntity.ok()
                 .body(service.addAnswers(answers));
     }

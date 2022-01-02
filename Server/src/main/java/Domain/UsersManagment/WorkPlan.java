@@ -1,28 +1,55 @@
 package Domain.UsersManagment;
 
 import Domain.CommonClasses.Pair;
+import Domain.CommonClasses.Response;
 import Domain.WorkPlan.Goal;
 
 import java.time.LocalDate;
 import java.util.*;
 
 public class WorkPlan {
-    TreeMap <String, String> calendar;
+    protected TreeMap <String, String> calendar;//todo is it weird to define as TreeMap for the base instead of Map = TreeMap?
 
     public WorkPlan(int year){
         this.calendar = GenerateCalendarForYear(year);
     }
 
-    //todo: check
-    public boolean insertActivityToFirstAvailableDate (Pair<String, Goal> input1, Pair<String, Goal> input2){
-        return insertActivityToFirstAvailableDate (input1) & insertActivityToFirstAvailableDate (input2);
+    /*
+    Inserts 2 goals from 2 schools for same date
+     */
+    public Response<Boolean> insertActivityToFirstAvailableDate (Pair<String, Goal> input1, Pair<String, Goal> input2){
+        //return insertActivityToFirstAvailableDate (input1) & insertActivityToFirstAvailableDate (input2);
+        String activity = "Activity " + input1.getSecond().getTitle() + " is scheduled for school " + input1.getFirst()
+                + "\n\t\t\t\t\t\t   Activity " + input2.getSecond().getTitle() + " is scheduled for school " + input2.getFirst() ;
+        String freeDate = findDate();
+
+        if (freeDate.equals("")) //no free date
+            return new Response<>(false, true, "no free dates available");
+
+        insertActivity (freeDate, activity);
+        return new Response<>(true, false, "");
     }
 
-    public boolean insertActivityToFirstAvailableDate (Pair<String, Goal> input){
-        //String todayDate = java.time.LocalDate.now().toString(); //example 2021-12-23
-        String activity = input.getSecond().getDescription();
-        String freeDate = "";
+    /*
+    Gets a pair of <School name, Goal> and insert it to the first available date (not friday/saturday)
+     */
+    public Response<Boolean> insertActivityToFirstAvailableDate (Pair<String, Goal> input){
+        String activity = "Activity " + input.getSecond().getTitle() + " is scheduled for school " + input.getFirst();
+        String freeDate = findDate();
 
+        if (freeDate.equals("")) //no free date
+            return new Response<>(false, true, "no free dates available");
+
+        insertActivity (freeDate, activity);
+        return new Response<>(true, false, "");
+    }
+
+    private void insertActivity (String date, String activity){
+        calendar.put(date, activity);
+    }
+
+    private String findDate (){
+        String freeDate = "";
         for (String date: calendar.descendingKeySet()) {
             if (calendar.get(date).equals("")) {
                 if (dayIsFridayOrSaturday(date))
@@ -30,21 +57,12 @@ public class WorkPlan {
                 freeDate = date;
             }
         }
-
-        if (freeDate.equals("")) //no free date
-            return false;
-
-        insertActivity (freeDate, activity);
-        return true;
-    }
-
-    private void insertActivity (String date, String activity){
-        calendar.put(date, activity);
+        return freeDate;
     }
 
     public void printMe (){
         for (String key: calendar.keySet()) {
-            System.out.println("date: " + key + " activity: " + calendar.get(key));
+            System.out.println("Date: " + key + " Schedule: " + calendar.get(key));
         }
     }
 
@@ -96,4 +114,19 @@ public class WorkPlan {
         int dayOfWeek = calendar.get(java.util.Calendar.DAY_OF_WEEK);
         return ""+dayOfWeek;
     }
+
+    public TreeMap<String, String> getCalendar() {
+        return calendar;
+    }
 }
+
+/* can be tested with:
+WorkPlan workPlan = new WorkPlan(2021);
+    Goal goal1 = new Goal(1, "a", "aa", 100);
+    Goal goal2 = new Goal(2, "b", "bb", 200);
+        workPlan.insertActivityToFirstAvailableDate(new Pair<>("school1", goal1), new Pair<>("school2", goal2));
+        workPlan.printMe();
+*/
+
+
+//String todayDate = java.time.LocalDate.now().toString(); //example 2021-12-23

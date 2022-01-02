@@ -1,6 +1,7 @@
 package Service;
 
 import Communication.DTOs.UserDTO;
+import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.User;
 import Domain.UsersManagment.UserController;
@@ -47,8 +48,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Response<String> login(String currUser, String userToLogin, String password) {
-        Response<String> res = UserController.getInstance().login(currUser, userToLogin, password);
+    public Response<Pair<String, UserStateEnum>> login(String currUser, String userToLogin, String password) {
+        Response<Pair<String, UserStateEnum>> res = UserController.getInstance().login(currUser, userToLogin, password);
 
         if(res.isFailure())
             log.error("failed to login with user {}", userToLogin);

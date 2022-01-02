@@ -1,8 +1,10 @@
 package Communication.Resource;
 
 import Communication.DTOs.UserDTO;
+import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.User;
+import Domain.UsersManagment.UserStateEnum;
 import Service.UserServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +25,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public ResponseEntity<Response<String>> login(@RequestBody Map<String, Object> body){
+    public ResponseEntity<Response<Pair<String, UserStateEnum>>> login(@RequestBody Map<String, Object> body){
         return ResponseEntity.ok()
                 .body(service.login((String)body.get("currUser"), (String)body.get("userToLogin"), (String)body.get("password")));
     }
