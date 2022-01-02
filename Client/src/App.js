@@ -43,7 +43,7 @@ import SummarizeIcon from '@mui/icons-material/Summarize';
 
 
 function App(){
-    const [type, setType] = useState('SYSTEM_MANAGER')
+    const [type, setType] = useState('INSTRUCTOR') //TODO: change back to 'GUEST' when not developing
 
     let navigate = useNavigate();
 
@@ -103,7 +103,7 @@ function App(){
             {/* TODO:  hide the sidebar and appbar when the user is not logged in*/}
             <Space.ViewPort >
                 {/* sidebar */}
-                {type !== 'guest' && <Space.Right size={sidebarWidth}>
+                {type !== 'GUEST' && <Space.Right size={sidebarWidth}>
                         <Drawer
                             sx={{
                                 width: sidebarWidth,
@@ -122,7 +122,7 @@ function App(){
                 </Space.Right>}
                 <Space.Fill>
                     {/* app bar */}
-                    {type !== 'guest' && <Space.Top size={barWidth}>
+                    {type !== 'GUEST' && <Space.Top size={barWidth}>
                         {/* TODO: fix it so the card line would be see and it would align with the logo*/}
                         {/* TODO:  can put an avatar and say hello <name> or something*/}
                         <AppBar style={{minHeight: "99%"}}  color="background" position="static">

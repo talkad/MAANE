@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import '../SurveyBuilder/SurveryBuilderQuestion.css'
-import {FormControlLabel, FormLabel, Grid, Paper, Radio, RadioGroup} from "@mui/material";
+import {FormControlLabel, Grid, Paper, Radio, RadioGroup} from "@mui/material";
 import TextField from "@mui/material/TextField";
-import FormControl from '@mui/material/FormControl';
 
 // TODO: change to react-space
 

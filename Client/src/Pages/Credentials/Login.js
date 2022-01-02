@@ -5,16 +5,14 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import {Alert, FormHelperText, IconButton, InputAdornment, InputLabel, MenuItem, Paper, Select,} from "@mui/material";
-import FormControl from "@mui/material/FormControl";
+import {Alert, IconButton, InputAdornment, Paper,} from "@mui/material";
 import Connection from "../../Communication/Connection";
 import { useNavigate } from 'react-router-dom'
-import UserInfo from "../../User/UserInfo";
 
 // TODO: change to react-space
 
 export default function Login(props){
-    const [username, setUsername] = useState('');
+    const [username, setUsername] = useState(''); // TODO: when getting the username when logs in is implemented deleted this state
     const [showPassword, setShowPassword] = useState(false);
     const [showError, setShowError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
