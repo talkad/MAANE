@@ -26,7 +26,7 @@ public class AnnualScheduleGeneratorTest {
         UserController.getInstance().clearUsers();
         userController = UserController.getInstance();
         guestName = userController.addGuest().getResult();
-        String adminName = userController.login(guestName, "shaked", "cohen").getResult();
+        String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
         Response<User> res = userController.registerSupervisor(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR,"tech","", "", "", "", "");
         guestName = userController.logout(adminName).getResult();
         //Response<String> supervisorName = userController.login(guestName, "sup1", "sup1");
@@ -34,7 +34,7 @@ public class AnnualScheduleGeneratorTest {
 
     @Test
     public void basicAlgorithmFunctionalitySuccess(){
-        String supervisorName = userController.login(guestName, "sup1", "sup1").getResult();
+        String supervisorName = userController.login(guestName, "sup1", "sup1").getResult().getFirst();
         List<Goal> goalList = new Vector<>();
         goalList.add(new Goal("1", 5));
         goalList.add(new Goal("3", 3));
@@ -54,7 +54,7 @@ public class AnnualScheduleGeneratorTest {
         school1Faults.add("2");
         List<String> school2Faults = new Vector<>();
         school2Faults.add("4");
-        school2Faults.add("2");
+        //school2Faults.add("2");
         schoolsAndFaults.add(new Pair<>("1", school1Faults));
         schoolsAndFaults.add(new Pair<>("2", school2Faults));
         String workField = userController.getUser(supervisorName).getWorkField();

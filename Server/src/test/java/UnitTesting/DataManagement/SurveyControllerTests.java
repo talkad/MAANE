@@ -66,7 +66,7 @@ public class SurveyControllerTests {
     public void surveyCreationSuccess(){
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
-        String adminName = userController.login(guestName, "shaked", "cohen").getResult();
+        String adminName = userController.login(guestName, "shaked", "cohen").getResult().getFirst();
         userController.registerSupervisor(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR,"tech","", "", "", "", "");
         String newGuestName = userController.logout(adminName).getResult();
         userController.login(newGuestName, "Dvorit", "Dvorit");
@@ -78,7 +78,7 @@ public class SurveyControllerTests {
     public void addAnswerSuccess(){
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
-        String adminName = userController.login(guestName, "shaked", "cohen").getResult();
+        String adminName = userController.login(guestName, "shaked", "cohen").getResult().getFirst();
         userController.registerSupervisor(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR,"tech","", "", "", "", "");
         String newGuestName = userController.logout(adminName).getResult();
         userController.login(newGuestName, "Dvorit", "Dvorit");
@@ -99,7 +99,7 @@ public class SurveyControllerTests {
 
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
-        String adminName = userController.login(guestName, "shaked", "cohen").getResult();
+        String adminName = userController.login(guestName, "shaked", "cohen").getResult().getFirst();
         userController.registerSupervisor(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR,"tech","", "", "", "", "");
         String newGuestName = userController.logout(adminName).getResult();
         userController.login(newGuestName, "Dvorit", "Dvorit");

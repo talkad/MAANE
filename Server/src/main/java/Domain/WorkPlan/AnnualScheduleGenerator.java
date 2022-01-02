@@ -258,6 +258,7 @@ public class AnnualScheduleGenerator {
                         goalsPriorityQueue.remove(0);
                         //todo make sure you stop when you fill WorkPlan
                         //todo when finishing work plan assign it to the instructor
+                        //todo if there is only 1 school left with activities push 2 at a time every day not 1
                     }
                 }
                 userController.assignWorkPlan(instructor, workPlan);

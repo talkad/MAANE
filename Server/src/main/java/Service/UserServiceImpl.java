@@ -48,7 +48,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response<String> login(String currUser, String userToLogin, String password) {
-        Response<String> res = UserController.getInstance().login(currUser, userToLogin, password);
+        Response<String> res = null;//todo bring back for merge - UserController.getInstance().login(currUser, userToLogin, password);
 
         if(res.isFailure())
             log.error("failed to login with user {}", userToLogin);

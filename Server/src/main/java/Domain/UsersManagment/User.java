@@ -137,7 +137,7 @@ public class User {
     public Response<User> registerUser(String username, UserStateEnum registerUserStateEnum, String firstName, String lastName, String email, String phoneNumber, String city) {
         if(this.state.allowed(Permissions.REGISTER_USER, this) && (registerUserStateEnum == UserStateEnum.INSTRUCTOR
             || registerUserStateEnum == UserStateEnum.GENERAL_SUPERVISOR) && !appointments.contains(username)) {
-            appointments.addAppointment(username);
+            appointments.addAppointment(username);//todo if admin is assigning the user he should be added to the supervisor's appointments as well and assigned the supervisor's work field
             return new Response<>(new User(username, registerUserStateEnum, this.workField, firstName, lastName, email, phoneNumber, city), false, "user successfully assigned");//todo split to 2 functions cause only admin can define work field?
         }
 //        else if(this.state.allowed(PermissionsEnum.REGISTER_SUPERVISOR, this) && (registerUserStateEnum == UserStateEnum.SUPERVISOR) && !appointments.contains(username)){
@@ -200,7 +200,7 @@ public class User {
     }
 
     public String getInfo() {
-        return this.username + " " + this.schools.toString(); //todo generate proper tostring
+        return this.username + " " + this.schools.toString(); //todo generate proper tostring or switch to UserDTO object
     }
 
     public Response<Integer> createSurvey(int surveyId) {
@@ -223,8 +223,13 @@ public class User {
         }
     }
 
-    public List<Integer> getSurveys() {
-        return surveys;
+    public Response<List<Integer>> getSurveys() {
+        if(this.state.allowed(Permissions.SURVEY_MANAGEMENT, this)){
+            return new Response<>(surveys, false, "");
+        }
+        else {
+            return new Response<>(null, true, "user not allowed to view surveys");
+        }
     }
 
     public String getWorkField(){
