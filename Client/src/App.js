@@ -20,7 +20,7 @@ import {
     AppBar,
     Button,
     Divider,
-    Drawer,
+    Drawer, IconButton,
     List,
     ListItem,
     ListItemIcon,
@@ -28,7 +28,6 @@ import {
     Toolbar
 } from "@mui/material";
 import SurveyMenu from "./Pages/Survey/SurveyMenu";
-import Typography from "@mui/material/Typography";
 import * as Space from 'react-spaces';
 
 // ICONS
@@ -36,6 +35,8 @@ import HomeIcon from '@mui/icons-material/Home';
 import PollIcon from '@mui/icons-material/Poll';
 import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 import SummarizeIcon from '@mui/icons-material/Summarize';
+import AccountCircle from "@mui/icons-material/AccountCircle";
+import Typography from "@mui/material/Typography";
 
 // TODO: prevent users from going through the site by entering paths in the url
 // TODO: currently saving everything in local storage but IT IS NOT SAFE
@@ -43,7 +44,7 @@ import SummarizeIcon from '@mui/icons-material/Summarize';
 
 
 function App(){
-    const [type, setType] = useState('INSTRUCTOR') //TODO: change back to 'GUEST' when not developing
+    const [type, setType] = useState('GUEST') //TODO: change back to 'GUEST' when not developing
 
     let navigate = useNavigate();
 
@@ -52,6 +53,8 @@ function App(){
     const sidebarWidth = "15%";
     const page_does_not_exist_string = "דף זה אינו קיים";
     const logout_button_string = "יציאה";
+    // TODO: the greetings currently doesn't work well. but perhaps once TAL implements what i asked then it will (return the username with the response for the request)
+    const greetings_string = "שלום " + window.sessionStorage.getItem('username') // TODO: instead of the username, use the actual name of the user
 
     useEffect(() => {
         // TODO: needed?
@@ -129,8 +132,18 @@ function App(){
                             <Toolbar>
                                 {/* TODO: see what to put instead of this typography*/}
 
+
+                                <IconButton
+                                    size="large"
+                                    aria-label="account of current user"
+                                    aria-controls="menu-appbar"
+                                    aria-haspopup="true"
+                                    color="inherit"
+                                >
+                                    <AccountCircle />
+                                </IconButton>
                                 <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                                    News
+                                    {greetings_string}
                                 </Typography>
                                 {/*TODO: set an onclick for the button*/}
                                 <Button color="inherit">{logout_button_string}</Button>

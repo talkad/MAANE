@@ -36,6 +36,10 @@ export default function Login(props){
           Connection.getInstance().setUpUser(callback);
       }, []);
 
+    const handleUsernameChange = (event) =>{
+        setUsername(event.target.data)
+    }
+
     const loginCallback = (data) => {
         if(data.failure){
             setShowError(true);
@@ -79,6 +83,7 @@ export default function Login(props){
                 <h1>{header_string}</h1>
                 <Paper className="Login-paper" elevation={3}>
                     <Box className="Login-form" component="form" onSubmit={handleSubmit} noValidate sx={{mt: 1, }}>
+                        {/* username */}
                         <TextField
                             color="secondary"
                             error={showError}
@@ -90,8 +95,10 @@ export default function Login(props){
                             label={username_label_string }
                             name="username"
                             autoComplete="username"
+                            onChange={handleUsernameChange}
                             autoFocus
                         />
+                        {/* password */}
                         <TextField
                             color="secondary"
                             error={showError}
@@ -118,6 +125,7 @@ export default function Login(props){
                             }}
                         />
                         {showError && <Alert severity="error">{errorMessage}</Alert>}
+                        {/* submit login */}
                         <Button
                             color="secondary"
                             type="submit"
