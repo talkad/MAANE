@@ -1,13 +1,21 @@
 import './App.css';
-import { Routes, Route } from "react-router-dom";
-import Login from "./Pages/Credentials/Login";
 import React, {useEffect, useState} from "react";
+import { Routes, Route } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
+// PAGES
+import Login from "./Pages/Credentials/Login";
 import SurveyBuilder from "./Pages/SurveyBuilder/SurveyBuilder";
 import RegisterUsers from "./Pages/Credentials/RegisterUsers";
 import Survey from "./Pages/Survey/Survey";
 import WorkPlan from "./Pages/WorkPlan/WorkPlan";
 import ManageUsers from "./Pages/ManageUsers/ManageUsers";
 import InfoViewer from "./Pages/GeneralSupervisorInfoViewer/InfoViewer";
+import SurveyConstraintBuilder from "./Pages/SurveyConstraints/SurveyConstraintBuilder";
+import GuidingBaskets from "./Pages/GuidingBaskets/GuidingBaskets";
+import WorkReport from "./Pages/WorkReport";
+
+// COMPONENTS
 import {
     AppBar,
     Button,
@@ -22,8 +30,6 @@ import {
 import SurveyMenu from "./Pages/Survey/SurveyMenu";
 import Typography from "@mui/material/Typography";
 import * as Space from 'react-spaces';
-import { useNavigate } from "react-router-dom";
-
 
 // ICONS
 import HomeIcon from '@mui/icons-material/Home';
@@ -37,7 +43,7 @@ import SummarizeIcon from '@mui/icons-material/Summarize';
 
 
 function App(){
-    const [type, setType] = useState('guest')
+    const [type, setType] = useState('SYSTEM_MANAGER')
 
     let navigate = useNavigate();
 
@@ -48,12 +54,10 @@ function App(){
     const logout_button_string = "יציאה";
 
     useEffect(() => {
-        // TODO: put something in here
-        // if(window.sessionStorage.getItem('type') !== null){
-        //     setType(window.sessionStorage.getItem('type')) // TODO: is this working? looks like it is...
-        // }
-    }, [type]);
+        // TODO: needed?
+    }, );
 
+    // sidebar
     const drawer = (
         <Space.Fill>
             <Space.Top size={barWidth}>
@@ -77,13 +81,13 @@ function App(){
                         </ListItemIcon>
                         <ListItemText primary="סקרים"/>
                     </ListItem>
-                    <ListItem button>
+                    <ListItem button onClick={() => navigate(`user/guidingBasketsSearch`, {replace: true})}>
                         <ListItemIcon>
                             <ShoppingBasketIcon/>
                         </ListItemIcon>
                         <ListItemText primary="סלי הדרכה"/>
                     </ListItem>
-                    <ListItem button>
+                    <ListItem button onClick={() => navigate(`user/workReport`, {replace: true})}>
                         <ListItemIcon>
                             <SummarizeIcon/>
                         </ListItemIcon>
@@ -140,25 +144,34 @@ function App(){
                             <Route path="user">
                                 <Route path="login" element={<Login changeType={setType}/>}/>
 
+                                {(type === "SUPERVISOR" || type === "INSTRUCTOR") &&
+                                    <Route path="guidingBasketsSearch" element={<GuidingBaskets/>}/>}
+
+                                {(type === "SUPERVISOR" || type === "INSTRUCTOR") &&
+                                    <Route path="workReport" element={<WorkReport/>}/>}
+
                                 {(type === "SUPERVISOR" || type === "SYSTEM_MANAGER") &&
                                     <Route path="registerUsers" element={<RegisterUsers type={type}/>}/>}
 
                                 {(type === "SUPERVISOR" || type === "SYSTEM_MANAGER") &&
                                     <Route path="home" element={<ManageUsers/>}/>}
 
-                                {type === "INSTRUCTOR" && <Route path="home" element={<WorkPlan/>}/>}
-                                {type === "GENERAL_SUPERVISOR" && <Route path="home" element={<InfoViewer/>}/>}
+                                {type === "INSTRUCTOR" &&
+                                    <Route path="home" element={<WorkPlan/>}/>}
+
+                                {type === "GENERAL_SUPERVISOR" &&
+                                    <Route path="home" element={<InfoViewer/>}/>}
 
                             {/*TODO: maybe put survey inside user?*/}
                             </Route>
+
                             {type === "SUPERVISOR" &&
                                 <Route path="survey">
                                     <Route path="menu" element={<SurveyMenu />}/>
                                     <Route path="createSurvey" element={<SurveyBuilder/>}/>
                                     <Route path="getSurvey" element={<Survey/>}/>
+                                    <Route path="surveyConstraint" element={<SurveyConstraintBuilder/>}/>
                                 </Route>}
-
-                            {/*<Route exact path="survey" element={<SurveyMenu />}/>*/}
 
                             <Route
                                 path="*"

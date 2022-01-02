@@ -18,7 +18,7 @@ export default function Login(props){
     const [showPassword, setShowPassword] = useState(false);
     const [showError, setShowError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-    const [loaded, setLoaded] = useState(true);
+    const [loaded, setLoaded] = useState(false);
 
     let navigate = useNavigate();
 

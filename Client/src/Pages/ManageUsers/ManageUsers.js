@@ -30,6 +30,7 @@ function createData(username, name, role, email, phoneNumber, city, schools) {
     }
 }
 
+// this hook represents a row in the table
 function Row(props) {
     const { row } = props;
     const [open, setOpen] = React.useState(false);
@@ -44,6 +45,7 @@ function Row(props) {
     return (
         <React.Fragment>
             <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
+                {/* the arrow to open the extra info */}
                 <TableCell>
                     <IconButton
                         aria-label="expand row"
@@ -53,6 +55,7 @@ function Row(props) {
                         {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                     </IconButton>
                 </TableCell>
+                {/* main user's info */}
                 <TableCell component="th" scope="row">
                     <Grid container spacing={1}>
                         <Grid item xs={2}><Avatar>{row.name.charAt(0)}</Avatar></Grid>
@@ -65,6 +68,7 @@ function Row(props) {
                 <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         <Box sx={{ margin: 1 }}>
+                            {/* the user's general info */}
                             <List
                                 sx={{
                                     width: '40%',
@@ -88,12 +92,12 @@ function Row(props) {
                                 </ListItem>
                             </List>
                             <br/>
+                            {/* the action buttons for each user */}
                             {/*TODO: have a warning beforehand and a verification */}
                             <Grid container spacing={1}>
                                 <Grid item xs={2.5}><Button onClick={() => props.userDeletion(row.username)} color="error" variant="outlined">{delete_user_button_string}</Button></Grid>
                                 <Grid item xs={2}><Button onClick={() => props.handleUserChangePassword(row.username)} color="secondary" variant="outlined">{change_password_button_string}</Button></Grid>
                             </Grid>
-
                         </Box>
                     </Collapse>
                 </TableCell>
@@ -133,8 +137,10 @@ export default function ManageUsers(){
     return (
         <div id="Manage-users">
             <h1>manage'em</h1>
+            {/* adding new users button */}
             <div><Button variant="outlined" color="secondary" onClick={() => navigate('../registerUsers')}>הוספת משתמש</Button></div>
             <TableContainer id="Manage-users-table" component={Paper}>
+                {/* the table */}
                 <Table aria-label="collapsible table">
                     <TableHead>
                         <TableRow>

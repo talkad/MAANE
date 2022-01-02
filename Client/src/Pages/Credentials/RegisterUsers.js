@@ -72,7 +72,7 @@ export default function RegisterUsers(props){
             setErrorMessage('ההרשמה נדחתה');
         }
         else{
-
+            // TODO: implement
         }
 
     }
@@ -86,10 +86,10 @@ export default function RegisterUsers(props){
             setErrorMessage('נא למלא את כל השדות')
         }
         else{
+            // TODO: send the data
             setShowError(false);
             Connection.getInstance().register({
-                    // currUser: window.sessionStorage.getItem('username'),
-                    currUser: "shaked", // TODO: fix it to general scenario
+                    currUser: window.sessionStorage.getItem('username'),
                     userToRegister: data.get('username'),
                     password: data.get('password'),
                     userStateEnum: roleChoiceEnum,
@@ -100,8 +100,6 @@ export default function RegisterUsers(props){
                     city: ""},
                 registerCallback);
         }
-
-        // TODO: send the data
     }
 
     const handleChange = (event) => {
