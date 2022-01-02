@@ -12,14 +12,15 @@ import { useNavigate } from 'react-router-dom'
 import UserInfo from "../../User/UserInfo";
 
 // TODO: change to react-space
-// TODO: change the usage of document.location.href with the useNavigate hook (example in SurveyMenu.js)
 
-export default function Login(){
+export default function Login(props){
     const [username, setUsername] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [showError, setShowError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [loaded, setLoaded] = useState(true);
+
+    let navigate = useNavigate();
 
     const header_string = 'מענ"ה'
     const username_label_string  = "שם משתמש"
@@ -47,20 +48,10 @@ export default function Login(){
             window.sessionStorage.setItem('username', username);
             const type = data.result;
             //UserInfo.getInstance().setType(type);
-            window.sessionStorage.setItem('type', type);
-            if (type === "INSTRUCTOR"){
-                document.location.href = window.location.origin + '/user/workPlan';
-            }
-            else if(type === "SUPERVISOR"){
-                document.location.href = window.location.origin + '/user/manageUsers';
-            }
-            else if(type === "SYSTEM_MANAGER"){
-                document.location.href = window.location.origin + '/user/ManageUsers';
-            }
-            else if(type === "GENERAL_SUPERVISOR"){
-                document.location.href = window.location.origin + '/user/InfoViewer';
-            }
+            props.changeType(type);
+            //window.sessionStorage.setItem('type', type);
 
+            navigate(`../home`, {replace: false}) // TODO: check what does the replace mean
         }
 
     }

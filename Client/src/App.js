@@ -1,18 +1,16 @@
 import './App.css';
 import { Routes, Route } from "react-router-dom";
 import Login from "./Pages/Credentials/Login";
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import SurveyBuilder from "./Pages/SurveyBuilder/SurveyBuilder";
 import RegisterUsers from "./Pages/Credentials/RegisterUsers";
 import Survey from "./Pages/Survey/Survey";
 import WorkPlan from "./Pages/WorkPlan/WorkPlan";
 import ManageUsers from "./Pages/ManageUsers/ManageUsers";
-import Connection from "./Communication/Connection.js"
 import InfoViewer from "./Pages/GeneralSupervisorInfoViewer/InfoViewer";
 import {
     AppBar,
     Button,
-    Container,
     Divider,
     Drawer,
     List,
@@ -21,10 +19,8 @@ import {
     ListItemText,
     Toolbar
 } from "@mui/material";
-import UserInfo from "./User/UserInfo";
 import SurveyMenu from "./Pages/Survey/SurveyMenu";
 import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
 import * as Space from 'react-spaces';
 import { useNavigate } from "react-router-dom";
 
@@ -41,9 +37,11 @@ import SummarizeIcon from '@mui/icons-material/Summarize';
 
 
 function App(){
+    const [type, setType] = useState('guest')
+
     let navigate = useNavigate();
 
-    let type = "SUPERVISOR";
+    //let type = "SUPERVISOR";
     const barWidth = "8%";
     const sidebarWidth = "15%";
     const page_does_not_exist_string = "דף זה אינו קיים";
@@ -51,7 +49,10 @@ function App(){
 
     useEffect(() => {
         // TODO: put something in here
-    }, []);
+        // if(window.sessionStorage.getItem('type') !== null){
+        //     setType(window.sessionStorage.getItem('type')) // TODO: is this working? looks like it is...
+        // }
+    }, [type]);
 
     const drawer = (
         <Space.Fill>
@@ -97,7 +98,8 @@ function App(){
         <div dir="rtl">
             {/* TODO:  hide the sidebar and appbar when the user is not logged in*/}
             <Space.ViewPort >
-                <Space.Right size={sidebarWidth}>
+                {/* sidebar */}
+                {type !== 'guest' && <Space.Right size={sidebarWidth}>
                         <Drawer
                             sx={{
                                 width: sidebarWidth,
@@ -113,9 +115,10 @@ function App(){
                         >
                             {drawer}
                         </Drawer>
-                </Space.Right>
+                </Space.Right>}
                 <Space.Fill>
-                    <Space.Top size={barWidth}>
+                    {/* app bar */}
+                    {type !== 'guest' && <Space.Top size={barWidth}>
                         {/* TODO: fix it so the card line would be see and it would align with the logo*/}
                         {/* TODO:  can put an avatar and say hello <name> or something*/}
                         <AppBar style={{minHeight: "99%"}}  color="background" position="static">
@@ -129,15 +132,16 @@ function App(){
                                 <Button color="inherit">{logout_button_string}</Button>
                             </Toolbar>
                         </AppBar>
-                    </Space.Top>
+                    </Space.Top>}
                     <Space.Fill>
+                        {/* routes to the different screens */}
                         <Routes>
                             {/*TODO: find a more elegant way for the permissions*/}
                             <Route path="user">
-                                <Route path="login" element={<Login/>}/>
+                                <Route path="login" element={<Login changeType={setType}/>}/>
 
                                 {(type === "SUPERVISOR" || type === "SYSTEM_MANAGER") &&
-                                    <Route path="registerUsers" element={<RegisterUsers/>}/>}
+                                    <Route path="registerUsers" element={<RegisterUsers type={type}/>}/>}
 
                                 {(type === "SUPERVISOR" || type === "SYSTEM_MANAGER") &&
                                     <Route path="home" element={<ManageUsers/>}/>}

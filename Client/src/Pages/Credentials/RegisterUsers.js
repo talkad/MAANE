@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import './RegisterUsers.css'
 import {Alert, FormHelperText, IconButton, InputAdornment, InputLabel, MenuItem, Paper, Select} from "@mui/material";
 import TextField from "@mui/material/TextField";
@@ -9,11 +9,13 @@ import Box from "@mui/material/Box";
 import FormControl from "@mui/material/FormControl";
 import Connection from "../../Communication/Connection";
 
-// TODO: random number just for it to work. check the real enums
+
 // TODO: once there are permission implemented have a different select for a system manager and a supervisor
 // TODO: change to react-space
 
-const roles = [
+
+// TODO: random number just for it to work. check the real enums
+const roles_system_manager = [
     {
         roleEnum: 0,
         role: 'מדריכ/ה'
@@ -28,13 +30,25 @@ const roles = [
     },
 ]
 
-export default function RegisterUsers(){
+const roles_supervisor = [
+    {
+        roleEnum: 0,
+        role: 'מדריכ/ה'
+    },
+    {
+        roleEnum: 1,
+        role: 'מפקח/ת כללי/ת',
+    },
+]
+
+export default function RegisterUsers(props){
     const [userInfo, setUserInfo] = useState({})
     const [showPassword, setShowPassword] = useState(false)
     const [showError, setShowError] = useState(false)
     const [errorMessage, setErrorMessage] = useState('');
-    const [roleChoiceEnum, setRoleChoiceEnum] = useState(roles[0]['roleEnum']);
-    const [roleChoice, setRoleChoice] = useState(roles[0]['role'])
+    const [roleChoiceEnum, setRoleChoiceEnum] = useState(-1);
+    const [roleChoice, setRoleChoice] = useState('')
+    const [roles, setRoles] = useState([])
 
     const header_string = 'רישום משתמשים';
     const username_label_string = 'שם משתמש';
@@ -44,6 +58,13 @@ export default function RegisterUsers(){
     const select_label_string = 'תפקיד';
     const select_helper_text_string = 'תפקיד המשתמש הנרשם';
     const supervisor_string = 'מפקח/ת'
+
+    useEffect(() => {
+        let selected_roles = props.type === 'SUPERVISOR' ? roles_supervisor : roles_system_manager
+        setRoles(selected_roles)
+        setRoleChoiceEnum(selected_roles[0]['ruleEnum'])
+        setRoleChoice(selected_roles[0]['role'])
+    },[]);
 
     const registerCallback = (data) => {
         if(data.failure){
@@ -71,7 +92,7 @@ export default function RegisterUsers(){
                     currUser: "shaked", // TODO: fix it to general scenario
                     userToRegister: data.get('username'),
                     password: data.get('password'),
-                    userStateEnum: "GUEST",
+                    userStateEnum: roleChoiceEnum,
                     firstName: "",
                     lastName: "",
                     email: "",
@@ -94,6 +115,7 @@ export default function RegisterUsers(){
             <h1>{header_string}</h1>
             <Paper className="Register-users-paper" elevation={3}>
                 <Box className="Register-users-form" component="form" onSubmit={handleSubmit} noValidate sx={{mt: 1, }}>
+                    {/* username text field */}
                     <TextField
                         color="secondary"
                         error={showError}
@@ -107,6 +129,7 @@ export default function RegisterUsers(){
                         autoComplete="username"
                         autoFocus
                     />
+                    {/* password text field */}
                     <TextField
                         color="secondary"
                         error={showError}
@@ -132,6 +155,7 @@ export default function RegisterUsers(){
                             ),
                         }}
                     />
+                    {/* role choice form */}
                     <FormControl color="secondary" sx={{ m: 1, minWidth: 120 }}>
                         <InputLabel id="role-select-helper-label">תפקיד</InputLabel>
                         <Select
@@ -157,6 +181,7 @@ export default function RegisterUsers(){
                             name="workField"
                         />}
                     {showError && <Alert severity="error">{errorMessage}</Alert>}
+                    {/* submit register button */}
                     <Button
                         color="secondary"
                         type="submit"

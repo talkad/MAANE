@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
 import './ManageUsers.css'
 
 import Table from '@mui/material/Table';
@@ -7,15 +7,13 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import Box from "@mui/material/Box";
 import {Avatar, Collapse, Divider, Grid, IconButton, List, ListItem, ListItemText} from "@mui/material";
 import Button from "@mui/material/Button";
-import UserInfo from "../../User/UserInfo";
-import Connection from "../../Communication/Connection";
+import {useNavigate} from "react-router-dom";
 
 
 //TODO: change to react space
@@ -115,6 +113,8 @@ export default function ManageUsers(){
     const table_name_col_string = 'שם';
     const table_role_col_string = 'תפקיד';
 
+    let navigate = useNavigate();
+
     useEffect(() => {
         console.log("typeeeeeeee");
         console.log(window.sessionStorage.getItem('type'));
@@ -133,7 +133,7 @@ export default function ManageUsers(){
     return (
         <div id="Manage-users">
             <h1>manage'em</h1>
-            <div><Button variant="outlined" color="secondary" onClick={() => document.location.href = window.location.origin + '/user/registerUsers'}>הוספת משתמש</Button></div>
+            <div><Button variant="outlined" color="secondary" onClick={() => navigate('../registerUsers')}>הוספת משתמש</Button></div>
             <TableContainer id="Manage-users-table" component={Paper}>
                 <Table aria-label="collapsible table">
                     <TableHead>
