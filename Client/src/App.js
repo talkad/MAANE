@@ -44,7 +44,7 @@ import Typography from "@mui/material/Typography";
 
 
 function App(){
-    const [type, setType] = useState('GUEST') //TODO: change back to 'GUEST' when not developing
+    const [type, setType] = useState('SUPERVISOR') //TODO: change back to 'GUEST' when not developing
 
     let navigate = useNavigate();
 
