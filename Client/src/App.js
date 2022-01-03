@@ -83,7 +83,6 @@ function App(){
             </Space.Top>
             <Space.Fill>
                 <Divider/>
-                {/*TODO: add onclick to the list buttons*/}
                 {/*TODO: show buttons based on permissions*/}
                 <List>
                     <ListItem button onClick={() => navigate(`user/home`, {replace: true})}>
@@ -141,12 +140,8 @@ function App(){
                     {/* app bar */}
                     {type !== 'GUEST' && <Space.Top size={barWidth}>
                         {/* TODO: fix it so the card line would be see and it would align with the logo*/}
-                        {/* TODO:  can put an avatar and say hello <name> or something*/}
                         <AppBar style={{minHeight: "99%"}}  color="background" position="static">
                             <Toolbar>
-                                {/* TODO: see what to put instead of this typography*/}
-
-
                                 <IconButton
                                     size="large"
                                     aria-label="account of current user"
@@ -159,7 +154,6 @@ function App(){
                                 <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                                     {greetings_string}
                                 </Typography>
-                                {/*TODO: set an onclick for the button*/}
                                 <Button onClick={() => handleLogout()} color="inherit">{logout_button_string}</Button>
                             </Toolbar>
                         </AppBar>

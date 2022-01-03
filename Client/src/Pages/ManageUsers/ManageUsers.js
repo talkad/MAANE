@@ -15,6 +15,7 @@ import {Avatar, Collapse, Divider, Grid, IconButton, List, ListItem, ListItemTex
 import Button from "@mui/material/Button";
 import {useNavigate} from "react-router-dom";
 import * as Space from 'react-spaces';
+import Connection from "../../Communication/Connection";
 
 
 //TODO: change to react space
@@ -122,13 +123,23 @@ export default function ManageUsers(){
     let navigate = useNavigate();
 
     useEffect(() => {
-        console.log("typeeeeeeee");
-        console.log(window.sessionStorage.getItem('type'));
+        // TODO: ask server for the data
     }, []);
 
+    const handleReceivedData = (data) => {
+        // TODO: implement
+    }
+
+    const userDeletionCallback = (data) => {
+        console.log(data)
+        // TODO: check this once the option to register users is working
+    }
+
     const handleUserDeletion = (username) => {
-        console.log('hi there');
-        // TODO: send
+        Connection.getInstance().removeUser({
+            currUser: window.sessionStorage.getItem('username'),
+            userToRemove: username,
+        }, userDeletionCallback)
     }
 
     const handleUserChangePassword = (username) => {

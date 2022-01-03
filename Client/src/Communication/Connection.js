@@ -77,6 +77,10 @@ class Connection{
         this.sendPOST('/user/registerUser', args, callback)
     }
 
+    removeUser(args, callback){
+        this.sendPOST('/user/removeUser', args, callback)
+    }
+
     createSurvey(args, callback){
         this.sendPOST('/survey/createSurvey', args, callback)
     }
