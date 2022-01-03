@@ -37,6 +37,7 @@ import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 import SummarizeIcon from '@mui/icons-material/Summarize';
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import Typography from "@mui/material/Typography";
+import Connection from "./Communication/Connection";
 
 // TODO: prevent users from going through the site by entering paths in the url
 // TODO: currently saving everything in local storage but IT IS NOT SAFE
@@ -44,7 +45,7 @@ import Typography from "@mui/material/Typography";
 
 
 function App(){
-    const [type, setType] = useState('SUPERVISOR') //TODO: change back to 'GUEST' when not developing
+    const [type, setType] = useState('GUEST') //TODO: change back to 'GUEST' when not developing
 
     let navigate = useNavigate();
 
@@ -55,6 +56,19 @@ function App(){
     const logout_button_string = "יציאה";
     // TODO: the greetings currently doesn't work well. but perhaps once TAL implements what i asked then it will (return the username with the response for the request)
     const greetings_string = "שלום " + window.sessionStorage.getItem('username') // TODO: instead of the username, use the actual name of the user
+
+    const logoutCallback = (data) => {
+        setType("GUEST")
+        window.sessionStorage.setItem('username', data.result)
+        navigate('/user/login', {replace: true})
+    }
+
+    const handleLogout = () => {
+        console.log("sending logout")
+        Connection.getInstance().logout({
+            name: window.sessionStorage.getItem('username')
+        }, logoutCallback)
+    }
 
     useEffect(() => {
         // TODO: needed?
@@ -146,7 +160,7 @@ function App(){
                                     {greetings_string}
                                 </Typography>
                                 {/*TODO: set an onclick for the button*/}
-                                <Button color="inherit">{logout_button_string}</Button>
+                                <Button onClick={() => handleLogout()} color="inherit">{logout_button_string}</Button>
                             </Toolbar>
                         </AppBar>
                     </Space.Top>}

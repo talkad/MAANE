@@ -69,6 +69,10 @@ class Connection{
         this.sendPOST('/user/login', args, callback)
     }
 
+    logout(args, callback){
+        this.sendPOST('/user/logout', args, callback)
+    }
+
     register(args, callback){
         this.sendPOST('/user/registerUser', args, callback)
     }

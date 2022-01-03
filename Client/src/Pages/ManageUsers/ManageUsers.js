@@ -14,6 +14,7 @@ import Box from "@mui/material/Box";
 import {Avatar, Collapse, Divider, Grid, IconButton, List, ListItem, ListItemText} from "@mui/material";
 import Button from "@mui/material/Button";
 import {useNavigate} from "react-router-dom";
+import * as Space from 'react-spaces';
 
 
 //TODO: change to react space
@@ -116,6 +117,7 @@ export default function ManageUsers(){
 
     const table_name_col_string = 'שם';
     const table_role_col_string = 'תפקיד';
+    const page_title_string = 'ניהול משתמשים'
 
     let navigate = useNavigate();
 
@@ -136,9 +138,11 @@ export default function ManageUsers(){
 
     return (
         <div id="Manage-users">
-            <h1>manage'em</h1>
+            <h1>{page_title_string}</h1>
             {/* adding new users button */}
-            <div><Button variant="outlined" color="secondary" onClick={() => navigate('../registerUsers')}>הוספת משתמש</Button></div>
+            <div>
+                <Button variant="outlined" color="secondary" onClick={() => navigate('../registerUsers')}>הוספת משתמש</Button>
+            </div>
             <TableContainer id="Manage-users-table" component={Paper}>
                 {/* the table */}
                 <Table aria-label="collapsible table">
