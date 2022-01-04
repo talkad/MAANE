@@ -2,7 +2,6 @@ package Domain.WorkPlan;
 
 
 import Domain.CommonClasses.Response;
-import Domain.UsersManagment.Security;
 
 import java.util.List;
 import java.util.Map;
@@ -24,7 +23,7 @@ public class GoalsManagement {
         return GoalsManagement.CreateSafeThreadSingleton.INSTANCE;
     }
 
-    public void addGoalsField(String workField) {//todo maybe change name
+    public void addGoalsField(String workField) {
         goals.put(workField, new Vector<>());
     }
 

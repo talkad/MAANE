@@ -156,14 +156,14 @@ public class AnnualScheduleGenerator {
                         while(instructorWithProblemsForSchools.get(instructor).get(goalsPriorityQueue.get(0).getFirst()).size() > 1) {
                             goalsPriorityQueue.add(new Pair<>(goalsPriorityQueue.get(0).getFirst(), instructorWithProblemsForSchools.get(instructor).get(goalsPriorityQueue.get(0).getFirst()).remove(0)));
                             goalsPriorityQueue.add(new Pair<>(goalsPriorityQueue.get(0).getFirst(), instructorWithProblemsForSchools.get(instructor).get(goalsPriorityQueue.get(0).getFirst()).remove(0)));
-                            workPlan.insertActivityToFirstAvailableDate(goalsPriorityQueue.get(0), goalsPriorityQueue.get(1));//todo check if activities are only from 1 school them they should be stacked 2 a day and not just 1
+                            workPlan.insertActivityToFirstAvailableDate(goalsPriorityQueue.get(0), goalsPriorityQueue.get(1));
                             goalsPriorityQueue.remove(0);
                             goalsPriorityQueue.remove(0);
                         }
                         if (instructorWithProblemsForSchools.get(instructor).get(goalsPriorityQueue.get(0).getFirst()).size() > 0) {
                             goalsPriorityQueue.add(new Pair<>(goalsPriorityQueue.get(0).getFirst(), instructorWithProblemsForSchools.get(instructor).get(goalsPriorityQueue.get(0).getFirst()).remove(0)));
                         }
-                        workPlan.insertActivityToFirstAvailableDate(goalsPriorityQueue.get(0));//todo check if activities are only from 1 school them they should be stacked 2 a day and not just 1
+                        workPlan.insertActivityToFirstAvailableDate(goalsPriorityQueue.get(0));
                         goalsPriorityQueue.remove(0);
                         //todo make sure you stop when you fill WorkPlan
                         //todo when finishing work plan assign it to the instructor
@@ -263,24 +263,24 @@ public class AnnualScheduleGenerator {
                         String lastSchool = goalsPriorityQueue.get(0).getFirst();
                         if(instructorWithProblemsForSchools.get(instructor).get(lastSchool).size() > 0) {
                             goalsPriorityQueue.add(new Pair<>(lastSchool, instructorWithProblemsForSchools.get(instructor).get(lastSchool).remove(0)));
-                            workPlan.insertActivityToFirstAvailableDate(goalsPriorityQueue.get(0), goalsPriorityQueue.get(1));//todo check if activities are only from 1 school them they should be stacked 2 a day and not just 1
+                            workPlan.insertActivityToFirstAvailableDate(goalsPriorityQueue.get(0), goalsPriorityQueue.get(1));
                             goalsPriorityQueue.remove(0);
                             goalsPriorityQueue.remove(0);
                         }
                         while(instructorWithProblemsForSchools.get(instructor).get(lastSchool).size() >= 2) {
                             goalsPriorityQueue.add(new Pair<>(lastSchool, instructorWithProblemsForSchools.get(instructor).get(lastSchool).remove(0)));
                             goalsPriorityQueue.add(new Pair<>(lastSchool, instructorWithProblemsForSchools.get(instructor).get(lastSchool).remove(0)));
-                            workPlan.insertActivityToFirstAvailableDate(goalsPriorityQueue.get(0), goalsPriorityQueue.get(1));//todo check if activities are only from 1 school them they should be stacked 2 a day and not just 1
+                            workPlan.insertActivityToFirstAvailableDate(goalsPriorityQueue.get(0), goalsPriorityQueue.get(1));
                             goalsPriorityQueue.remove(0);
                             goalsPriorityQueue.remove(0);
                         }
                         if (instructorWithProblemsForSchools.get(instructor).get(lastSchool).size() > 0) {
                             goalsPriorityQueue.add(new Pair<>(lastSchool, instructorWithProblemsForSchools.get(instructor).get(lastSchool).remove(0)));
-                            workPlan.insertActivityToFirstAvailableDate(goalsPriorityQueue.get(0));//todo check if activities are only from 1 school them they should be stacked 2 a day and not just 1
+                            workPlan.insertActivityToFirstAvailableDate(goalsPriorityQueue.get(0));
                             goalsPriorityQueue.remove(0);
                         }
                         if (goalsPriorityQueue.size() > 0) {
-                            workPlan.insertActivityToFirstAvailableDate(goalsPriorityQueue.remove(0));//todo check if activities are only from 1 school them they should be stacked 2 a day and not just 1
+                            workPlan.insertActivityToFirstAvailableDate(goalsPriorityQueue.remove(0));
                         }
                         //todo make sure you stop when you fill WorkPlan
                         //todo when finishing work plan assign it to the instructor

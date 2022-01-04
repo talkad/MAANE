@@ -171,7 +171,7 @@ public class User {
     }
 
     public Response<Boolean> addAppointment(String appointee){
-        return appointments.addAppointment(appointee);//todo
+        return appointments.addAppointment(appointee);
     }
 
     public Response<String> fillMonthlyReport(String currUser) {
