@@ -67,7 +67,7 @@ public class SurveyControllerTests {
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
         String adminName = userController.login(guestName, "shaked", "cohen").getResult().getFirst();
-        userController.registerSupervisor(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR,"tech","", "", "", "", "");
+        userController.registerUserByAdmin(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         String newGuestName = userController.logout(adminName).getResult();
         userController.login(newGuestName, "Dvorit", "Dvorit");
 
@@ -79,7 +79,7 @@ public class SurveyControllerTests {
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
         String adminName = userController.login(guestName, "shaked", "cohen").getResult().getFirst();
-        userController.registerSupervisor(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR,"tech","", "", "", "", "");
+        userController.registerUserByAdmin(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         String newGuestName = userController.logout(adminName).getResult();
         userController.login(newGuestName, "Dvorit", "Dvorit");
 
@@ -100,7 +100,7 @@ public class SurveyControllerTests {
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
         String adminName = userController.login(guestName, "shaked", "cohen").getResult().getFirst();
-        userController.registerSupervisor(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR,"tech","", "", "", "", "");
+        userController.registerUserByAdmin(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         String newGuestName = userController.logout(adminName).getResult();
         userController.login(newGuestName, "Dvorit", "Dvorit");
 

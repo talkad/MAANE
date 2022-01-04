@@ -14,7 +14,7 @@ public class Instructor extends Registered{
     }
 
     @Override
-    public boolean allowed(Permissions func, User user, int schoolId) {
+    public boolean allowed(Permissions func, User user, String schoolId) {
         return this.allowedFunctions.contains(func);
     }
 

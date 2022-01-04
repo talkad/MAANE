@@ -1,6 +1,7 @@
 package Domain.UsersManagment;
 
 import Communication.DTOs.SurveyDTO;
+import Communication.DTOs.UserDTO;
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.SurveyController;
@@ -9,6 +10,7 @@ import Domain.WorkPlan.GoalsManagement;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -72,8 +74,6 @@ public class UserController {
         User user = new User();
         user.setUsername(guestName);
         connectedUsers.put(guestName, user);
-        //System.out.println("guest name is " + guestName);
-
         return new Response<>(guestName, false, "added guest");
     }
 
@@ -139,24 +139,83 @@ public class UserController {
         }
     }
 
-    public Response<User> registerSupervisor(String currUser, String userToRegister, String password, UserStateEnum userStateEnum, String workField, String firstName, String lastName, String email, String phoneNumber, String city){
+    public Response<User> registerUserByAdmin(String currUser, String userToRegister, String password, UserStateEnum userStateEnum, String optionalSupervisor, String workField, String firstName, String lastName, String email, String phoneNumber, String city){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             if (!userToRegister.startsWith("Guest") && !registeredUsers.containsKey(userToRegister)){
-                Response<User> result = user.registerSupervisor(userToRegister, userStateEnum, workField, firstName, lastName, email, phoneNumber, city);
-                if (!result.isFailure()) {
-                    registeredUsers.put(userToRegister, new Pair<>(result.getResult(), security.sha256(password)));
-                    result = new Response<>(result.getResult(), false, "Registration occurred");
-                    goalsManagement.addGoalsField(workField);
+                if(userStateEnum == UserStateEnum.SUPERVISOR){
+                    Response<User> result = user.registerSupervisor(userToRegister, userStateEnum, workField, firstName, lastName, email, phoneNumber, city);
+                    if (!result.isFailure()) {
+                        registeredUsers.put(userToRegister, new Pair<>(result.getResult(), security.sha256(password)));
+                        result = new Response<>(result.getResult(), false, "Registration occurred");
+                        goalsManagement.addGoalsField(workField);
+                    }
+                    return result;
                 }
-                return result;
+                else {
+                    if(user.appointments.contains(optionalSupervisor)){
+                        User supervisor = registeredUsers.get(optionalSupervisor).getFirst();
+                        if(supervisor.isSupervisor().getResult())
+                        {
+                            Response<User> result = user.registerUserBySystemManager(userToRegister, userStateEnum, supervisor.getWorkField(), firstName, lastName, email, phoneNumber, city);
+                            if (!result.isFailure()) {
+                                Response<Boolean> appointmentRes = supervisor.addAppointment(userToRegister);
+                                if(appointmentRes.getResult()){
+                                    registeredUsers.put(userToRegister, new Pair<>(result.getResult(), security.sha256(password)));
+                                    result = new Response<>(result.getResult(), false, "Registration occurred");
+                                }
+                                else{
+                                    return new Response<>(null, true, appointmentRes.getErrMsg());
+                                }
+
+                            }
+                            return result;
+                        }
+                        else{
+                            return new Response<>(null, true, "chosen user as supervisor isn't actually a supervisor");
+                        }
+                    }
+                    else{
+                        return new Response<>(null, true, "chosen user as supervisor isn't actually a supervisor");
+                    }
+                }
             }
             else {
                 return new Response<>(null, true, "username already exists"); // null may be a problem
             }
-            }
+        }
         else {
             return new Response<>(null, true, "User not connected");
+        }
+    }
+
+    public Response<List<UserDTO>> getSupervisors(String currUser){
+        if (connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            if(user.isSystemManager().getResult()){
+                Response<List<String>> appointeesRes = user.getAppointees();
+                if (!appointeesRes.isFailure()) {
+                    List<UserDTO> supervisorsDTOs = new Vector<>();
+                    for (String username : appointeesRes.getResult()) {
+                        UserDTO userDTO = new UserDTO();
+                        userDTO.setCurrUser(registeredUsers.get(username).getFirst().getUsername());
+                        userDTO.setWorkField(registeredUsers.get(username).getFirst().getWorkField());
+                        userDTO.setFirstName(registeredUsers.get(username).getFirst().getFirstName());
+                        userDTO.setLastName(registeredUsers.get(username).getFirst().getLastName());
+                        supervisorsDTOs.add(userDTO);
+                    }
+                    return new Response<>(supervisorsDTOs, false, "");
+                }
+                else {
+                    return new Response<>(null, appointeesRes.isFailure(), appointeesRes.getErrMsg());
+                }
+            }
+            else{
+                return new Response<>(null, true, "user is not allowed to get view supervisors");
+            }
+        }
+        else {
+            return new Response<>(null, true, "user is not logged in");
         }
     }
 
@@ -278,20 +337,54 @@ public class UserController {
         }
     }
 
-    public Response<List<String>> getAppointedUsers(String currUser){//todo test it
+    public Response<List<UserDTO>> getAppointedUsers(String currUser){
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             Response<List<String>> appointeesRes = user.getAppointees();
-            if(!appointeesRes.isFailure()){
-                List<String> appointees = new Vector<>();
-                for (String appointee: appointeesRes.getResult()) {
-                    User u = registeredUsers.get(appointee).getFirst();
-                    appointees.add(u.getInfo());
+            if (!appointeesRes.isFailure()) {
+                List<UserDTO> appointeesDTOs = new Vector<>();
+                for (String appointee : appointeesRes.getResult()) {
+                    appointeesDTOs.add(createUserDTOS(appointee));
                 }
-                return new Response<>(appointees, false, "");
+                return new Response<>(appointeesDTOs, false, "");
             }
             else {
-                return appointeesRes;
+                return new Response<>(null, appointeesRes.isFailure(), appointeesRes.getErrMsg());
+            }
+        }
+        else{
+            return new Response<>(null, true, "User is not connected");
+        }
+    }
+
+    private UserDTO createUserDTOS(String username){
+        UserDTO userDTO = new UserDTO();
+        userDTO.setWorkField(registeredUsers.get(username).getFirst().getWorkField());
+        userDTO.setFirstName(registeredUsers.get(username).getFirst().getFirstName());
+        userDTO.setLastName(registeredUsers.get(username).getFirst().getLastName());
+        userDTO.setEmail(registeredUsers.get(username).getFirst().getEmail());
+        userDTO.setUserStateEnum(registeredUsers.get(username).getFirst().getState().getStateEnum());
+        userDTO.setPhoneNumber(registeredUsers.get(username).getFirst().getPhoneNumber());
+        userDTO.setCity(registeredUsers.get(username).getFirst().getCity());
+        userDTO.setSchools(registeredUsers.get(username).getFirst().getSchools());
+        return userDTO;
+    }
+
+    public Response<List<UserDTO>> getAllUsers(String currUser){//todo test it
+        if (connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            Response<Boolean> viewAllUsersRes = user.viewAllUsers();
+            if (viewAllUsersRes.getResult()) {
+                List<UserDTO> users = new Vector<>();
+                Set<String> usernamesWithoutSystemManager = registeredUsers.keySet();
+                usernamesWithoutSystemManager.remove(currUser);
+                for (String username : usernamesWithoutSystemManager) {
+                    users.add(createUserDTOS(username));
+                }
+                return new Response<>(users, false, "");
+            }
+            else {
+                return new Response<>(null, true, viewAllUsersRes.getErrMsg());//todo should be isFailure false?
             }
         }
         else{
@@ -363,25 +456,6 @@ public class UserController {
             else {
                 return new Response<>(false, true, "new password does not match the confirmed password");
             }
-        }
-        else {
-            return new Response<>(null, true, "User not connected");
-        }
-    }
-
-    public Response<String> viewInstructorsDetails(String currUser) {
-        if (connectedUsers.containsKey(currUser)) {
-            User user = connectedUsers.get(currUser);
-            StringBuilder instructorDetails = new StringBuilder(); //todo maybe make it a list??
-            Response<List<String>> instructorListRes = user.viewInstructorsDetails();
-            if(!instructorListRes.isFailure()){
-                for (String instructor: instructorListRes.getResult()) {
-                    User ins = registeredUsers.get(instructor).getFirst();
-                    instructorDetails.append(ins.getInfo());
-                }
-                return new Response<>(instructorDetails.toString(), false, "successfully generated instructors details");
-            }
-            return new Response<>("", true, instructorListRes.getErrMsg());
         }
         else {
             return new Response<>(null, true, "User not connected");
@@ -515,7 +589,7 @@ public class UserController {
             }
         }
         else {
-            return new Response<>(null, true, "User not connected"); //todo make sure null is not a problem
+            return new Response<>(null, true, "User not connected");
         }
     }
 

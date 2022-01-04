@@ -18,7 +18,7 @@ public class Guest extends UserState{
     }
 
     @Override
-    public boolean allowed(Permissions func, User user, int schoolId) {
+    public boolean allowed(Permissions func, User user, String schoolId) {
         return false;
     }
 

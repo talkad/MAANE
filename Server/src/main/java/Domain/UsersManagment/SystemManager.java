@@ -9,6 +9,10 @@ public class SystemManager extends Registered{
         allowedFunctions.add(Permissions.ASSIGN_SCHOOLS_TO_USER);
         allowedFunctions.add(Permissions.REGISTER_USER);
         allowedFunctions.add(Permissions.CHANGE_PASSWORD_TO_USER);
+        allowedFunctions.add(Permissions.VIEW_USERS_INFO);//todo maybe remove
+        allowedFunctions.add(Permissions.VIEW_ALL_USERS_INFO);
+        allowedFunctions.add(Permissions.REGISTER_BY_ADMIN);//todo maybe useless
+        allowedFunctions.add(Permissions.GET_ALL_SUPERVISORS);//todo maybe useless
     }
 
     @Override
@@ -17,7 +21,7 @@ public class SystemManager extends Registered{
     }
 
     @Override
-    public boolean allowed(Permissions permission, User user, int schoolId) {
+    public boolean allowed(Permissions permission, User user, String schoolId) {
         return user.getSchools().contains(schoolId);
     }
 

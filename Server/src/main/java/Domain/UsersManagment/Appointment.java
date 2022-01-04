@@ -30,7 +30,7 @@ public class Appointment {//todo go over entire class and fit it to what we need
             this.userAppointments.put(name, new Vector<>());
             return new Response<>(true, false, "added appointment");
         }
-        return new Response<>(false, true, "appointment already exists");
+        return new Response<>(false, false, "appointment already exists");
     }
 
     public Response<String> removeSchoolAppointment(String name, int schoolId){
@@ -49,7 +49,7 @@ public class Appointment {//todo go over entire class and fit it to what we need
         Response<Boolean> response;
         if(this.userAppointments.containsKey(name)) {
             response = new Response<>(true, false, "successfully removed school assignment");
-            this.userAppointments.remove(name);//todo maybe look at again
+            this.userAppointments.remove(name);
         }
         else{
             response = new Response<>(null, true, "Tried removing school assignment for a nonexistent appointment");
@@ -77,7 +77,7 @@ public class Appointment {//todo go over entire class and fit it to what we need
             }
             return new Response<>(true, false, "successfully assigned the schools to the user " + userToAssign);
         }
-        return new Response<>(true, false, "user was not appointed by you");//todo better errmsg
+        return new Response<>(true, false, "user was not appointed by you");
     }
 
     public boolean contains(String appointee){

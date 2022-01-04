@@ -12,8 +12,6 @@ public class Registered extends UserState {
         this.allowedFunctions.add(Permissions.LOGOUT);
         this.allowedFunctions.add(Permissions.CHANGE_PASSWORD);
         this.allowedFunctions.add(Permissions.UPDATE_INFO);
-
-
     }
 
     @Override
@@ -22,7 +20,7 @@ public class Registered extends UserState {
     }
 
     @Override
-    public boolean allowed(Permissions permission, User user, int schoolId) {
+    public boolean allowed(Permissions permission, User user, String schoolId) {
         return user.getSchools().contains(schoolId);
     }
 

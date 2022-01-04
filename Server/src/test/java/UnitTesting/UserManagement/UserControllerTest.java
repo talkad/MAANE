@@ -1,5 +1,6 @@
 package UnitTesting.UserManagement;
 
+import Communication.DTOs.UserDTO;
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.*;
@@ -7,12 +8,10 @@ import Domain.WorkPlan.Goal;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Comparator;
 import java.util.List;
 import java.util.Vector;
 
-public class UserControllerTest { //todo reset tests
+public class UserControllerTest {
 
     @Before
     public void setup(){
@@ -28,7 +27,19 @@ public class UserControllerTest { //todo reset tests
         Assert.assertFalse(userController.getConnectedUsers().containsKey(guestName));
         Assert.assertTrue(userController.getConnectedUsers().containsKey(adminName));
         Assert.assertTrue(userController.getRegisteredUsers().containsKey(adminName));
+    }
 
+    @Test
+    public void loginAsAlreadyLoggedInUser(){
+        UserController userController = UserController.getInstance();
+        String guestName = userController.addGuest().getResult();
+        Assert.assertTrue(userController.getConnectedUsers().containsKey(guestName));
+        String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
+        Assert.assertFalse(userController.getConnectedUsers().containsKey(guestName));
+        Assert.assertTrue(userController.getConnectedUsers().containsKey(adminName));
+        Assert.assertTrue(userController.getRegisteredUsers().containsKey(adminName));
+        Response<Pair<String, UserStateEnum>> loginShouldFailRes = userController.login(guestName, "admin", "admin");
+        Assert.assertTrue(loginShouldFailRes.isFailure());
     }
 
     @Test
@@ -36,7 +47,7 @@ public class UserControllerTest { //todo reset tests
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
         String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
-        Response<User> res = userController.registerSupervisor(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR,"tech","", "", "", "", "");
+        userController.registerUserByAdmin(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         guestName = userController.logout(adminName).getResult();
         Response<Pair<String, UserStateEnum>> supervisorName = userController.login(guestName, "sup1", "sup1");
         Assert.assertTrue(userController.getConnectedUsers().containsKey("sup1"));
@@ -47,7 +58,7 @@ public class UserControllerTest { //todo reset tests
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
         String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
-        userController.registerSupervisor(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "tech", "", "", "", "", "");
+        userController.registerUserByAdmin(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         guestName = userController.logout(adminName).getResult();
         userController.login(guestName, "sup1", "sup1");
         userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "", "", "");
@@ -55,30 +66,51 @@ public class UserControllerTest { //todo reset tests
         Assert.assertTrue(userController.getRegisteredUsers().get("ins1").getFirst().getWorkField().equals("tech"));
     }
 
-//    @Test
-//    public void temp(){
-//        UserController userController = UserController.getInstance();
-//        String guestName = userController.addGuest().getResult();
-//        String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
-//        userController.registerSupervisor(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "tech", "", "", "", "", "");
-//        guestName = userController.logout(adminName).getResult();
-//        userController.login(guestName, "sup1", "sup1");
-//        userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "", "", "");
-//        userController.registerUser("sup1", "gensup1", "gensup1", UserStateEnum.GENERAL_SUPERVISOR, "", "", "", "", "");
-//        Assert.assertTrue(userController.getRegisteredUsers().containsKey("ins1"));
-//        Assert.assertTrue(userController.getRegisteredUsers().get("ins1").getFirst().getWorkField().equals("tech"));
-//        Assert.assertTrue(userController.getRegisteredUsers().containsKey("gensup1"));
-//        Assert.assertTrue(userController.getRegisteredUsers().get("gensup1").getFirst().getWorkField().equals("tech"));
-//        Assert.assertTrue(userController.getRegisteredUsers().get("gensup1").getFirst().getState().getStateEnum().equals(UserStateEnum.GENERAL_SUPERVISOR));
-//        System.out.println(userController.getAppointedUsers("sup1").getResult().toString());
-//    }
+    @Test
+    public void assigningInstructorByAdminSuccess(){
+        UserController userController = UserController.getInstance();
+        String guestName = userController.addGuest().getResult();
+        String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
+        userController.registerUserByAdmin(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.login(userController.addGuest().getResult(), "sup1", "sup1");
+        userController.registerUserByAdmin(adminName, "ins1", "ins1", UserStateEnum.INSTRUCTOR, "sup1", "", "", "", "", "", "");
+        Assert.assertTrue(userController.getRegisteredUsers().containsKey("ins1"));
+        Assert.assertTrue(userController.getRegisteredUsers().get("ins1").getFirst().getWorkField().equals("tech"));
+        Assert.assertTrue(userController.getRegisteredUsers().get("sup1").getFirst().getAppointees().getResult().contains("ins1"));
+    }
+
+    @Test
+    public void assigningInstructorByAdminToAlreadyAppointedUserFail(){
+        UserController userController = UserController.getInstance();
+        String guestName = userController.addGuest().getResult();
+        String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
+        userController.registerUserByAdmin(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.login(userController.addGuest().getResult(), "sup1", "sup1");
+        userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "", "", "");
+        Response<User> res = userController.registerUserByAdmin(adminName, "ins1", "ins1", UserStateEnum.INSTRUCTOR, "sup1", "", "", "", "", "", "");
+        Assert.assertTrue(res.isFailure());
+    }
+
+    @Test
+    public void getAppointedUsers(){
+        UserController userController = UserController.getInstance();
+        String guestName = userController.addGuest().getResult();
+        String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
+        userController.registerUserByAdmin(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        guestName = userController.logout(adminName).getResult();
+        userController.login(guestName, "sup1", "sup1");
+        userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "", "", "");
+        userController.registerUser("sup1", "gensup1", "gensup1", UserStateEnum.GENERAL_SUPERVISOR, "", "", "", "", "");
+        List<UserDTO> appointees = userController.getAppointedUsers("sup1").getResult();
+        Assert.assertTrue(appointees.size() == 2);
+    }
 
     @Test
     public void assigningSchoolsToInstructorSuccess(){
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
         String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
-        userController.registerSupervisor(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "tech", "", "", "", "", "");
+        userController.registerUserByAdmin(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         guestName = userController.logout(adminName).getResult();
         userController.login(guestName, "sup1", "sup1");
         userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "", "", "");
@@ -96,7 +128,7 @@ public class UserControllerTest { //todo reset tests
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
         String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
-        userController.registerSupervisor(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "tech", "", "", "", "", "");
+        userController.registerUserByAdmin(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         guestName = userController.logout(adminName).getResult();
         userController.login(guestName, "sup1", "sup1");
         userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "", "", "");
@@ -117,7 +149,7 @@ public class UserControllerTest { //todo reset tests
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
         String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
-        userController.registerSupervisor(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "tech", "","", "", "", "");
+        userController.registerUserByAdmin(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         guestName = userController.logout(adminName).getResult();
         userController.login(guestName, "sup1", "sup1");
         userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "", "", "");
@@ -136,7 +168,7 @@ public class UserControllerTest { //todo reset tests
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
         String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
-        userController.registerSupervisor(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "tech", "","", "", "", "");
+        userController.registerUserByAdmin(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         userController.changePasswordToUser(adminName, "sup1", "sup111", "sup11");
         guestName = userController.logout(adminName).getResult();
         Response<Pair<String, UserStateEnum>> res = userController.login(guestName, "sup1", "sup111");
@@ -150,7 +182,7 @@ public class UserControllerTest { //todo reset tests
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
         String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
-        userController.registerSupervisor(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "tech", "","", "", "", "");
+        userController.registerUserByAdmin(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         userController.changePasswordToUser(adminName, "sup1", "sup111", "sup111");
         guestName = userController.logout(adminName).getResult();
         Response<Pair<String, UserStateEnum>> res = userController.login(guestName, "sup1", "sup111");
@@ -163,7 +195,7 @@ public class UserControllerTest { //todo reset tests
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
         String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
-        Response<User> res = userController.registerSupervisor(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR,"tech","", "", "", "", "");
+        userController.registerUserByAdmin(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         guestName = userController.logout(adminName).getResult();
         Response<Pair<String, UserStateEnum>> supervisorName = userController.login(guestName, "sup1", "sup1");
         userController.changePassword("sup1", "1234", "1234");
@@ -178,7 +210,7 @@ public class UserControllerTest { //todo reset tests
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
         String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
-        Response<User> res = userController.registerSupervisor(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR,"tech","", "", "", "", "");
+        userController.registerUserByAdmin(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         //System.out.println(res.isFailure());
         guestName = userController.logout(adminName).getResult();
         Response<Pair<String, UserStateEnum>> supervisorName = userController.login(guestName, "sup1", "sup1");
@@ -191,7 +223,7 @@ public class UserControllerTest { //todo reset tests
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
         String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
-        userController.registerSupervisor(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "tech", "", "", "", "", "");
+        userController.registerUserByAdmin(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         guestName = userController.logout(adminName).getResult();
         userController.login(guestName, "sup1", "sup1");
         userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "", "", "");
@@ -206,7 +238,7 @@ public class UserControllerTest { //todo reset tests
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
         String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
-        Response<User> res = userController.registerSupervisor(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR,"tech","", "", "", "", "");
+        userController.registerUserByAdmin(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         guestName = userController.logout(adminName).getResult();
         String supervisorName = userController.login(guestName, "sup1", "sup1").getResult().getFirst();
         List<Goal> goalList = new Vector<>();

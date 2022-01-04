@@ -137,13 +137,24 @@ public class User {
     public Response<User> registerUser(String username, UserStateEnum registerUserStateEnum, String firstName, String lastName, String email, String phoneNumber, String city) {
         if(this.state.allowed(Permissions.REGISTER_USER, this) && (registerUserStateEnum == UserStateEnum.INSTRUCTOR
             || registerUserStateEnum == UserStateEnum.GENERAL_SUPERVISOR) && !appointments.contains(username)) {
-            appointments.addAppointment(username);//todo if admin is assigning the user he should be added to the supervisor's appointments as well and assigned the supervisor's work field
-            return new Response<>(new User(username, registerUserStateEnum, this.workField, firstName, lastName, email, phoneNumber, city), false, "user successfully assigned");//todo split to 2 functions cause only admin can define work field?
+            Response<Boolean> res = appointments.addAppointment(username);
+            if(res.getResult()){
+                return new Response<>(new User(username, registerUserStateEnum, this.workField, firstName, lastName, email, phoneNumber, city), false, "user successfully assigned");
+            }
+            else{
+                return new Response<>(null, true, res.getErrMsg());
+            }
         }
-//        else if(this.state.allowed(PermissionsEnum.REGISTER_SUPERVISOR, this) && (registerUserStateEnum == UserStateEnum.SUPERVISOR) && !appointments.contains(username)){
-//            appointments.addAppointment(username);
-//            return new Response<>(new User(username, UserStateEnum.SUPERVISOR, workField, firstName, lastName, email, phoneNumber, city), false, "supervisor successfully assigned");
-//        }
+        else{
+            return new Response<>(null, true, "user not allowed to register users");
+        }
+    }
+
+    public Response<User> registerUserBySystemManager(String username, UserStateEnum registerUserStateEnum, String workField, String firstName, String lastName, String email, String phoneNumber, String city) {
+        if(this.state.allowed(Permissions.REGISTER_BY_ADMIN, this) && (registerUserStateEnum == UserStateEnum.INSTRUCTOR
+                || registerUserStateEnum == UserStateEnum.GENERAL_SUPERVISOR)) {
+            return new Response<>(new User(username, registerUserStateEnum, workField, firstName, lastName, email, phoneNumber, city), false, "user successfully assigned");//todo split to 2 functions cause only admin can define work field?
+        }
         else{
             return new Response<>(null, true, "user not allowed to register users");
         }
@@ -152,11 +163,15 @@ public class User {
     public Response<User> registerSupervisor(String username, UserStateEnum registerUserStateEnum, String workField, String firstName, String lastName, String email, String phoneNumber, String city) {
         if(this.state.allowed(Permissions.REGISTER_SUPERVISOR, this) && (registerUserStateEnum == UserStateEnum.SUPERVISOR) && !appointments.contains(username)){
             appointments.addAppointment(username);
-            return new Response<>(new User(username, UserStateEnum.SUPERVISOR, workField, firstName, lastName, email, phoneNumber, city), false, "supervisor successfully assigned");
+            return new Response<>(new User(username, registerUserStateEnum, workField, firstName, lastName, email, phoneNumber, city), false, "supervisor successfully assigned");
         }
         else{
             return new Response<>(null, true, "user not allowed to register users");
         }
+    }
+
+    public Response<Boolean> addAppointment(String appointee){
+        return appointments.addAppointment(appointee);//todo
     }
 
     public Response<String> fillMonthlyReport(String currUser) {
@@ -188,19 +203,6 @@ public class User {
         else {
             return new Response<>(false, true, "user not allowed to change password");
         }
-    }
-
-    public Response<List<String>> viewInstructorsDetails() {
-        if (this.state.allowed(Permissions.VIEW_INSTRUCTORS_INFO, this)) {
-            return appointments.getAppointees();
-        }
-        else{
-            return new Response<>(null, true, "user not allowed to view instructor info"); //todo null may be problem and better be empty list
-        }
-    }
-
-    public String getInfo() {
-        return this.username + " " + this.schools.toString(); //todo generate proper tostring or switch to UserDTO object
     }
 
     public Response<Integer> createSurvey(int surveyId) {
@@ -393,7 +395,12 @@ public class User {
     }
 
     public Response<List<String>> getAppointees() {//todo maybe make response and verify
-        return this.appointments.getAppointees();
+        if (this.state.allowed(Permissions.VIEW_USERS_INFO, this)) {
+            return this.appointments.getAppointees();
+        }
+        else {
+            return new Response<>(null, true, "user not allowed to view appointed users");
+        }
     }
 
     public boolean isInstructor() {
@@ -406,5 +413,24 @@ public class User {
 
     public WorkPlan getWorkPlan() {
         return workPlan;
+    }
+
+    public Response<Boolean> viewAllUsers() {
+        if (this.state.allowed(Permissions.VIEW_ALL_USERS_INFO, this)) {
+            return new Response<>(true, false, "");
+        }
+        else {
+            return new Response<>(false, false, "user not allowed to view all users");
+        }
+    }
+
+    public Response<Boolean> isSystemManager() {
+        if(this.state.getStateEnum() == UserStateEnum.SYSTEM_MANAGER)
+        {
+            return new Response<>(true, false, "user is system manager");
+        }
+        else {
+            return new Response<>(false, false, "user is not the system manager");
+        }
     }
 }

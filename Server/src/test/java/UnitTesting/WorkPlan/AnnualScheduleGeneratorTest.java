@@ -27,7 +27,7 @@ public class AnnualScheduleGeneratorTest {
         userController = UserController.getInstance();
         guestName = userController.addGuest().getResult();
         String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
-        Response<User> res = userController.registerSupervisor(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR,"tech","", "", "", "", "");
+        userController.registerUserByAdmin(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         guestName = userController.logout(adminName).getResult();
         //Response<String> supervisorName = userController.login(guestName, "sup1", "sup1");
     }
