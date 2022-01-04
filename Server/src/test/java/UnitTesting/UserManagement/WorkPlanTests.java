@@ -2,12 +2,16 @@ package UnitTesting.UserManagement;
 
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
+import Domain.UsersManagment.Activity;
 import Domain.UsersManagment.UserController;
 import Domain.UsersManagment.WorkPlan;
 import Domain.WorkPlan.Goal;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.List;
+import java.util.Map;
 
 public class WorkPlanTests {
     WorkPlan workPlan;
@@ -27,13 +31,19 @@ public class WorkPlanTests {
         Response<Boolean> res = workPlan.insertActivityToFirstAvailableDate(new Pair<>("school1", goal1));
         Assert.assertFalse(res.isFailure());
 
-        String activity = workPlan.getCalendar().get("2021-09-01");
-        Assert.assertEquals("Activity a is scheduled for school school1", activity);
+        List<Activity> activity = workPlan.getCalendar().get("2021-09-01");
+        Assert.assertEquals("school1", activity.get(0).getSchool());
     }
 
     @Test
     public void addTwoSchoolsSuccess(){
         Response<Boolean> res = workPlan.insertActivityToFirstAvailableDate(new Pair<>("school2", goal1), new Pair<>("school3", goal2));
         Assert.assertFalse(res.isFailure());
+    }
+
+    @Test
+    public void getFromMonthSuccess(){
+        Map<String, List<Activity>> result = workPlan.getScheduleFromMonth("4");
+        Assert.assertTrue(result.size()==51);
     }
 }
