@@ -11,6 +11,7 @@ public enum Permissions {
 
     /** Instructor User **/
     FILL_MONTHLY_REPORT,
+    VIEW_WORK_PLAN,
 
     /** Supervisor User **/
     ASSIGN_SCHOOLS_TO_USER,
