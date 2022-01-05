@@ -5,6 +5,8 @@ public class Instructor extends Registered{
 
     public Instructor() {
         super();
+        this.allowedFunctions.add(Permissions.VIEW_WORK_PLAN);
+
     }
 
 

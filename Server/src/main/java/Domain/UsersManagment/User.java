@@ -411,8 +411,13 @@ public class User {
         this.workPlan = workPlan;//todo prevent errors
     }
 
-    public WorkPlan getWorkPlan() {
-        return workPlan;
+    public Response<WorkPlan> getWorkPlan() {
+        if (this.state.allowed(Permissions.VIEW_WORK_PLAN, this)) {
+            return new Response<>(this.workPlan, false, "");
+        }
+        else {
+            return new Response<>(null, true, "user not allowed to view work plan");
+        }
     }
 
     public Response<Boolean> viewAllUsers() {

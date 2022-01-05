@@ -2,6 +2,7 @@ package Domain.UsersManagment;
 
 import Communication.DTOs.SurveyDTO;
 import Communication.DTOs.UserDTO;
+import Communication.DTOs.WorkPlanDTO;
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.SurveyController;
@@ -586,6 +587,24 @@ public class UserController {
             }
             else{
                 return new Response<>(null, true, res.getErrMsg());
+            }
+        }
+        else {
+            return new Response<>(null, true, "User not connected");
+        }
+    }
+
+    public Response<WorkPlanDTO> viewWorkPlan(String currUser){
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            Response<WorkPlan> workPlanResponse = user.getWorkPlan();
+            if(!workPlanResponse.isFailure()){
+                WorkPlanDTO workPlanDTO = new WorkPlanDTO();
+                //todo almog fill whatever needs to be filled here
+                return new Response<>(workPlanDTO, false, "successfully acquired work plan");
+            }
+            else{
+                return new Response<>(null, true, workPlanResponse.getErrMsg());
             }
         }
         else {
