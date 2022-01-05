@@ -1,5 +1,6 @@
 package Domain.UsersManagment;
 
+import Communication.DTOs.ActivityDTO;
 import Communication.DTOs.SurveyDTO;
 import Communication.DTOs.UserDTO;
 import Communication.DTOs.WorkPlanDTO;
@@ -9,10 +10,7 @@ import Domain.DataManagement.SurveyController;
 import Domain.WorkPlan.Goal;
 import Domain.WorkPlan.GoalsManagement;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -599,8 +597,7 @@ public class UserController {
             User user = connectedUsers.get(currUser);
             Response<WorkPlan> workPlanResponse = user.getWorkPlan();
             if(!workPlanResponse.isFailure()){
-                WorkPlanDTO workPlanDTO = new WorkPlanDTO();
-                //todo almog fill whatever needs to be filled here
+                WorkPlanDTO workPlanDTO = generateWpDTO (user);
                 return new Response<>(workPlanDTO, false, "successfully acquired work plan");
             }
             else{
@@ -610,6 +607,24 @@ public class UserController {
         else {
             return new Response<>(null, true, "User not connected");
         }
+    }
+
+    //TODO: need to test this one
+    private WorkPlanDTO generateWpDTO(User user) {
+        WorkPlanDTO workPlanDTO = new WorkPlanDTO();
+        WorkPlan workPlan = user.getWorkPlan().getResult();
+        for (String date: workPlan.getCalendar().descendingKeySet()) {
+            List<Activity> fromHere = workPlan.getCalendar().get(date);
+            List<ActivityDTO> toHere = new ArrayList<>();
+            for (Activity activity : fromHere){
+                ActivityDTO activityDTO = new ActivityDTO();
+                activityDTO.setTitle(activity.getTitle());
+                activityDTO.setSchoolId(activity.getSchool());
+                toHere.add(activityDTO);
+            }
+            workPlanDTO.getCalendar().add(new Pair<>(date, toHere));
+        }
+        return workPlanDTO;
     }
 
 }
