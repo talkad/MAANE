@@ -1,11 +1,13 @@
 package Service;
 
 import Communication.DTOs.UserDTO;
+import Communication.DTOs.WorkPlanDTO;
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.User;
 import Domain.UsersManagment.UserController;
 import Domain.UsersManagment.UserStateEnum;
+import Domain.WorkPlan.AnnualScheduleGenerator;
 import Service.Interfaces.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -92,6 +94,30 @@ public class UserServiceImpl implements UserService {
             log.error("failed to remove user {}", userToRemove);
         else
             log.info("removed user {}", userToRemove);
+
+        return res;
+    }
+
+    @Override
+    public Response<Boolean> generateSchedule(String supervisor, int surveyID) {
+        Response<Boolean> res = AnnualScheduleGenerator.getInstance().generateSchedule(supervisor, surveyID);
+
+        if(res.isFailure())
+            log.error("{} generated work plan successfully", supervisor);
+        else
+            log.info("{} failed to generate work plan", supervisor);
+
+        return res;
+    }
+
+    @Override
+    public Response<WorkPlanDTO> viewWorkPlan(String currUser) {
+        Response<WorkPlanDTO> res = UserController.getInstance().viewWorkPlan(currUser);
+
+        if(res.isFailure())
+            log.error("user {} cannot view plan", currUser);
+        else
+            log.info("user {} viewed plan", currUser);
 
         return res;
     }

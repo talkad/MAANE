@@ -1,6 +1,7 @@
 package Communication.Resource;
 
 import Communication.DTOs.UserDTO;
+import Communication.DTOs.WorkPlanDTO;
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.User;
@@ -46,9 +47,19 @@ public class UserController {
     public ResponseEntity<Response<Boolean>> removeUser(@RequestBody Map<String, Object>  body){
         return ResponseEntity.ok()
                 .body(service.removeUser((String)body.get("currUser"), (String)body.get("userToRemove")));
-
     }
 
+    @GetMapping("/viewWorkPlan/username={username}")
+    public ResponseEntity<Response<WorkPlanDTO>> viewWorkPlan(@PathVariable("username") String username){
+        return ResponseEntity.ok()
+                .body(service.viewWorkPlan(username));
+    }
+
+    @RequestMapping(value = "/removeUser", method = RequestMethod.POST)
+    public ResponseEntity<Response<Boolean>> generateSchedule(@RequestBody Map<String, Object>  body){
+        return ResponseEntity.ok()
+                .body(service.generateSchedule((String)body.get("supervisor"), (Integer) body.get("surveyID")));
+    }
 
 
 }

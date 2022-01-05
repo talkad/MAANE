@@ -1,6 +1,7 @@
 package Service.Interfaces;
 
 import Communication.DTOs.UserDTO;
+import Communication.DTOs.WorkPlanDTO;
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.User;
@@ -15,4 +16,7 @@ public interface UserService {
 
     Response<User> registerUser(UserDTO user);
     Response<Boolean> removeUser(String currUser, String userToRemove);
+
+    Response<Boolean> generateSchedule(String supervisor, int surveyId);
+    Response<WorkPlanDTO> viewWorkPlan(String currUser);
 }
