@@ -56,11 +56,19 @@ public class SurveyController {
                 .body( service.addRule((String)body.get("username"), (Integer)body.get("surveyID"), rule, (Integer)body.get("goalID")));
     }
 
+    @RequestMapping(value = "/removeRule", method = RequestMethod.POST)
+    public ResponseEntity<Response<Boolean>> removeRule(@RequestBody Map<String, Object> body){
+
+        return ResponseEntity.ok()
+                .body(service.removeRule((String)body.get("username"), (Integer)body.get("surveyID"), (Integer)body.get("ruleID")));
+    }
+
     @GetMapping("/detectFault/username={username}&surveyID={surveyID}")
     public ResponseEntity<Response<List<List<String>>>> detectFault(@PathVariable("username") String username, @PathVariable("surveyID") int surveyID){
         return ResponseEntity.ok()
                 .body(service.detectFault(username, surveyID));
     }
+
 
 
     private Rule RuleConverter(RuleDTO ruleDTO) {

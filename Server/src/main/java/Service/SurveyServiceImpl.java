@@ -74,6 +74,18 @@ public class SurveyServiceImpl implements SurveyService {
     }
 
     @Override
+    public Response<Boolean> removeRule(String username, int surveyID, int ruleID) {
+        Response<Boolean> res = SurveyController.getInstance().removeRule(username, surveyID, ruleID);
+
+        if(res.isFailure())
+            log.error(res.getErrMsg());
+        else
+            log.info("new rule added successfully");
+
+        return res;
+    }
+
+    @Override
     public Response<List<List<String>>> detectFault(String username, int surveyID) {
         Response<List<List<String>>> res = SurveyController.getInstance().detectFault(username, surveyID);
 

@@ -10,6 +10,7 @@ import java.util.List;
 
 public class FaultDetector {
 
+    // the index of the rule is the index in list
     private List<Pair<Rule, Integer>> rules;
 
     public FaultDetector() {

@@ -18,6 +18,8 @@ public interface SurveyService {
 
     Response<Boolean> addRule(String username, int surveyID, Rule rule, int goalID);
 
+    Response<Boolean> removeRule(String username, int surveyID, int ruleID);
+
 //    Response<Boolean> removeSurvey(String username, int id);
 //
 //    Response<Survey> getSurvey(int id);

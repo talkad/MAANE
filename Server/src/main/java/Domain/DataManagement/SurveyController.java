@@ -139,6 +139,26 @@ public class SurveyController {
         return new Response<>(true, false, "OK");
     }
 
+    public Response<Boolean> removeRule(String username, int id, int ruleID){
+        Pair<Survey, FaultDetector> surveyPair;
+        FaultDetector faultDetector;
+        Response<Boolean> legalAdd = UserController.getInstance().hasCreatedSurvey(username, id);
+
+        if(!legalAdd.getResult())
+            return new Response<>(false, true, username + "does not created survey " + id);
+
+        if(!surveys.containsKey(id))
+            return new Response<>(false, true, "id is out of bound");
+
+        surveyPair =surveys.get(id);
+        faultDetector = surveyPair.getSecond();
+        faultDetector.removeRule(ruleID);
+
+        surveys.put(id, new Pair<>(surveyPair.getFirst(), faultDetector));
+
+        return new Response<>(true, false, "OK");
+    }
+
     public Response<List<List<String>>> detectFault(String username, int id){
         List<List<String>> faults = new LinkedList<>();
         FaultDetector faultDetector;
