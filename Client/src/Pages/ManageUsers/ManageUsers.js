@@ -14,6 +14,8 @@ import Box from "@mui/material/Box";
 import {Avatar, Collapse, Divider, Grid, IconButton, List, ListItem, ListItemText} from "@mui/material";
 import Button from "@mui/material/Button";
 import {useNavigate} from "react-router-dom";
+import * as Space from 'react-spaces';
+import Connection from "../../Communication/Connection";
 
 
 //TODO: change to react space
@@ -116,17 +118,28 @@ export default function ManageUsers(){
 
     const table_name_col_string = 'שם';
     const table_role_col_string = 'תפקיד';
+    const page_title_string = 'ניהול משתמשים'
 
     let navigate = useNavigate();
 
     useEffect(() => {
-        console.log("typeeeeeeee");
-        console.log(window.sessionStorage.getItem('type'));
+        // TODO: ask server for the data
     }, []);
 
+    const handleReceivedData = (data) => {
+        // TODO: implement
+    }
+
+    const userDeletionCallback = (data) => {
+        console.log(data)
+        // TODO: check this once the option to register users is working
+    }
+
     const handleUserDeletion = (username) => {
-        console.log('hi there');
-        // TODO: send
+        Connection.getInstance().removeUser({
+            currUser: window.sessionStorage.getItem('username'),
+            userToRemove: username,
+        }, userDeletionCallback)
     }
 
     const handleUserChangePassword = (username) => {
@@ -136,9 +149,11 @@ export default function ManageUsers(){
 
     return (
         <div id="Manage-users">
-            <h1>manage'em</h1>
+            <h1>{page_title_string}</h1>
             {/* adding new users button */}
-            <div><Button variant="outlined" color="secondary" onClick={() => navigate('../registerUsers')}>הוספת משתמש</Button></div>
+            <div>
+                <Button variant="outlined" color="secondary" onClick={() => navigate('../registerUsers')}>הוספת משתמש</Button>
+            </div>
             <TableContainer id="Manage-users-table" component={Paper}>
                 {/* the table */}
                 <Table aria-label="collapsible table">

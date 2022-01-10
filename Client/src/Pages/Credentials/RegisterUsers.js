@@ -9,8 +9,6 @@ import Box from "@mui/material/Box";
 import FormControl from "@mui/material/FormControl";
 import Connection from "../../Communication/Connection";
 
-
-// TODO: once there are permission implemented have a different select for a system manager and a supervisor
 // TODO: change to react-space
 
 
@@ -43,6 +41,11 @@ const roles_supervisor = [
 
 export default function RegisterUsers(props){
     const [userInfo, setUserInfo] = useState({})
+    const [values, setValues] = useState({
+        username: '',
+        password: '',
+        workField: '',
+    })
     const [showPassword, setShowPassword] = useState(false)
     const [showError, setShowError] = useState(false)
     const [errorMessage, setErrorMessage] = useState('');
@@ -64,7 +67,11 @@ export default function RegisterUsers(props){
         setRoles(selected_roles)
         setRoleChoiceEnum(selected_roles[0]['ruleEnum'])
         setRoleChoice(selected_roles[0]['role'])
-    },[]);
+    },[props.type]);
+
+    const handleTextFieldsChange = (props) => (event) => {
+        setValues({ ...values, [props]: event.target.value})
+    }
 
     const registerCallback = (data) => {
         if(data.failure){
@@ -72,9 +79,9 @@ export default function RegisterUsers(props){
             setErrorMessage('ההרשמה נדחתה');
         }
         else{
-            // TODO: implement
+            // TODO: currently the functionality doesn't work correctly so check on this later
+            console.log(data)
         }
-
     }
 
     const handleSubmit = (event) => {
@@ -86,7 +93,7 @@ export default function RegisterUsers(props){
             setErrorMessage('נא למלא את כל השדות')
         }
         else{
-            // TODO: send the data
+            // TODO: change this once there is an option to register a supervisor
             setShowError(false);
             Connection.getInstance().register({
                     currUser: window.sessionStorage.getItem('username'),
@@ -116,6 +123,8 @@ export default function RegisterUsers(props){
                     {/* username text field */}
                     <TextField
                         color="secondary"
+                        value={values.username}
+                        onChange={handleTextFieldsChange('username')}
                         error={showError}
                         margin="normal"
                         variant="standard"
@@ -130,6 +139,8 @@ export default function RegisterUsers(props){
                     {/* password text field */}
                     <TextField
                         color="secondary"
+                        value={values.password}
+                        onChange={handleTextFieldsChange('password')}
                         error={showError}
                         margin="normal"
                         variant="standard"
@@ -169,6 +180,8 @@ export default function RegisterUsers(props){
                     {roleChoice === supervisor_string &&
                         <TextField
                             color="secondary"
+                            value={values.workField}
+                            onChange={handleTextFieldsChange('workField')}
                             error={showError}
                             margin="normal"
                             variant="standard"

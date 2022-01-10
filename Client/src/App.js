@@ -37,6 +37,7 @@ import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 import SummarizeIcon from '@mui/icons-material/Summarize';
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import Typography from "@mui/material/Typography";
+import Connection from "./Communication/Connection";
 
 // TODO: prevent users from going through the site by entering paths in the url
 // TODO: currently saving everything in local storage but IT IS NOT SAFE
@@ -56,6 +57,19 @@ function App(){
     // TODO: the greetings currently doesn't work well. but perhaps once TAL implements what i asked then it will (return the username with the response for the request)
     const greetings_string = "שלום " + window.sessionStorage.getItem('username') // TODO: instead of the username, use the actual name of the user
 
+    const logoutCallback = (data) => {
+        setType("GUEST")
+        window.sessionStorage.setItem('username', data.result)
+        navigate('/user/login', {replace: true})
+    }
+
+    const handleLogout = () => {
+        console.log("sending logout")
+        Connection.getInstance().logout({
+            name: window.sessionStorage.getItem('username')
+        }, logoutCallback)
+    }
+
     useEffect(() => {
         // TODO: needed?
     }, );
@@ -69,7 +83,6 @@ function App(){
             </Space.Top>
             <Space.Fill>
                 <Divider/>
-                {/*TODO: add onclick to the list buttons*/}
                 {/*TODO: show buttons based on permissions*/}
                 <List>
                     <ListItem button onClick={() => navigate(`user/home`, {replace: true})}>
@@ -127,12 +140,8 @@ function App(){
                     {/* app bar */}
                     {type !== 'GUEST' && <Space.Top size={barWidth}>
                         {/* TODO: fix it so the card line would be see and it would align with the logo*/}
-                        {/* TODO:  can put an avatar and say hello <name> or something*/}
                         <AppBar style={{minHeight: "99%"}}  color="background" position="static">
                             <Toolbar>
-                                {/* TODO: see what to put instead of this typography*/}
-
-
                                 <IconButton
                                     size="large"
                                     aria-label="account of current user"
@@ -145,8 +154,7 @@ function App(){
                                 <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                                     {greetings_string}
                                 </Typography>
-                                {/*TODO: set an onclick for the button*/}
-                                <Button color="inherit">{logout_button_string}</Button>
+                                <Button onClick={() => handleLogout()} color="inherit">{logout_button_string}</Button>
                             </Toolbar>
                         </AppBar>
                     </Space.Top>}

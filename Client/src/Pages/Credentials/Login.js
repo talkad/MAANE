@@ -47,10 +47,9 @@ export default function Login(props){
         }
         else{
             //UserInfo.getInstance().setUsername(username)
-            window.sessionStorage.setItem('username', username);
-            const type = data.result;
+            window.sessionStorage.setItem('username', data.result.first);
             //UserInfo.getInstance().setType(type);
-            props.changeType(type);
+            props.changeType(data.result.second);
             //window.sessionStorage.setItem('type', type);
 
             navigate(`../home`, {replace: false}) // TODO: check what does the replace mean
