@@ -55,11 +55,11 @@ public class UserController {
                 .body(service.viewWorkPlan(username));
     }
 
-    @RequestMapping(value = "/removeUser", method = RequestMethod.POST)
-    public ResponseEntity<Response<Boolean>> generateSchedule(@RequestBody Map<String, Object>  body){
-        return ResponseEntity.ok()
-                .body(service.generateSchedule((String)body.get("supervisor"), (Integer) body.get("surveyID")));
-    }
+//    @RequestMapping(value = "/removeUser", method = RequestMethod.POST)
+//    public ResponseEntity<Response<Boolean>> generateSchedule(@RequestBody Map<String, Object>  body){
+//        return ResponseEntity.ok()
+//                .body(service.generateSchedule((String)body.get("supervisor"), (Integer) body.get("surveyID")));
+//    }
 
 
 }

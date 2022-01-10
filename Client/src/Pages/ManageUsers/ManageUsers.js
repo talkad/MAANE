@@ -110,8 +110,8 @@ function Row(props) {
 
 
 const rows = [
-    createData("anakin", 'אנקין', "בוגד", "stam@post.bgu.ac.il", "000-123-4567", "פתח תקווה", ["מקיף ז'", "רגר"]),
-    createData("kenobi", 'קנובי', "גנרל", "stam2@post.bgu.ac.il", "002-123-4567", "ירוחם", ["מאיפה לי", "איזה מקיף בלוד"]),
+    createData("Ronit", 'רונית', "מפקחת", "ronit@post.bgu.ac.il", "000-123-4567", "פתח תקווה", ["מקיף ז'", "רגר"]),
+    createData("Shoshi", 'שושי', "מדריכה", "shoshi@post.bgu.ac.il", "002-123-4567", "ירוחם", ["יהלום", "שהם"]),
 ];
 
 export default function ManageUsers(){

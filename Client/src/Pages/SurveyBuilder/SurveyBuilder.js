@@ -7,6 +7,7 @@ import Button from "@mui/material/Button";
 import { TransitionGroup } from 'react-transition-group';
 import SurveyQuestionBuilder from "./SurveyBuilderQuestion";
 import Connection from "../../Communication/Connection";
+import * as Space from 'react-spaces';
 
 // TODO: change to react-space
 
@@ -110,7 +111,7 @@ export default function SurveyBuilder(){
     }
 
     return (
-        <div className="Survey">
+        <Space.Fill scrollable className="Survey">
             <h1>{header_string}</h1>
             <Paper className="Survey-paper" elevation={3}>
                 {/*TODO: make the margin work */}
@@ -146,6 +147,6 @@ export default function SurveyBuilder(){
             <Button onClick={add_question} color="secondary" variant="contained">{add_question_string}</Button>
             <br/>
             <Button onClick={submit_survey} color="secondary" variant="contained">{submit_survey_string}</Button>
-        </div>
+        </Space.Fill>
     )
 }

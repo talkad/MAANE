@@ -8,89 +8,84 @@ const data =
     [
         {
             id: 1,
-            title: "hello there",
-            description: "general kenobi",
+            title: "סקר 2018",
+            description: "רוית",
         },
         {
             id: 2,
-            title: "hello there",
-            description: "general kenobi",
+            title: "סקר 2019",
+            description: "רוית",
         },
         {
             id: 3,
-            title: "hello there",
-            description: "general kenobi",
+            title: "סקר 2020",
+            description: "רוית",
         },
         {
             id: 4,
-            title: "hello there",
-            description: "general kenobi",
-        },
-        {
-            id: 5,
-            title: "hello there",
-            description: "general kenobi",
-        },
-        {
-            id: 6,
-            title: "hello there",
-            description: "general kenobi",
-        },
-        {
-            id: 7,
-            title: "hello there",
-            description: "general kenobi",
-        },
-        {
-            id: 7,
-            title: "hello there",
-            description: "general kenobi",
-        },
-        {
-            id: 7,
-            title: "hello there",
-            description: "general kenobi",
-        },
-        {
-            id: 7,
-            title: "hello there",
-            description: "general kenobi",
-        },
-        {
-            id: 7,
-            title: "hello there",
-            description: "general kenobi",
-        },
-        {
-            id: 7,
-            title: "hello there",
-            description: "general kenobi",
-        },
-        {
-            id: 7,
-            title: "hello there",
-            description: "general kenobi",
-        },
-        {
-            id: 7,
-            title: "hello there",
-            description: "general kenobi",
-        },
-        {
-            id: 7,
-            title: "hello there",
-            description: "general kenobi",
-        },
-        {
-            id: 7,
-            title: "hello there",
-            description: "general kenobi",
-        },
-        {
-            id: 7,
-            title: "hello there",
-            description: "general kenobi",
-        },
+            title: "סקר 2021",
+            description: "רוית",
+        }
+        // {
+        //     id: 6,
+        //     title: "hello there",
+        //     description: "general kenobi",
+        // },
+        // {
+        //     id: 7,
+        //     title: "hello there",
+        //     description: "general kenobi",
+        // },
+        // {
+        //     id: 7,
+        //     title: "hello there",
+        //     description: "general kenobi",
+        // },
+        // {
+        //     id: 7,
+        //     title: "hello there",
+        //     description: "general kenobi",
+        // },
+        // {
+        //     id: 7,
+        //     title: "hello there",
+        //     description: "general kenobi",
+        // },
+        // {
+        //     id: 7,
+        //     title: "hello there",
+        //     description: "general kenobi",
+        // },
+        // {
+        //     id: 7,
+        //     title: "hello there",
+        //     description: "general kenobi",
+        // },
+        // {
+        //     id: 7,
+        //     title: "hello there",
+        //     description: "general kenobi",
+        // },
+        // {
+        //     id: 7,
+        //     title: "hello there",
+        //     description: "general kenobi",
+        // },
+        // {
+        //     id: 7,
+        //     title: "hello there",
+        //     description: "general kenobi",
+        // },
+        // {
+        //     id: 7,
+        //     title: "hello there",
+        //     description: "general kenobi",
+        // },
+        // {
+        //     id: 7,
+        //     title: "hello there",
+        //     description: "general kenobi",
+        // },
 
     ]
 

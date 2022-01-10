@@ -12,9 +12,25 @@ const localizer = momentLocalizer(moment);
 
 const myEventsList = [
     {
-        title: "שלום שם",
-        start: "1/2/2022",
-        end: "1/2/2022",
+        title: "בטיחות במעבדה",
+        start: "1/3/2022",
+        end: "1/3/2022",
+        allDay: false,
+        resource: "https://momentjs.com/", // TODO: what the heck is the resource???
+    },
+
+    {
+        title: "קידום תלמידים",
+        start: "1/4/2022",
+        end: "1/4/2022",
+        allDay: false,
+        resource: "https://momentjs.com/", // TODO: what the heck is the resource???
+    },
+
+    {
+        title: "שעות פרטניות",
+        start: "1/10/2022",
+        end: "1/10/2022",
         allDay: false,
         resource: "https://momentjs.com/", // TODO: what the heck is the resource???
     }
