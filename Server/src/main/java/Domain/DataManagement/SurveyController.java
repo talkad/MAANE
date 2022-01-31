@@ -34,6 +34,12 @@ public class SurveyController {
         indexer = 0;
     }
 
+    /**
+     * creates new survey
+     * @param username the name of the user that wish to create a survey
+     * @param surveyDTO is the questions and their types that the generated survey will contain
+     * @return response with result of the new surveyID on success, -1 on failure
+     */
     public Response<Integer> createSurvey(String username, SurveyDTO surveyDTO){
         Response<Integer> permissionRes;
         Response<Survey> surveyRes;
@@ -61,6 +67,11 @@ public class SurveyController {
         return new Response<>(indexer++, false, "new survey created successfully");
     }
 
+    /**
+     * new answers for certain survey
+     * @param answersDTO is the answers for a given survey
+     * @return response with boolean that represents if the answers was
+     */
     public Response<Boolean> addAnswers(SurveyAnswersDTO answersDTO){
 
         SurveyAnswers answer = new SurveyAnswers();
@@ -90,6 +101,11 @@ public class SurveyController {
         return new Response<>(true, false, "the answer added successfully");
     }
 
+    /**
+     * get the survey by its ID
+     * @param id of the desired survey
+     * @return the survey with the given ID if exists, failure response otherwise
+     */
     public Response<SurveyDTO> getSurvey(int id){
         Survey survey;
         SurveyDTO surveyDTO = new SurveyDTO();
@@ -119,6 +135,14 @@ public class SurveyController {
         return new Response<>(surveyDTO, false, "OK");
     }
 
+    /**
+     * add a new rule to a survey
+     * @param username the name of the user that desired to add a rule
+     * @param id of the survey
+     * @param rule the new rule to be added
+     * @param goalID the goal the rule represents
+     * @return success response if the arguments are legal. failure otherwise
+     */
     public Response<Boolean> addRule(String username, int id, Rule rule, int goalID){
         Pair<Survey, FaultDetector> surveyPair;
         FaultDetector faultDetector;
@@ -139,6 +163,13 @@ public class SurveyController {
         return new Response<>(true, false, "OK");
     }
 
+    /**
+     * remove a rule from a survey
+     * @param username the name of the user desired to remove a rule
+     * @param id of the survey
+     * @param ruleID id of the rule to be removed
+     * @return successful response if the {@username} created the survey in first place
+     */
     public Response<Boolean> removeRule(String username, int id, int ruleID){
         Pair<Survey, FaultDetector> surveyPair;
         FaultDetector faultDetector;
@@ -159,6 +190,12 @@ public class SurveyController {
         return new Response<>(true, false, "OK");
     }
 
+    /**
+     * detects irregularities in survey answers
+     * @param username the name of the user want to detect fault
+     * @param id of the survey
+     * @return response contains list of all goals that not consistent with the rules, for each answer
+     */
     public Response<List<List<String>>> detectFault(String username, int id){
         List<List<String>> faults = new LinkedList<>();
         FaultDetector faultDetector;
@@ -207,6 +244,13 @@ public class SurveyController {
         this.answers = answers;
     }
 
+    /**
+     * detect all irregularities in certain school
+     * @param username the name of the user that want to detect the faults
+     * @param id of the survey
+     * @param symbol of the school
+     * @return list of all goals that not consistent with the rules
+     */
     public Response<List<String>> detectSchoolFault(String username, int id, String symbol){
         FaultDetector faultDetector;
         List<Goal> goals = UserController.getInstance().getGoals(username).getResult();

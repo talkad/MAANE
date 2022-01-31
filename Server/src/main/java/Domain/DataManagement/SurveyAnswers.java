@@ -42,6 +42,12 @@ public class SurveyAnswers {
         return new Response<>(true, false, "OK");
     }
 
+    /**
+     * add answer to survey
+     * @param type of answer
+     * @param answer string contains the answer
+     * @return successful response if the input was legal according to its type
+     */
     private Response<Boolean> addAnswer(AnswerType type, String answer){
         switch (type){
             case MULTIPLE_CHOICE:
