@@ -49,6 +49,7 @@ public class SurveyControllerTests {
         List<String> answers2 = Arrays.asList("30", "1", "2");
         List<AnswerType> types2 = Arrays.asList(NUMERIC_ANSWER, MULTIPLE_CHOICE, MULTIPLE_CHOICE);
 
+        answersDTO1.setSymbol("A123");
         answersDTO1.setAnswers(answers2);
         answersDTO1.setTypes(types2);
 
@@ -58,6 +59,7 @@ public class SurveyControllerTests {
         List<String> answers3 = Arrays.asList("30", "1");
         List<AnswerType> types3 = Arrays.asList(NUMERIC_ANSWER, MULTIPLE_CHOICE);
 
+        answersDTO1.setSymbol("B456");
         answersDTO2.setAnswers(answers3);
         answersDTO2.setTypes(types3);
     }
@@ -66,7 +68,7 @@ public class SurveyControllerTests {
     public void surveyCreationSuccess(){
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
-        String adminName = userController.login(guestName, "shaked", "cohen").getResult().getFirst();
+        String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
         userController.registerUserByAdmin(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         String newGuestName = userController.logout(adminName).getResult();
         userController.login(newGuestName, "Dvorit", "Dvorit");
@@ -78,7 +80,7 @@ public class SurveyControllerTests {
     public void addAnswerSuccess(){
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
-        String adminName = userController.login(guestName, "shaked", "cohen").getResult().getFirst();
+        String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
         userController.registerUserByAdmin(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         String newGuestName = userController.logout(adminName).getResult();
         userController.login(newGuestName, "Dvorit", "Dvorit");
@@ -99,7 +101,7 @@ public class SurveyControllerTests {
 
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
-        String adminName = userController.login(guestName, "shaked", "cohen").getResult().getFirst();
+        String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
         userController.registerUserByAdmin(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         String newGuestName = userController.logout(adminName).getResult();
         userController.login(newGuestName, "Dvorit", "Dvorit");

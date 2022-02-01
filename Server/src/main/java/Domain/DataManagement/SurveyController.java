@@ -183,11 +183,11 @@ public class SurveyController {
 
         surveyPair =surveys.get(id);
         faultDetector = surveyPair.getSecond();
-        faultDetector.removeRule(ruleID);
+        Response<Boolean> res = faultDetector.removeRule(ruleID);
 
         surveys.put(id, new Pair<>(surveyPair.getFirst(), faultDetector));
 
-        return new Response<>(true, false, "OK");
+        return res;
     }
 
     /**
