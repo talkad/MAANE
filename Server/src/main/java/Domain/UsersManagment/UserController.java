@@ -287,11 +287,7 @@ public class UserController {
     }
 
     /**
-     * assign school to certain user
-     * @param currUser the user trying to apply the assignment
-     * @param userToAssignName the user that to be assign to school
-     * @param schools that the userToAssignName
-     * @return
+successful response on sucess. failure otherwise.
      */
     public Response<Boolean> assignSchoolsToUser(String currUser, String userToAssignName, List<String> schools){
         Response<Boolean> response;
@@ -315,9 +311,15 @@ public class UserController {
         }
         else{
             return new Response<>(null, true, "User not connected");
-        }
-    }
+        }}
 
+    /**
+     * */
+     * @param currUser
+     * @param userToRemoveSchoolsName
+     * @param schools
+     * @return
+     */
     public Response<Boolean> removeSchoolsFromUser(String currUser, String userToRemoveSchoolsName, List<String> schools){
         Response<Boolean> response;
         if (connectedUsers.containsKey(currUser)) {
@@ -348,9 +350,7 @@ public class UserController {
     public Response<List<String>> getSchools(String currUser){//todo maybe add checks
         User user = registeredUsers.get(currUser).getFirst();
         return new Response<>(user.getSchools(), false, "");
-    }
-
-    public Response<List<String>> getAppointedInstructors(String currUser){
+    }public Response<List<String>> getAppointedInstructors(String currUser){
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             Response<List<String>> appointeesRes = user.getAppointees();
