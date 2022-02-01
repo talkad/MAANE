@@ -25,6 +25,13 @@ public class SearchEngine {
 
     // TODO: for now we ignore the query
     // TODO: also for now we ignore "sub office" id
+
+    /**
+     * returns the best matching guiding baskets to the query filtered by the given labels
+     * @param query the query to search with
+     * @param labels the labels to filter upon
+     * @return best matching guiding baskets according to predetermined metrics
+     */
     public Response<List<GuidingBasketDTO>> search(String query, String[] labels){
         List<GuidingBasketDTO> toReturn = new LinkedList<>();
 
@@ -50,6 +57,11 @@ public class SearchEngine {
         }
     }
 
+    /**
+     * checks if the given id already exists in the system
+     * @param id the id to check
+     * @return true if exists, false otheriwse
+     */
     private boolean idExists(String id){
         for (GuidingBasket basket: baskets){
             if(basket.getBasketID().equals(id)){
@@ -60,6 +72,12 @@ public class SearchEngine {
         return false;
     }
 
+    /**
+     * adds a new guiding basket to the system
+     * @param dto the guiding basket to add
+     * @param newID the id of the new basket to add
+     * @return response with the result of the operation
+     */
     public Response<Boolean> addBasket(GuidingBasketDTO dto, String newID){
         if(dto != null && newID != null && !idExists(newID)){
             dto.setBasketID(newID);
@@ -70,6 +88,11 @@ public class SearchEngine {
         return new Response<>(false, true, "Couldn't add the basket");
     }
 
+    /**
+     * removes a guiding basket from the system
+     * @param dto the guiding basket to remove
+     * @return response with the result of the operation
+     */
     public Response<Boolean> removeBasket(GuidingBasketDTO dto){
         if (dto != null && dto.getBasketID() != null){
             if(instance.baskets.removeIf(b -> b.getBasketID().equals(dto.getBasketID()))){
@@ -80,6 +103,11 @@ public class SearchEngine {
         return new Response<>(false, true, "Couldn't find basket to remove");
     }
 
+    /**
+     * gets a GuidingBasket based on its DTO version
+     * @param dto the dto of the guiding basket asked
+     * @return a GuidingBasket representation of the given GuidingBasketDTO
+     */
     private GuidingBasket getBasket(GuidingBasketDTO dto){
         try{
            return baskets.stream().filter(b -> b.getBasketID().equals(dto.getBasketID()))
@@ -90,6 +118,12 @@ public class SearchEngine {
         }
     }
 
+    /**
+     * sets the title of a given basket
+     * @param dto the guiding basket to update
+     * @param newTitle the value of the new title
+     * @return response with the result of the operation
+     */
     public Response<Boolean> setBasketTitle(GuidingBasketDTO dto, String newTitle){
 
         if(newTitle != null){
@@ -104,6 +138,12 @@ public class SearchEngine {
         return new Response<>(false, true, "A new title was not provided");
     }
 
+    /**
+     * sets the description of a given basket
+     * @param dto the guiding basket to update
+     * @param newDescription the value of the new description
+     * @return response with the result of the operation
+     */
     public Response<Boolean> setBasketDescription(GuidingBasketDTO dto, String newDescription){
         if(newDescription != null){
             GuidingBasket selected = getBasket(dto);
@@ -117,6 +157,13 @@ public class SearchEngine {
         return new Response<>(false, true, "A new description was not provided");
     }
 
+    /**
+     * adds or removes a label from a given guiding basket based on the param of the operation
+     * @param dto the guiding basket to modify
+     * @param label the label to add or remove
+     * @param action 1 or 0. 0 - add label, 1 - remove label
+     * @return response with the result of the operation
+     */
     // action = 0 - add
     // action = 1 - remove
     public Response<Boolean> addRemoveLabel(GuidingBasketDTO dto, String label, int action){

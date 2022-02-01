@@ -20,6 +20,17 @@ import Connection from "../../Communication/Connection";
 
 //TODO: change to react space
 
+/**
+ * a function to return an object of the data the tables accepts
+ * @param username username of the user
+ * @param name the name of the user
+ * @param role the role of the user
+ * @param email the email of user
+ * @param phoneNumber the phone number of the user
+ * @param city the city of the user
+ * @param schools the schools under the user
+ * @returns {{role, phoneNumber, city, schools, name, email, username}} the object to return
+ */
 function createData(username, name, role, email, phoneNumber, city, schools) {
     return {
         username,
@@ -32,7 +43,11 @@ function createData(username, name, role, email, phoneNumber, city, schools) {
     }
 }
 
-// this hook represents a row in the table
+/**
+ * this function is a hook of a row in the table
+ * @param props data for a row
+ * @returns {JSX.Element} JSX element of the row
+ */
 function Row(props) {
     const { row } = props;
     const [open, setOpen] = React.useState(false);
@@ -108,7 +123,7 @@ function Row(props) {
     );
 }
 
-
+// data for offline testing
 const rows = [
     createData("Ronit", 'רונית', "מפקחת", "ronit@post.bgu.ac.il", "000-123-4567", "פתח תקווה", ["מקיף ז'", "רגר"]),
     createData("Shoshi", 'שושי', "מדריכה", "shoshi@post.bgu.ac.il", "002-123-4567", "ירוחם", ["יהלום", "שהם"]),
@@ -126,15 +141,27 @@ export default function ManageUsers(){
         // TODO: ask server for the data
     }, []);
 
+    /**
+     * handler for the response from the server for table data
+     * @param data the table data to arrange
+     */
     const handleReceivedData = (data) => {
         // TODO: implement
     }
 
+    /**
+     * callback for the response of the server for the deletion of a user request
+     * @param data
+     */
     const userDeletionCallback = (data) => {
         console.log(data)
         // TODO: check this once the option to register users is working
     }
 
+    /**
+     * handler for deleting a user. sends a request to the server to delete the given user
+     * @param username the user to delete
+     */
     const handleUserDeletion = (username) => {
         Connection.getInstance().removeUser({
             currUser: window.sessionStorage.getItem('username'),
@@ -142,6 +169,10 @@ export default function ManageUsers(){
         }, userDeletionCallback)
     }
 
+    /**
+     * handler for changing the password of a user. sends a request to the server to change the password of the given user
+     * @param username the user to change the password to
+     */
     const handleUserChangePassword = (username) => {
         console.log('sup');
         // TODO: send

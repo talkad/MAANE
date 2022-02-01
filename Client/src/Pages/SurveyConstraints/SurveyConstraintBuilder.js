@@ -1,3 +1,5 @@
+// TODO: decide if we keep this or changing how we present this
+
 import {
     GraphView, // required
     Edge, // optional

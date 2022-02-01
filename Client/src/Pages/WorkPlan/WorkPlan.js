@@ -8,8 +8,9 @@ import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment'
 import 'moment/locale/he'
 
-const localizer = momentLocalizer(moment);
+const localizer = momentLocalizer(moment); // localizer to represent the data according to our location (israel)
 
+// dummy data for offline testing
 const myEventsList = [
     {
         title: "בטיחות במעבדה",
@@ -38,6 +39,9 @@ const myEventsList = [
 
 export default function WorkPlan(){
 
+    /**
+     * sends a request to the server to get work plan of the current user
+     */
     useEffect(() => {
         // TODO: get information from server
     }, );
