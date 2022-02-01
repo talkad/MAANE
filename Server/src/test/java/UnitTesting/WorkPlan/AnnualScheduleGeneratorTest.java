@@ -1,14 +1,11 @@
 package UnitTesting.WorkPlan;
 
 import Domain.CommonClasses.Pair;
-import Domain.CommonClasses.Response;
-import Domain.UsersManagment.User;
 import Domain.UsersManagment.UserController;
 import Domain.UsersManagment.UserStateEnum;
 import Domain.WorkPlan.AnnualScheduleGenerator;
 import Domain.WorkPlan.Goal;
 import Domain.WorkPlan.GoalsManagement;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -27,7 +24,7 @@ public class AnnualScheduleGeneratorTest {
         userController = UserController.getInstance();
         guestName = userController.addGuest().getResult();
         String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
-        userController.registerUserByAdmin(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         guestName = userController.logout(adminName).getResult();
         //Response<String> supervisorName = userController.login(guestName, "sup1", "sup1");
     }

@@ -8,10 +8,13 @@ import Domain.UsersManagment.User;
 import Domain.UsersManagment.UserController;
 import Domain.UsersManagment.UserStateEnum;
 import Domain.WorkPlan.AnnualScheduleGenerator;
+import Domain.WorkPlan.Goal;
 import Service.Interfaces.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -87,6 +90,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Response<User> registerUserBySystemManager(UserDTO user, String optionalSupervisor) {
+        Response<User> res = UserController.getInstance().registerUserBySystemManager(user.getCurrUser(), user.getUserToRegister(), user.getPassword(), user.getUserStateEnum(), optionalSupervisor, user.getWorkField(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getPhoneNumber(), user.getCity());
+
+        if(res.isFailure())
+            log.error("failed to register user {}", user.getUserToRegister());
+        else
+            log.info("user {} registered successfully", user.getUserToRegister());
+
+        return res;
+    }
+
+    @Override
     public Response<Boolean> removeUser(String currUser, String userToRemove) {
         Response<Boolean> res = UserController.getInstance().removeUser(currUser, userToRemove);
 
@@ -94,18 +109,6 @@ public class UserServiceImpl implements UserService {
             log.error("failed to remove user {}", userToRemove);
         else
             log.info("removed user {}", userToRemove);
-
-        return res;
-    }
-
-    @Override
-    public Response<Boolean> generateSchedule(String supervisor, int surveyID) {
-        Response<Boolean> res = AnnualScheduleGenerator.getInstance().generateSchedule(supervisor, surveyID);
-
-        if(res.isFailure())
-            log.error("{} generated work plan successfully", supervisor);
-        else
-            log.info("{} failed to generate work plan", supervisor);
 
         return res;
     }
@@ -119,6 +122,43 @@ public class UserServiceImpl implements UserService {
         else
             log.info("user {} viewed plan", currUser);
 
+        return res;
+    }
+
+    @Override
+    public Response<List<UserDTO>> getAppointedUsers(String currUser) {//todo implement on client side
+        Response<List<UserDTO>> res = UserController.getInstance().getAppointedUsers(currUser);
+
+        if(res.isFailure())
+            log.error("failed to get Appointed users for the user {}", currUser);
+        else
+            log.info("user {} successfully received appointed users", currUser);
+        return res;
+    }
+
+    //for testing purposes only
+    @Override
+    public Response<User> getUserRes(String username) {
+        return UserController.getInstance().getUserRes(username);
+    }
+
+    @Override
+    public Response<Boolean> assignSchoolsToUser(String currUser, String userToAssignName, List<String> schools) {
+        Response<Boolean> res = UserController.getInstance().assignSchoolsToUser(currUser, userToAssignName, schools);
+
+        if(res.isFailure())
+            log.error("failed to assign schools for the user {}", userToAssignName);
+        else
+            log.info("user {} was successfully assigned to the schools", userToAssignName);
+        return res;    }
+
+    public Response<Boolean> addGoals(String currUser, List<Goal> goalList){
+        Response<Boolean> res = UserController.getInstance().addGoals(currUser, goalList);
+
+        if(res.isFailure())
+            log.error("failed to add goals by {}", currUser);
+        else
+            log.info("user {} successfully added goals", currUser);
         return res;
     }
 

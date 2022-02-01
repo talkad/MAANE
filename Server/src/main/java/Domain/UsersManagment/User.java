@@ -363,7 +363,7 @@ public class User {
             return new Response<>(this.workField, false, "");
         }
         else {
-            return new Response<>(null, true, "user not allowed to generate work plan");
+            return new Response<>("", true, "user not allowed to generate work plan");
         }
     }
 

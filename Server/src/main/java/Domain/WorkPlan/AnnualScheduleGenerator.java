@@ -91,20 +91,27 @@ public class AnnualScheduleGenerator {
         //2
         Response<List<String>> instructorsRes = userController.getAppointedInstructors(supervisor); //get the supervisors instructors
         if (!instructorsRes.isFailure()) {
+
             Map<String, Map<String, List<Goal>>> instructorWithProblemsForSchools = new ConcurrentHashMap<>(); //instructor -> school symbol -> list of faults as goals for that school
             Map<String, List<Goal>> schoolsAndFaults; // a map of schools and their faults as goals
+
             List<String> instructors = instructorsRes.getResult();
+
             //4 - 7
             List<String> schoolsOfInstructor;
             List<String> schoolFaults;
             List<Goal> schoolFaultsGoals;
 
             for (String instructor : instructors) { //2 - for every instructors under workField:
+
                 schoolsOfInstructor = userController.getSchools(instructor).getResult();
                 schoolsAndFaults = new ConcurrentHashMap<>();
                 for (String school : schoolsOfInstructor) { //4 - schools of this instructor
+
                     schoolFaultsGoals = new Vector<>();//todo verify it doesnt get deleted from the map
+
                     Response<List<String>> schoolFaultsRes = surveyController.detectSchoolFault(supervisor, surveyId, school);
+
                     if(schoolFaultsRes.isFailure()) {
                         return; //todo some error
                     }
@@ -129,9 +136,11 @@ public class AnnualScheduleGenerator {
                 }
             }
             for (String instructor : instructorWithProblemsForSchools.keySet()) {
+
                 WorkPlan workPlan = new WorkPlan(2022);
                 List<Pair<String, Goal>> goalsPriorityQueue = new Vector<>();
                 for (String school : instructorWithProblemsForSchools.get(instructor).keySet()) {
+
                     if (instructorWithProblemsForSchools.get(instructor).get(school) != null && instructorWithProblemsForSchools.get(instructor).get(school).size() > 0) {
                         goalsPriorityQueue.add(new Pair<>(school, instructorWithProblemsForSchools.get(instructor).get(school).remove(0)));
                     }
@@ -139,34 +148,79 @@ public class AnnualScheduleGenerator {
                 Pair<String, Goal> maxFirst;
                 Pair<String, Goal> maxSecond;
 
+//                while (goalsPriorityQueue.size() > 0) {
+//                    if (goalsPriorityQueue.size() >= 2) {
+//                        maxFirst = goalsPriorityQueue.remove(indexOfMaxGoal(goalsPriorityQueue));
+//                        maxSecond = goalsPriorityQueue.remove(indexOfMaxGoal(goalsPriorityQueue));
+//
+//                        if (instructorWithProblemsForSchools.get(instructor).get(maxFirst.getFirst()) != null && instructorWithProblemsForSchools.get(instructor).get(maxFirst.getFirst()).size() > 0) {
+//                            goalsPriorityQueue.add(new Pair<>(maxFirst.getFirst(), instructorWithProblemsForSchools.get(instructor).get(maxFirst.getFirst()).remove(0)));
+//                        }
+//                        if (instructorWithProblemsForSchools.get(instructor).get(maxSecond.getFirst()) != null && instructorWithProblemsForSchools.get(instructor).get(maxSecond.getFirst()).size() > 0) {
+//                            goalsPriorityQueue.add(new Pair<>(maxSecond.getFirst(), instructorWithProblemsForSchools.get(instructor).get(maxSecond.getFirst()).remove(0)));
+//                        }
+//                        workPlan.insertActivityToFirstAvailableDate(maxFirst, maxSecond);
+//                    }
+//                    else {
+//                        while(instructorWithProblemsForSchools.get(instructor).get(goalsPriorityQueue.get(0).getFirst()).size() > 1) {
+//                            goalsPriorityQueue.add(new Pair<>(goalsPriorityQueue.get(0).getFirst(), instructorWithProblemsForSchools.get(instructor).get(goalsPriorityQueue.get(0).getFirst()).remove(0)));
+//                            goalsPriorityQueue.add(new Pair<>(goalsPriorityQueue.get(0).getFirst(), instructorWithProblemsForSchools.get(instructor).get(goalsPriorityQueue.get(0).getFirst()).remove(0)));
+//                            workPlan.insertActivityToFirstAvailableDate(goalsPriorityQueue.get(0), goalsPriorityQueue.get(1));
+//                            goalsPriorityQueue.remove(0);
+//                            goalsPriorityQueue.remove(0);
+//                        }
+//                        if (instructorWithProblemsForSchools.get(instructor).get(goalsPriorityQueue.get(0).getFirst()).size() > 0) {
+//                            goalsPriorityQueue.add(new Pair<>(goalsPriorityQueue.get(0).getFirst(), instructorWithProblemsForSchools.get(instructor).get(goalsPriorityQueue.get(0).getFirst()).remove(0)));
+//                        }
+//                        workPlan.insertActivityToFirstAvailableDate(goalsPriorityQueue.get(0));
+//                        goalsPriorityQueue.remove(0);
+//                        //todo make sure you stop when you fill WorkPlan
+//                    }
+//                }
                 while (goalsPriorityQueue.size() > 0) {
                     if (goalsPriorityQueue.size() >= 2) {
                         maxFirst = goalsPriorityQueue.remove(indexOfMaxGoal(goalsPriorityQueue));
                         maxSecond = goalsPriorityQueue.remove(indexOfMaxGoal(goalsPriorityQueue));
 
-                        if (instructorWithProblemsForSchools.get(instructor).get(maxFirst.getFirst()) != null && instructorWithProblemsForSchools.get(instructor).get(maxFirst.getFirst()).size() > 0) {
+                        if (instructorWithProblemsForSchools.get(instructor).get(maxFirst.getFirst()).size() > 0) {
                             goalsPriorityQueue.add(new Pair<>(maxFirst.getFirst(), instructorWithProblemsForSchools.get(instructor).get(maxFirst.getFirst()).remove(0)));
+                            //System.out.println(instructorWithProblemsForSchools.get(instructor).get(maxFirst.getFirst()).get(0));
                         }
                         if (instructorWithProblemsForSchools.get(instructor).get(maxSecond.getFirst()) != null && instructorWithProblemsForSchools.get(instructor).get(maxSecond.getFirst()).size() > 0) {
                             goalsPriorityQueue.add(new Pair<>(maxSecond.getFirst(), instructorWithProblemsForSchools.get(instructor).get(maxSecond.getFirst()).remove(0)));
+                            //System.out.println(instructorWithProblemsForSchools.get(instructor).get(maxSecond.getFirst()).get(0));
                         }
                         workPlan.insertActivityToFirstAvailableDate(maxFirst, maxSecond);
                     }
                     else {
-                        while(instructorWithProblemsForSchools.get(instructor).get(goalsPriorityQueue.get(0).getFirst()).size() > 1) {
-                            goalsPriorityQueue.add(new Pair<>(goalsPriorityQueue.get(0).getFirst(), instructorWithProblemsForSchools.get(instructor).get(goalsPriorityQueue.get(0).getFirst()).remove(0)));
-                            goalsPriorityQueue.add(new Pair<>(goalsPriorityQueue.get(0).getFirst(), instructorWithProblemsForSchools.get(instructor).get(goalsPriorityQueue.get(0).getFirst()).remove(0)));
+                        String lastSchool = goalsPriorityQueue.get(0).getFirst();
+                        if(instructorWithProblemsForSchools.get(instructor).get(lastSchool).size() > 0) {
+
+                            goalsPriorityQueue.add(new Pair<>(lastSchool, instructorWithProblemsForSchools.get(instructor).get(lastSchool).remove(0)));
                             workPlan.insertActivityToFirstAvailableDate(goalsPriorityQueue.get(0), goalsPriorityQueue.get(1));
                             goalsPriorityQueue.remove(0);
                             goalsPriorityQueue.remove(0);
                         }
-                        if (instructorWithProblemsForSchools.get(instructor).get(goalsPriorityQueue.get(0).getFirst()).size() > 0) {
-                            goalsPriorityQueue.add(new Pair<>(goalsPriorityQueue.get(0).getFirst(), instructorWithProblemsForSchools.get(instructor).get(goalsPriorityQueue.get(0).getFirst()).remove(0)));
+                        while(instructorWithProblemsForSchools.get(instructor).get(lastSchool).size() >= 2) {
+                            goalsPriorityQueue.add(new Pair<>(lastSchool, instructorWithProblemsForSchools.get(instructor).get(lastSchool).remove(0)));
+                            goalsPriorityQueue.add(new Pair<>(lastSchool, instructorWithProblemsForSchools.get(instructor).get(lastSchool).remove(0)));
+                            workPlan.insertActivityToFirstAvailableDate(goalsPriorityQueue.get(0), goalsPriorityQueue.get(1));
+                            goalsPriorityQueue.remove(0);
+                            goalsPriorityQueue.remove(0);
+
                         }
-                        workPlan.insertActivityToFirstAvailableDate(goalsPriorityQueue.get(0));
-                        goalsPriorityQueue.remove(0);
+                        if (instructorWithProblemsForSchools.get(instructor).get(lastSchool).size() > 0) {
+
+                            goalsPriorityQueue.add(new Pair<>(lastSchool, instructorWithProblemsForSchools.get(instructor).get(lastSchool).remove(0)));
+                            workPlan.insertActivityToFirstAvailableDate(goalsPriorityQueue.get(0));
+                            goalsPriorityQueue.remove(0);
+                        }
+                        if (goalsPriorityQueue.size() > 0) {
+
+                            workPlan.insertActivityToFirstAvailableDate(goalsPriorityQueue.remove(0));
+
+                        }
                         //todo make sure you stop when you fill WorkPlan
-                        //todo when finishing work plan assign it to the instructor
                     }
                 }
                 userController.assignWorkPlan(instructor, workPlan);
@@ -243,7 +297,6 @@ public class AnnualScheduleGenerator {
 
                 Pair<String, Goal> maxFirst;
                 Pair<String, Goal> maxSecond;
-
                 while (goalsPriorityQueue.size() > 0) {
                     if (goalsPriorityQueue.size() >= 2) {
                         maxFirst = goalsPriorityQueue.remove(indexOfMaxGoal(goalsPriorityQueue));
@@ -262,6 +315,7 @@ public class AnnualScheduleGenerator {
                     else {
                         String lastSchool = goalsPriorityQueue.get(0).getFirst();
                         if(instructorWithProblemsForSchools.get(instructor).get(lastSchool).size() > 0) {
+
                             goalsPriorityQueue.add(new Pair<>(lastSchool, instructorWithProblemsForSchools.get(instructor).get(lastSchool).remove(0)));
                             workPlan.insertActivityToFirstAvailableDate(goalsPriorityQueue.get(0), goalsPriorityQueue.get(1));
                             goalsPriorityQueue.remove(0);
@@ -283,10 +337,10 @@ public class AnnualScheduleGenerator {
                             workPlan.insertActivityToFirstAvailableDate(goalsPriorityQueue.remove(0));
                         }
                         //todo make sure you stop when you fill WorkPlan
-                        //todo when finishing work plan assign it to the instructor
                     }
                 }
                 userController.assignWorkPlan(instructor, workPlan);
+
             }
         }
     }

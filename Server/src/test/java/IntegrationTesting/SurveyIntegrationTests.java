@@ -58,7 +58,7 @@ public class SurveyIntegrationTests {
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
         String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
-        userController.registerUserByAdmin(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.registerUserBySystemManager(adminName, "Miri", "Band", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         String newGuestName = userController.logout(adminName).getResult();
         userController.login(newGuestName, "Dvorit", "Dvorit");
 
@@ -70,7 +70,7 @@ public class SurveyIntegrationTests {
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
         String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
-        userController.registerUserByAdmin(adminName, "Shlomit", "Malka", UserStateEnum.INSTRUCTOR, "", "tech", "", "", "", "", "");
+        userController.registerUserBySystemManager(adminName, "Shlomit", "Malka", UserStateEnum.INSTRUCTOR, "", "tech", "", "", "", "", "");
         String newGuestName = userController.logout(adminName).getResult();
         userController.login(newGuestName, "Shlomit", "Malka");
 
@@ -84,7 +84,7 @@ public class SurveyIntegrationTests {
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
         String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
-        userController.registerUserByAdmin(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         String newGuestName = userController.logout(adminName).getResult();
         userController.login(newGuestName, "Dvorit", "Dvorit");
 
@@ -103,8 +103,8 @@ public class SurveyIntegrationTests {
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
         String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
-        userController.registerUserByAdmin(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
-        userController.registerUserByAdmin(adminName, "Shosh", "Bar", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.registerUserBySystemManager(adminName, "Shosh", "Bar", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
 
         String newGuestName = userController.logout(adminName).getResult();
         userController.login(newGuestName, "Dvorit", "Dvorit");
@@ -123,7 +123,7 @@ public class SurveyIntegrationTests {
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
         String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
-        userController.registerUserByAdmin(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         String newGuestName = userController.logout(adminName).getResult();
         userController.login(newGuestName, "Dvorit", "Dvorit");
 
@@ -138,8 +138,8 @@ public class SurveyIntegrationTests {
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
         String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
-        userController.registerUserByAdmin(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
-        userController.registerUserByAdmin(adminName, "Levana", "Zoharim", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.registerUserBySystemManager(adminName, "Levana", "Zoharim", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
 
         String newGuestName = userController.logout(adminName).getResult();
         userController.login(newGuestName, "Dvorit", "Dvorit");
@@ -156,7 +156,7 @@ public class SurveyIntegrationTests {
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
         String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
-        userController.registerUserByAdmin(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         String newGuestName = userController.logout(adminName).getResult();
         userController.login(newGuestName, "Dvorit", "Dvorit");
 
@@ -172,7 +172,7 @@ public class SurveyIntegrationTests {
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
         String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
-        userController.registerUserByAdmin(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         String newGuestName = userController.logout(adminName).getResult();
         userController.login(newGuestName, "Dvorit", "Dvorit");
 
@@ -187,8 +187,8 @@ public class SurveyIntegrationTests {
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
         String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
-        userController.registerUserByAdmin(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
-        userController.registerUserByAdmin(adminName, "Levana", "Zoharim", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.registerUserBySystemManager(adminName, "Levana", "Zoharim", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
 
         String newGuestName = userController.logout(adminName).getResult();
         userController.login(newGuestName, "Dvorit", "Dvorit");

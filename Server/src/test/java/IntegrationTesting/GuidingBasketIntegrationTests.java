@@ -25,7 +25,7 @@ public class GuidingBasketIntegrationTests {
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
         String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
-        userController.registerUserByAdmin(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "","", "");
         String newGuestName = userController.logout(adminName).getResult();
         userController.login(newGuestName, "Dvorit", "Dvorit");
 
@@ -48,7 +48,7 @@ public class GuidingBasketIntegrationTests {
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
         String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
-        userController.registerUserByAdmin(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "","", "");
 
         String newGuestName = userController.logout(adminName).getResult();
         userController.login(newGuestName, "Dvorit", "Dvorit");
@@ -61,8 +61,8 @@ public class GuidingBasketIntegrationTests {
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
         String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
-        userController.registerUserByAdmin(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
-        userController.registerUserByAdmin(adminName, "Miri", "Band", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "","", "");
+        userController.registerUserBySystemManager(adminName, "Miri", "Band", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
 
         String newGuestName = userController.logout(adminName).getResult();
         userController.login(newGuestName, "Dvorit", "Dvorit");
@@ -75,7 +75,7 @@ public class GuidingBasketIntegrationTests {
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
         String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
-        userController.registerUserByAdmin(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "","", "");
 
         String newGuestName = userController.logout(adminName).getResult();
         userController.login(newGuestName, "Dvorit", "Dvorit");
@@ -89,8 +89,8 @@ public class GuidingBasketIntegrationTests {
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
         String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
-        userController.registerUserByAdmin(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
-        userController.registerUserByAdmin(adminName, "Miri", "Band", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "","", "");
+        userController.registerUserBySystemManager(adminName, "Miri", "Band", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
 
         String newGuestName = userController.logout(adminName).getResult();
         userController.login(newGuestName, "Dvorit", "Dvorit");
@@ -103,7 +103,7 @@ public class GuidingBasketIntegrationTests {
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
         String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
-        userController.registerUserByAdmin(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "","", "");
 
         String newGuestName = userController.logout(adminName).getResult();
         userController.login(newGuestName, "Dvorit", "Dvorit");
@@ -117,8 +117,8 @@ public class GuidingBasketIntegrationTests {
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
         String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
-        userController.registerUserByAdmin(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
-        userController.registerUserByAdmin(adminName, "Miri", "Band", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "","", "");
+        userController.registerUserBySystemManager(adminName, "Miri", "Band", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
 
         String newGuestName = userController.logout(adminName).getResult();
         userController.login(newGuestName, "Dvorit", "Dvorit");
@@ -131,7 +131,7 @@ public class GuidingBasketIntegrationTests {
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
         String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
-        userController.registerUserByAdmin(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "","", "");
 
         String newGuestName = userController.logout(adminName).getResult();
         userController.login(newGuestName, "Dvorit", "Dvorit");
@@ -146,8 +146,8 @@ public class GuidingBasketIntegrationTests {
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
         String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
-        userController.registerUserByAdmin(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
-        userController.registerUserByAdmin(adminName, "Miri", "Band", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "","", "");
+        userController.registerUserBySystemManager(adminName, "Miri", "Band", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
 
         String newGuestName = userController.logout(adminName).getResult();
         userController.login(newGuestName, "Dvorit", "Dvorit");

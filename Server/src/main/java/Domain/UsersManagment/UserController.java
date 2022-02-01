@@ -22,7 +22,6 @@ public class UserController {
     private GoalsManagement goalsManagement;
     private SurveyController surveyController;
 
-
     private UserController() {
         this.availableId = new AtomicInteger(1);
         this.security = Security.getInstance();
@@ -53,6 +52,11 @@ public class UserController {
         return UserController.CreateSafeThreadSingleton.INSTANCE;
     }
 
+    /**
+     * generate schedule for all instructors under current user
+     * @param currUser the supervisor wish to generate schedules
+     * @return response contains the work field of current user
+     */
     public Response<String> generateSchedule(String currUser) {
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
@@ -76,6 +80,13 @@ public class UserController {
         return new Response<>(guestName, false, "added guest");
     }
 
+    /**
+     * login user into system
+     * @param currUser the holder username previous login
+     * @param userToLogin the original username
+     * @param password the identifier of the user
+     * @return pair contains the username and its role
+     */
     public Response<Pair<String, UserStateEnum>> login(String currUser, String userToLogin, String password){
         User user;
         if (connectedUsers.containsKey(currUser)) {
@@ -118,6 +129,19 @@ public class UserController {
         return new Response<>(null, true, "User not connected");
     }
 
+    /**
+     * allow user to register another user (if user is supervisor or admin)
+     * @param currUser the user that trying to apply the registration
+     * @param userToRegister the user to be registered
+     * @param password its future password
+     * @param userStateEnum the role of the registered user
+     * @param firstName first name
+     * @param lastName last name
+     * @param email email address
+     * @param phoneNumber phone number
+     * @param city city
+     * @return User object of the new user upon success
+     */
     public Response<User> registerUser(String currUser, String userToRegister, String password, UserStateEnum userStateEnum, String firstName, String lastName, String email, String phoneNumber, String city){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
@@ -138,7 +162,7 @@ public class UserController {
         }
     }
 
-    public Response<User> registerUserByAdmin(String currUser, String userToRegister, String password, UserStateEnum userStateEnum, String optionalSupervisor, String workField, String firstName, String lastName, String email, String phoneNumber, String city){
+    public Response<User> registerUserBySystemManager(String currUser, String userToRegister, String password, UserStateEnum userStateEnum, String optionalSupervisor, String workField, String firstName, String lastName, String email, String phoneNumber, String city){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             if (!userToRegister.startsWith("Guest") && !registeredUsers.containsKey(userToRegister)){
@@ -235,6 +259,12 @@ public class UserController {
         }
     }
 
+    /**
+     * remove user from the system
+     * @param currUser the user that trying to remove another user
+     * @param userToRemove the user to be removed
+     * @return successful response upon success. failure otherwise
+     */
     public Response<Boolean> removeUser(String currUser, String userToRemove) {
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
@@ -256,6 +286,9 @@ public class UserController {
         }
     }
 
+    /**
+        successful response on sucess. failure otherwise.
+     */
     public Response<Boolean> assignSchoolsToUser(String currUser, String userToAssignName, List<String> schools){
         Response<Boolean> response;
         if (connectedUsers.containsKey(currUser)) {
@@ -311,9 +344,7 @@ public class UserController {
     public Response<List<String>> getSchools(String currUser){//todo maybe add checks
         User user = registeredUsers.get(currUser).getFirst();
         return new Response<>(user.getSchools(), false, "");
-    }
-
-    public Response<List<String>> getAppointedInstructors(String currUser){
+    }public Response<List<String>> getAppointedInstructors(String currUser){
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             Response<List<String>> appointeesRes = user.getAppointees();
@@ -345,6 +376,7 @@ public class UserController {
                 for (String appointee : appointeesRes.getResult()) {
                     appointeesDTOs.add(createUserDTOS(appointee));
                 }
+
                 return new Response<>(appointeesDTOs, false, "");
             }
             else {
@@ -391,12 +423,19 @@ public class UserController {
         }
     }
 
-    //only for tests purposes
+    //for test purposes only
     public User getUser(String user){
         return this.registeredUsers.get(user).getFirst();
     }
 
-    //only for tests purposes
+    public Response<User> getUserRes(String user){
+        if(this.registeredUsers.containsKey(user)){
+            return new Response<>(this.registeredUsers.get(user).getFirst(), false, "user found");
+        }
+        return new Response<>(null, true, "user not found");
+    }
+
+    //for test purposes only
     public void clearUsers(){
         this.availableId.set(1);
         this.security = Security.getInstance();
