@@ -62,6 +62,11 @@ public class GuidingBasket {
         this.labels = labels;
     }
 
+    /**
+     * adds a label to the current GuidingBasket
+     * @param label the label to add
+     * @return response with the result of the operation
+     */
     public Response<Boolean> addLabel(String label) {
         if (label != null && !labels.contains(label)){
             labels.add(label);
@@ -71,6 +76,11 @@ public class GuidingBasket {
         return new Response<>(false, true, "The label already exists in this guiding basket");
     }
 
+    /**
+     * removes a label from the current GuidingBasket
+     * @param label the label to remove
+     * @return response with the result of the operation
+     */
     public Response<Boolean> removeLabel(String label) {
         if (label != null && labels.contains(label)){
             labels.remove(label);
