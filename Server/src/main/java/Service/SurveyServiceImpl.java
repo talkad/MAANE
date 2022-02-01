@@ -17,6 +17,7 @@ import java.util.List;
 @Slf4j
 public class SurveyServiceImpl implements SurveyService {
 
+
     private static class CreateSafeThreadSingleton {
         private static final SurveyServiceImpl INSTANCE = new SurveyServiceImpl();
     }

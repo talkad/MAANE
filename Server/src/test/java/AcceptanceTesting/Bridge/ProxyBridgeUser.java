@@ -6,8 +6,10 @@ import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.User;
 import Domain.UsersManagment.UserStateEnum;
+import Domain.WorkPlan.Goal;
 import Service.Interfaces.UserService;
-import Service.UserServiceImpl;
+
+import java.util.List;
 
 public class ProxyBridgeUser implements UserService {
     private UserService real;
@@ -68,6 +70,15 @@ public class ProxyBridgeUser implements UserService {
     }
 
     @Override
+    public Response<User> registerUserBySystemManager(UserDTO user, String optionalSupervisor) {
+        if (real != null){
+            return real.registerUserBySystemManager(user, optionalSupervisor);
+        }
+
+        return new Response<>(null, true, "not implemented");
+    }
+
+    @Override
     public Response<Boolean> removeUser(String currUser, String userToRemove) {
         if (real != null){
             return real.removeUser(currUser, userToRemove);
@@ -77,18 +88,44 @@ public class ProxyBridgeUser implements UserService {
     }
 
     @Override
-    public Response<Boolean> generateSchedule(String supervisor, int surveyId) {
+    public Response<WorkPlanDTO> viewWorkPlan(String currUser) {
         if (real != null){
-            return real.generateSchedule(supervisor, surveyId);
+            return real.viewWorkPlan(currUser);
         }
 
         return new Response<>(null, true, "not implemented");
     }
 
     @Override
-    public Response<WorkPlanDTO> viewWorkPlan(String currUser) {
+    public Response<List<UserDTO>> getAppointedUsers(String currUser) {
         if (real != null){
-            return real.viewWorkPlan(currUser);
+            return real.getAppointedUsers(currUser);
+        }
+
+        return new Response<>(null, true, "not implemented");
+    }
+
+    @Override
+    public Response<Boolean> addGoals(String currUser, List<Goal> goalList) {
+        if (real != null){
+            return real.addGoals(currUser, goalList);
+        }
+
+        return new Response<>(null, true, "not implemented");
+    }
+
+    public Response<User> getUserRes(String username) {
+        if (real != null){
+            return real.getUserRes(username);
+        }
+
+        return new Response<>(null, true, "not implemented");
+    }
+
+    @Override
+    public Response<Boolean> assignSchoolsToUser(String currUser, String userToAssignName, List<String> schools) {
+        if (real != null){
+            return real.assignSchoolsToUser(currUser, userToAssignName, schools);
         }
 
         return new Response<>(null, true, "not implemented");

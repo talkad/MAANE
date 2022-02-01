@@ -125,7 +125,7 @@ public class SurveyController {
         Response<Boolean> legalAdd = UserController.getInstance().hasCreatedSurvey(username, id);
 
         if(!legalAdd.getResult())
-            return new Response<>(false, true, username + "does not created survey " + id);
+            return new Response<>(false, true, username + " does not created survey " + id);
 
         if(!surveys.containsKey(id))
             return new Response<>(false, true, "id is out of bound");
@@ -145,7 +145,7 @@ public class SurveyController {
         Response<Boolean> legalAdd = UserController.getInstance().hasCreatedSurvey(username, id);
 
         if(!legalAdd.getResult())
-            return new Response<>(false, true, username + "does not created survey " + id);
+            return new Response<>(false, true, username + " does not created survey " + id);
 
         if(!surveys.containsKey(id))
             return new Response<>(false, true, "id is out of bound");
@@ -167,7 +167,7 @@ public class SurveyController {
         Response<Boolean> legalAdd = UserController.getInstance().hasCreatedSurvey(username, id);
 
         if(!legalAdd.getResult())
-            return new Response<>(null, true, username + "does not created survey " + id);
+            return new Response<>(null, true, username + " does not created survey " + id);
 
         if(!surveys.containsKey(id))
             return new Response<>(null, true, "The survey doesn't exists");
@@ -214,7 +214,7 @@ public class SurveyController {
         Response<Boolean> legalAdd = UserController.getInstance().hasCreatedSurvey(username, id);
 
         if(!legalAdd.getResult())
-            return new Response<>(null, true, username + "does not created survey " + id);
+            return new Response<>(null, true, username + " does not created survey " + id);
 
         if(!surveys.containsKey(id))
             return new Response<>(null, true, "The survey doesn't exists");
