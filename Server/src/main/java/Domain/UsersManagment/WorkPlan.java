@@ -7,6 +7,12 @@ import Domain.WorkPlan.Goal;
 import java.time.LocalDate;
 import java.util.*;
 
+/**
+ * Represents the annual schedule of some user
+ * it builds and holds the calendar with all dates and their activities
+ *
+ */
+
 public class WorkPlan {
     protected TreeMap <String, List<Activity>> calendar; //Date and his activities for each day of year
 
@@ -52,6 +58,7 @@ public class WorkPlan {
         calendar.get(date).add(activity);
     }
 
+    // find the next avaliable date
     private String findDate (){
         String freeDate = "";
         for (String date: calendar.descendingKeySet()) {
@@ -72,6 +79,7 @@ public class WorkPlan {
         }
     }
 
+    //returns the schedule rom month {input} till the end of year
     public Map<String, List<Activity>> getScheduleFromMonth (String input){
         final String month = addZeroIfNeeded(input); //need to work with "01","02" etc
         Map <String, List<Activity>> output = new TreeMap<>(calendar);
@@ -99,6 +107,7 @@ public class WorkPlan {
         return number.length() == 1 ? "0" + number : number;
     }
 
+    //Generate the dates
     private static List<String> generateDatesForYear (int year){
         String s = year + "-09-01";
         String e = year + "-12-31";
