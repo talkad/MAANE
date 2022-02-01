@@ -14,6 +14,7 @@ import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
 import rtlPlugin from 'stylis-plugin-rtl';
 
+// for theming the website
 const theme = createTheme({ //TODO: figure the colors out
     palette: {
         background: {
@@ -29,6 +30,7 @@ const theme = createTheme({ //TODO: figure the colors out
     direction: 'rtl',
 })
 
+// for rtl
 const cacheRtl = createCache({
     key: "muirtl",
     stylisPlugins: [rtlPlugin]

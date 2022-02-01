@@ -13,7 +13,7 @@ import ManageUsers from "./Pages/ManageUsers/ManageUsers";
 import InfoViewer from "./Pages/GeneralSupervisorInfoViewer/InfoViewer";
 import SurveyConstraintBuilder from "./Pages/SurveyConstraints/SurveyConstraintBuilder";
 import GuidingBaskets from "./Pages/GuidingBaskets/GuidingBaskets";
-import WorkReport from "./Pages/WorkReport";
+import WorkReport from "./Pages/WorkReport/WorkReport";
 
 // COMPONENTS
 import {
@@ -57,12 +57,19 @@ function App(){
     // TODO: the greetings currently doesn't work well. but perhaps once TAL implements what i asked then it will (return the username with the response for the request)
     const greetings_string = "שלום " + window.sessionStorage.getItem('username') // TODO: instead of the username, use the actual name of the user
 
+    /**
+     * a callback to call when the result of the logout request got back
+     * @param data the response for the logout request
+     */
     const logoutCallback = (data) => {
         setType("GUEST")
         window.sessionStorage.setItem('username', data.result)
         navigate('/user/login', {replace: true})
     }
 
+    /**
+     * handler for when the logout button is pressed
+     */
     const handleLogout = () => {
         console.log("sending logout")
         Connection.getInstance().logout({
@@ -77,32 +84,38 @@ function App(){
     // sidebar
     const drawer = (
         <Space.Fill>
+            {/*logo*/}
             <Space.Top size={barWidth}>
                 {/*TODO: make a logo*/}
                 <h1>מענ"ה</h1>
             </Space.Top>
+            {/*sidebar content*/}
             <Space.Fill>
                 <Divider/>
                 {/*TODO: show buttons based on permissions*/}
                 <List>
+                    {/*home button*/}
                     <ListItem button onClick={() => navigate(`user/home`, {replace: true})}>
                         <ListItemIcon>
                             <HomeIcon/>
                         </ListItemIcon>
                         <ListItemText primary="בית"/>
                     </ListItem>
+                    {/*survey button*/}
                     <ListItem button onClick={() => navigate(`survey/menu`, {replace: true})}>
                         <ListItemIcon>
                             <PollIcon/>
                         </ListItemIcon>
                         <ListItemText primary="סקרים"/>
                     </ListItem>
+                    {/*guiding baskets button*/}
                     <ListItem button onClick={() => navigate(`user/guidingBasketsSearch`, {replace: true})}>
                         <ListItemIcon>
                             <ShoppingBasketIcon/>
                         </ListItemIcon>
                         <ListItemText primary="סלי הדרכה"/>
                     </ListItem>
+                    {/*work report button*/}
                     <ListItem button onClick={() => navigate(`user/workReport`, {replace: true})}>
                         <ListItemIcon>
                             <SummarizeIcon/>

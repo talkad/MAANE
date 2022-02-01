@@ -4,6 +4,7 @@ import {Button, Card, CardActionArea, CardActions, CardContent} from "@mui/mater
 import Typography from "@mui/material/Typography";
 import { useNavigate } from "react-router-dom";
 
+// data for testing offline
 const data =
     [
         {
@@ -94,6 +95,12 @@ export default function SurveyMenu(){
 
     // getting a list and an amount
     // returning a list of lists where in each sub-list there is at most amountInList elements
+    /**
+     * returns a list of lists where in each sub-list there is at most amountInList elements
+     * @param list list of elements
+     * @param amountInList amout for each sublist
+     * @returns {*[]} list of sub-lists of the param list
+     */
     const listOfLists = (list, amountInList) => {
         let toReturn = [];
         let index = 0;
@@ -112,19 +119,23 @@ export default function SurveyMenu(){
         <Space.Fill>
             <Space.Top size="10%">
                 <Space.Right size="5%"/>
+                {/*title of the menu*/}
                 <Space.Fill size>
                     <h1>הסקרים שלי</h1>
                 </Space.Fill>
             </Space.Top>
+            {/*container for all the elments of the menu*/}
             <Space.Fill scrollable={true}>
                 {listOfLists(data, 3).map(x =>
                     <Space.Top size="30%">
                         <Space.Right size="5%"/>
                         {x.map(y =>
                             <Space.Right size="30%">
+                                {/*container for each element in the menu*/}
                                 <Card variant="outlined" sx={{minHeight: "90%", maxWidth: "90%"}}>
                                     <CardActionArea>
                                         <CardContent>
+                                            {/*description of the survey*/}
                                             <Typography variant="h5" component="div">
                                                 {y.title}
                                             </Typography>
@@ -133,6 +144,7 @@ export default function SurveyMenu(){
                                             </Typography>
                                         </CardContent>
                                         <CardActions>
+                                            {/*button to go to the survey represented by the card this button is in*/}
                                             <Button color="secondary" size="medium" onClick={() => navigate(`../getSurvey?id=${y.id}`, {replace: true})}>מעבר לסקר</Button>
                                         </CardActions>
                                     </CardActionArea>

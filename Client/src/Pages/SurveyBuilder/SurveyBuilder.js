@@ -17,12 +17,16 @@ export default function SurveyBuilder(){
     const [questionID, setQuestionID] = useState(0);
     const [questions, setQuestions] = useState([]);
 
+    // STRINGS
     const header_string = 'בניית סקר'
     const survey_title_label_string = 'כותרת הסקר'
     const survey_description_label_string = 'תיאור הסקר'
     const add_question_string = 'הוסף/י שאלה'
     const submit_survey_string = 'סיום'
 
+    /**
+     * adds a new question to the survey
+     */
     const add_question = () => {
         // setting new question element
 
@@ -55,6 +59,13 @@ export default function SurveyBuilder(){
         setQuestionID(questionID+1);
     }
 
+    /**
+     * update a field of a given question
+     * @param id the id of the question's cell
+     * @param attribute the attribute of the question to update
+     * @param value the value to update to
+     * @param answer_id for the case of updating an answer in multiple-choice, the id of the answer
+     */
     const modify_question = (id, attribute, value, answer_id = -1) => {
 
         const index = questions.findIndex(element => element['id'] === id);
@@ -77,6 +88,11 @@ export default function SurveyBuilder(){
         }
     }
 
+    /**
+     * delete an answer in multiple-choice questions
+     * @param id the id of the question
+     * @param answer_id the id of the answer to delete
+     */
     const delete_question_answer = (id, answer_id) => {
         const index = questions.findIndex(element => element['id'] === id);
 
@@ -86,12 +102,19 @@ export default function SurveyBuilder(){
     }
 
     // TODO: NOT FUCKING WORKING CORRECTLY. NOT HERE AND NOT IN THE MULTIPLE ANSWERS OF A QUESTION
+    /**
+     * deletes a question from the survey
+     * @param id the id of the question to delete
+     */
     const delete_question = (id) => {
         const index = questions.findIndex(element => element['id'] === id);
         questions.splice(index, 1)
         setQuestions(questions => [...questions])
     }
 
+    /**
+     * sends the structure of the built survey to the sever
+     */
     const submit_survey = () => {
 
         Connection.getInstance().createSurvey({
@@ -115,6 +138,7 @@ export default function SurveyBuilder(){
             <h1>{header_string}</h1>
             <Paper className="Survey-paper" elevation={3}>
                 {/*TODO: make the margin work */}
+                {/*the title of the survey*/}
                 <TextField
                     color="secondary"
                     className="Survey-text-field"
@@ -127,7 +151,7 @@ export default function SurveyBuilder(){
                     name="title"
                     autoFocus
                 />
-
+                {/*the description of the survey*/}
                 <TextField
                     color="secondary"
                     className="Survey-text-field"
@@ -142,10 +166,13 @@ export default function SurveyBuilder(){
             </Paper>
 
             {/*TODO: animation transition when adding a question*/}
+            {/*the questions*/}
             {questions.map(x => x['element'])}
 
+            {/*add question button*/}
             <Button onClick={add_question} color="secondary" variant="contained">{add_question_string}</Button>
             <br/>
+            {/*submit question button*/}
             <Button onClick={submit_survey} color="secondary" variant="contained">{submit_survey_string}</Button>
         </Space.Fill>
     )

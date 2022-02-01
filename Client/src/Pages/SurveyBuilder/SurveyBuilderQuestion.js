@@ -15,6 +15,7 @@ export default function SurveyQuestionBuilder(props) {
     const [multipleAnswersID, setMultipleAnswersID] = useState(0);
     const [multipleAnswers, setMultipleAnswers] = useState([])
 
+    // STRINGS
     const question_label_string = 'שאלה';
     const answer_label_string = 'תשובה';
     const multiple_item_string = 'בחירה מרובה';
@@ -24,23 +25,41 @@ export default function SurveyQuestionBuilder(props) {
     const question_title_tooltip_string = 'מחיקת שאלה';
     const answer_title_tooltip_string = 'מחיקת תשובה';
 
+    /**
+     * onChange handler when the text-field of the question changes. updated the value
+     * @param event wrapper for the question element with the change
+     */
     const handleQuestionChange = (event) => {
         props.modify(props.id, 'question', event.target.value);
     }
 
+    /**
+     * onChange handler for the dropdown list of type of question. changes the current question to the selected type
+     * @param event wrapper for selection element with the new value
+     */
     const handleChange = (event) => {
         setSelection(event.target.value);
         props.modify(props.id, 'type', selection);
     }
 
+    /**
+     * delets the current question from the survey
+     */
     const delete_question = () => {
         props.delete(props.id)
     }
 
+    /**
+     * onChange handler for updating the text of an answer in multiple-choice questions
+     * @param event
+     */
     const handleAnswerChange = (event) => {
         props.modify(props.id, 'answers', event.target.value, event.target.id);
     }
 
+    /**
+     * adds a new answer to a multiple-choice question
+     */
     const add_answer = () => {
         const to_add = [multipleAnswersID.toString(),
             <TextField
@@ -61,6 +80,10 @@ export default function SurveyQuestionBuilder(props) {
 
     }
 
+    /**
+     * deletes an answer from a given multiple-choice question
+     * @param answer_id id of the answer to delete
+     */
     const delete_answer = (answer_id) => {
         const index = multipleAnswers.findIndex(element => element[0] === answer_id);
 
@@ -74,6 +97,7 @@ export default function SurveyQuestionBuilder(props) {
             <Paper className="Survey-paper" elevation={3}>
                 <Grid container spacing={2}>
                     <Grid item xs={9}>
+                        {/*the question*/}
                         <TextField
                             color="secondary"
                             className="SurveyQuestion-text-field"
@@ -88,6 +112,7 @@ export default function SurveyQuestionBuilder(props) {
                         />
                     </Grid>
                     <Grid item xs={2}>
+                        {/*selection of which type of question the question is*/}
                         <FormControl  sx={{ m: 1, minWidth: 80 }}>
                             <Select
                                 value={selection}
@@ -102,15 +127,18 @@ export default function SurveyQuestionBuilder(props) {
                         </FormControl>
                     </Grid>
                     <Grid item xs={1}>
+                        {/*button to the delete the current question*/}
                         <Tooltip title={question_title_tooltip_string}>
                             <IconButton onClick={delete_question} aria-label="delete">
                                 <DeleteIcon />
                             </IconButton>
                         </Tooltip>
                     </Grid>
+                    {/*element for the case where the question is multiple-choice*/}
                     {selection === 'MULTIPLE_CHOICE' &&
                         <Grid item xs={12}>
                                 <RadioGroup column>
+                                        {/*viewing the options the user added*/}
                                         {multipleAnswers.map(x =>
                                             <Grid container spacing={2}>
                                                 <Grid item xs={2}>
@@ -130,6 +158,7 @@ export default function SurveyQuestionBuilder(props) {
                             <br/>
                         </Grid>
                     }
+                    {/*element for the case where the question is open or open-numeric*/}
                     {(selection === 'OPEN_ANSWER' || selection === 'NUMERIC_ANSWER')  &&
                     <Grid sx={{alignItems: 'center'}} item xs={12}>
                         <TextField

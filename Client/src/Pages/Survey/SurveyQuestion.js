@@ -9,15 +9,24 @@ export default function SurveyQuestion(props){
     const [openAnswer, setOpenAnswer] = useState('');
     const [multipleChoiceAnswer, setMultipleChoiceAnswer] = useState(0);
 
+    // STRINGS
     const answer_label_string = 'תשובה';
     const numeral_answer_label_string = 'תשובה מספרית'
     const open_answer_helper_text_string = 'נא להזין תשובה מספרית בלבד'
 
+    /**
+     * onChange callback when there a change to the answer text-field
+     * @param event the changed element
+     */
     const handleOpenAnswerChange = (event) => {
         setOpenAnswer(event.target.value)
         props.answerChange(props.id, event.target.value)
     }
 
+    /**
+     * onChange callback when a there a new selection for multiple-choice question's answer
+     * @param event
+     */
     const handleMultipleChoiceAnswerChange = (event) => {
         setMultipleChoiceAnswer(event.target.value);
         props.answerChange(props.id, event.target.value)
@@ -29,6 +38,7 @@ export default function SurveyQuestion(props){
             <Paper className="Survey-paper" elevation={3}>
                 <Grid container spacing={2}>
                     <Grid item xs={9}>
+                        {/*the question*/}
                         <TextField
                             color="secondary"
                             className="SurveyQuestion-text-field"
@@ -41,6 +51,7 @@ export default function SurveyQuestion(props){
                             }}
                         />
                     </Grid>
+                    {/*multiple-choice view for question of this kind*/}
                     {props.type === 'multiple' &&
                         <Grid item xs={12}>
                                 <RadioGroup
@@ -56,6 +67,7 @@ export default function SurveyQuestion(props){
 
 
                     }
+                    {/*open view for question of this kind*/}
                     {props.type === 'open' && <Grid sx={{alignItems: 'center'}} item xs={12}>
                         <TextField
                             color="secondary"
@@ -69,6 +81,7 @@ export default function SurveyQuestion(props){
                         />
                     </Grid>}
                     {/*TODO: see about this thingy down below*/}
+                    {/*open-numerical view for question of this kind*/}
                     {props.type === 'open-number'  && <Grid sx={{alignItems: 'center'}} item xs={12}>
                         <TextField
                             color="secondary"

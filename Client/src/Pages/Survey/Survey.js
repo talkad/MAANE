@@ -20,6 +20,7 @@ export default function Survey(){
     const [surveyTitle, setSurveyTitle] = useState('Hello there');
     const [surveyDescription, setSurveyDescription] = useState('General Kenobi');
     const [questionID, setQuestionID] = useState(0);
+    // initializing with dummy data for offline testing
     const [questions, setQuestions] = useState([
         {
             id: 0,
@@ -81,6 +82,7 @@ export default function Survey(){
     ]);
     const [page, setPage] = React.useState(1);
 
+    // STRINGS
     const submit_survey_string = 'סיום מענה';
 
     // TODO: return this once we get the info from the server
@@ -90,12 +92,20 @@ export default function Survey(){
     //     questions[index]['answer'] = value;
     // }
 
+    /**
+     * handler for changing a page in the survey
+     * @param event required but not used
+     * @param value the new page to go to
+     */
     const handlePageChange = (event, value) => {
         setPage(value);
     };
 
     // TODO: have a function which gets the data from the server and sets the states
 
+    /**
+     * sends the answers to the survey to the server
+     */
     const handleSubmit = () => {
         // TODO: send the survey
     }
@@ -104,6 +114,7 @@ export default function Survey(){
         <div style={{margin: '5vh'}} className="Survey">
             <Paper className="Survey-paper" elevation={3}>
                 {/*TODO: have this big and in bold*/}
+                {/*title of the survey*/}
                 <TextField
                     color="secondary"
                     margin="normal"
@@ -115,6 +126,7 @@ export default function Survey(){
                     variant="standard"
                 />
                 {/*TODO: have this a little smaller*/}
+                {/*description of the survey*/}
                 <TextField
                     color="secondary"
                     margin="normal"
@@ -127,10 +139,13 @@ export default function Survey(){
                 />
             </Paper>
 
+            {/*the question to the survey*/}
             {questions.slice((page-1) * questionsPerPage, Math.min(page * questionsPerPage, questions.length)).map(x => x['element'])}
 
+            {/*paging component*/}
             <Pagination count={Math.ceil(questions.length/questionsPerPage)} page={page} onChange={handlePageChange} />
             <br/>
+            {/*submitting the survey*/}
             {page === Math.ceil(questions.length/questionsPerPage) && <Button color="secondary" variant="contained" onClick={handleSubmit}>{submit_survey_string}</Button>}
 
         </div>

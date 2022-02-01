@@ -12,7 +12,7 @@ import Connection from "../../Communication/Connection";
 // TODO: change to react-space
 
 
-// TODO: random number just for it to work. check the real enums
+// for offline testing
 const roles_system_manager = [
     {
         roleEnum: 0,
@@ -53,6 +53,7 @@ export default function RegisterUsers(props){
     const [roleChoice, setRoleChoice] = useState('')
     const [roles, setRoles] = useState([])
 
+    // STRINGS
     const header_string = 'רישום משתמשים';
     const username_label_string = 'שם משתמש';
     const password_label_string = 'סיסמה';
@@ -62,6 +63,9 @@ export default function RegisterUsers(props){
     const select_helper_text_string = 'תפקיד המשתמש הנרשם';
     const supervisor_string = 'מפקח/ת'
 
+    /**
+     * before the screen loads sets the relevant components according to the type of user who got to the screen
+     */
     useEffect(() => {
         let selected_roles = props.type === 'SUPERVISOR' ? roles_supervisor : roles_system_manager
         setRoles(selected_roles)
@@ -69,10 +73,19 @@ export default function RegisterUsers(props){
         setRoleChoice(selected_roles[0]['role'])
     },[props.type]);
 
+    /**
+     * onChange handler for the text-fields
+     * @param props the field who's been changed
+     * @returns {(function(*): void)|*} updating the new values in the state hook
+     */
     const handleTextFieldsChange = (props) => (event) => {
         setValues({ ...values, [props]: event.target.value})
     }
 
+    /**
+     * callback function for the response of the server for the register request
+     * @param data
+     */
     const registerCallback = (data) => {
         if(data.failure){
             setShowError(true);
@@ -84,6 +97,11 @@ export default function RegisterUsers(props){
         }
     }
 
+    /**
+     * on submitting to register a new user, checks all the fields and not empty and sends request to the server to
+     * register a new user with the given input
+     * @param event wrapper for the state of the components at the moment of the submit
+     */
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
@@ -109,6 +127,10 @@ export default function RegisterUsers(props){
         }
     }
 
+    /**
+     * onChange handler for the dropdown list of roles
+     * @param event wrapper for the changed component
+     */
     const handleChange = (event) => {
         setRoleChoiceEnum(event.target.value);
         const role = roles.find(x => x["roleEnum"] === event.target.value)
@@ -177,6 +199,7 @@ export default function RegisterUsers(props){
                         </Select>
                         <FormHelperText>{select_helper_text_string}</FormHelperText>
                     </FormControl>
+                    {/*optional text-field if the user chose to register a supervisor*/}
                     {roleChoice === supervisor_string &&
                         <TextField
                             color="secondary"

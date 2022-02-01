@@ -1,5 +1,5 @@
 
-
+// TODO: delete if not needed anymore
 class UserInfo{
     static #instance = null;
 
