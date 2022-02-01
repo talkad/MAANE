@@ -221,13 +221,8 @@ public class User {
     }
 
     public Response<String> createBasket(String basketId) {
-        if(this.state.allowed(Permissions.SURVEY_MANAGEMENT, this)){
-            this.baskets.add(basketId);
-            return new Response<>(basketId, false, "user is allowed to create survey");
-        }
-        else {
-            return new Response<>("", true, "user not allowed to create basket");
-        }
+        this.baskets.add(basketId);
+        return new Response<>(basketId, false, "user is allowed to create survey");
     }
 
     public Response<Integer> removeSurvey(int surveyId) {
@@ -241,7 +236,7 @@ public class User {
     }
 
     public Response<String> removeBasket(String basketId) {
-        if(this.state.allowed(Permissions.SURVEY_MANAGEMENT, this)){
+        if(!hasCreatedBasket(basketId).isFailure()){
             this.baskets.remove(basketId);
             return new Response<>(basketId, false, "user is allowed to remove survey");
         }
