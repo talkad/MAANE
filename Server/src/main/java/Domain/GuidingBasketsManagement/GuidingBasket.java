@@ -27,7 +27,9 @@ public class GuidingBasket {
         this.basketID = dto.getBasketID();
         this.title = dto.getTitle();
         this.description = dto.getDescription();
-        this.labels = dto.getLabels();
+
+        this.labels = new LinkedList<>();
+        labels.addAll(dto.getLabels());
     }
 
     public String getBasketID() {
@@ -64,8 +66,10 @@ public class GuidingBasket {
 
     public Response<Boolean> addLabel(String label) {
         if (label != null && !labels.contains(label)){
+            System.out.println(labels);
             labels.add(label);
-            return new Response<>(true, false, null);
+            System.out.println(labels);
+            return new Response<>(true, false, "");
         }
 
         return new Response<>(false, true, "The label already exists in this guiding basket");

@@ -33,7 +33,7 @@ public class GuidingBasketController {
         if(response.isFailure())
             return new Response<>(false, true, response.getErrMsg());
 
-        return SearchEngine.getInstance().addBasket(dto, instance.generateID());
+        return SearchEngine.getInstance().addBasket(dto, basketID);
     }
 
     public Response<Boolean> removeBasket(String username, GuidingBasketDTO dto){

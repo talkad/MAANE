@@ -222,7 +222,7 @@ public class User {
 
     public Response<String> createBasket(String basketId) {
         this.baskets.add(basketId);
-        return new Response<>(basketId, false, "user is allowed to create survey");
+        return new Response<>(basketId, false, "user is allowed to create basket");
     }
 
     public Response<Integer> removeSurvey(int surveyId) {
