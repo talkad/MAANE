@@ -18,6 +18,7 @@ public class User {
     protected List<String> schools;
     protected Appointment appointments;
     protected List<Integer> surveys;
+    protected List<String> baskets;
 //    private MonthlyReport monthlyReport; //todo monthly reports history??
     protected WorkPlan workPlan;
 
@@ -27,6 +28,7 @@ public class User {
         this.appointments = new Appointment();
         this.schools = new Vector<>();
         this.surveys = new Vector<>();
+        this.baskets = new Vector<>();
     }
 
     public User(String username) {
@@ -34,6 +36,7 @@ public class User {
         this.appointments = new Appointment();
         this.schools = new Vector<>();
         this.surveys = new Vector<>();
+        this.baskets = new Vector<>();
     }
 
     public User(String username, UserStateEnum userStateEnum) {
@@ -42,6 +45,7 @@ public class User {
         this.appointments = new Appointment();
         this.schools = new Vector<>();
         this.surveys = new Vector<>();
+        this.baskets = new Vector<>();
     }
 
     public User(String username, UserStateEnum userStateEnum, String workField,String firstName, String lastName, String email, String phoneNumber, String city) {
@@ -56,6 +60,7 @@ public class User {
         this.appointments = new Appointment();
         this.schools = new Vector<>();
         this.surveys = new Vector<>();
+        this.baskets = new Vector<>();
     }
 
     private UserState inferUserType(UserStateEnum userStateEnum) {
@@ -211,7 +216,17 @@ public class User {
             return new Response<>(surveyId, false, "user is allowed to create survey");
         }
         else {
-            return new Response<>(-1, false, "user not allowed to create survey");
+            return new Response<>(-1, true, "user not allowed to create survey");
+        }
+    }
+
+    public Response<String> createBasket(String basketId) {
+        if(this.state.allowed(Permissions.SURVEY_MANAGEMENT, this)){
+            this.baskets.add(basketId);
+            return new Response<>(basketId, false, "user is allowed to create survey");
+        }
+        else {
+            return new Response<>("", true, "user not allowed to create basket");
         }
     }
 
@@ -221,7 +236,17 @@ public class User {
             return new Response<>(surveyId, false, "user is allowed to remove survey");
         }
         else {
-            return new Response<>(-1, false, "user not allowed to remove survey");
+            return new Response<>(-1, true, "user not allowed to remove survey");
+        }
+    }
+
+    public Response<String> removeBasket(String basketId) {
+        if(this.state.allowed(Permissions.SURVEY_MANAGEMENT, this)){
+            this.baskets.remove(basketId);
+            return new Response<>(basketId, false, "user is allowed to remove survey");
+        }
+        else {
+            return new Response<>("", true, "user not allowed to remove basket");
         }
     }
 
@@ -296,6 +321,19 @@ public class User {
         if(this.state.getStateEnum() == UserStateEnum.SUPERVISOR)
         {
             return new Response<>(this.surveys.contains(surveyId), false, "user is supervisor");
+        }
+        else {
+            return new Response<>(false, true, "user is not a supervisor");
+        }
+    }
+
+    public Response<Boolean> hasCreatedBasket(String basketId) {
+        if(this.state.getStateEnum() == UserStateEnum.SUPERVISOR)
+        {
+            if(this.baskets.contains(basketId))
+                return new Response<>(true, false, "user created this basket");
+
+            return new Response<>(false, true, "user not created this basket");
         }
         else {
             return new Response<>(false, true, "user is not a supervisor");
@@ -390,6 +428,10 @@ public class User {
         this.surveys = surveys;
     }
 
+    public void setBaskets(List<String> baskets) {
+        this.baskets = baskets;
+    }
+
     public void setWorkField(String workField) {
         this.workField = workField;
     }
@@ -438,4 +480,6 @@ public class User {
             return new Response<>(false, false, "user is not the system manager");
         }
     }
+
+
 }

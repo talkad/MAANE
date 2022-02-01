@@ -9,7 +9,7 @@ public class GuidingBasketDTO {
     List<String> labels;
     // TODO: how would we save the file?
 
-    public GuidingBasketDTO(String basketID ,String title, String description, List<String> labels) { //TODO: should we pass labels as an array or List?
+    public GuidingBasketDTO(String basketID ,String title, String description, List<String> labels) {
         this.basketID = basketID;
         this.title = title;
         this.description = description;

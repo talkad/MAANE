@@ -471,10 +471,30 @@ public class UserController {
         }
     }
 
+    public Response<String> createBasket(String currUser, String basketId) {
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            return user.createBasket(basketId);
+        }
+        else {
+            return new Response<>("", true, "User not connected");
+        }
+    }
+
     public Response<Boolean> hasCreatedSurvey(String currUser, int surveyId) {
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             return user.hasCreatedSurvey(surveyId);
+        }
+        else {
+            return new Response<>(false, true, "User not connected");
+        }
+    }
+
+    public Response<Boolean> hasCreatedBasket(String currUser, String basketId) {
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            return user.hasCreatedBasket(basketId);
         }
         else {
             return new Response<>(false, true, "User not connected");
@@ -488,6 +508,16 @@ public class UserController {
         }
         else {
             return new Response<>(-1, true, "User not connected");
+        }
+    }
+
+    public Response<String> removeBasket(String currUser, String basketId) {
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            return user.removeBasket(basketId);
+        }
+        else {
+            return new Response<>("", true, "User not connected");
         }
     }
 
