@@ -9,10 +9,7 @@ import {Alert, IconButton, InputAdornment, Paper,} from "@mui/material";
 import Connection from "../../Communication/Connection";
 import { useNavigate } from 'react-router-dom'
 
-// TODO: change to react-space
-
 export default function Login(props){
-    const [username, setUsername] = useState(''); // TODO: when getting the username when logs in is implemented deleted this state
     const [showPassword, setShowPassword] = useState(false);
     const [showError, setShowError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
@@ -39,14 +36,6 @@ export default function Login(props){
 
           Connection.getInstance().setUpUser(callback);
       }, []);
-
-    /**
-     * onChange handler for the username field
-     * @param event the change
-     */
-    const handleUsernameChange = (event) =>{
-        setUsername(event.target.data)
-    }
 
     /**
      * a callback handler for the log in request which logs in the user on success and raises an error on failure
@@ -108,10 +97,9 @@ export default function Login(props){
                             required
                             fullWidth
                             id="username"
-                            label={username_label_string }
+                            label={username_label_string}
                             name="username"
                             autoComplete="username"
-                            onChange={handleUsernameChange}
                             autoFocus
                         />
                         {/* password */}

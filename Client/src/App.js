@@ -131,7 +131,6 @@ function App(){
 
     return (
         <div dir="rtl">
-            {/* TODO:  hide the sidebar and appbar when the user is not logged in*/}
             <Space.ViewPort >
                 {/* sidebar */}
                 {!hideBars && <Space.Right size={sidebarWidth}>
@@ -300,7 +299,7 @@ export default App;
 //   const page_does_not_exist_string = "דף זה אינו קיים"
 //   return (
 //     <Space.ViewPort dir="rtl" className="App">
-//         {!document.location.href.includes("login") && // TODO: a better case would be if the user is logged in
+//         {!document.location.href.includes("login") &&
 //             <Space.Right size="20%">
 //                 <Space.Top size={barWidth}>
 //                     <h1>מענ"ה</h1>
@@ -331,9 +330,9 @@ export default App;
 //                 <AppBar color="background">
 //                     <Toolbar variant="dense">
 //                         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-//                             {/*    TODO: if i remove this empty thing then everything in the app bar vanishes*/}
+//                             {/*
 //                         </Typography>
-//                         {/*TODO: implement logout*/}
+//                         {/*
 //                         <Button color="inherit">יציאה</Button>
 //                     </Toolbar>
 //                 </AppBar>
@@ -347,12 +346,12 @@ export default App;
 //                     <Route path="user/InfoViewer" element={<InfoViewer/>}/>
 //                     <Route exact path="/survey" element={<SurveyMenu />}/>
 //                     <Route path="survey/createSurvey" element={<SurveyBuilder/>}/>
-//                     {/*    TODO: change to survey/getSurvey=id (the one below)*/}
+//                     {/*
 //                     <Route path="survey/survey" element={<Survey/>}/>
 //                     <Route
 //                         path="*"
 //                         element={
-//                             <main style={{ padding: "1rem" }}> {/*todo: make this page prettier */}
+//                             <main style={{ padding: "1rem" }}> {/*
 //                                 <p>{page_does_not_exist_string}</p>
 //                             </main>
 //                         }

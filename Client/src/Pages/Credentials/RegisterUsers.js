@@ -9,9 +9,6 @@ import Box from "@mui/material/Box";
 import FormControl from "@mui/material/FormControl";
 import Connection from "../../Communication/Connection";
 
-// TODO: change to react-space
-
-
 // for offline testing
 const roles_system_manager = [
     {

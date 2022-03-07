@@ -8,8 +8,6 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import Button from "@mui/material/Button";
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 
-// TODO: change to react-space
-
 export default function SurveyQuestionBuilder(props) {
     const [selection, setSelection] = useState('MULTIPLE_CHOICE');
     const [multipleAnswersID, setMultipleAnswersID] = useState(0);

@@ -17,9 +17,6 @@ import {useNavigate} from "react-router-dom";
 import * as Space from 'react-spaces';
 import Connection from "../../Communication/Connection";
 
-
-//TODO: change to react space
-
 /**
  * a function to return an object of the data the tables accepts
  * @param username username of the user

@@ -3,8 +3,6 @@ import '../SurveyBuilder/SurveryBuilderQuestion.css'
 import {FormControlLabel, Grid, Paper, Radio, RadioGroup} from "@mui/material";
 import TextField from "@mui/material/TextField";
 
-// TODO: change to react-space
-
 export default function SurveyQuestion(props){
     const [openAnswer, setOpenAnswer] = useState('');
     const [multipleChoiceAnswer, setMultipleChoiceAnswer] = useState(0);

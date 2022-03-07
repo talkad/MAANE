@@ -9,8 +9,6 @@ import SurveyQuestionBuilder from "./SurveyBuilderQuestion";
 import Connection from "../../Communication/Connection";
 import * as Space from 'react-spaces';
 
-// TODO: change to react-space
-
 export default function SurveyBuilder(){
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
@@ -75,7 +73,7 @@ export default function SurveyBuilder(){
         if(attribute !== 'answers'){
             questions[index][attribute] = value;
 
-            if(attribute === 'type'){ // if the type has changed then resetting the answers TODO: maybe make it save it?
+            if(attribute === 'type'){ // if the type has changed then resetting the answers
                 questions[index]['answers'] = []
             }
         }
