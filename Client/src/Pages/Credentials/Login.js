@@ -84,10 +84,10 @@ export default function Login(props){
         }
         else{
             setShowError(false);
-            Connection.getInstance().login({
-                currUser: window.sessionStorage.getItem('username'),
-                userToLogin: data.get('username'),
-                password: data.get('password')},
+            Connection.getInstance().login(
+                window.sessionStorage.getItem('username'),
+                data.get('username'),
+                data.get('password'),
                 loginCallback);
         }
 

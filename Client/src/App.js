@@ -74,9 +74,9 @@ function App(){
      */
     const handleLogout = () => {
         console.log("sending logout")
-        Connection.getInstance().logout({
-            name: window.sessionStorage.getItem('username')
-        }, logoutCallback)
+        Connection.getInstance().logout(
+           window.sessionStorage.getItem('username'),
+            logoutCallback)
     }
 
     useEffect(() => {

@@ -1,7 +1,5 @@
 import axios from "axios";
 
-// TODO: change the function in the class so they would get the args and the function warps it
-
 class Connection{
     static #instance = null;
 
@@ -87,47 +85,93 @@ class Connection{
 
     /**
      * sends a POST request to log in the user with the given credentials
-     * @param args args of the login function
+     * @param currUser the current logged-in user
+     * @param username the username of the user to log in
+     * @param password the password of the user to log in
      * @param callback a callback function to call once there's a response
      */
-    login(args, callback){
-        this.sendPOST('/user/login', args, callback)
+    login(currUser, username, password, callback){
+        this.sendPOST('/user/login',
+            {
+                currUser: currUser,
+                userToLogin: username,
+                password: password
+            },
+            callback)
     }
 
     /**
      * sends a POST request to log out the current user
-     * @param args args of the logout function
+     * @param username the username of the user to log out
      * @param callback a callback function to call once there's a response
      */
-    logout(args, callback){
-        this.sendPOST('/user/logout', args, callback)
+    logout(username, callback){
+        this.sendPOST('/user/logout',
+            {
+            name: username
+            },
+            callback)
     }
 
     /**
      * sends a POST request to register a new user to the system
-     * @param args args of the register function
+     * @param currUser the current user which is logged in
+     * @param usernameToRegister the username of the registered user
+     * @param password the password of the registered user
+     * @param userStateEnum the userStateEnum of the registered user
      * @param callback a callback function to call once there's a response
      */
-    register(args, callback){
-        this.sendPOST('/user/registerUser', args, callback)
+    register(currUser, usernameToRegister, password, userStateEnum, callback){
+        this.sendPOST('/user/registerUser',
+            {
+                currUser: currUser,
+                userToRegister: usernameToRegister,
+                password: password,
+                userStateEnum: userStateEnum,
+                firstName: "",
+                lastName: "",
+                email: "",
+                phoneNumber: "",
+                city: ""
+            },
+            callback)
     }
 
     /**
      * sends a POST request to remove a user from the system
-     * @param args args of the removeUser function
+     * @param currUser the current user active
+     * @param usernameToRemove the user to remove from the system
      * @param callback a callback function to call once there's a response
      */
-    removeUser(args, callback){
-        this.sendPOST('/user/removeUser', args, callback)
+    removeUser(currUser, usernameToRemove, callback){
+        this.sendPOST('/user/removeUser',
+            {
+                currUser: currUser,
+                usernameToRemove: usernameToRemove
+            },
+            callback)
     }
 
     /**
      * sends s POST request to create a new survey
-     * @param args args of the createSurvey function
+     * @param title the title of the survey
+     * @param description the description of the survey
+     * @param questions the questions of the survey
+     * @param answers the possible answers of the multiple-question questions
+     * @param types the type of answer of each question
      * @param callback a callback function to call once there's a response
      */
-    createSurvey(args, callback){
-        this.sendPOST('/survey/createSurvey', args, callback)
+    createSurvey(title, description, questions, answers, types, callback){
+        this.sendPOST('/survey/createSurvey',
+            {
+                id: -1,
+                title: title,
+                description: description,
+                questions: questions,
+                answers: answers,
+                types: types
+            },
+            callback)
     }
 }
 

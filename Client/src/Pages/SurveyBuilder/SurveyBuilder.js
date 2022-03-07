@@ -12,10 +12,12 @@ import * as Space from 'react-spaces';
 // TODO: change to react-space
 
 export default function SurveyBuilder(){
-    const [showError, setShowError] = useState(false)
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [questions, setQuestions] = useState([]);
+    const [showError, setShowError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [questionID, setQuestionID] = useState(0);
-    const [questions, setQuestions] = useState([]);
 
     // STRINGS
     const header_string = 'בניית סקר'
@@ -112,6 +114,14 @@ export default function SurveyBuilder(){
         setQuestions(questions => [...questions])
     }
 
+    const handleTitleChange = (event) => {
+        setTitle(event.target.value);
+    }
+
+    const handleDescriptionChange = (event) => {
+        setDescription(event.target.value);
+    }
+
     /**
      * sends the structure of the built survey to the sever
      */
@@ -121,14 +131,11 @@ export default function SurveyBuilder(){
             username: "shaked",
             surveyDTO: JSON.stringify({
                 id: -1,
-                title: "title",
-                description: "desc",
-                questions: ["question"],
-                answers: [["answer"]],
-                types: ["OPEN_ANSWER"],
-                // questions: questions.map(x => x.question),
-                // answers: questions.map(x => x.answers),
-                // types: questions.map(x => x.type),
+                title: title,
+                description: description,
+                questions: questions.map(x => x["question"]),
+                answers: questions.map(x => x["answers"]),
+                types: questions.map(x => x["type"]),
             })
         })
     }
@@ -140,6 +147,8 @@ export default function SurveyBuilder(){
                 {/*TODO: make the margin work */}
                 {/*the title of the survey*/}
                 <TextField
+                    value={title}
+                    onChange={handleTitleChange}
                     color="secondary"
                     className="Survey-text-field"
                     error={showError}
@@ -153,6 +162,8 @@ export default function SurveyBuilder(){
                 />
                 {/*the description of the survey*/}
                 <TextField
+                    value={description}
+                    onChange={handleDescriptionChange}
                     color="secondary"
                     className="Survey-text-field"
                     error={showError}

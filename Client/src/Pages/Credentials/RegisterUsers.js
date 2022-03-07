@@ -113,16 +113,11 @@ export default function RegisterUsers(props){
         else{
             // TODO: change this once there is an option to register a supervisor
             setShowError(false);
-            Connection.getInstance().register({
-                    currUser: window.sessionStorage.getItem('username'),
-                    userToRegister: data.get('username'),
-                    password: data.get('password'),
-                    userStateEnum: roleChoiceEnum,
-                    firstName: "",
-                    lastName: "",
-                    email: "",
-                    phoneNumber: "",
-                    city: ""},
+            Connection.getInstance().register(
+                    window.sessionStorage.getItem('username'),
+                    data.get('username'),
+                    data.get('password'),
+                    roleChoiceEnum,
                 registerCallback);
         }
     }
