@@ -21,7 +21,7 @@ const theme = createTheme({ //TODO: figure the colors out
             default: '#ffffff'
         },
         primary: {
-            main: '#FFDE03'
+            main: '#0336FF'
         },
         secondary: {
             main: '#0336FF'
