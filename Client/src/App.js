@@ -38,6 +38,7 @@ import SummarizeIcon from '@mui/icons-material/Summarize';
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import Typography from "@mui/material/Typography";
 import Connection from "./Communication/Connection";
+import PasswordAuthentication from "./Pages/Credentials/PasswordAuthentication";
 
 // TODO: prevent users from going through the site by entering paths in the url
 // TODO: currently saving everything in local storage but IT IS NOT SAFE
@@ -46,6 +47,7 @@ import Connection from "./Communication/Connection";
 
 function App(){
     const [type, setType] = useState('SUPERVISOR') //TODO: change back to 'GUEST' when not developing
+    const [hideBars, setHideBars] = useState(true);
 
     let navigate = useNavigate();
 
@@ -132,7 +134,7 @@ function App(){
             {/* TODO:  hide the sidebar and appbar when the user is not logged in*/}
             <Space.ViewPort >
                 {/* sidebar */}
-                {type !== 'GUEST' && <Space.Right size={sidebarWidth}>
+                {!hideBars && <Space.Right size={sidebarWidth}>
                         <Drawer
                             sx={{
                                 width: sidebarWidth,
@@ -151,7 +153,7 @@ function App(){
                 </Space.Right>}
                 <Space.Fill>
                     {/* app bar */}
-                    {type !== 'GUEST' && <Space.Top size={barWidth}>
+                    {!hideBars && <Space.Top size={barWidth}>
                         {/* TODO: fix it so the card line would be see and it would align with the logo*/}
                         <AppBar style={{minHeight: "99%"}}  color="background" position="static">
                             <Toolbar>
@@ -176,7 +178,8 @@ function App(){
                         <Routes>
                             {/*TODO: find a more elegant way for the permissions*/}
                             <Route path="user">
-                                <Route path="login" element={<Login changeType={setType}/>}/>
+                                <Route path="login" element={<Login changeType={setType} setHideBars={setHideBars}/>}/>
+                                <Route path="auth" element={<PasswordAuthentication setHideBars={setHideBars}/>}/>
 
                                 {(type === "SUPERVISOR" || type === "INSTRUCTOR") &&
                                     <Route path="guidingBasketsSearch" element={<GuidingBaskets/>}/>}

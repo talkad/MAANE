@@ -62,6 +62,7 @@ export default function Login(props){
             window.sessionStorage.setItem('username', data.result.first);
             //UserInfo.getInstance().setType(type);
             props.changeType(data.result.second);
+            props.setHideBars(false);
             //window.sessionStorage.setItem('type', type);
 
             navigate(`../home`, {replace: false}) // TODO: check what does the replace mean
