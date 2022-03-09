@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import './ManageUsers.css'
 
 import Table from '@mui/material/Table';
@@ -11,11 +11,24 @@ import Paper from '@mui/material/Paper';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import Box from "@mui/material/Box";
-import {Avatar, Collapse, Divider, Grid, IconButton, List, ListItem, ListItemText} from "@mui/material";
+import {
+    Avatar,
+    Collapse,
+    Dialog,
+    DialogTitle,
+    Divider,
+    Grid,
+    IconButton, InputAdornment,
+    List,
+    ListItem,
+    ListItemText, Stack, TextField
+} from "@mui/material";
 import Button from "@mui/material/Button";
 import {useNavigate} from "react-router-dom";
 import * as Space from 'react-spaces';
 import Connection from "../../Communication/Connection";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import Visibility from "@mui/icons-material/Visibility";
 
 /**
  * a function to return an object of the data the tables accepts
@@ -110,7 +123,7 @@ function Row(props) {
                             {/*TODO: have a warning beforehand and a verification */}
                             <Grid container spacing={1}>
                                 <Grid item xs={2.5}><Button onClick={() => props.userDeletion(row.username)} color="error" variant="outlined">{delete_user_button_string}</Button></Grid>
-                                <Grid item xs={2}><Button onClick={() => props.handleUserChangePassword(row.username)} color="secondary" variant="outlined">{change_password_button_string}</Button></Grid>
+                                <Grid item xs={2}><Button onClick={() => props.handleOpenCPDialog(row.username, row.name)} color="secondary" variant="outlined">{change_password_button_string}</Button></Grid>
                             </Grid>
                         </Box>
                     </Collapse>
@@ -120,6 +133,61 @@ function Row(props) {
     );
 }
 
+function ChangePasswordDialog(props){
+    const [showPassword, setShowPassword] = useState(false);
+
+    const title_string = "שינוי סיסמה עבור"
+    const password_string = "סיסמה חדשה"
+    const change_string = "שנה/י"
+
+    /**
+     * gathers the input and passing it to the provided callback
+     * @param event the elements' status
+     */
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        const data = new FormData(event.currentTarget);
+
+        if (data.get("password") === ''){
+            // todo: raise error
+        }
+        else{
+            props.callback(props.selectedUser, data.get("password"))
+        }
+
+    }
+
+    return (
+        <Dialog fullWidth maxWidth="sm" onClose={props.onClose} open={props.open}>
+            <DialogTitle>{title_string} {props.selectedName}</DialogTitle>
+            <Stack component="form" sx={{alignItems: "center"}} onSubmit={handleSubmit}>
+                {/*the new password field*/}
+                {/*todo: the adornment is on the wrong side for some reason*/}
+                <TextField name="password"
+                           sx={{paddingBottom: 1, width: "50%"}}
+                           id="outlined-basic"
+                           label={password_string}
+                           variant="outlined"
+                           type={showPassword ? 'text' : 'password'}
+                           InputProps={{
+                               endAdornment: (
+                                   <InputAdornment position="end">
+                                       <IconButton
+                                           onClick={() => setShowPassword(!showPassword)}
+                                           onMouseDown={(event) => event.preventDefault()}
+                                       >
+                                           {showPassword ? <VisibilityOff /> : <Visibility />}
+                                       </IconButton>
+                                   </InputAdornment>
+                               ),
+                           }}/>
+                {/*the submit button*/}
+                <Button type="submit" sx={{marginBottom: 1, width: "20%"}} variant="outlined">{change_string}</Button>
+            </Stack>
+        </Dialog>
+    )
+}
+
 // data for offline testing
 const rows = [
     createData("Ronit", 'רונית', "מפקחת", "ronit@post.bgu.ac.il", "000-123-4567", "פתח תקווה", ["מקיף ז'", "רגר"]),
@@ -127,6 +195,9 @@ const rows = [
 ];
 
 export default function ManageUsers(){
+    const [openCPDialog, setOpenCPDialog] = useState(false);
+    const [selectedUser, setSelectedUser] = useState('');
+    const [selectedName, setSelectedName] = useState('');
 
     const table_name_col_string = 'שם';
     const table_role_col_string = 'תפקיד';
@@ -167,12 +238,33 @@ export default function ManageUsers(){
     }
 
     /**
+     * handles the opening of the dialog to change password to a selcted user
+     * @param username the selected user
+     * @param name the name of the selected user
+     */
+    const handleOpenCPDialog = (username, name) => {
+        setOpenCPDialog(true);
+        setSelectedUser(username);
+        setSelectedName(name);
+        //TODO: implement
+    }
+
+    /**
+     * handles the closing of the dialog for changing the password for a selected user
+     */
+    const handleCloseCPDialog = () => {
+        setOpenCPDialog(false);
+    }
+
+    /**
      * handler for changing the password of a user. sends a request to the server to change the password of the given user
      * @param username the user to change the password to
+     * @param newPassword the new password of the user
      */
-    const handleUserChangePassword = (username) => {
+    const handleUserChangePassword = (username, newPassword) => {
         console.log('sup');
-        // TODO: send
+        setOpenCPDialog(false);
+        // TODO: move to auth and send
     }
 
     return (
@@ -194,11 +286,20 @@ export default function ManageUsers(){
                     </TableHead>
                     <TableBody>
                         {rows.map((row) => (
-                            <Row key={row.username} row={row} userDeletion={handleUserDeletion} handleUserChangePassword={handleUserChangePassword}/>
+                            <Row key={row.username} row={row} handleOpenCPDialog={handleOpenCPDialog} userDeletion={handleUserDeletion} handleUserChangePassword={handleUserChangePassword}/>
                         ))}
                     </TableBody>
                 </Table>
             </TableContainer>
+            {/*TODO: add a dialog for the deletion*/}
+            {/*change password dialog pop up*/}
+            <ChangePasswordDialog
+                selectedUser={selectedUser}
+                selectedName={selectedName}
+                open={openCPDialog}
+                onClose={handleCloseCPDialog}
+                callback={handleUserChangePassword}
+            />
         </div>
     )
 }
