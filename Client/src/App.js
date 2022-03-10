@@ -48,6 +48,8 @@ import PasswordAuthentication from "./Pages/Credentials/PasswordAuthentication";
 function App(){
     const [type, setType] = useState('SUPERVISOR') //TODO: change back to 'GUEST' when not developing
     const [hideBars, setHideBars] = useState(true);
+    const [authCallback, setAuthCallback] = useState(() => console.log("not auth callback"));
+    const [authCalleePage, setAuthCalleePage] = useState(''); // todo: is there's a better way to do it? i do it that way cause i override the history stack and can't just go back
 
     let navigate = useNavigate();
 
@@ -178,7 +180,7 @@ function App(){
                             {/*TODO: find a more elegant way for the permissions*/}
                             <Route path="user">
                                 <Route path="login" element={<Login changeType={setType} setHideBars={setHideBars}/>}/>
-                                <Route path="auth" element={<PasswordAuthentication setHideBars={setHideBars}/>}/>
+                                <Route path="auth" element={<PasswordAuthentication callback={authCallback} callee={authCalleePage} setHideBars={setHideBars}/>}/>
 
                                 {(type === "SUPERVISOR" || type === "INSTRUCTOR") &&
                                     <Route path="guidingBasketsSearch" element={<GuidingBaskets/>}/>}
@@ -190,7 +192,7 @@ function App(){
                                     <Route path="registerUsers" element={<RegisterUsers type={type}/>}/>}
 
                                 {(type === "SUPERVISOR" || type === "SYSTEM_MANAGER") &&
-                                    <Route path="home" element={<ManageUsers/>}/>}
+                                    <Route path="home" element={<ManageUsers setAuthCallBack={setAuthCallback} setAuthCalleePage={setAuthCalleePage}/>}/>}
 
                                 {type === "INSTRUCTOR" &&
                                     <Route path="home" element={<WorkPlan/>}/>}

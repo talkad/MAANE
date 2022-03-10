@@ -222,7 +222,6 @@ function ChangePasswordDialog(props){
                         <Button type="submit" color="success" sx={{marginBottom: 1, width: "50%"}} variant="outlined">{change_string}</Button>
                     </Grid>
                 </Grid>
-
             </Stack>
         </Dialog>
     )
@@ -234,7 +233,7 @@ const rows = [
     createData("Shoshi", 'שושי', "מדריכה", "shoshi@post.bgu.ac.il", "002-123-4567", "ירוחם", ["יהלום", "שהם"]),
 ];
 
-export default function ManageUsers(){
+export default function ManageUsers(props){
     const [openCPDialog, setOpenCPDialog] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [selectedUser, setSelectedUser] = useState('');
@@ -260,11 +259,11 @@ export default function ManageUsers(){
 
     /**
      * callback for the response of the server for the deletion of a user request
-     * @param data
+     * @param data the response from the server
      */
     const userDeletionCallback = (data) => {
         console.log(data)
-        // TODO: check this once the option to register users is working
+        // TODO: do something
     }
 
     /**
@@ -292,11 +291,16 @@ export default function ManageUsers(){
     const handleUserDeletion = (username) => {
         console.log("please don't delete me");
 
+        props.setAuthCallBack(() =>
+            Connection.getInstance().removeUser({
+                currUser: window.sessionStorage.getItem('username'),
+                userToRemove: username,
+            }, userDeletionCallback)
+        )
+
+        props.setAuthCalleePage('../home');
+        navigate(`../auth`, {replace: true})
         // TODO: move to auth and send
-        // Connection.getInstance().removeUser({
-        //     currUser: window.sessionStorage.getItem('username'),
-        //     userToRemove: username,
-        // }, userDeletionCallback)
     }
 
     /**
@@ -318,6 +322,15 @@ export default function ManageUsers(){
     }
 
     /**
+     * callback for the response of the server for the changing a password for a user
+     * @param data the response from the server
+     */
+    const userChangePasswordCallback = (data) => {
+        console.log(data);
+        //todo: do something
+    }
+
+    /**
      * handler for changing the password of a user. sends a request to the server to change the password of the given user
      * @param username the user to change the password to
      * @param newPassword the new password of the user
@@ -325,7 +338,11 @@ export default function ManageUsers(){
     const handleUserChangePassword = (username, newPassword) => {
         console.log('sup');
         setOpenCPDialog(false);
-        // TODO: move to auth and send
+        // TODO: check what to send
+        props.setAuthCallBack(() => console.log("dunno what to send here"));
+
+        props.setAuthCalleePage('../home');
+        navigate(`../auth`, {replace: true})
     }
 
     return (

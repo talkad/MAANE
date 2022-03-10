@@ -54,7 +54,7 @@ export default function Login(props){
             props.setHideBars(false);
             //window.sessionStorage.setItem('type', type);
 
-            navigate(`../home`, {replace: false}) // TODO: check what does the replace mean
+            navigate(`../home`, {replace: true}) // TODO: check what does the replace mean. that's what it does https://reactrouter.com/docs/en/v6/examples/auth
         }
 
     }
