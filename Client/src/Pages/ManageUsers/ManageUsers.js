@@ -21,7 +21,7 @@ import {
     IconButton, InputAdornment,
     List,
     ListItem,
-    ListItemText, Stack, TextField
+    ListItemText, Stack, TextField, Typography
 } from "@mui/material";
 import Button from "@mui/material/Button";
 import {useNavigate} from "react-router-dom";
@@ -29,6 +29,7 @@ import * as Space from 'react-spaces';
 import Connection from "../../Communication/Connection";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Visibility from "@mui/icons-material/Visibility";
+
 
 /**
  * a function to return an object of the data the tables accepts
@@ -122,7 +123,7 @@ function Row(props) {
                             {/* the action buttons for each user */}
                             {/*TODO: have a warning beforehand and a verification */}
                             <Grid container spacing={1}>
-                                <Grid item xs={2.5}><Button onClick={() => props.userDeletion(row.username)} color="error" variant="outlined">{delete_user_button_string}</Button></Grid>
+                                <Grid item xs={2.5}><Button onClick={() => props.handleOpenDeleteDialog(row.username, row.name)} color="error" variant="outlined">{delete_user_button_string}</Button></Grid>
                                 <Grid item xs={2}><Button onClick={() => props.handleOpenCPDialog(row.username, row.name)} color="secondary" variant="outlined">{change_password_button_string}</Button></Grid>
                             </Grid>
                         </Box>
@@ -133,12 +134,41 @@ function Row(props) {
     );
 }
 
+function DeleteUserDialog(props){
+
+    const title_string = "האם את/ה בטוח/ה שהינך רוצה למחוק את";
+    const delete_string = "מחק/י";
+    const cancel_string = "ביטול";
+
+    const handleSubmitDeletion = () => {
+        props.callback(props.selectUser);
+    }
+
+    return (
+        <Dialog titleStyle={{textAlign: "center"}} sx={{alignItems: "right"}} fullWidth maxWidth="sm" onClose={props.onClose} open={props.open}>
+            <DialogTitle><Typography variant="h5" align="center">?{title_string} {props.selectedName}</Typography></DialogTitle>
+            <Grid container justifyContent="center" spacing={0}>
+                <Grid item align="center" xs={6}>
+                    {/*the cancel button*/}
+                    <Button onClick={() => props.onClose()} sx={{marginBottom: 1, width: "50%"}} variant="outlined">{cancel_string}</Button>
+                </Grid>
+                <Grid item align="center" xs={6}>
+                    {/*the delete button*/}
+                    <Button onClick={() => handleSubmitDeletion()} sx={{marginBottom: 1, width: "50%"}} color="error" variant="outlined">{delete_string}</Button>
+                </Grid>
+            </Grid>
+        </Dialog>
+    )
+}
+
+
 function ChangePasswordDialog(props){
     const [showPassword, setShowPassword] = useState(false);
 
-    const title_string = "שינוי סיסמה עבור"
-    const password_string = "סיסמה חדשה"
-    const change_string = "שנה/י"
+    const title_string = "שינוי סיסמה עבור";
+    const password_string = "סיסמה חדשה";
+    const change_string = "שנה/י";
+    const cancel_string = "ביטול";
 
     /**
      * gathers the input and passing it to the provided callback
@@ -159,7 +189,7 @@ function ChangePasswordDialog(props){
 
     return (
         <Dialog fullWidth maxWidth="sm" onClose={props.onClose} open={props.open}>
-            <DialogTitle>{title_string} {props.selectedName}</DialogTitle>
+            <DialogTitle><Typography variant="h5" align="center">{title_string} {props.selectedName}</Typography></DialogTitle>
             <Stack component="form" sx={{alignItems: "center"}} onSubmit={handleSubmit}>
                 {/*the new password field*/}
                 {/*todo: the adornment is on the wrong side for some reason*/}
@@ -182,7 +212,17 @@ function ChangePasswordDialog(props){
                                ),
                            }}/>
                 {/*the submit button*/}
-                <Button type="submit" sx={{marginBottom: 1, width: "20%"}} variant="outlined">{change_string}</Button>
+                <Grid container justifyContent="center" spacing={0}>
+                    <Grid item align="center" xs={4}>
+                        {/*the cancel button*/}
+                        <Button onClick={() => props.onClose()} sx={{marginBottom: 1, width: "50%"}} variant="outlined">{cancel_string}</Button>
+                    </Grid>
+                    <Grid item align="center" xs={4}>
+                        {/*the change button*/}
+                        <Button type="submit" color="success" sx={{marginBottom: 1, width: "50%"}} variant="outlined">{change_string}</Button>
+                    </Grid>
+                </Grid>
+
             </Stack>
         </Dialog>
     )
@@ -196,6 +236,7 @@ const rows = [
 
 export default function ManageUsers(){
     const [openCPDialog, setOpenCPDialog] = useState(false);
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [selectedUser, setSelectedUser] = useState('');
     const [selectedName, setSelectedName] = useState('');
 
@@ -227,18 +268,39 @@ export default function ManageUsers(){
     }
 
     /**
+     * handles the opening of the dialog to delete a selected user
+     * @param username the selected user
+     * @param name the name of the selected user
+     */
+    const handleOpenDeleteDialog = (username, name) => {
+        setOpenDeleteDialog(true);
+        setSelectedUser(username);
+        setSelectedName(name);
+    }
+
+    /**
+     * handles the closing of the dialog for deleting a selected user
+     */
+    const handleCloseDeleteDialog = () => {
+        setOpenDeleteDialog(false);
+    }
+
+    /**
      * handler for deleting a user. sends a request to the server to delete the given user
      * @param username the user to delete
      */
     const handleUserDeletion = (username) => {
-        Connection.getInstance().removeUser({
-            currUser: window.sessionStorage.getItem('username'),
-            userToRemove: username,
-        }, userDeletionCallback)
+        console.log("please don't delete me");
+
+        // TODO: move to auth and send
+        // Connection.getInstance().removeUser({
+        //     currUser: window.sessionStorage.getItem('username'),
+        //     userToRemove: username,
+        // }, userDeletionCallback)
     }
 
     /**
-     * handles the opening of the dialog to change password to a selcted user
+     * handles the opening of the dialog to change password to a selected user
      * @param username the selected user
      * @param name the name of the selected user
      */
@@ -246,7 +308,6 @@ export default function ManageUsers(){
         setOpenCPDialog(true);
         setSelectedUser(username);
         setSelectedName(name);
-        //TODO: implement
     }
 
     /**
@@ -268,38 +329,47 @@ export default function ManageUsers(){
     }
 
     return (
-        <div id="Manage-users">
-            <h1>{page_title_string}</h1>
-            {/* adding new users button */}
-            <div>
-                <Button variant="outlined" color="secondary" onClick={() => navigate('../registerUsers')}>הוספת משתמש</Button>
+        <Space.Fill scrollable>
+            <div id="Manage-users">
+                <h1>{page_title_string}</h1>
+                {/* adding new users button */}
+                <div>
+                    <Button variant="outlined" color="secondary" onClick={() => navigate('../registerUsers')}>הוספת משתמש</Button>
+                </div>
+                <TableContainer id="Manage-users-table" component={Paper}>
+                    {/* the table */}
+                    <Table aria-label="collapsible table">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell />
+                                <TableCell>{table_name_col_string}</TableCell>
+                                <TableCell>{table_role_col_string}</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {rows.map((row) => (
+                                <Row key={row.username} row={row} handleOpenCPDialog={handleOpenCPDialog} handleOpenDeleteDialog={handleOpenDeleteDialog}/>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+                {/*change password dialog pop up*/}
+                <ChangePasswordDialog
+                    selectedUser={selectedUser}
+                    selectedName={selectedName}
+                    open={openCPDialog}
+                    onClose={handleCloseCPDialog}
+                    callback={handleUserChangePassword}
+                />
+                {/*delete user dialog pop up*/}
+                <DeleteUserDialog
+                    selectUser={selectedUser}
+                    selectedName={selectedName}
+                    open={openDeleteDialog}
+                    onClose={handleCloseDeleteDialog}
+                    callback={handleUserDeletion}
+                />
             </div>
-            <TableContainer id="Manage-users-table" component={Paper}>
-                {/* the table */}
-                <Table aria-label="collapsible table">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell />
-                            <TableCell>{table_name_col_string}</TableCell>
-                            <TableCell>{table_role_col_string}</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {rows.map((row) => (
-                            <Row key={row.username} row={row} handleOpenCPDialog={handleOpenCPDialog} userDeletion={handleUserDeletion} handleUserChangePassword={handleUserChangePassword}/>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-            {/*TODO: add a dialog for the deletion*/}
-            {/*change password dialog pop up*/}
-            <ChangePasswordDialog
-                selectedUser={selectedUser}
-                selectedName={selectedName}
-                open={openCPDialog}
-                onClose={handleCloseCPDialog}
-                callback={handleUserChangePassword}
-            />
-        </div>
+        </Space.Fill>
     )
 }
