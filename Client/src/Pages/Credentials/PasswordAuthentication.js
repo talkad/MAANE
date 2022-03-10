@@ -33,6 +33,7 @@ export default function PasswordAuthentication(props){
         // TODO: if successful return the app and side bar
         //TODO: if unsuccessful raise an error
         props.callback(); // sending the message after received positive authentication
+        props.setHideBars(false);
         navigate(props.callee, {replace: true})
     }
 
@@ -41,7 +42,6 @@ export default function PasswordAuthentication(props){
         const data = new FormData(event.currentTarget);
 
         // todo: send auth
-        props.setHideBars(false);
         navigate(props.callee, {replace: true})
     }
 
