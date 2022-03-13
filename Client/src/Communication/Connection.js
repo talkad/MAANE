@@ -153,7 +153,7 @@ class Connection{
     }
 
     /**
-     * sends s POST request to create a new survey
+     * sends a POST request to create a new survey
      * @param title the title of the survey
      * @param description the description of the survey
      * @param questions the questions of the survey
@@ -171,7 +171,36 @@ class Connection{
                 answers: answers,
                 types: types
             },
-            callback)
+            callback);
+    }
+
+    /**
+     * sends a POST request to authenticate the password of the current user
+     * @param currentUser the current user
+     * @param password the password of the user
+     * @param callback a callback function to call once there's a response
+     */
+    authenticatePassword(currentUser, password, callback){
+        this.sendPOST('/survey/authenticatePassword',
+            {
+                currUser: currentUser,
+                password: password,
+            },
+            callback
+        );
+    }
+
+    /**
+     * getting all the users appointed by currentUser
+     * @param currentUser the current user who asks for his appointed user
+     * @param callback a callback function to call once there's a response
+     */
+    getAppointedUsers(currentUser, callback){
+        this.sendPOST('/user/getAppointedUsers',
+            {
+                currUser: currentUser,
+            },
+            callback);
     }
 }
 

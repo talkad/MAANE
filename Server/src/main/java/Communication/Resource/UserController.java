@@ -10,6 +10,7 @@ import Service.UserServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 
@@ -53,6 +54,24 @@ public class UserController {
     public ResponseEntity<Response<WorkPlanDTO>> viewWorkPlan(@PathVariable("username") String username){
         return ResponseEntity.ok()
                 .body(service.viewWorkPlan(username));
+    }
+
+    @RequestMapping(value = "/authenticatePassword", method = RequestMethod.POST)
+    public ResponseEntity<Response<Boolean>> verifyUser(@RequestBody Map<String, Object>  body){
+        return ResponseEntity.ok()
+                .body(service.verifyUser((String)body.get("currUser"), (String)body.get("password")));
+    }
+
+///*    @GetMapping("/getAppointedUsers/username={currUser}")
+//        public ResponseEntity<Response<List<UserDTO>>> getAppointedUsers(@PathVariable("currUser") String currUser){
+//            return ResponseEntity.ok()
+//                    .body(service.getAppointedUsers(currUser));
+//        }*/
+
+    @RequestMapping(value = "/getAppointedUsers", method = RequestMethod.POST)
+    public ResponseEntity<Response<List<UserDTO>>> getAppointedUsers(@RequestBody Map<String, Object>  body){
+        return ResponseEntity.ok()
+                .body(service.getAppointedUsers((String)body.get("currUser")));
     }
 
 //    @RequestMapping(value = "/removeUser", method = RequestMethod.POST)

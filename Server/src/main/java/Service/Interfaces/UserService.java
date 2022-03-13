@@ -32,4 +32,6 @@ public interface UserService {
 
     Response<Boolean> assignSchoolsToUser(String currUser, String userToAssignName, List<String> schools);
 
+    Response<Boolean> verifyUser(String currUser, String password);
+
 }

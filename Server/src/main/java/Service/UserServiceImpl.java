@@ -150,7 +150,20 @@ public class UserServiceImpl implements UserService {
             log.error("failed to assign schools for the user {}", userToAssignName);
         else
             log.info("user {} was successfully assigned to the schools", userToAssignName);
-        return res;    }
+        return res;
+    }
+
+    @Override
+    public Response<Boolean> verifyUser(String currUser, String password) {
+        Response<Boolean> res = UserController.getInstance().verifyUser(currUser, password);
+
+        if(res.isFailure())
+            log.error("failed to verify the user {}", currUser);
+        else
+            log.info("successfully verified the user {}", currUser);
+
+        return res;
+    }
 
     public Response<Boolean> addGoals(String currUser, List<Goal> goalList){
         Response<Boolean> res = UserController.getInstance().addGoals(currUser, goalList);

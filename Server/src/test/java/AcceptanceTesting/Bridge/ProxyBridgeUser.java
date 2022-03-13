@@ -130,4 +130,13 @@ public class ProxyBridgeUser implements UserService {
 
         return new Response<>(null, true, "not implemented");
     }
+
+    @Override
+    public Response<Boolean> verifyUser(String currUser, String password) {
+        if (real != null){
+            return real.verifyUser(currUser, password);
+        }
+
+        return new Response<>(null, true, "not implemented");
+    }
 }

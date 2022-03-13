@@ -5,6 +5,7 @@ import Box from "@mui/material/Box";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Visibility from "@mui/icons-material/Visibility";
 import {useNavigate} from "react-router-dom";
+import Connection from "../../Communication/Connection";
 
 
 // todo: make this screen get the previous and next pages to go to
@@ -27,22 +28,24 @@ export default function PasswordAuthentication(props){
      * a callback for the response from the server for the result of the authentication process
      * @param data the response from the server
      */
-    const submitCallback = (data) =>{
-        //TODO: have an if for the case where the authentication failed
-        //TODO: first go back to the previous page then send
-        // TODO: if successful return the app and side bar
-        //TODO: if unsuccessful raise an error
-        props.callback(); // sending the message after received positive authentication
-        props.setHideBars(false);
-        navigate(props.callee, {replace: true})
+    const submitCallback = (data) => {
+
+        if (data.failure){
+            //TODO: raise an error
+        }
+        else{
+            props.callback(); // sending the message after received positive authentication
+            props.setHideBars(false);
+            navigate(props.callee, {replace: true})
+        }
     }
 
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
+        //TODO: check input is not empty and raise an error
 
-        // todo: send auth
-        navigate(props.callee, {replace: true})
+        Connection.getInstance().authenticatePassword(window.sessionStorage.getItem('username'), data.get('password'), submitCallback)
     }
 
     return (

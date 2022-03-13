@@ -241,13 +241,21 @@ export default function ManageUsers(props){
 
     const table_name_col_string = 'שם';
     const table_role_col_string = 'תפקיד';
-    const page_title_string = 'ניהול משתמשים'
+    const page_title_string = 'ניהול משתמשים';
 
     let navigate = useNavigate();
 
     useEffect(() => {
-        // TODO: ask server for the data
+        Connection.getInstance().getAppointedUsers(window.sessionStorage.getItem('username'), arrangeTableDataCallback)
     }, []);
+
+    /**
+     * a function which arranges the received data from the server to view in the table
+     * @param data the data
+     */
+    const arrangeTableDataCallback = (data) => {
+        console.log(data);
+    }
 
     /**
      * handler for the response from the server for table data
@@ -292,15 +300,11 @@ export default function ManageUsers(props){
         console.log("please don't delete me");
 
         props.setAuthCallBack(() =>
-            Connection.getInstance().removeUser({
-                currUser: window.sessionStorage.getItem('username'),
-                userToRemove: username,
-            }, userDeletionCallback)
+            Connection.getInstance().removeUser(window.sessionStorage.getItem('username'), username, userDeletionCallback)
         )
 
         props.setAuthCalleePage('../home');
         navigate(`../auth`, {replace: true})
-        // TODO: move to auth and send
     }
 
     /**

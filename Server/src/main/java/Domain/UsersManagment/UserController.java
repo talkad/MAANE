@@ -190,7 +190,6 @@ public class UserController {
                                 else{
                                     return new Response<>(null, true, appointmentRes.getErrMsg());
                                 }
-
                             }
                             return result;
                         }
@@ -287,7 +286,7 @@ public class UserController {
     }
 
     /**
-        successful response on sucess. failure otherwise.
+        successful response on success. failure otherwise.
      */
     public Response<Boolean> assignSchoolsToUser(String currUser, String userToAssignName, List<String> schools){
         Response<Boolean> response;
@@ -344,7 +343,9 @@ public class UserController {
     public Response<List<String>> getSchools(String currUser){//todo maybe add checks
         User user = registeredUsers.get(currUser).getFirst();
         return new Response<>(user.getSchools(), false, "");
-    }public Response<List<String>> getAppointedInstructors(String currUser){
+    }
+
+    public Response<List<String>> getAppointedInstructors(String currUser){
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             Response<List<String>> appointeesRes = user.getAppointees();
@@ -631,6 +632,12 @@ public class UserController {
     public void adminBoot(String username, String password) {
         User user = new User(username, UserStateEnum.SYSTEM_MANAGER);
         registeredUsers.put(username, new Pair<>(user, security.sha256(password)));
+        //todo temp static data
+        String guest_name_temp = addGuest().getResult();
+        login(guest_name_temp,"admin", "admin");
+        registerUserBySystemManager("admin", "ronit", "ronit", UserStateEnum.SUPERVISOR, "", "science", "ronit", "ronit", "ronit@gmail.com", "", "");
+        registerUserBySystemManager("admin", "shoshi", "shoshi", UserStateEnum.INSTRUCTOR, "ronit", "", "shoshi", "shoshi", "shoshi@gmail.com", "", "");
+        logout("admin");
     }
 
     public void notifySurveyCreation(String username, int indexer) {
