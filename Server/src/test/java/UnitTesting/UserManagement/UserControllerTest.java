@@ -27,7 +27,6 @@ public class UserControllerTest {
         Assert.assertFalse(userController.getConnectedUsers().containsKey(guestName));
         Assert.assertTrue(userController.getConnectedUsers().containsKey(adminName));
         Assert.assertTrue(userController.getRegisteredUsers().containsKey(adminName));
-        guestName = userController.logout(adminName).getResult();
     }
 
     @Test
