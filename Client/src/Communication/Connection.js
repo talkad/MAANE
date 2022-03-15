@@ -202,6 +202,10 @@ class Connection{
             },
             callback);
     }
+
+    getYearGoals(currentUser, hebrewYear){
+        
+    }
 }
 
 export default Connection;

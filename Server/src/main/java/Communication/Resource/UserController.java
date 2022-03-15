@@ -6,6 +6,7 @@ import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.User;
 import Domain.UsersManagment.UserStateEnum;
+import Domain.WorkPlan.Goal;
 import Service.UserServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -51,9 +52,9 @@ public class UserController {
     }
 
     @GetMapping("/viewWorkPlan/username={username}")
-    public ResponseEntity<Response<WorkPlanDTO>> viewWorkPlan(@PathVariable("username") String username){
+    public ResponseEntity<Response<WorkPlanDTO>> viewWorkPlan(@PathVariable("username") String username, @PathVariable("year") String year){
         return ResponseEntity.ok()
-                .body(service.viewWorkPlan(username));
+                .body(service.viewWorkPlan(username, year));
     }
 
     @RequestMapping(value = "/authenticatePassword", method = RequestMethod.POST)
@@ -80,5 +81,15 @@ public class UserController {
 //                .body(service.generateSchedule((String)body.get("supervisor"), (Integer) body.get("surveyID")));
 //    }
 
+    @RequestMapping(value = "/addGoals", method = RequestMethod.POST)
+    public ResponseEntity<Response<Boolean>> addGoals(@RequestBody Map<String, Object>  body){
+        return ResponseEntity.ok()
+                .body(service.addGoals((String)body.get("currUser"), (List<Goal>)body.get("goalList"), (String)body.get("year")));
+    }
 
+    @RequestMapping(value = "/removeGoal", method = RequestMethod.POST)
+    public ResponseEntity<Response<Boolean>> removeGoal(@RequestBody Map<String, Object>  body){
+        return ResponseEntity.ok()
+                .body(service.removeGoal((String)body.get("currUser"), (String)body.get("year"), (int)body.get("goalId")));
+    }
 }

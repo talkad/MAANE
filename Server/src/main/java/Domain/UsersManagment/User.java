@@ -3,7 +3,9 @@ package Domain.UsersManagment;
 import Domain.CommonClasses.Response;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class User {
 
@@ -20,7 +22,7 @@ public class User {
     protected List<Integer> surveys;
     protected List<String> baskets;
 //    private MonthlyReport monthlyReport; //todo monthly reports history??
-    protected WorkPlan workPlan;
+    protected Map<String, WorkPlan> workPlan;
 
 
     public User() {
@@ -46,9 +48,10 @@ public class User {
         this.schools = new Vector<>();
         this.surveys = new Vector<>();
         this.baskets = new Vector<>();
+        this.workPlan = new ConcurrentHashMap<>();//todo maybe init only for instructors
     }
 
-    public User(String username, UserStateEnum userStateEnum, String workField,String firstName, String lastName, String email, String phoneNumber, String city) {
+    public User(String username, UserStateEnum userStateEnum, String workField, String firstName, String lastName, String email, String phoneNumber, String city) {
         this.state = inferUserType(userStateEnum);
         this.username = username;
         this.workField = workField;
@@ -61,6 +64,7 @@ public class User {
         this.schools = new Vector<>();
         this.surveys = new Vector<>();
         this.baskets = new Vector<>();
+        this.workPlan = new ConcurrentHashMap<>();//todo maybe init only for instructors
     }
 
     private UserState inferUserType(UserStateEnum userStateEnum) {
@@ -444,13 +448,13 @@ public class User {
         return this.getState().getStateEnum() == UserStateEnum.INSTRUCTOR;
     }
 
-    public void assignWorkPlan(WorkPlan workPlan) {
-        this.workPlan = workPlan;//todo prevent errors
+    public void assignWorkPlan(WorkPlan workPlan, String year) {
+        this.workPlan.put(year, workPlan);//todo prevent errors
     }
 
-    public Response<WorkPlan> getWorkPlan() {
+    public Response<WorkPlan> getWorkPlan(String year) {
         if (this.state.allowed(Permissions.VIEW_WORK_PLAN, this)) {
-            return new Response<>(this.workPlan, false, "");
+            return new Response<>(this.workPlan.get(year), false, "");
         }
         else {
             return new Response<>(null, true, "user not allowed to view work plan");
@@ -476,5 +480,13 @@ public class User {
         }
     }
 
-
+    public Response<String> removeGoal() {
+        if(this.state.getStateEnum() == UserStateEnum.SUPERVISOR)
+        {
+            return new Response<>(this.workField, false, "acquired work field");
+        }
+        else {
+            return new Response<>(null, true, "not allowed to acquire work field");
+        }
+    }
 }

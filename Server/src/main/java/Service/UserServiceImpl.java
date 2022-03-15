@@ -114,8 +114,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Response<WorkPlanDTO> viewWorkPlan(String currUser) {
-        Response<WorkPlanDTO> res = UserController.getInstance().viewWorkPlan(currUser);
+    public Response<WorkPlanDTO> viewWorkPlan(String currUser, String year) {
+        Response<WorkPlanDTO> res = UserController.getInstance().viewWorkPlan(currUser, year);
 
         if(res.isFailure())
             log.error("user {} cannot view plan", currUser);
@@ -172,6 +172,16 @@ public class UserServiceImpl implements UserService {
             log.error("failed to add goals by {}", currUser);
         else
             log.info("user {} successfully added goals", currUser);
+        return res;
+    }
+
+    public Response<Boolean> removeGoal(String currUser, String year, int goalId){
+        Response<Boolean> res = UserController.getInstance().removeGoal(currUser, year, goalId);
+
+        if(res.isFailure())
+            log.error("failed to remove goal by {}", currUser);
+        else
+            log.info("user {} successfully removed goal", currUser);
         return res;
     }
 

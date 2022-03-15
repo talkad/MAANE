@@ -59,6 +59,6 @@ public class AnnualScheduleGeneratorTest {
         schoolsAndFaults.add(new Pair<>("2", school2Faults));
         String workField = userController.getUser(supervisorName).getWorkField();
         AnnualScheduleGenerator.getInstance().algorithmMock(supervisorName, schoolsAndFaults, workField, GoalsManagement.getInstance().getGoals(workField, year).getResult(), year);
-        userController.getUser(instructorName).getWorkPlan().getResult().printMe();
+        userController.getUser(instructorName).getWorkPlan(year).getResult().printMe();
     }
 }

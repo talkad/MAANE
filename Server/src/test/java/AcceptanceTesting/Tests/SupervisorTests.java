@@ -165,8 +165,8 @@ public class SupervisorTests extends AcceptanceTests{
 
         scheduleBridge.generateSchedule(supervisorName1, 0, year);
 
-        userBridge.getUserRes(instructorName1).getResult().getWorkPlan().getResult().printMe();
-        userBridge.getUserRes(instructorName2).getResult().getWorkPlan().getResult().printMe();
+        userBridge.getUserRes(instructorName1).getResult().getWorkPlan(year).getResult().printMe();
+        userBridge.getUserRes(instructorName2).getResult().getWorkPlan(year).getResult().printMe();
 
     }
 }

@@ -40,8 +40,8 @@ public class UserController {
         return this.registeredUsers;
     }
 
-    public void assignWorkPlan(String instructor, WorkPlan workPlan) {
-        registeredUsers.get(instructor).getFirst().assignWorkPlan(workPlan);//todo validate and prevent errors
+    public void assignWorkPlan(String instructor, WorkPlan workPlan, String year) {
+        registeredUsers.get(instructor).getFirst().assignWorkPlan(workPlan, year);//todo validate and prevent errors
     }
 
     private static class CreateSafeThreadSingleton {
@@ -98,7 +98,7 @@ public class UserController {
                     return new Response<>(new Pair<>(userToLogin, user.getState().getStateEnum()), false, "successfully Logged in");
                 }
                 else {
-                    return new Response<>(null, true, "Failed to login user");//todo make sure null is ok with aviad/tal
+                    return new Response<>(null, true, "Failed to login user");
                 }
             }
             else {
@@ -271,7 +271,7 @@ public class UserController {
             if(!response.isFailure()){
                 if(registeredUsers.containsKey(userToRemove)){
                     registeredUsers.remove(userToRemove);
-                    connectedUsers.remove(userToRemove);//todo check that user was disconnected from the system
+                    connectedUsers.remove(userToRemove);
                     return response;
                 }
                 else{
@@ -606,7 +606,7 @@ public class UserController {
             }
         }
         else {
-            return new Response<>(null, true, "User not connected"); //todo make sure null is not a problem
+            return new Response<>(null, true, "User not connected");
         }
     }
 
@@ -616,7 +616,7 @@ public class UserController {
              return user.isSupervisor();
          }
          else {
-             return new Response<>(null, true, "User not connected"); //todo make sure null is not a problem
+             return new Response<>(null, true, "User not connected");
          }
      }
 
@@ -625,7 +625,7 @@ public class UserController {
              return new Response<>(security.sha256(password).equals(registeredUsers.get(currUser).getSecond()), false, "");
          }
          else {
-             return new Response<>(null, true, "User not connected"); //todo make sure null is not a problem
+             return new Response<>(null, true, "User not connected");
          }
      }
 
@@ -642,6 +642,22 @@ public class UserController {
 
     public void notifySurveyCreation(String username, int indexer) {
         // todo - publisher and subscribers
+    }
+
+    public Response<Boolean> removeGoal(String currUser, String year, int goalId){
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            Response<String> res = user.removeGoal();
+            if(!res.isFailure()){
+                return goalsManagement.removeGoal(user.workField, year, goalId);
+            }
+            else{
+                return new Response<>(null, true, res.getErrMsg());
+            }
+        }
+        else {
+            return new Response<>(null, true, "User not connected");
+        }
     }
 
     public Response<List<SurveyDTO>> getSurveys(String currUser){
@@ -668,12 +684,12 @@ public class UserController {
         }
     }
 
-    public Response<WorkPlanDTO> viewWorkPlan(String currUser){
+    public Response<WorkPlanDTO> viewWorkPlan(String currUser, String year){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
-            Response<WorkPlan> workPlanResponse = user.getWorkPlan();
+            Response<WorkPlan> workPlanResponse = user.getWorkPlan(year);
             if(!workPlanResponse.isFailure()){
-                WorkPlanDTO workPlanDTO = generateWpDTO (user);
+                WorkPlanDTO workPlanDTO = generateWpDTO(user, year);
                 return new Response<>(workPlanDTO, false, "successfully acquired work plan");
             }
             else{
@@ -686,9 +702,9 @@ public class UserController {
     }
 
     //TODO: need to test this one
-    private WorkPlanDTO generateWpDTO(User user) {
+    private WorkPlanDTO generateWpDTO(User user, String year) {
         WorkPlanDTO workPlanDTO = new WorkPlanDTO();
-        WorkPlan workPlan = user.getWorkPlan().getResult();
+        WorkPlan workPlan = user.getWorkPlan(year).getResult();
         for (String date: workPlan.getCalendar().descendingKeySet()) {
             List<Activity> fromHere = workPlan.getCalendar().get(date);
             List<ActivityDTO> toHere = new ArrayList<>();

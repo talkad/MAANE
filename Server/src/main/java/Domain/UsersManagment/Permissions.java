@@ -23,6 +23,7 @@ public enum Permissions {
     REMOVE_SCHOOLS_FROM_USER,
     GET_GOALS,
     ADD_GOALS,
+    REMOVE_GOALS,
 
     /** System Manager User **/
     REGISTER_SUPERVISOR,

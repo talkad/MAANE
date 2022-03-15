@@ -41,7 +41,7 @@ public class AnnualScheduleGenerator {
                     schoolIds.add(surveyAnswers.getSymbol());
                 }
                 workField = workFieldRes.getResult();
-                Response<List<Goal>> goalsRes = goalsManagement.getGoals(workField, year);//todo check year ok
+                Response<List<Goal>> goalsRes = goalsManagement.getGoals(workField, year);
                 if(!goalsRes.isFailure()){
                     algorithm(supervisor, surveyId, workField, goalsRes.getResult(), year);//todo
                 }
@@ -223,7 +223,7 @@ public class AnnualScheduleGenerator {
                         //todo make sure you stop when you fill WorkPlan
                     }
                 }
-                userController.assignWorkPlan(instructor, workPlan);
+                userController.assignWorkPlan(instructor, workPlan, year);
             }
         }
     }
@@ -339,7 +339,7 @@ public class AnnualScheduleGenerator {
                         //todo make sure you stop when you fill WorkPlan
                     }
                 }
-                userController.assignWorkPlan(instructor, workPlan);
+                userController.assignWorkPlan(instructor, workPlan, year);
             }
         }
     }

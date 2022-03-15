@@ -22,11 +22,13 @@ public interface UserService {
 
     Response<Boolean> removeUser(String currUser, String userToRemove);
 
-    Response<WorkPlanDTO> viewWorkPlan(String currUser);
+    Response<WorkPlanDTO> viewWorkPlan(String currUser, String year);
 
     Response<List<UserDTO>> getAppointedUsers(String currUser);
 
     Response<Boolean> addGoals(String currUser, List<Goal> goalList, String year);
+
+    Response<Boolean> removeGoal(String currUser, String year, int goalId);
 
     Response<User> getUserRes(String username); //for testing purposes only
 
