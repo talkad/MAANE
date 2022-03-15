@@ -377,7 +377,6 @@ public class UserController {
                 for (String appointee : appointeesRes.getResult()) {
                     appointeesDTOs.add(createUserDTOS(appointee));
                 }
-
                 return new Response<>(appointeesDTOs, false, "");
             }
             else {
@@ -391,6 +390,7 @@ public class UserController {
 
     private UserDTO createUserDTOS(String username){
         UserDTO userDTO = new UserDTO();
+        userDTO.setCurrUser(registeredUsers.get(username).getFirst().getUsername());
         userDTO.setWorkField(registeredUsers.get(username).getFirst().getWorkField());
         userDTO.setFirstName(registeredUsers.get(username).getFirst().getFirstName());
         userDTO.setLastName(registeredUsers.get(username).getFirst().getLastName());
