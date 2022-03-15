@@ -165,8 +165,8 @@ public class UserServiceImpl implements UserService {
         return res;
     }
 
-    public Response<Boolean> addGoals(String currUser, List<Goal> goalList){
-        Response<Boolean> res = UserController.getInstance().addGoals(currUser, goalList);
+    public Response<Boolean> addGoals(String currUser, List<Goal> goalList, String year){
+        Response<Boolean> res = UserController.getInstance().addGoals(currUser, goalList, year);
 
         if(res.isFailure())
             log.error("failed to add goals by {}", currUser);

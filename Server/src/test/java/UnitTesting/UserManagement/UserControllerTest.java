@@ -235,6 +235,7 @@ public class UserControllerTest {
 
     @Test
     public void assigningYeadimSuccess(){
+        String year = "תשפ\"ג";
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
         String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
@@ -245,10 +246,10 @@ public class UserControllerTest {
         goalList.add(new Goal(1, "goal1", "goal1", 1));
         goalList.add(new Goal(2, "goal2", "goal2", 1));
         goalList.add(new Goal(3, "goal3", "goal3", 1));
-        userController.addGoals(supervisorName, goalList);
+        userController.addGoals(supervisorName, goalList, year);
 //        for (Goal goal: userController.getGoals(supervisorName).getResult()) {
 //            System.out.println(goal.toString());
 //        }
-        Assert.assertTrue(userController.getGoals(supervisorName).getResult().size() == 3);
+        Assert.assertTrue(userController.getGoals(supervisorName, year).getResult().size() == 3);
     }
 }

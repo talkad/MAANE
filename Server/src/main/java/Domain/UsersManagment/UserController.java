@@ -171,7 +171,7 @@ public class UserController {
                     if (!result.isFailure()) {
                         registeredUsers.put(userToRegister, new Pair<>(result.getResult(), security.sha256(password)));
                         result = new Response<>(result.getResult(), false, "Registration occurred");
-                        goalsManagement.addGoalsField(workField);
+                        goalsManagement.addGoalsField(workField);//todo verify field doesnt exist already
                     }
                     return result;
                 }
@@ -578,12 +578,12 @@ public class UserController {
         }
     }
 
-    public Response<List<Goal>> getGoals(String currUser){
+    public Response<List<Goal>> getGoals(String currUser, String year){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             Response<String> res = user.getGoals();
             if(!res.isFailure()){
-                return goalsManagement.getGoals(res.getResult());
+                return goalsManagement.getGoals(res.getResult(), year);//todo check no errors on year
             }
             else{
                 return new Response<>(null, true, res.getErrMsg());
@@ -594,12 +594,12 @@ public class UserController {
         }
     }
 
-    public Response<Boolean> addGoals(String currUser, List<Goal> goalList){
+    public Response<Boolean> addGoals(String currUser, List<Goal> goalList, String year){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             Response<String> res = user.addGoals();
             if(!res.isFailure()){
-                return goalsManagement.addGoalsToField(res.getResult(), goalList);
+                return goalsManagement.addGoalsToField(res.getResult(), goalList, year);
             }
             else{
                 return new Response<>(null, true, res.getErrMsg());

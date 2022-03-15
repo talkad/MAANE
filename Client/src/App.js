@@ -37,13 +37,14 @@ import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 import SummarizeIcon from '@mui/icons-material/Summarize';
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import Typography from "@mui/material/Typography";
+import TaskIcon from '@mui/icons-material/Task';
 import Connection from "./Communication/Connection";
 import PasswordAuthentication from "./Pages/Credentials/PasswordAuthentication";
+import GoalsManagement from "./Pages/GoalsManagement/GoalsManagement";
 
 // TODO: prevent users from going through the site by entering paths in the url
 // TODO: currently saving everything in local storage but IT IS NOT SAFE
 // TODO: change the usage of document.location.href with the useNavigate hook (example in SurveyMenu.js) in the whole project
-
 
 function App(){
     const [type, setType] = useState('SUPERVISOR') //TODO: change back to 'GUEST' when not developing
@@ -127,6 +128,13 @@ function App(){
                         </ListItemIcon>
                         <ListItemText primary='דו"ח עבודה'/>
                     </ListItem>
+                    {/*goals management button*/}
+                    <ListItem button onClick={() => navigate(`user/goalsManagement`, {replace: true})}>
+                        <ListItemIcon>
+                            <TaskIcon/>
+                        </ListItemIcon>
+                        <ListItemText primary='ניהול יעדים'/>
+                    </ListItem>
                 </List>
             </Space.Fill>
         </Space.Fill>
@@ -191,6 +199,9 @@ function App(){
 
                                 {(type === "SUPERVISOR" || type === "SYSTEM_MANAGER") &&
                                     <Route path="registerUsers" element={<RegisterUsers type={type}/>}/>}
+
+                                {(type === "SUPERVISOR" || type === "SYSTEM_MANAGER") &&
+                                    <Route path="goalsManagement" element={<GoalsManagement/>}/>}}}
 
                                 {(type === "SUPERVISOR" || type === "SYSTEM_MANAGER") &&
                                     <Route path="home" element={<ManageUsers setAuthCallBack={setAuthCallback} setAuthCalleePage={setAuthCalleePage}/>}/>}

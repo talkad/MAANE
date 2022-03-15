@@ -106,9 +106,9 @@ public class ProxyBridgeUser implements UserService {
     }
 
     @Override
-    public Response<Boolean> addGoals(String currUser, List<Goal> goalList) {
+    public Response<Boolean> addGoals(String currUser, List<Goal> goalList, String year) {
         if (real != null){
-            return real.addGoals(currUser, goalList);
+            return real.addGoals(currUser, goalList, year);
         }
 
         return new Response<>(null, true, "not implemented");

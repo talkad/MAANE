@@ -30,7 +30,7 @@ public class AnnualScheduleGenerator {
         return AnnualScheduleGenerator.CreateSafeThreadSingleton.INSTANCE;
     }
 
-    public Response<Boolean> generateSchedule(String supervisor, int surveyId){
+    public Response<Boolean> generateSchedule(String supervisor, int surveyId, String year){
         Response<List<SurveyAnswers>> surveyRes = surveyController.getAnswersForSurvey(surveyId);
         String workField;
         if(!surveyRes.isFailure()){
@@ -41,9 +41,9 @@ public class AnnualScheduleGenerator {
                     schoolIds.add(surveyAnswers.getSymbol());
                 }
                 workField = workFieldRes.getResult();
-                Response<List<Goal>> goalsRes = goalsManagement.getGoals(workField);
+                Response<List<Goal>> goalsRes = goalsManagement.getGoals(workField, year);//todo check year ok
                 if(!goalsRes.isFailure()){
-                    algorithm(supervisor, surveyId, workField, goalsRes.getResult());
+                    algorithm(supervisor, surveyId, workField, goalsRes.getResult(), year);//todo
                 }
                 else{
                     return new Response<>(false, true, goalsRes.getErrMsg());
@@ -71,7 +71,7 @@ public class AnnualScheduleGenerator {
         return maxGoalIndex;
     }
 
-    public void algorithm(String supervisor, int surveyId, String workField, List<Goal> goals) {
+    public void algorithm(String supervisor, int surveyId, String workField, List<Goal> goals, String year) {
         //1 - sort Goals by their weight (goal is per workfield)
         //2 - for every instructors under workField:
         //3 - workDay = the work day of the current instructor
@@ -110,14 +110,14 @@ public class AnnualScheduleGenerator {
 
                     schoolFaultsGoals = new Vector<>();//todo verify it doesnt get deleted from the map
 
-                    Response<List<String>> schoolFaultsRes = surveyController.detectSchoolFault(supervisor, surveyId, school);
+                    Response<List<String>> schoolFaultsRes = surveyController.detectSchoolFault(supervisor, surveyId, school, year);
 
                     if(schoolFaultsRes.isFailure()) {
                         return; //todo some error
                     }
                     schoolFaults = schoolFaultsRes.getResult();
                     if(schoolFaults != null && schoolFaults.size() > 0) {
-                        Response<List<Goal>> goalsRes = goalsManagement.getGoalsByTitles(workField, schoolFaults);
+                        Response<List<Goal>> goalsRes = goalsManagement.getGoalsByTitles(workField, schoolFaults, year);
                         if (!goalsRes.isFailure()) {
                             schoolFaultsGoals.addAll(goalsRes.getResult());
                         } else {
@@ -228,7 +228,7 @@ public class AnnualScheduleGenerator {
         }
     }
 
-    public void algorithmMock(String supervisor, List<Pair<String, List<String>>> schoolFaultsMock, String workField, List<Goal> goals) {
+    public void algorithmMock(String supervisor, List<Pair<String, List<String>>> schoolFaultsMock, String workField, List<Goal> goals, String year) {
         //1 - sort Goals by their weight (goal is per workfield)
         //2 - for every instructors under workField:
         //3 - workDay = the work day of the current instructor
@@ -265,7 +265,7 @@ public class AnnualScheduleGenerator {
                         return; //todo some error
                     schoolFaults = schoolFaultsRes.getResult();
                     if(schoolFaults != null && schoolFaults.size() > 0) {
-                        Response<List<Goal>> goalsRes = goalsManagement.getGoalsByTitles(workField, schoolFaults);
+                        Response<List<Goal>> goalsRes = goalsManagement.getGoalsByTitles(workField, schoolFaults, year);
                         if (!goalsRes.isFailure()) {
                             schoolFaultsGoals.addAll(goalsRes.getResult());
                         } else {
@@ -340,7 +340,6 @@ public class AnnualScheduleGenerator {
                     }
                 }
                 userController.assignWorkPlan(instructor, workPlan);
-
             }
         }
     }

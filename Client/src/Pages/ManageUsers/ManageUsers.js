@@ -92,6 +92,7 @@ function Row(props) {
                 </TableCell>
                 <TableCell>{row.role}</TableCell>
             </TableRow>
+            {/*secondary user's into*/}
             <TableRow>
                 <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
@@ -252,7 +253,7 @@ export default function ManageUsers(props){
 
 
     /**
-     * handler for the response from the server for table data
+     * handler for the response from the server for the table data
      * @param data the table data to arrange
      */
     const handleReceivedData = (data) => {

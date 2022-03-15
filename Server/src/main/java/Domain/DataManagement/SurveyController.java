@@ -196,10 +196,10 @@ public class SurveyController {
      * @param id of the survey
      * @return response contains list of all goals that not consistent with the rules, for each answer
      */
-    public Response<List<List<String>>> detectFault(String username, int id){
+    public Response<List<List<String>>> detectFault(String username, int id, String year){
         List<List<String>> faults = new LinkedList<>();
         FaultDetector faultDetector;
-        List<Goal> goals = UserController.getInstance().getGoals(username).getResult();
+        List<Goal> goals = UserController.getInstance().getGoals(username, year).getResult();
         List<String> currentFaults;
         Response<Boolean> legalAdd = UserController.getInstance().hasCreatedSurvey(username, id);
 
@@ -251,9 +251,9 @@ public class SurveyController {
      * @param symbol of the school
      * @return list of all goals that not consistent with the rules
      */
-    public Response<List<String>> detectSchoolFault(String username, int id, String symbol){
+    public Response<List<String>> detectSchoolFault(String username, int id, String symbol, String year){
         FaultDetector faultDetector;
-        List<Goal> goals = UserController.getInstance().getGoals(username).getResult();
+        List<Goal> goals = UserController.getInstance().getGoals(username, year).getResult();
         List<String> currentFaults = new LinkedList<>();;
         Response<Boolean> legalAdd = UserController.getInstance().hasCreatedSurvey(username, id);
 

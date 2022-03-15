@@ -101,6 +101,7 @@ public class SurveyControllerTests {
 
     @Test
     public void faultDetectionSuccess(){
+        String year = "תשפ\"ג";
         Response<List<List<String>>> faults;
 
         UserController userController = UserController.getInstance();
@@ -122,8 +123,8 @@ public class SurveyControllerTests {
 
         UserController.getInstance().addGoals("Dvorit", Arrays.asList(new Goal(0, "goal0", "goal0", 1,1),
                                                                                 new Goal(1, "goal1", "goal1", 1, 1),
-                                                                                new Goal(2, "goal2", "goal2", 1,1)));
-        faults = surveyController.detectFault("Dvorit", 0);
+                                                                                new Goal(2, "goal2", "goal2", 1,1)), year);
+        faults = surveyController.detectFault("Dvorit", 0, year);
 
         Assert.assertTrue(faults.getResult().size() == 2 && faults.getResult().get(0).size() == 3);
 

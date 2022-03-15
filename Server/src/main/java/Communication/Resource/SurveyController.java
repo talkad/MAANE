@@ -64,9 +64,9 @@ public class SurveyController {
     }
 
     @GetMapping("/detectFault/username={username}&surveyID={surveyID}")
-    public ResponseEntity<Response<List<List<String>>>> detectFault(@PathVariable("username") String username, @PathVariable("surveyID") int surveyID){
+    public ResponseEntity<Response<List<List<String>>>> detectFault(@PathVariable("username") String username, @PathVariable("surveyID") int surveyID, @PathVariable("year") String year){
         return ResponseEntity.ok()
-                .body(service.detectFault(username, surveyID));
+                .body(service.detectFault(username, surveyID, year));
     }
 
 

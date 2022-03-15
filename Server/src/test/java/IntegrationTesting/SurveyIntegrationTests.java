@@ -80,6 +80,7 @@ public class SurveyIntegrationTests {
     @Test
     public void faultDetectionSuccess(){
         Response<List<List<String>>> faults;
+        String year = "תשפ\"ג";
 
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
@@ -91,7 +92,7 @@ public class SurveyIntegrationTests {
         surveyController.createSurvey("Dvorit", surveyDTO);
         surveyController.addAnswers(answersDTO);
 
-        faults = surveyController.detectFault("Dvorit", 0);
+        faults = surveyController.detectFault("Dvorit", 0, year);
 
         Assert.assertFalse(faults.isFailure());
     }
@@ -99,6 +100,7 @@ public class SurveyIntegrationTests {
     @Test
     public void faultDetectionWrongSupervisorFailure(){
         Response<List<List<String>>> faults;
+        String year = "תשפ\"ג";
 
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
@@ -113,7 +115,7 @@ public class SurveyIntegrationTests {
         surveyController.createSurvey("Dvorit", surveyDTO);
         surveyController.addAnswers(answersDTO);
 
-        faults = surveyController.detectFault("Shosh", 0);
+        faults = surveyController.detectFault("Shosh", 0, year);
 
         Assert.assertTrue(faults.isFailure());
     }

@@ -136,10 +136,11 @@ public class SupervisorTests extends AcceptanceTests{
     @Test
     public void workPlanTest(){
         List<Goal> goalList = new Vector<>();
+        String year = "תשפ\"ג";
         goalList.add(new Goal(0, "research", "", 1, 3));
         goalList.add(new Goal(1, "private hours", "", 1, 2));
         goalList.add(new Goal(2, "maintenance", "", 1, 4));
-        userBridge.addGoals(supervisorName1, goalList);
+        userBridge.addGoals(supervisorName1, goalList, year);
 
         surveyBridge.createSurvey(supervisorName1, surveyDTO);
         surveyBridge.addAnswers(answersDTO1);
@@ -162,7 +163,7 @@ public class SupervisorTests extends AcceptanceTests{
         userBridge.assignSchoolsToUser(supervisorName1, instructorName1, Arrays.asList("1", "2", "3"));
         userBridge.assignSchoolsToUser(supervisorName1, instructorName2, Arrays.asList("4", "5", "6"));
 
-        scheduleBridge.generateSchedule(supervisorName1, 0);
+        scheduleBridge.generateSchedule(supervisorName1, 0, year);
 
         userBridge.getUserRes(instructorName1).getResult().getWorkPlan().getResult().printMe();
         userBridge.getUserRes(instructorName2).getResult().getWorkPlan().getResult().printMe();

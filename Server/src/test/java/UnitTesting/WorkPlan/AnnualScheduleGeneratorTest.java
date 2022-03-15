@@ -31,13 +31,14 @@ public class AnnualScheduleGeneratorTest {
 
     @Test
     public void basicAlgorithmFunctionalitySuccess(){
+        String year = "תשפ\"ג";
         String supervisorName = userController.login(guestName, "sup1", "sup1").getResult().getFirst();
         List<Goal> goalList = new Vector<>();
         goalList.add(new Goal("1", 5));
         goalList.add(new Goal("3", 3));
         goalList.add(new Goal("2", 4));
         goalList.add(new Goal("4", 1));
-        userController.addGoals(supervisorName, goalList);
+        userController.addGoals(supervisorName, goalList, year);
         String instructorName = userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "", "", "").getResult().getUsername();
         List<String> schools = new Vector<>();
         schools.add("1");
@@ -57,7 +58,7 @@ public class AnnualScheduleGeneratorTest {
         schoolsAndFaults.add(new Pair<>("1", school1Faults));
         schoolsAndFaults.add(new Pair<>("2", school2Faults));
         String workField = userController.getUser(supervisorName).getWorkField();
-        AnnualScheduleGenerator.getInstance().algorithmMock(supervisorName, schoolsAndFaults, workField, GoalsManagement.getInstance().getGoals(workField).getResult());
+        AnnualScheduleGenerator.getInstance().algorithmMock(supervisorName, schoolsAndFaults, workField, GoalsManagement.getInstance().getGoals(workField, year).getResult(), year);
         userController.getUser(instructorName).getWorkPlan().getResult().printMe();
     }
 }

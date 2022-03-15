@@ -69,9 +69,9 @@ public class ProxyBridgeSurvey implements SurveyService {
     }
 
     @Override
-    public Response<List<List<String>>> detectFault(String username, int surveyID) {
+    public Response<List<List<String>>> detectFault(String username, int surveyID, String year) {
         if (real != null){
-            return real.detectFault(username, surveyID);
+            return real.detectFault(username, surveyID, year);
         }
 
         return new Response<>(null, true, "not implemented");
