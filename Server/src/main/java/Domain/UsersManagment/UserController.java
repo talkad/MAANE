@@ -377,7 +377,6 @@ public class UserController {
                 for (String appointee : appointeesRes.getResult()) {
                     appointeesDTOs.add(createUserDTOS(appointee));
                 }
-
                 return new Response<>(appointeesDTOs, false, "");
             }
             else {
