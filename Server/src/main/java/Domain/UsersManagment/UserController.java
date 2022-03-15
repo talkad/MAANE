@@ -391,6 +391,7 @@ public class UserController {
 
     private UserDTO createUserDTOS(String username){
         UserDTO userDTO = new UserDTO();
+        userDTO.setCurrUser(username);
         userDTO.setWorkField(registeredUsers.get(username).getFirst().getWorkField());
         userDTO.setFirstName(registeredUsers.get(username).getFirst().getFirstName());
         userDTO.setLastName(registeredUsers.get(username).getFirst().getLastName());

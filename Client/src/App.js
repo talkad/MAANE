@@ -68,6 +68,7 @@ function App(){
     const logoutCallback = (data) => {
         setType("GUEST")
         window.sessionStorage.setItem('username', data.result)
+        setHideBars(true);
         navigate('/user/login', {replace: true})
     }
 

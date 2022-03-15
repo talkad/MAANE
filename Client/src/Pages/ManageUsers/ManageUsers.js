@@ -234,6 +234,7 @@ const rows = [
 ];
 
 export default function ManageUsers(props){
+    const [tableRows, setTableRows] = useState([]);
     const [openCPDialog, setOpenCPDialog] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [selectedUser, setSelectedUser] = useState('');
@@ -246,23 +247,47 @@ export default function ManageUsers(props){
     let navigate = useNavigate();
 
     useEffect(() => {
-        Connection.getInstance().getAppointedUsers(window.sessionStorage.getItem('username'), arrangeTableDataCallback)
+        Connection.getInstance().getAppointedUsers(window.sessionStorage.getItem('username'), handleReceivedData)
     }, []);
 
-    /**
-     * a function which arranges the received data from the server to view in the table
-     * @param data the data
-     */
-    const arrangeTableDataCallback = (data) => {
-        console.log(data);
-    }
 
     /**
      * handler for the response from the server for table data
      * @param data the table data to arrange
      */
     const handleReceivedData = (data) => {
-        // TODO: implement
+        if (!data.failure){
+            let rows = [];
+
+            for (const row of data.result){
+                let role = "";
+
+                if (row.userStateEnum === "INSTRUCTOR") {
+                    role = "מדריכ/ה";
+                }
+                else if (row.userStateEnum === "SUPERVISOR") {
+                    role = "מפקח/ת";
+                }
+                else if (row.userStateEnum === "GENERAL_SUPERVISOR") {
+                    role = "מפקח/ת כללי/ת";
+                }
+
+                rows.push(createData(
+                    row.currUser,
+                    row.firstName,
+                    role,
+                    row.email,
+                    row.phoneNumber,
+                    row.city,
+                    row.schools
+                ));
+            }
+
+            setTableRows(rows);
+        }
+        else {
+            //TODO: needed?
+        }
     }
 
     /**
@@ -359,6 +384,7 @@ export default function ManageUsers(props){
                 </div>
                 <TableContainer id="Manage-users-table" component={Paper}>
                     {/* the table */}
+                    {/*TODO: implement a case for an empty table*/}
                     <Table aria-label="collapsible table">
                         <TableHead>
                             <TableRow>
@@ -368,8 +394,8 @@ export default function ManageUsers(props){
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {rows.map((row) => (
-                                <Row key={row.username} row={row} handleOpenCPDialog={handleOpenCPDialog} handleOpenDeleteDialog={handleOpenDeleteDialog}/>
+                            {tableRows.map((tableRows) => (
+                                <Row key={tableRows.username} row={tableRows} handleOpenCPDialog={handleOpenCPDialog} handleOpenDeleteDialog={handleOpenDeleteDialog}/>
                             ))}
                         </TableBody>
                     </Table>
