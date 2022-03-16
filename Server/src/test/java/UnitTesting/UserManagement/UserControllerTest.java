@@ -43,7 +43,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void assigningSupervisorSuccess(){//todo gets fixed by resetting the database
+    public void assigningSupervisorSuccess(){
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
         String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
@@ -163,7 +163,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void changePasswordBySupervisorFail(){//todo fix setup so it resets
+    public void changePasswordBySupervisorFail(){
         Security security = Security.getInstance();
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
@@ -247,9 +247,26 @@ public class UserControllerTest {
         goalList.add(new Goal(2, "goal2", "goal2", 1));
         goalList.add(new Goal(3, "goal3", "goal3", 1));
         userController.addGoals(supervisorName, goalList, year);
-//        for (Goal goal: userController.getGoals(supervisorName).getResult()) {
-//            System.out.println(goal.toString());
-//        }
         Assert.assertTrue(userController.getGoals(supervisorName, year).getResult().size() == 3);
+    }
+
+    @Test
+    public void removingGoalSuccess(){
+        String year = "תשפ\"ג";
+        UserController userController = UserController.getInstance();
+        String guestName = userController.addGuest().getResult();
+        String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
+        userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        guestName = userController.logout(adminName).getResult();
+        String supervisorName = userController.login(guestName, "sup1", "sup1").getResult().getFirst();
+        List<Goal> goalList = new Vector<>();
+        goalList.add(new Goal(1, "goal1", "goal1", 1));
+        goalList.add(new Goal(2, "goal2", "goal2", 1));
+        goalList.add(new Goal(3, "goal3", "goal3", 1));
+        userController.addGoals(supervisorName, goalList, year);
+        Assert.assertTrue(userController.getGoals(supervisorName, year).getResult().size() == 3);
+        int goalToRemoveId = userController.getGoals(supervisorName, year).getResult().get(0).getGoalId();
+        userController.removeGoal(supervisorName, year, goalToRemoveId);
+        Assert.assertTrue(userController.getGoals(supervisorName, year).getResult().size() == 2);
     }
 }

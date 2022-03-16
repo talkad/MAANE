@@ -88,7 +88,7 @@ public class GoalsManagement {
 
     //todo manage goals id's and identify in algorithm according to id!!!
 
-    public Response<Boolean> removeGoal(String workField, String year, int goalId){//todo test that it works
+    public Response<Boolean> removeGoal(String workField, String year, int goalId){
         if(goals.containsKey(workField) && goals.get(workField).containsKey(year)){
             int goalIndex = -1;
             for(Goal g: goals.get(workField).get(year)){

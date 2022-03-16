@@ -454,7 +454,7 @@ public class UserController {
             return response;
         }
         else{
-            return new Response<>(null, true, "User not connected");//todo bad null res
+            return new Response<>(null, true, "User not connected");
         }
     }
 
@@ -701,7 +701,6 @@ public class UserController {
         }
     }
 
-    //TODO: need to test this one
     private WorkPlanDTO generateWpDTO(User user, String year) {
         WorkPlanDTO workPlanDTO = new WorkPlanDTO();
         WorkPlan workPlan = user.getWorkPlan(year).getResult();

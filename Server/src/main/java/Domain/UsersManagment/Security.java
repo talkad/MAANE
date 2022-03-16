@@ -16,7 +16,7 @@ public class Security {
 
 
     // Copyright - https://techexpertise.medium.com/java-cryptographic-hash-functions-a7ae28f3fa42
-    public String sha256(String plainText){//todo make sha safer
+    public String sha256(String plainText){
         StringBuilder hashText;
 
         try {
