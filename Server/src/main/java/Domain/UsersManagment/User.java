@@ -435,7 +435,7 @@ public class User {
         this.workField = workField;
     }
 
-    public Response<List<String>> getAppointees() {//todo maybe make response and verify
+    public Response<List<String>> getAppointees() {
         if (this.state.allowed(Permissions.VIEW_USERS_INFO, this)) {
             return this.appointments.getAppointees();
         }

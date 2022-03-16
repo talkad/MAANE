@@ -269,7 +269,7 @@ public class SurveyController {
 
             if(ans.getSymbol().equals(symbol)){
                 for(Integer fault: faultDetector.detectFault(ans).getResult())
-                    currentFaults.add(goals.get(fault).getTitle());
+                    currentFaults.add(goals.get(fault).getTitle());//todo switch to getGoalId
             }
         }
 
