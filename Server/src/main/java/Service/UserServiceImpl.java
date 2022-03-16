@@ -194,4 +194,12 @@ public class UserServiceImpl implements UserService {
         return res;
     }
 
-}
+    public Response<Boolean> updateInfo(String currUser, String firstName, String lastName, String email, String phoneNumber, String city) {
+        Response<Boolean> res = UserController.getInstance().updateInfo(currUser, firstName, lastName, email, phoneNumber, city);
+        if(res.isFailure())
+            log.error("failed to update {}'s info", currUser);
+        else
+            log.info("successfully updated {}'s info", currUser);
+        return res;
+    }
+    }

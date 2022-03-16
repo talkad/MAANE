@@ -158,4 +158,13 @@ public class ProxyBridgeUser implements UserService {
 
         return new Response<>(null, true, "not implemented");
     }
+
+    @Override
+    public Response<Boolean> updateInfo(String currUser, String firstName, String lastName, String email, String phoneNumber, String city){
+        if (real != null){
+            return real.updateInfo(currUser, firstName, lastName, email, phoneNumber, city);
+        }
+
+        return new Response<>(null, true, "not implemented");
+    }
 }

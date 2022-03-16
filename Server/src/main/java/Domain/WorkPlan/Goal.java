@@ -17,22 +17,6 @@ public class Goal {
         this.weight = weight;
     }
 
-    public Goal(int goalId, String title, String description, int quarterly) {
-        this.goalId = goalId;
-        this.title = title;
-        this.description = description;
-        this.quarterly = quarterly;
-        this.weight = -1; //todo uninitialized
-    }
-
-    public Goal(String title, int weight){  //for test purposes only
-        this.goalId = 1;
-        this.title = title;
-        this.description = "test";
-        this.quarterly = 1;
-        this.weight = weight;
-    }
-
     public Goal(GoalDTO gDTO) {
         this.goalId = gDTO.getGoalId();
         this.title = gDTO.getTitle();

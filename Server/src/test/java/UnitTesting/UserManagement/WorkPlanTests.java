@@ -21,9 +21,9 @@ public class WorkPlanTests {
     @Before
     public void setUp(){
         workPlan = new WorkPlan(2021);
-        goal1 = new Goal(1, "a", "aa", 100);
-        goal2 = new Goal(2, "b", "bb", 200);
-        goal2 = new Goal(3, "c", "cc", 300);
+        goal1 = new Goal(1, "a", "aa", 1, 1);
+        goal2 = new Goal(2, "b", "bb", 2, 2);
+        goal2 = new Goal(3, "c", "cc", 3, 3);
     }
 
     @Test

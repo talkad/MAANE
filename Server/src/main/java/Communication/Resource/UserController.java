@@ -50,6 +50,12 @@ public class UserController {
                 .body(service.registerUser(user));
     }
 
+/*    @RequestMapping(value = "/registerUserBySystemManager", method = RequestMethod.POST)
+    public ResponseEntity<Response<User>> registerUserBySystemManager(@RequestBody UserDTO user) {
+        return ResponseEntity.ok()
+                .body(service.registerUserBySystemManager(user));
+    }*/ //todo fix dto so it adds opt sup
+
     @RequestMapping(value = "/removeUser", method = RequestMethod.POST)
     public ResponseEntity<Response<Boolean>> removeUser(@RequestBody Map<String, Object>  body){
         return ResponseEntity.ok()
@@ -80,7 +86,7 @@ public class UserController {
                 .body(service.getAppointedUsers((String)body.get("currUser")));
     }
 
-//    @RequestMapping(value = "/removeUser", method = RequestMethod.POST)
+//    @RequestMapping(value = "/generateSchedule", method = RequestMethod.POST)
 //    public ResponseEntity<Response<Boolean>> generateSchedule(@RequestBody Map<String, Object>  body){
 //        return ResponseEntity.ok()
 //                .body(service.generateSchedule((String)body.get("supervisor"), (Integer) body.get("surveyID")));
@@ -111,4 +117,13 @@ public class UserController {
         return ResponseEntity.ok()
                 .body(service.getGoals((String)body.get("currUser"), (String)body.get("year")));
     }
+
+   @RequestMapping(value = "/updateInfo", method = RequestMethod.POST)//todo aviad
+    public ResponseEntity<Response<Boolean>> updateInfo(@RequestBody Map<String, Object>  body){
+        return ResponseEntity.ok()
+                .body(service.updateInfo((String)body.get("currUser"), (String)body.get("firstName"), (String)body.get("lastName"), (String)body.get("email"), (String)body.get("phoneNumber"), (String)body.get("city")));
+    }
+
+
+
 }

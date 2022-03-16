@@ -39,4 +39,5 @@ public interface UserService {
 
     Response<Boolean> verifyUser(String currUser, String password);
 
+    Response<Boolean> updateInfo(String currUser, String firstName, String lastName, String email, String phoneNumber, String city);
 }

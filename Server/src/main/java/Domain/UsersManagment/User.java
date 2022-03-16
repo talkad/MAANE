@@ -33,14 +33,6 @@ public class User {
         this.baskets = new Vector<>();
     }
 
-    public User(String username) {
-        this.username = username;
-        this.appointments = new Appointment();
-        this.schools = new Vector<>();
-        this.surveys = new Vector<>();
-        this.baskets = new Vector<>();
-    }
-
     public User(String username, UserStateEnum userStateEnum) {
         this.state = inferUserType(userStateEnum);
         this.username = username;

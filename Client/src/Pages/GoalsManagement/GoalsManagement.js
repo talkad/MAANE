@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import './GoalsManagement.css'
 import * as Space from 'react-spaces';
 import {
-    Accordion, AccordionDetails, AccordionSummary,
+    Accordion, AccordionDetails, AccordionSummary, Alert,
     Box, Button,
     Collapse, Dialog, DialogTitle, FormControl, Grid, Grow,
     IconButton, InputLabel, List, ListItem, ListItemText, MenuItem,
@@ -69,7 +69,7 @@ function Row(props) {
                 <TableCell>{row.quarter}</TableCell>
                 <TableCell>{row.weight}</TableCell>
                 <TableCell>
-                    <IconButton color="error" onClick={() => props.handleOpenDeleteDialog(row.key)}>
+                    <IconButton color="error" onClick={() => props.handleOpenDeleteDialog(row.id)}>
                         <DeleteIcon/>
                     </IconButton>
                 </TableCell>
@@ -175,11 +175,14 @@ function NewGoalForm(props) {
 
     const submitCallback = (data) => {
         if(data.failure){
-            //todo: raise an error
+            props.setOpenSnackbar(true);
+            props.setSnackbarSeverity("error");
+            props.setSnackbarMessage("היעד לא הוסף");
         }
         else{
-            //TODO: say something about it succeeding
-            window.location.reload();
+            props.setOpenSnackbar(true);
+            props.setSnackbarSeverity("success");
+            props.setSnackbarMessage("יעד הוסף בהצלחה");
 
             setTitle('');
             setDescription('');
@@ -187,6 +190,7 @@ function NewGoalForm(props) {
             setQuarter(1);
             let currentYear = new Date().getFullYear();
             setHebrewYear(gematriya(currentYear + 3760, {punctuate: true, limit: 3}))
+            props.refreshData();
         }
     }
 
@@ -348,7 +352,13 @@ export default function GoalsManagement(props){
     const [showNewGoalForm, setShowNewGoalForm] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [selectedGoalID, setSelectedGoalID] = useState(-1);
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [years, setYears] = useState([]);
+    const [selectedYear, setSelectedYear] = useState('');
 
+    const year_to_view_string = "שנה להצגה";
     const page_title_string = "ניהול יעדים";
     const goal_title_cell_head_string = "יעד";
     const goal_quarter_cell_head_string = "רבעון";
@@ -359,11 +369,34 @@ export default function GoalsManagement(props){
     useEffect(() => {
         let year = new Date().getFullYear();
 
+        let years_range = [];
+        let currentYear = new Date().getFullYear();
 
+        let delta = -7;
+
+        while (delta <= 7) { // calculating up to 7 previous and ahead years
+            years_range.push(currentYear + delta + 3760); //3760 is the delta between the gregorian and hebrew calendars
+            delta++;
+        }
+
+        setYears(years_range);
+
+        setSelectedYear(gematriya(year + 3760, {punctuate: true, limit: 3}));
         Connection.getInstance().getGoals(window.sessionStorage.getItem('username'),
             gematriya(year + 3760, {punctuate: true, limit: 3}),
             handleReceivedData);
     }, []);
+
+    /**
+     * refreshes the new table
+     */
+    const refreshData = () => {
+        Connection.getInstance().getGoals(window.sessionStorage.getItem('username'),
+            selectedYear,
+            handleReceivedData);
+
+        //TODO: have a loading animation
+    }
 
     /**
      * handler for the response from the server for the table data
@@ -390,6 +423,22 @@ export default function GoalsManagement(props){
         }
     }
 
+    const handleYearChange = (event) => {
+        setSelectedYear(event.target.value);
+
+        Connection.getInstance().getGoals(window.sessionStorage.getItem('username'),
+            event.target.value,
+            handleReceivedData);
+    }
+
+    const handleSnackbarClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setOpenSnackbar(false);
+    }
+
     /**
      * handles the opening of the dialog to delete a selected goal
      * @param goalID the selected goal
@@ -406,12 +455,33 @@ export default function GoalsManagement(props){
         setOpenDeleteDialog(false);
     }
 
+    const deleteGoalCallback = (data) => {
+        if (!data.failure){
+            setOpenSnackbar(true);
+            setSnackbarSeverity('success');
+            setSnackbarMessage("היעד נמחק בהצלחה");
+            refreshData();
+        }
+        else{
+            // todo: raise an error
+        }
+    }
+
     /**
-     *
-     * @param goalID
+     * handler for removing a goal
+     * @param goalID the id of the goal
      */
     const handleDeleteGoal = (goalID) => {
-        // todo: send
+        console.log("GOAL ID IS:" + goalID);
+
+        Connection.getInstance().removeGoal(
+            window.sessionStorage.getItem('username'),
+            selectedYear,
+            goalID,
+            deleteGoalCallback
+        )
+
+        setOpenDeleteDialog(false);
     }
 
     return (
@@ -422,12 +492,29 @@ export default function GoalsManagement(props){
                 <Button onClick={() => setShowNewGoalForm(!showNewGoalForm)} variant="outlined">{add_goal_button_string}</Button>
 
                 {/*collapsed new goal form*/}
-                <Collapse sx={{width: "40%"}} in={showNewGoalForm}><NewGoalForm/></Collapse>
+                <Collapse sx={{width: "40%"}} in={showNewGoalForm}><NewGoalForm setOpenSnackbar={setOpenSnackbar}
+                                                                                setSnackbarSeverity={setSnackbarSeverity}
+                                                                                setSnackbarMessage={setSnackbarMessage}
+                                                                                refreshData={refreshData}/></Collapse>
 
                 {/*the table presenting the goals*/}
                 <TableContainer sx={{width: "80%", marginTop: "1%"}} component={Paper}>
                     <Table aria-label="collapsible table">
                         <TableHead>
+                            <TableRow>
+                                <FormControl sx={{width: "50%", marginTop: "3%"}}>
+                                    <InputLabel>{year_to_view_string}</InputLabel>
+                                    <Select
+                                        value={selectedYear}
+                                        onChange={handleYearChange}
+                                        label={year_to_view_string}
+                                    >
+                                        {years.map((year) => (
+                                            <MenuItem value={gematriya(year, {punctuate: true, limit: 3})}>{gematriya(year, {punctuate: true, limit: 3})}</MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </TableRow>
                             <TableRow>
                                 <TableCell/>
                                 <TableCell>{goal_title_cell_head_string}</TableCell>
@@ -438,18 +525,25 @@ export default function GoalsManagement(props){
                         </TableHead>
                         <TableBody>
                             {tableRows.map((tableRow) => (
-                                <Row key={tableRow.id} row={tableRow} handleOpenDeleteDialog={handleOpenDeleteDialog}/>
+                                <Row key={tableRow.id} row={tableRow}
+                                     handleOpenDeleteDialog={handleOpenDeleteDialog}/>
                             ))}
                         </TableBody>
                     </Table>
                 </TableContainer>
+
+                <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleSnackbarClose}>
+                    <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '100%' }}>
+                        {snackbarMessage}
+                    </Alert>
+                </Snackbar>
 
                 {/*deleting a goal dialog*/}
                 <DeleteGoalDialog
                     open={openDeleteDialog}
                     goalID={selectedGoalID}
                     onClose={handleCloseDeleteDialog}
-                    callBack={handleDeleteGoal}
+                    callback={handleDeleteGoal}
                 />
             </div>
         </Space.Fill>

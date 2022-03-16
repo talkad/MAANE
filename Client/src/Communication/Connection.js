@@ -234,6 +234,23 @@ class Connection{
             },
             callback);
     }
+
+    /**
+     * removeing a gaol
+     * @param currentUser the current user removing the goal
+     * @param year the year of the goal
+     * @param goalId the id of the goal
+     * @param callback a callback function to call once there's a response
+     */
+    removeGoal(currentUser, year, goalId, callback){
+        this.sendPOST('/user/removeGoal',
+            {
+                currUser: currentUser,
+                year: year,
+                goalId: goalId,
+            },
+            callback)
+    }
 }
 
 export default Connection;
