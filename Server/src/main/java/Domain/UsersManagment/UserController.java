@@ -584,13 +584,10 @@ public class UserController {
                 return goalsManagement.getGoalsDTO(res.getResult(), year);//todo check no errors on year
             }
             else{
-                System.out.println("2");
-
                 return new Response<>(null, true, res.getErrMsg());
             }
         }
         else {
-            System.out.println("3");
 
             return new Response<>(null, true, "User not connected");
         }

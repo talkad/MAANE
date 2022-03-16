@@ -63,11 +63,11 @@ public class GoalsManagement {
                 goalDTO.setDescription(g.getDescription());
                 goalDTO.setQuarterly(g.getQuarterly());
                 goalDTO.setTitle(g.getTitle());
+                goalDTO.setWeight(g.getWeight());
                 goalDTOList.add(goalDTO);
             }
             return new Response<>(goalDTOList, false, "successfully acquired goals from the work field: " + workField);
         }
-        System.out.println("1");
         return new Response<>(null, true, "work field: " + workField + " does not exists"); //todo cant really get here
     }
 

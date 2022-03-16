@@ -6,7 +6,7 @@ import {
     Box, Button,
     Collapse, Dialog, DialogTitle, FormControl, Grid, Grow,
     IconButton, InputLabel, List, ListItem, ListItemText, MenuItem,
-    Paper, Select, Stack,
+    Paper, Select, Snackbar, Stack,
     Table,
     TableBody,
     TableCell,
@@ -187,7 +187,6 @@ function NewGoalForm(props) {
             setQuarter(1);
             let currentYear = new Date().getFullYear();
             setHebrewYear(gematriya(currentYear + 3760, {punctuate: true, limit: 3}))
-
         }
     }
 
@@ -345,7 +344,7 @@ const rows = [
 ]
 
 export default function GoalsManagement(props){
-    const [tableRows, setTableRows] = useState(rows);
+    const [tableRows, setTableRows] = useState([]);
     const [showNewGoalForm, setShowNewGoalForm] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [selectedGoalID, setSelectedGoalID] = useState(-1);
@@ -371,8 +370,24 @@ export default function GoalsManagement(props){
      * @param data the table data to arrange
      */
     const handleReceivedData = (data) => {
-        console.log('TO DO DO DO!!! the received dat')
-        console.log(data);
+        if(!data.failure){
+            let rows = []
+
+            for (const row of data.result){
+                rows.push(createData(
+                    row.goalId,
+                    row.title,
+                    row.description,
+                    row.quarterly,
+                    row.weight,
+                ));
+            }
+
+            setTableRows(rows);
+        }
+        else{
+            //TODO: raise error
+        }
     }
 
     /**
