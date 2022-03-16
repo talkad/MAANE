@@ -203,8 +203,36 @@ class Connection{
             callback);
     }
 
-    getYearGoals(currentUser, hebrewYear){
-        
+    /**
+     * getting the goals of a user for a given year
+     * @param currentUser the current user getting the info
+     * @param year the selected year
+     * @param callback a callback function to call once there's a response
+     */
+    getGoals(currentUser, year, callback){
+        this.sendPOST('/user/getGoals',
+            {
+                currUser: currentUser,
+                year: year,
+            },
+            callback);
+    }
+
+    /**
+     * adding a goal
+     * @param currentUser the current user adding the goal
+     * @param goalDTO an object representing the goal
+     * @param year the hebrew year the goal is assigned to
+     * @param callback a callback function to call once there's a response
+     */
+    addGoal(currentUser, goalDTO, year, callback){
+        this.sendPOST('/user/addGoal',
+            {
+                currUser: currentUser,
+                goalDTO: goalDTO,
+                year: year,
+            },
+            callback);
     }
 }
 

@@ -27,9 +27,11 @@ public interface UserService {
 
     Response<List<UserDTO>> getAppointedUsers(String currUser);
 
-    Response<Boolean> addGoals(String currUser, List<GoalDTO> goalDTOList, String year);
+    Response<Boolean> addGoal(String currUser, GoalDTO goalDTO, String year);
 
     Response<Boolean> removeGoal(String currUser, String year, int goalId);
+
+    Response<List<GoalDTO>> getGoals(String currUser, String year);
 
     Response<User> getUserRes(String username); //for testing purposes only
 

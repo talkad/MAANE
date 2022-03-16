@@ -138,10 +138,9 @@ public class SupervisorTests extends AcceptanceTests{
     public void workPlanTest(){
         List<GoalDTO> goalDTOList = new Vector<>();
         String year = "תשפ\"ג";
-        goalDTOList.add(new GoalDTO(0, "research", "", 1, 3));
-        goalDTOList.add(new GoalDTO(1, "private hours", "", 1, 2));
-        goalDTOList.add(new GoalDTO(2, "maintenance", "", 1, 4));
-        userBridge.addGoals(supervisorName1, goalDTOList, year);
+        userBridge.addGoal(supervisorName1, new GoalDTO(0, "research", "", 1, 3), year);
+        userBridge.addGoal(supervisorName1, new GoalDTO(1, "private hours", "", 1, 2), year);
+        userBridge.addGoal(supervisorName1, new GoalDTO(2, "maintenance", "", 1, 4), year);
 
         surveyBridge.createSurvey(supervisorName1, surveyDTO);
         surveyBridge.addAnswers(answersDTO1);

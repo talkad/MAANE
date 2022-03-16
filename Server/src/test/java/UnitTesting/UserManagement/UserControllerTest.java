@@ -5,7 +5,6 @@ import Communication.DTOs.UserDTO;
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.*;
-import Domain.WorkPlan.Goal;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -212,7 +211,6 @@ public class UserControllerTest {
         String guestName = userController.addGuest().getResult();
         String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
-        //System.out.println(res.isFailure());
         guestName = userController.logout(adminName).getResult();
         Response<Pair<String, UserStateEnum>> supervisorName = userController.login(guestName, "sup1", "sup1");
         userController.updateInfo("sup1", "1", "", "", "", "");
@@ -243,11 +241,11 @@ public class UserControllerTest {
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         guestName = userController.logout(adminName).getResult();
         String supervisorName = userController.login(guestName, "sup1", "sup1").getResult().getFirst();
-        List<GoalDTO> goalDTOList = new Vector<>();
-        goalDTOList.add(new GoalDTO(1, "goal1", "goal1", 1, 1));
-        goalDTOList.add(new GoalDTO(2, "goal2", "goal2", 1, 1));
-        goalDTOList.add(new GoalDTO(3, "goal3", "goal3", 1, 1));
-        userController.addGoals(supervisorName, goalDTOList, year);
+
+        userController.addGoal(supervisorName, new GoalDTO(1, "goal1", "goal1", 1, 1), year);
+        userController.addGoal(supervisorName, new GoalDTO(2, "goal2", "goal2", 1, 1), year);
+        userController.addGoal(supervisorName, new GoalDTO(3, "goal3", "goal3", 1, 1), year);
+
         Assert.assertTrue(userController.getGoals(supervisorName, year).getResult().size() == 3);
     }
 
@@ -260,11 +258,11 @@ public class UserControllerTest {
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         guestName = userController.logout(adminName).getResult();
         String supervisorName = userController.login(guestName, "sup1", "sup1").getResult().getFirst();
-        List<GoalDTO> goalDTOList = new Vector<>();
-        goalDTOList.add(new GoalDTO(1, "goal1", "goal1", 1, 1));
-        goalDTOList.add(new GoalDTO(2, "goal2", "goal2", 1, 1));
-        goalDTOList.add(new GoalDTO(3, "goal3", "goal3", 1, 1));
-        userController.addGoals(supervisorName, goalDTOList, year);
+
+        userController.addGoal(supervisorName, new GoalDTO(1, "goal1", "goal1", 1, 1), year);
+        userController.addGoal(supervisorName, new GoalDTO(2, "goal2", "goal2", 1, 1), year);
+        userController.addGoal(supervisorName, new GoalDTO(3, "goal3", "goal3", 1, 1), year);
+
         Assert.assertTrue(userController.getGoals(supervisorName, year).getResult().size() == 3);
         int goalToRemoveId = userController.getGoals(supervisorName, year).getResult().get(0).getGoalId();
         userController.removeGoal(supervisorName, year, goalToRemoveId);

@@ -73,6 +73,14 @@ public class Goal {
         this.goalId = goalId;
     }
 
+    public int getQuarterly() {
+        return quarterly;
+    }
+
+    public void setQuarterly(int quarterly) {
+        this.quarterly = quarterly;
+    }
+
     public String toString(){
         return /*"goal id: " + this.goalId + */" title: " + this.title + /*" description: " + this.description +*/ " weight:  " + this.weight;
     }

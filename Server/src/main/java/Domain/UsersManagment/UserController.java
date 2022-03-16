@@ -169,6 +169,7 @@ public class UserController {
                         registeredUsers.put(userToRegister, new Pair<>(result.getResult(), security.sha256(password)));
                         result = new Response<>(result.getResult(), false, "Registration occurred");
                         goalsManagement.addGoalsField(workField);//todo verify field doesnt exist already
+                        //goalsManagement.
                     }
                     return result;
                 }
@@ -575,28 +576,32 @@ public class UserController {
         }
     }
 
-    public Response<List<Goal>> getGoals(String currUser, String year){
+    public Response<List<GoalDTO>> getGoals(String currUser, String year){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             Response<String> res = user.getGoals();
             if(!res.isFailure()){
-                return goalsManagement.getGoals(res.getResult(), year);//todo check no errors on year
+                return goalsManagement.getGoalsDTO(res.getResult(), year);//todo check no errors on year
             }
             else{
+                System.out.println("2");
+
                 return new Response<>(null, true, res.getErrMsg());
             }
         }
         else {
+            System.out.println("3");
+
             return new Response<>(null, true, "User not connected");
         }
     }
 
-    public Response<Boolean> addGoals(String currUser, List<GoalDTO> goalDTOList, String year){
+    public Response<Boolean> addGoal(String currUser, GoalDTO goalDTO, String year){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             Response<String> res = user.addGoals();
             if(!res.isFailure()){
-                return goalsManagement.addGoalsToField(res.getResult(), goalDTOList, year);
+                return goalsManagement.addGoalToField(res.getResult(), goalDTO, year);
             }
             else{
                 return new Response<>(null, true, res.getErrMsg());

@@ -9,6 +9,8 @@ import Domain.UsersManagment.User;
 import Domain.UsersManagment.UserStateEnum;
 import Domain.WorkPlan.Goal;
 import Service.UserServiceImpl;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +22,8 @@ import java.util.Map;
 @RequestMapping("/user")
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class UserController {
+    ObjectMapper objectMapper = new ObjectMapper();
+    private Gson gson = new Gson();
     private static final UserServiceImpl service = UserServiceImpl.getInstance();
 
     @GetMapping("/startup")
@@ -52,10 +56,10 @@ public class UserController {
                 .body(service.removeUser((String)body.get("currUser"), (String)body.get("userToRemove")));
     }
 
-    @GetMapping("/viewWorkPlan/username={username}")
-    public ResponseEntity<Response<WorkPlanDTO>> viewWorkPlan(@PathVariable("username") String username, @PathVariable("year") String year){
+    @RequestMapping(value = "/viewWorkPlan", method = RequestMethod.POST)
+    public ResponseEntity<Response<WorkPlanDTO>> viewWorkPlan(@RequestBody Map<String, Object>  body){
         return ResponseEntity.ok()
-                .body(service.viewWorkPlan(username, year));
+                .body(service.viewWorkPlan((String)body.get("username"), (String)body.get("year")));
     }
 
     @RequestMapping(value = "/authenticatePassword", method = RequestMethod.POST)
@@ -82,15 +86,29 @@ public class UserController {
 //                .body(service.generateSchedule((String)body.get("supervisor"), (Integer) body.get("surveyID")));
 //    }
 
-    @RequestMapping(value = "/addGoals", method = RequestMethod.POST)
-    public ResponseEntity<Response<Boolean>> addGoals(@RequestBody Map<String, Object>  body){
+    @RequestMapping(value = "/addGoal", method = RequestMethod.POST)
+    public ResponseEntity<Response<Boolean>> addGoal(@RequestBody Map<String, Object>  body){
+        String goal = "";
+
+        try {
+            goal = objectMapper.writeValueAsString(body.get("goalDTO"));
+        }catch(Exception e){
+            System.out.println("This exception shouldn't occur");
+        }
+
         return ResponseEntity.ok()
-                .body(service.addGoals((String)body.get("currUser"), (List<GoalDTO>)body.get("goalDTOList"), (String)body.get("year")));
+                .body(service.addGoal((String)body.get("currUser"), gson.fromJson(goal, GoalDTO.class), (String)body.get("year")));
     }
 
     @RequestMapping(value = "/removeGoal", method = RequestMethod.POST)
     public ResponseEntity<Response<Boolean>> removeGoal(@RequestBody Map<String, Object>  body){
         return ResponseEntity.ok()
                 .body(service.removeGoal((String)body.get("currUser"), (String)body.get("year"), (int)body.get("goalId")));
+    }
+
+    @RequestMapping(value = "/getGoals", method = RequestMethod.POST)
+    public ResponseEntity<Response<List<GoalDTO>>> getGoals(@RequestBody Map<String, Object>  body){
+        return ResponseEntity.ok()
+                .body(service.getGoals((String)body.get("currUser"), (String)body.get("year")));
     }
 }

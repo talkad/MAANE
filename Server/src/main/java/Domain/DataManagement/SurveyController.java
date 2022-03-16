@@ -1,5 +1,6 @@
 package Domain.DataManagement;
 
+import Communication.DTOs.GoalDTO;
 import Communication.DTOs.SurveyAnswersDTO;
 import Communication.DTOs.SurveyDTO;
 import Domain.CommonClasses.Pair;
@@ -199,7 +200,7 @@ public class SurveyController {
     public Response<List<List<String>>> detectFault(String username, int id, String year){
         List<List<String>> faults = new LinkedList<>();
         FaultDetector faultDetector;
-        List<Goal> goals = UserController.getInstance().getGoals(username, year).getResult();
+        List<GoalDTO> goals = UserController.getInstance().getGoals(username, year).getResult();
         List<String> currentFaults;
         Response<Boolean> legalAdd = UserController.getInstance().hasCreatedSurvey(username, id);
 
@@ -253,7 +254,7 @@ public class SurveyController {
      */
     public Response<List<String>> detectSchoolFault(String username, int id, String symbol, String year){
         FaultDetector faultDetector;
-        List<Goal> goals = UserController.getInstance().getGoals(username, year).getResult();
+        List<GoalDTO> goals = UserController.getInstance().getGoals(username, year).getResult();
         List<String> currentFaults = new LinkedList<>();;
         Response<Boolean> legalAdd = UserController.getInstance().hasCreatedSurvey(username, id);
 

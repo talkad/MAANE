@@ -4,7 +4,7 @@ import * as Space from 'react-spaces';
 import {
     Accordion, AccordionDetails, AccordionSummary,
     Box, Button,
-    Collapse, FormControl, Grow,
+    Collapse, Dialog, DialogTitle, FormControl, Grid, Grow,
     IconButton, InputLabel, List, ListItem, ListItemText, MenuItem,
     Paper, Select, Stack,
     Table,
@@ -14,6 +14,7 @@ import {
     TableHead,
     TableRow, TextField, Typography
 } from "@mui/material";
+import DeleteIcon from '@mui/icons-material/Delete';
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
@@ -67,6 +68,11 @@ function Row(props) {
                 <TableCell>{row.title}</TableCell>
                 <TableCell>{row.quarter}</TableCell>
                 <TableCell>{row.weight}</TableCell>
+                <TableCell>
+                    <IconButton color="error" onClick={() => props.handleOpenDeleteDialog(row.key)}>
+                        <DeleteIcon/>
+                    </IconButton>
+                </TableCell>
             </TableRow>
             {/*secondary user's into*/}
             <TableRow>
@@ -95,6 +101,8 @@ function Row(props) {
 }
 
 function NewGoalForm(props) {
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
     const [weight, setWeight] = useState(1);
     const [quarter, setQuarter] = useState(1);
     const [years, setYears] = useState([]);
@@ -120,8 +128,26 @@ function NewGoalForm(props) {
             delta++;
         }
 
+        setHebrewYear(gematriya(currentYear + 3760, {punctuate: true, limit: 3}))
         setYears(years_range);
     }, []);
+
+
+    /**
+     * handles the change of the title
+     * @param event the change of the element bound to the function
+     */
+    const handleTitleChange = (event) => {
+        setTitle(event.target.value);
+    }
+
+    /**
+     * handles the change of the description
+     * @param event the change of the element bound to the function
+     */
+    const handleDescriptionChange = (event) => {
+        setDescription(event.target.value);
+    }
 
     /**
      * handles the change of the selection of quarter
@@ -147,6 +173,24 @@ function NewGoalForm(props) {
         setHebrewYear(event.target.value);
     }
 
+    const submitCallback = (data) => {
+        if(data.failure){
+            //todo: raise an error
+        }
+        else{
+            //TODO: say something about it succeeding
+            window.location.reload();
+
+            setTitle('');
+            setDescription('');
+            setWeight(1);
+            setQuarter(1);
+            let currentYear = new Date().getFullYear();
+            setHebrewYear(gematriya(currentYear + 3760, {punctuate: true, limit: 3}))
+
+        }
+    }
+
     /**
      * handles the submission of the add goal form (collecting and sending the data of the form)
      * @param event
@@ -155,32 +199,55 @@ function NewGoalForm(props) {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
 
-        // todo: collect data and send
+        if(title === '' || description === ''){
+            // todo: raise an error
+        }
+        else{
+            Connection.getInstance().addGoal(
+                window.sessionStorage.getItem('username'),
+                {
+                    goalId: -1,
+                    title: title,
+                    description: description,
+                    quarterly: quarter,
+                    weight: weight,
+                },
+                hebrewYear,
+                submitCallback);
+        }
     }
 
     return (
             <Paper sx={{marginTop: "1%"}} elevation={2}>
-                <Typography variant="h5">{form_title_string}</Typography>
+
                 <Stack
                     component="form"
                     onSubmit={handleSubmit}
                     spacing={2}
                     sx={{
-                        '& .MuiTextField-root': { m: 1, width: '50%' },
+                        '& .MuiTextField-root': { width: '50%' },
+                        paddingBottom: "1%",
+                        paddingTop: "1%",
+                        paddingLeft: "1%"
                     }}
                     noValidate
                     autoComplete="off">
 
+                    <Typography sx={{paddingLeft: "1%"}} variant="h5">{form_title_string}</Typography>
+
                     {/*form title*/}
                     <TextField
                         name="title"
+                        value={title}
+                        onChange={handleTitleChange}
                         label={form_title_field_label_string}
-                        width
                     />
 
                     {/*form description*/}
                     <TextField
                         name="description"
+                        value={description}
+                        onChange={handleDescriptionChange}
                         label={form_description_field_label_string}
                         multiline
                         rows={4}
@@ -240,11 +307,38 @@ function NewGoalForm(props) {
                     </FormControl>
 
                     {/*form submit button*/}
-                    <Button variant={"outlined"} sx={{width: "20%", marginBottom: "1%"}}>{form_add_button_string}</Button>
+                    <Button type="submit" variant={"outlined"} sx={{width: "20%", marginBottom: "1%"}}>{form_add_button_string}</Button>
                 </Stack>
             </Paper>
     );
 }
+
+function DeleteGoalDialog(props){
+    const title_string = "האם את/ה בטוח/ה שהינך רוצה למחוק את היעד";
+    const delete_string = "מחק/י";
+    const cancel_string = "ביטול";
+
+    const handleSubmitDeletion = () => {
+        props.callback(props.goalID);
+    }
+
+    return (
+        <Dialog titleStyle={{textAlign: "center"}} sx={{alignItems: "right"}} fullWidth maxWidth="sm" onClose={props.onClose} open={props.open}>
+            <DialogTitle><Typography variant="h5" align="center">?{title_string}</Typography></DialogTitle>
+            <Grid container justifyContent="center" spacing={0}>
+                <Grid item align="center" xs={6}>
+                    {/*the cancel button*/}
+                    <Button onClick={() => props.onClose()} sx={{marginBottom: 1, width: "50%"}} variant="outlined">{cancel_string}</Button>
+                </Grid>
+                <Grid item align="center" xs={6}>
+                    {/*the delete button*/}
+                    <Button onClick={() => handleSubmitDeletion()} sx={{marginBottom: 1, width: "50%"}} color="error" variant="outlined">{delete_string}</Button>
+                </Grid>
+            </Grid>
+        </Dialog>
+    )
+}
+
 
 const rows = [
     createData(0, "the tragedy of darth plaguis the wise", "Did you ever hear the tragedy of Darth Plagueis The Wise? I thought not. It’s not a story the Jedi would tell you. It’s a Sith legend. Darth Plagueis was a Dark Lord of the Sith, so powerful and so wise he could use the Force to influence the midichlorians to create life… He had such a knowledge of the dark side that he could even keep the ones he cared about from dying. The dark side of the Force is a pathway to many abilities some consider to be unnatural. He became so powerful… the only thing he was afraid of was losing his power, which eventually, of course, he did. Unfortunately, he taught his apprentice everything he knew, then his apprentice killed him in his sleep. Ironic. He could save others from death, but not himself.", 1, 3),
@@ -253,15 +347,23 @@ const rows = [
 export default function GoalsManagement(props){
     const [tableRows, setTableRows] = useState(rows);
     const [showNewGoalForm, setShowNewGoalForm] = useState(false);
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+    const [selectedGoalID, setSelectedGoalID] = useState(-1);
 
     const page_title_string = "ניהול יעדים";
     const goal_title_cell_head_string = "יעד";
     const goal_quarter_cell_head_string = "רבעון";
     const goal_weight_cell_head_string = "משקל";
+    const goal_actions_cell_head_string = "פעולות";
     const add_goal_button_string = "הוספ/י יעד";
 
     useEffect(() => {
-        //TODO: send request to server
+        let year = new Date().getFullYear();
+
+
+        Connection.getInstance().getGoals(window.sessionStorage.getItem('username'),
+            gematriya(year + 3760, {punctuate: true, limit: 3}),
+            handleReceivedData);
     }, []);
 
     /**
@@ -269,7 +371,32 @@ export default function GoalsManagement(props){
      * @param data the table data to arrange
      */
     const handleReceivedData = (data) => {
-        //todo: implement
+        console.log('TO DO DO DO!!! the received dat')
+        console.log(data);
+    }
+
+    /**
+     * handles the opening of the dialog to delete a selected goal
+     * @param goalID the selected goal
+     */
+    const handleOpenDeleteDialog = (goalID) => {
+        setOpenDeleteDialog(true);
+        setSelectedGoalID(goalID);
+    }
+
+    /**
+     * handles the closing of the dialog for deleting a selected goal
+     */
+    const handleCloseDeleteDialog = () => {
+        setOpenDeleteDialog(false);
+    }
+
+    /**
+     *
+     * @param goalID
+     */
+    const handleDeleteGoal = (goalID) => {
+        // todo: send
     }
 
     return (
@@ -278,7 +405,11 @@ export default function GoalsManagement(props){
                 <h1>{page_title_string}</h1>
                 {/*todo: make the add button stick to the right*/}
                 <Button onClick={() => setShowNewGoalForm(!showNewGoalForm)} variant="outlined">{add_goal_button_string}</Button>
-                <Collapse sx={{width: "50%"}} in={showNewGoalForm}><NewGoalForm/></Collapse>
+
+                {/*collapsed new goal form*/}
+                <Collapse sx={{width: "40%"}} in={showNewGoalForm}><NewGoalForm/></Collapse>
+
+                {/*the table presenting the goals*/}
                 <TableContainer sx={{width: "80%", marginTop: "1%"}} component={Paper}>
                     <Table aria-label="collapsible table">
                         <TableHead>
@@ -287,16 +418,24 @@ export default function GoalsManagement(props){
                                 <TableCell>{goal_title_cell_head_string}</TableCell>
                                 <TableCell>{goal_quarter_cell_head_string}</TableCell>
                                 <TableCell>{goal_weight_cell_head_string}</TableCell>
-                            {/*    TODO: add delete goal*/}
+                                <TableCell>{goal_actions_cell_head_string}</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             {tableRows.map((tableRow) => (
-                                <Row key={tableRow.id} row={tableRow}/>
+                                <Row key={tableRow.id} row={tableRow} handleOpenDeleteDialog={handleOpenDeleteDialog}/>
                             ))}
                         </TableBody>
                     </Table>
                 </TableContainer>
+
+                {/*deleting a goal dialog*/}
+                <DeleteGoalDialog
+                    open={openDeleteDialog}
+                    goalID={selectedGoalID}
+                    onClose={handleCloseDeleteDialog}
+                    callBack={handleDeleteGoal}
+                />
             </div>
         </Space.Fill>
     );

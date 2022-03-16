@@ -8,8 +8,6 @@ import Domain.CommonClasses.Response;
 import Domain.UsersManagment.User;
 import Domain.UsersManagment.UserController;
 import Domain.UsersManagment.UserStateEnum;
-import Domain.WorkPlan.AnnualScheduleGenerator;
-import Domain.WorkPlan.Goal;
 import Service.Interfaces.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -166,8 +164,8 @@ public class UserServiceImpl implements UserService {
         return res;
     }
 
-    public Response<Boolean> addGoals(String currUser, List<GoalDTO> goalDTOList, String year){
-        Response<Boolean> res = UserController.getInstance().addGoals(currUser, goalDTOList, year);
+    public Response<Boolean> addGoal(String currUser, GoalDTO goalDTO, String year){
+        Response<Boolean> res = UserController.getInstance().addGoal(currUser, goalDTO, year);
 
         if(res.isFailure())
             log.error("failed to add goals by {}", currUser);
@@ -183,6 +181,16 @@ public class UserServiceImpl implements UserService {
             log.error("failed to remove goal by {}", currUser);
         else
             log.info("user {} successfully removed goal", currUser);
+        return res;
+    }
+
+    public Response<List<GoalDTO>> getGoals(String currUser, String year){
+        Response<List<GoalDTO>> res = UserController.getInstance().getGoals(currUser, year);
+
+        if(res.isFailure())
+            log.error("failed to view goal by {}", currUser);
+        else
+            log.info("the user {} successfully accessed goals", currUser);
         return res;
     }
 

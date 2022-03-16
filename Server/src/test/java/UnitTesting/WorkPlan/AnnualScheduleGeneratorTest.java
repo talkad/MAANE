@@ -5,7 +5,6 @@ import Domain.CommonClasses.Pair;
 import Domain.UsersManagment.UserController;
 import Domain.UsersManagment.UserStateEnum;
 import Domain.WorkPlan.AnnualScheduleGenerator;
-import Domain.WorkPlan.Goal;
 import Domain.WorkPlan.GoalsManagement;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,12 +33,12 @@ public class AnnualScheduleGeneratorTest {
     public void basicAlgorithmFunctionalitySuccess(){
         String year = "תשפ\"ג";
         String supervisorName = userController.login(guestName, "sup1", "sup1").getResult().getFirst();
-        List<GoalDTO> goalDTOList = new Vector<>();
-        goalDTOList.add(new GoalDTO(0,"1", "desc", 1,5));
-        goalDTOList.add(new GoalDTO(1, "3", "desc", 1, 3));
-        goalDTOList.add(new GoalDTO(2, "2", "desc", 1,4));
-        goalDTOList.add(new GoalDTO(3, "4","desc", 1, 1));
-        userController.addGoals(supervisorName, goalDTOList, year);
+
+        userController.addGoal(supervisorName, new GoalDTO(0,"1", "desc", 1,5), year);
+        userController.addGoal(supervisorName, new GoalDTO(1, "3", "desc", 1, 3), year);
+        userController.addGoal(supervisorName, new GoalDTO(2, "2", "desc", 1,4), year);
+        userController.addGoal(supervisorName, new GoalDTO(3, "4","desc", 1, 1), year);
+
         String instructorName = userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "", "", "").getResult().getUsername();
         List<String> schools = new Vector<>();
         schools.add("1");
