@@ -1,5 +1,6 @@
 package Service.Interfaces;
 
+import Communication.DTOs.GoalDTO;
 import Communication.DTOs.UserDTO;
 import Communication.DTOs.WorkPlanDTO;
 import Domain.CommonClasses.Pair;
@@ -26,7 +27,7 @@ public interface UserService {
 
     Response<List<UserDTO>> getAppointedUsers(String currUser);
 
-    Response<Boolean> addGoals(String currUser, List<Goal> goalList, String year);
+    Response<Boolean> addGoals(String currUser, List<GoalDTO> goalDTOList, String year);
 
     Response<Boolean> removeGoal(String currUser, String year, int goalId);
 

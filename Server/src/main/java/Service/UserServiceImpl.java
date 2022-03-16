@@ -1,5 +1,6 @@
 package Service;
 
+import Communication.DTOs.GoalDTO;
 import Communication.DTOs.UserDTO;
 import Communication.DTOs.WorkPlanDTO;
 import Domain.CommonClasses.Pair;
@@ -165,8 +166,8 @@ public class UserServiceImpl implements UserService {
         return res;
     }
 
-    public Response<Boolean> addGoals(String currUser, List<Goal> goalList, String year){
-        Response<Boolean> res = UserController.getInstance().addGoals(currUser, goalList, year);
+    public Response<Boolean> addGoals(String currUser, List<GoalDTO> goalDTOList, String year){
+        Response<Boolean> res = UserController.getInstance().addGoals(currUser, goalDTOList, year);
 
         if(res.isFailure())
             log.error("failed to add goals by {}", currUser);

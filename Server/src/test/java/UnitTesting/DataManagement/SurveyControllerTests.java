@@ -1,5 +1,6 @@
 package UnitTesting.DataManagement;
 
+import Communication.DTOs.GoalDTO;
 import Communication.DTOs.SurveyAnswersDTO;
 import Communication.DTOs.SurveyDTO;
 import Domain.CommonClasses.Response;
@@ -121,9 +122,9 @@ public class SurveyControllerTests {
         surveyController.addRule("Dvorit", 0, new MultipleChoiceBaseRule(1, 1), 1);
         surveyController.addRule("Dvorit", 0, new MultipleChoiceBaseRule(2, 2), 2);
 
-        UserController.getInstance().addGoals("Dvorit", Arrays.asList(new Goal(0, "goal0", "goal0", 1,1),
-                                                                                new Goal(1, "goal1", "goal1", 1, 1),
-                                                                                new Goal(2, "goal2", "goal2", 1,1)), year);
+        UserController.getInstance().addGoals("Dvorit", Arrays.asList(new GoalDTO(0, "goal0", "goal0", 1,1),
+                                                                                new GoalDTO(1, "goal1", "goal1", 1, 1),
+                                                                                new GoalDTO(2, "goal2", "goal2", 1,1)), year);
         faults = surveyController.detectFault("Dvorit", 0, year);
 
         Assert.assertTrue(faults.getResult().size() == 2 && faults.getResult().get(0).size() == 3);

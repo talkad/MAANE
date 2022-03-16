@@ -1,5 +1,6 @@
 package AcceptanceTesting.Bridge;
 
+import Communication.DTOs.GoalDTO;
 import Communication.DTOs.UserDTO;
 import Communication.DTOs.WorkPlanDTO;
 import Domain.CommonClasses.Pair;
@@ -106,9 +107,9 @@ public class ProxyBridgeUser implements UserService {
     }
 
     @Override
-    public Response<Boolean> addGoals(String currUser, List<Goal> goalList, String year) {
+    public Response<Boolean> addGoals(String currUser, List<GoalDTO> goalDTOList, String year) {
         if (real != null){
-            return real.addGoals(currUser, goalList, year);
+            return real.addGoals(currUser, goalDTOList, year);
         }
 
         return new Response<>(null, true, "not implemented");

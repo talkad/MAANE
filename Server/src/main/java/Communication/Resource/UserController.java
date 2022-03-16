@@ -1,5 +1,6 @@
 package Communication.Resource;
 
+import Communication.DTOs.GoalDTO;
 import Communication.DTOs.UserDTO;
 import Communication.DTOs.WorkPlanDTO;
 import Domain.CommonClasses.Pair;
@@ -84,7 +85,7 @@ public class UserController {
     @RequestMapping(value = "/addGoals", method = RequestMethod.POST)
     public ResponseEntity<Response<Boolean>> addGoals(@RequestBody Map<String, Object>  body){
         return ResponseEntity.ok()
-                .body(service.addGoals((String)body.get("currUser"), (List<Goal>)body.get("goalList"), (String)body.get("year")));
+                .body(service.addGoals((String)body.get("currUser"), (List<GoalDTO>)body.get("goalDTOList"), (String)body.get("year")));
     }
 
     @RequestMapping(value = "/removeGoal", method = RequestMethod.POST)

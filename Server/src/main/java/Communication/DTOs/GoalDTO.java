@@ -1,5 +1,10 @@
 package Communication.DTOs;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
+@AllArgsConstructor
 public class GoalDTO {
     private int goalId;
     private String title;

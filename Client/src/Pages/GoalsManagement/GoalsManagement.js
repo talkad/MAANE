@@ -16,8 +16,9 @@ import {
 } from "@mui/material";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+
 import Connection from "../../Communication/Connection";
-import {AccordionButton} from "react-bootstrap";
+import gematriya from "gematriya";
 
 /**
  * a function that returns an object containing the data for a row in the table
@@ -96,13 +97,31 @@ function Row(props) {
 function NewGoalForm(props) {
     const [weight, setWeight] = useState(1);
     const [quarter, setQuarter] = useState(1);
+    const [years, setYears] = useState([]);
+    const [hebrewYear, setHebrewYear] = useState('');
 
     const form_title_string = "הוספת יעד חדש";
     const form_title_field_label_string = "כותרת היעד";
     const form_description_field_label_string = "תיאור היעד";
     const form_quarter_string = "רבעון השלמת היעד";
     const form_weight_string = "משקל היעד";
+    const form_year_string = "שנת לימודים";
     const form_add_button_string = "הוספ/י יעד";
+
+    useEffect(() => {
+        // calculating the numeric hebrew years
+        let years_range = [];
+        let currentYear = new Date().getFullYear();
+
+        let delta = -7;
+
+        while (delta <= 7) { // calculating up to 7 previous and ahead years
+            years_range.push(currentYear + delta + 3760); //3760 is the delta between the gregorian and hebrew calendars
+            delta++;
+        }
+
+        setYears(years_range);
+    }, []);
 
     /**
      * handles the change of the selection of quarter
@@ -119,6 +138,14 @@ function NewGoalForm(props) {
     const handleWeightChange = (event) => {
         setWeight(event.target.value);
     };
+
+    /**
+     * handles the change of the selection of year
+     * @param event the selection element bound to the function
+     */
+    const handleYearChange = (event) => {
+        setHebrewYear(event.target.value);
+    }
 
     /**
      * handles the submission of the add goal form (collecting and sending the data of the form)
@@ -159,22 +186,6 @@ function NewGoalForm(props) {
                         rows={4}
                     />
 
-                    {/*form quarter select*/}
-                    <FormControl sx={{width: "20%"}}>
-                        <InputLabel id="quarter-label">{form_quarter_string}</InputLabel>
-                        <Select
-                            labelId="quarter-label"
-                            value={quarter}
-                            label={form_quarter_string}
-                            onChange={handleQuarterChange}
-                        >
-                            <MenuItem value={1}>1</MenuItem>
-                            <MenuItem value={2}>2</MenuItem>
-                            <MenuItem value={3}>3</MenuItem>
-                            <MenuItem value={4}>4</MenuItem>
-                        </Select>
-                    </FormControl>
-
                     {/*form weight select*/}
                     <FormControl sx={{width: "20%"}}>
                         <InputLabel id="weight-label">{form_weight_string}</InputLabel>
@@ -197,7 +208,36 @@ function NewGoalForm(props) {
                         </Select>
                     </FormControl>
 
-                    {/*TODO: add hebrew year selection*/}
+                    {/*form quarter select*/}
+                    <FormControl sx={{width: "20%"}}>
+                        <InputLabel id="quarter-label">{form_quarter_string}</InputLabel>
+                        <Select
+                            labelId="quarter-label"
+                            value={quarter}
+                            label={form_quarter_string}
+                            onChange={handleQuarterChange}
+                        >
+                            <MenuItem value={1}>1</MenuItem>
+                            <MenuItem value={2}>2</MenuItem>
+                            <MenuItem value={3}>3</MenuItem>
+                            <MenuItem value={4}>4</MenuItem>
+                        </Select>
+                    </FormControl>
+
+                    {/*hebrew year picker*/}
+                    <FormControl sx={{width: "20%"}}>
+                        <InputLabel id="year-label">{form_year_string}</InputLabel>
+                        <Select
+                            labelId="year-label"
+                            value={hebrewYear}
+                            label={form_year_string}
+                            onChange={handleYearChange}
+                        >
+                            {years.map((year) => (
+                                <MenuItem value={gematriya(year, {punctuate: true, limit: 3})}>{gematriya(year, {punctuate: true, limit: 3})}</MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
 
                     {/*form submit button*/}
                     <Button variant={"outlined"} sx={{width: "20%", marginBottom: "1%"}}>{form_add_button_string}</Button>

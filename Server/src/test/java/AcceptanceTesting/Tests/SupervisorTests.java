@@ -1,5 +1,6 @@
 package AcceptanceTesting.Tests;
 
+import Communication.DTOs.GoalDTO;
 import Communication.DTOs.SurveyAnswersDTO;
 import Communication.DTOs.SurveyDTO;
 import Communication.DTOs.UserDTO;
@@ -135,12 +136,12 @@ public class SupervisorTests extends AcceptanceTests{
 
     @Test
     public void workPlanTest(){
-        List<Goal> goalList = new Vector<>();
+        List<GoalDTO> goalDTOList = new Vector<>();
         String year = "תשפ\"ג";
-        goalList.add(new Goal(0, "research", "", 1, 3));
-        goalList.add(new Goal(1, "private hours", "", 1, 2));
-        goalList.add(new Goal(2, "maintenance", "", 1, 4));
-        userBridge.addGoals(supervisorName1, goalList, year);
+        goalDTOList.add(new GoalDTO(0, "research", "", 1, 3));
+        goalDTOList.add(new GoalDTO(1, "private hours", "", 1, 2));
+        goalDTOList.add(new GoalDTO(2, "maintenance", "", 1, 4));
+        userBridge.addGoals(supervisorName1, goalDTOList, year);
 
         surveyBridge.createSurvey(supervisorName1, surveyDTO);
         surveyBridge.addAnswers(answersDTO1);

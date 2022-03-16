@@ -1,5 +1,6 @@
 package UnitTesting.WorkPlan;
 
+import Communication.DTOs.GoalDTO;
 import Domain.CommonClasses.Pair;
 import Domain.UsersManagment.UserController;
 import Domain.UsersManagment.UserStateEnum;
@@ -33,12 +34,12 @@ public class AnnualScheduleGeneratorTest {
     public void basicAlgorithmFunctionalitySuccess(){
         String year = "תשפ\"ג";
         String supervisorName = userController.login(guestName, "sup1", "sup1").getResult().getFirst();
-        List<Goal> goalList = new Vector<>();
-        goalList.add(new Goal("1", 5));
-        goalList.add(new Goal("3", 3));
-        goalList.add(new Goal("2", 4));
-        goalList.add(new Goal("4", 1));
-        userController.addGoals(supervisorName, goalList, year);
+        List<GoalDTO> goalDTOList = new Vector<>();
+        goalDTOList.add(new GoalDTO(0,"1", "desc", 1,5));
+        goalDTOList.add(new GoalDTO(1, "3", "desc", 1, 3));
+        goalDTOList.add(new GoalDTO(2, "2", "desc", 1,4));
+        goalDTOList.add(new GoalDTO(3, "4","desc", 1, 1));
+        userController.addGoals(supervisorName, goalDTOList, year);
         String instructorName = userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "", "", "").getResult().getUsername();
         List<String> schools = new Vector<>();
         schools.add("1");

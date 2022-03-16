@@ -1,6 +1,7 @@
 package Domain.WorkPlan;
 
 
+import Communication.DTOs.GoalDTO;
 import Domain.CommonClasses.Response;
 
 import java.util.List;
@@ -30,13 +31,15 @@ public class GoalsManagement {
         goals.put(workField, new ConcurrentHashMap<>());
     }
 
-    public Response<Boolean> addGoalsToField(String workField, List<Goal> goalList, String year){
+    public Response<Boolean> addGoalsToField(String workField, List<GoalDTO> goalDTOList, String year){
         if(this.goals.containsKey(workField)){
+            List<Goal> goalList = new Vector<>();
             if(!this.goals.get(workField).containsKey(year)){
                 this.goals.get(workField).put(year, new Vector<>());
             }
-            for(Goal g: goalList){
-                g.setGoalId(this.goalId.getAndIncrement());
+            for(GoalDTO gDTO: goalDTOList){
+                gDTO.setGoalId(this.goalId.getAndIncrement());
+                goalList.add(new Goal(gDTO));
             }
             this.goals.get(workField).get(year).addAll(goalList);//todo check errors on year
             return new Response<>(true, false, "successfully added goals to the work field: " + workField);

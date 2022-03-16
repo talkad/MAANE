@@ -1,5 +1,7 @@
 package Domain.WorkPlan;
 
+import Communication.DTOs.GoalDTO;
+
 public class Goal {
     private int goalId;
     private String title;
@@ -29,6 +31,14 @@ public class Goal {
         this.description = "test";
         this.quarterly = 1;
         this.weight = weight;
+    }
+
+    public Goal(GoalDTO gDTO) {
+        this.goalId = gDTO.getGoalId();
+        this.title = gDTO.getTitle();
+        this.description = gDTO.getDescription();
+        this.quarterly = gDTO.getQuarterly();
+        this.weight = gDTO.getWeight();
     }
 
     public String getTitle() {

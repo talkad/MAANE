@@ -1,9 +1,6 @@
 package Domain.UsersManagment;
 
-import Communication.DTOs.ActivityDTO;
-import Communication.DTOs.SurveyDTO;
-import Communication.DTOs.UserDTO;
-import Communication.DTOs.WorkPlanDTO;
+import Communication.DTOs.*;
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.SurveyController;
@@ -594,12 +591,12 @@ public class UserController {
         }
     }
 
-    public Response<Boolean> addGoals(String currUser, List<Goal> goalList, String year){
+    public Response<Boolean> addGoals(String currUser, List<GoalDTO> goalDTOList, String year){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             Response<String> res = user.addGoals();
             if(!res.isFailure()){
-                return goalsManagement.addGoalsToField(res.getResult(), goalList, year);
+                return goalsManagement.addGoalsToField(res.getResult(), goalDTOList, year);
             }
             else{
                 return new Response<>(null, true, res.getErrMsg());
