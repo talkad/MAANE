@@ -167,4 +167,28 @@ public class ProxyBridgeUser implements UserService {
 
         return new Response<>(null, true, "not implemented");
     }
+
+    public Response<Boolean> changePasswordToUser(String currUser, String userToChangePassword, String newPassword, String confirmPassword) {
+        if (real != null){
+            return real.changePasswordToUser(currUser, userToChangePassword, newPassword, confirmPassword);
+        }
+
+        return new Response<>(null, true, "not implemented");
+    }
+
+    public Response<Boolean> changePassword(String currUser, String newPassword, String confirmPassword) {
+        if (real != null){
+            return real.changePassword(currUser, newPassword, confirmPassword);
+        }
+
+        return new Response<>(null, true, "not implemented");
+    }
+
+    public Response<List<UserDTO>> getAllUsers(String currUser) {
+        if (real != null){
+            return real.getAllUsers(currUser);
+        }
+
+        return new Response<>(null, true, "not implemented");
+    }
 }

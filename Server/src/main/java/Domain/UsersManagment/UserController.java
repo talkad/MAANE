@@ -4,7 +4,6 @@ import Communication.DTOs.*;
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.SurveyController;
-import Domain.WorkPlan.Goal;
 import Domain.WorkPlan.GoalsManagement;
 
 import java.util.*;
@@ -286,17 +285,17 @@ public class UserController {
     /**
         successful response on success. failure otherwise.
      */
-    public Response<Boolean> assignSchoolsToUser(String currUser, String userToAssignName, List<String> schools){
+    public Response<Boolean> assignSchoolsToUser(String currUser, String userToAssign, List<String> schools){
         Response<Boolean> response;
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
-            if(registeredUsers.containsKey(userToAssignName)) {
-                response = user.assignSchoolsToUser(userToAssignName, schools);
+            if(registeredUsers.containsKey(userToAssign)) {
+                response = user.assignSchoolsToUser(userToAssign, schools);
                 if(!response.isFailure()){
-                    User userToAssignSchools = registeredUsers.get(userToAssignName).getFirst();
+                    User userToAssignSchools = registeredUsers.get(userToAssign).getFirst();
                     userToAssignSchools.addSchools(schools);
-                    if(connectedUsers.containsKey(userToAssignName)){
-                        userToAssignSchools = connectedUsers.get(userToAssignName);
+                    if(connectedUsers.containsKey(userToAssign)){
+                        userToAssignSchools = connectedUsers.get(userToAssign);
                         userToAssignSchools.addSchools(schools);
                     }
                 }
@@ -400,15 +399,13 @@ public class UserController {
         return userDTO;
     }
 
-    public Response<List<UserDTO>> getAllUsers(String currUser){//todo test it
+    public Response<List<UserDTO>> getAllUsers(String currUser){
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             Response<Boolean> viewAllUsersRes = user.viewAllUsers();
             if (viewAllUsersRes.getResult()) {
                 List<UserDTO> users = new Vector<>();
-                Set<String> usernamesWithoutSystemManager = registeredUsers.keySet();
-                usernamesWithoutSystemManager.remove(currUser);
-                for (String username : usernamesWithoutSystemManager) {
+                for (String username : registeredUsers.keySet()) {
                     users.add(createUserDTOS(username));
                 }
                 return new Response<>(users, false, "");
@@ -631,11 +628,11 @@ public class UserController {
         User user = new User(username, UserStateEnum.SYSTEM_MANAGER);
         registeredUsers.put(username, new Pair<>(user, security.sha256(password)));
         //todo temp static data
-        String guest_name_temp = addGuest().getResult();
+/*        String guest_name_temp = addGuest().getResult();
         login(guest_name_temp,"admin", "admin");
         registerUserBySystemManager("admin", "ronit", "ronit", UserStateEnum.SUPERVISOR, "", "science", "ronit", "ronit", "ronit@gmail.com", "", "");
         registerUserBySystemManager("admin", "shoshi", "shoshi", UserStateEnum.INSTRUCTOR, "ronit", "", "shoshi", "shoshi", "shoshi@gmail.com", "", "");
-        logout("admin");
+        logout("admin");*/
     }
 
     public void notifySurveyCreation(String username, int indexer) {

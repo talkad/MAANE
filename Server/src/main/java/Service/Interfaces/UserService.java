@@ -40,4 +40,11 @@ public interface UserService {
     Response<Boolean> verifyUser(String currUser, String password);
 
     Response<Boolean> updateInfo(String currUser, String firstName, String lastName, String email, String phoneNumber, String city);
+
+    Response<Boolean> changePasswordToUser(String currUser, String userToChangePassword, String newPassword, String confirmPassword);
+
+    Response<Boolean> changePassword(String currUser, String newPassword, String confirmPassword);
+
+    Response<List<UserDTO>> getAllUsers(String currUser);
+
 }

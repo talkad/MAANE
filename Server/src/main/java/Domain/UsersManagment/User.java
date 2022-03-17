@@ -191,8 +191,8 @@ public class User {
             else if(this.state.getStateEnum() == UserStateEnum.SYSTEM_MANAGER){
                 return new Response<>(true, false,"successfully password changed");
             }
-
-            return new Response<>(false, false, "user not allowed to change password to this user");        }
+            return new Response<>(false, false, "user not allowed to change password to this user");
+        }
         else {
             return new Response<>(false, true, "user not allowed to change password");
         }

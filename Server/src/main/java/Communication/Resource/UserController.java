@@ -1,6 +1,7 @@
 package Communication.Resource;
 
 import Communication.DTOs.GoalDTO;
+import Communication.DTOs.SchoolManagementDTO;
 import Communication.DTOs.UserDTO;
 import Communication.DTOs.WorkPlanDTO;
 import Domain.CommonClasses.Pair;
@@ -124,6 +125,33 @@ public class UserController {
                 .body(service.updateInfo((String)body.get("currUser"), (String)body.get("firstName"), (String)body.get("lastName"), (String)body.get("email"), (String)body.get("phoneNumber"), (String)body.get("city")));
     }
 
+    @RequestMapping(value = "/changePasswordToUser", method = RequestMethod.POST)
+    public ResponseEntity<Response<Boolean>> changePasswordToUser(@RequestBody Map<String, Object>  body){
+        return ResponseEntity.ok()
+                .body(service.changePasswordToUser((String)body.get("currUser"), (String)body.get("userToChangePassword"), (String)body.get("newPassword"), (String)body.get("confirmPassword")));
+    }
 
+    @RequestMapping(value = "/changePassword", method = RequestMethod.POST)//todo aviad
+    public ResponseEntity<Response<Boolean>> changePassword(@RequestBody Map<String, Object>  body){
+        return ResponseEntity.ok()
+                .body(service.changePassword((String)body.get("currUser"), (String)body.get("newPassword"), (String)body.get("confirmPassword")));
+    }
 
+    @RequestMapping(value = "/getAllUsers", method = RequestMethod.POST)//todo aviad
+    public ResponseEntity<Response<List<UserDTO>>> getAllUsers(@RequestBody Map<String, Object>  body){
+        return ResponseEntity.ok()
+                .body(service.getAllUsers((String)body.get("currUser")));
+    }
+
+    @RequestMapping(value = "/assignSchoolsToUser", method = RequestMethod.POST)//todo aviad
+    public ResponseEntity<Response<Boolean>> assignSchoolsToUser(@RequestBody SchoolManagementDTO schoolManagementDTO){
+        return ResponseEntity.ok()
+                .body(service.assignSchoolsToUser(schoolManagementDTO.getCurrUser(), schoolManagementDTO.getAffectedUser(), schoolManagementDTO.getSchools()));
+    }
+
+    @RequestMapping(value = "/removeSchoolsFromUser", method = RequestMethod.POST)//todo aviad
+    public ResponseEntity<Response<Boolean>> removeSchoolsFromUser(@RequestBody SchoolManagementDTO schoolManagementDTO){
+        return ResponseEntity.ok()
+                .body(service.removeSchoolsFromUser(schoolManagementDTO.getCurrUser(), schoolManagementDTO.getAffectedUser(), schoolManagementDTO.getSchools()));
+    }
 }

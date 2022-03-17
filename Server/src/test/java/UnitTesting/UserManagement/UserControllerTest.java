@@ -268,4 +268,19 @@ public class UserControllerTest {
         userController.removeGoal(supervisorName, year, goalToRemoveId);
         Assert.assertTrue(userController.getGoals(supervisorName, year).getResult().size() == 2);
     }
+
+    @Test
+    public void viewAllUsersSuccess(){
+        UserController userController = UserController.getInstance();
+        String guestName = userController.addGuest().getResult();
+        String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
+        userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        guestName = userController.logout(adminName).getResult();
+        userController.login(guestName, "sup1", "sup1");
+        userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "", "", "");
+        guestName = userController.logout("sup1").getResult();
+        userController.login(guestName, adminName, adminName);
+        List<UserDTO> allUsers = userController.getAllUsers(adminName).getResult();
+        Assert.assertTrue(allUsers.size() == 3);
+    }
 }
