@@ -95,7 +95,7 @@ public class AnnualScheduleGenerator {
 
             //4 - 7
             List<String> schoolsOfInstructor;
-            List<String> schoolFaults;
+            List<Integer> schoolFaults;
             List<Goal> schoolFaultsGoals;
 
             for (String instructor : instructors) { //2 - for every instructors under workField:
@@ -106,14 +106,14 @@ public class AnnualScheduleGenerator {
 
                     schoolFaultsGoals = new Vector<>();//todo verify it doesnt get deleted from the map
 
-                    Response<List<String>> schoolFaultsRes = surveyController.detectSchoolFault(supervisor, surveyId, school, year);
+                    Response<List<Integer>> schoolFaultsRes = surveyController.detectSchoolFault(supervisor, surveyId, school, year);
 
                     if(schoolFaultsRes.isFailure()) {
                         return; //todo some error
                     }
                     schoolFaults = schoolFaultsRes.getResult();
                     if(schoolFaults != null && schoolFaults.size() > 0) {
-                        Response<List<Goal>> goalsRes = goalsManagement.getGoalsByTitles(workField, schoolFaults, year);
+                        Response<List<Goal>> goalsRes = goalsManagement.getGoalsById(workField, schoolFaults, year);
                         if (!goalsRes.isFailure()) {
                             schoolFaultsGoals.addAll(goalsRes.getResult());
                         } else {
@@ -191,7 +191,7 @@ public class AnnualScheduleGenerator {
         }
     }
 
-    public void algorithmMock(String supervisor, List<Pair<String, List<String>>> schoolFaultsMock, String workField, List<Goal> goals, String year) {
+    public void algorithmMock(String supervisor, List<Pair<String, List<Integer>>> schoolFaultsMock, String workField, List<Goal> goals, String year) {
         //1 - sort Goals by their weight (goal is per workfield)
         //2 - for every instructors under workField:
         //3 - workDay = the work day of the current instructor
@@ -214,7 +214,7 @@ public class AnnualScheduleGenerator {
             List<String> instructors = instructorsRes.getResult();
             //4 - 7
             List<String> schoolsOfInstructor;
-            List<String> schoolFaults;
+            List<Integer> schoolFaults;
             List<Goal> schoolFaultsGoals;
 
             for (String instructor : instructors) { //2 - for every instructors under workField:
@@ -223,12 +223,12 @@ public class AnnualScheduleGenerator {
                 for (String school : schoolsOfInstructor) { //4 - schools of this instructor
                     schoolFaultsGoals = new Vector<>();
 
-                    Response<List<String>> schoolFaultsRes = surveyController.detectSchoolFaultsMock(schoolFaultsMock, school);
+                    Response<List<Integer>> schoolFaultsRes = surveyController.detectSchoolFaultsMock(schoolFaultsMock, school);
                     if(schoolFaultsRes.isFailure())
                         return; //todo some error
                     schoolFaults = schoolFaultsRes.getResult();
                     if(schoolFaults != null && schoolFaults.size() > 0) {
-                        Response<List<Goal>> goalsRes = goalsManagement.getGoalsByTitles(workField, schoolFaults, year);
+                        Response<List<Goal>> goalsRes = goalsManagement.getGoalsById(workField, schoolFaults, year);
                         if (!goalsRes.isFailure()) {
                             schoolFaultsGoals.addAll(goalsRes.getResult());
                         } else {

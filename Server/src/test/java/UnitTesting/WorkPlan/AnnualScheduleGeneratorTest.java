@@ -44,16 +44,15 @@ public class AnnualScheduleGeneratorTest {
         schools.add("1");
         schools.add("2");
         userController.assignSchoolsToUser(supervisorName, instructorName, schools);
-        List<Pair<String, List<String>>> schoolsAndFaults = new Vector<>();
-        List<String> school1Faults = new Vector<>();
-        school1Faults.add("1");
-        school1Faults.add("3");
-        school1Faults.add("4");
-        school1Faults.add("2");
-        List<String> school2Faults = new Vector<>();
-        school2Faults.add("4");
-        school2Faults.add("2");
-        //school2Faults.add("3");
+        List<Pair<String, List<Integer>>> schoolsAndFaults = new Vector<>();
+        List<Integer> school1Faults = new Vector<>();
+        school1Faults.add(0);
+        school1Faults.add(2);
+        school1Faults.add(3);
+        school1Faults.add(1);
+        List<Integer> school2Faults = new Vector<>();
+        school2Faults.add(3);
+        school2Faults.add(1);
 
         schoolsAndFaults.add(new Pair<>("1", school1Faults));
         schoolsAndFaults.add(new Pair<>("2", school2Faults));

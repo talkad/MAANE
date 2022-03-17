@@ -252,10 +252,10 @@ public class SurveyController {
      * @param symbol of the school
      * @return list of all goals that not consistent with the rules
      */
-    public Response<List<String>> detectSchoolFault(String username, int id, String symbol, String year){
+    public Response<List<Integer>> detectSchoolFault(String username, int id, String symbol, String year){
         FaultDetector faultDetector;
         List<GoalDTO> goals = UserController.getInstance().getGoals(username, year).getResult();
-        List<String> currentFaults = new LinkedList<>();;
+        List<Integer> currentFaults = new LinkedList<>();
         Response<Boolean> legalAdd = UserController.getInstance().hasCreatedSurvey(username, id);
 
         if(!legalAdd.getResult())
@@ -270,15 +270,15 @@ public class SurveyController {
 
             if(ans.getSymbol().equals(symbol)){
                 for(Integer fault: faultDetector.detectFault(ans).getResult())
-                    currentFaults.add(goals.get(fault).getTitle());//todo switch to getGoalId
+                    currentFaults.add(goals.get(fault).getGoalId());
             }
         }
 
         return new Response<>(currentFaults, false, "faults detected");
     }
 
-    public Response<List<String>> detectSchoolFaultsMock(List<Pair<String, List<String>>> schoolsAndFaults, String schoolId){
-        for (Pair<String, List<String>> schoolAndFaults: schoolsAndFaults)
+    public Response<List<Integer>> detectSchoolFaultsMock(List<Pair<String, List<Integer>>> schoolsAndFaults, String schoolId){
+        for (Pair<String, List<Integer>> schoolAndFaults: schoolsAndFaults)
         {
             if(schoolId.equals(schoolAndFaults.getFirst())) {
                 //System.out.println("schoodId: " + schoolId + " schoolidFromList: " + schoolAndFaults.getFirst() + " faults: " + schoolAndFaults.getSecond().toString());

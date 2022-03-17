@@ -82,31 +82,29 @@ public class GoalsManagement {
         return new Response<>(null, true, "no such goal exists");
     }
 
-    public Response<List<Goal>> getGoalsByTitles(String workField, List<String> titles, String year){
+    public Response<List<Goal>> getGoalsById(String workField, List<Integer> goalsId, String year){
         List<Goal> goalsList = new Vector<>();
-        boolean titleNotFound;
+        boolean idNotFound;
         if(this.goals.containsKey(workField) && this.goals.get(workField).containsKey(year)){
-            if(titles != null && titles.size() > 0) {
-                for (String title: titles) {
-                    titleNotFound = true;
+            if(goalsId != null && goalsId.size() > 0) {
+                for (Integer goalId: goalsId) {
+                    idNotFound = true;
                     for (Goal goal : this.goals.get(workField).get(year)) {
-                        if (goal.getTitle().equals(title)) {
+                        if (goal.getGoalId() == goalId) {
                             goalsList.add(goal);
-                            titleNotFound = false;
+                            idNotFound = false;
                             break;
                         }
                     }
-                    if(titleNotFound){
+                    if(idNotFound){
                         return new Response<>(null, true, "one of the provided goals doesn't exist");
                     }
                 }
-                return new Response<>(goalsList, false, "all titles found");
+                return new Response<>(goalsList, false, "all goals found");
             }//todo maybe add else and error
         }
         return new Response<>(null, true, "no such goal exists");
     }
-
-    //todo manage goals id's and identify in algorithm according to id!!!
 
     public Response<Boolean> removeGoal(String workField, String year, int goalId){
         if(goals.containsKey(workField) && goals.get(workField).containsKey(year)){
