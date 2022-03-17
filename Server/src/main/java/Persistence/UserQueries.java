@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class UserQueries {
-    public static void getUsers () throws SQLException {
+    public static void getUsers() throws SQLException {
         Connect.createConnection();
         String sql = "SELECT * FROM \"Users\"";
         Statement statement = Connect.conn.createStatement();
