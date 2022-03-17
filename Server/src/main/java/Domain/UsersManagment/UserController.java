@@ -581,14 +581,13 @@ public class UserController {
             User user = connectedUsers.get(currUser);
             Response<String> res = user.getGoals();
             if(!res.isFailure()){
-                return goalsManagement.getGoalsDTO(res.getResult(), year);//todo check no errors on year
+                return goalsManagement.getGoalsDTO(res.getResult(), year);
             }
             else{
                 return new Response<>(null, true, res.getErrMsg());
             }
         }
         else {
-
             return new Response<>(null, true, "User not connected");
         }
     }

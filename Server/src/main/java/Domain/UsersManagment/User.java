@@ -40,7 +40,6 @@ public class User {
         this.schools = new Vector<>();
         this.surveys = new Vector<>();
         this.baskets = new Vector<>();
-        this.workPlan = new ConcurrentHashMap<>();//todo maybe init only for instructors
     }
 
     public User(String username, UserStateEnum userStateEnum, String workField, String firstName, String lastName, String email, String phoneNumber, String city) {
@@ -56,7 +55,9 @@ public class User {
         this.schools = new Vector<>();
         this.surveys = new Vector<>();
         this.baskets = new Vector<>();
-        this.workPlan = new ConcurrentHashMap<>();//todo maybe init only for instructors
+        if(this.state.getStateEnum() == UserStateEnum.INSTRUCTOR){
+            this.workPlan = new ConcurrentHashMap<>();
+        }
     }
 
     private UserState inferUserType(UserStateEnum userStateEnum) {
