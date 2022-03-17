@@ -41,6 +41,7 @@ import TaskIcon from '@mui/icons-material/Task';
 import Connection from "./Communication/Connection";
 import PasswordAuthentication from "./Pages/Credentials/PasswordAuthentication";
 import GoalsManagement from "./Pages/GoalsManagement/GoalsManagement";
+import MenuIcon from '@mui/icons-material/Menu';
 
 // TODO: prevent users from going through the site by entering paths in the url
 // TODO: currently saving everything in local storage but IT IS NOT SAFE
@@ -49,7 +50,7 @@ import GoalsManagement from "./Pages/GoalsManagement/GoalsManagement";
 function App(){
     const [type, setType] = useState('SUPERVISOR') //TODO: change back to 'GUEST' when not developing
     const [hideBars, setHideBars] = useState(true);
-    const [authCallback, setAuthCallback] = useState(() => console.log("not auth callback"));
+    const [authCallback, setAuthCallback] = useState(() => () => {console.log("not auth callback")});
     const [authCalleePage, setAuthCalleePage] = useState(''); // todo: is there's a better way to do it? i do it that way cause i override the history stack and can't just go back
 
     let navigate = useNavigate();
@@ -90,11 +91,6 @@ function App(){
     // sidebar
     const drawer = (
         <Space.Fill>
-            {/*logo*/}
-            <Space.Top size={barWidth}>
-                {/*TODO: make a logo*/}
-                <h1>מענ"ה</h1>
-            </Space.Top>
             {/*sidebar content*/}
             <Space.Fill>
                 <Divider/>
@@ -142,47 +138,81 @@ function App(){
 
     return (
         <div dir="rtl">
-            <Space.ViewPort >
-                {/* sidebar */}
-                {!hideBars && <Space.Right size={sidebarWidth}>
-                        <Drawer
-                            sx={{
-                                width: sidebarWidth,
-                                flexShrink: 0,
-                                '& .MuiDrawer-paper': {
-                                    width: sidebarWidth,
-                                    boxSizing: 'border-box',
-                                },
-                            }}
-                            variant="persistent"
-                            anchor="left"
-                            open
-                        >
-                            {drawer}
-                        </Drawer>
-                </Space.Right>}
+            <Space.ViewPort>
+                {/* app bar */}
+                {!hideBars && <Space.Top size={barWidth}>
+                    {/* TODO: fix it so the card line would be see and it would align with the logo*/}
+                    <AppBar color="background" position="static">
+                        <Toolbar>
+                            {/*menu button*/}
+                            <IconButton
+                                color="inherit"
+                                aria-label="Menu"
+                            >
+                                <MenuIcon />
+                            </IconButton>
+                            {/*logo*/}
+                            <Typography
+                                variant="h6"
+                                noWrap
+                                component="div"
+                            >
+                                מענ"ה
+                            </Typography>
+                            {/*profile button*/}
+                            <IconButton
+                                size="large"
+                                aria-label="account of current user"
+                                aria-controls="menu-appbar"
+                                aria-haspopup="true"
+                                color="inherit"
+                            >
+                                <AccountCircle />
+                            </IconButton>
+                            {/*greetings text*/}
+                            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                                {greetings_string}
+                            </Typography>
+                            {/*logout button*/}
+                            <Button onClick={() => handleLogout()} color="inherit">{logout_button_string}</Button>
+                        </Toolbar>
+                    </AppBar>
+                    {/*<Drawer*/}
+                    {/*    sx={{*/}
+                    {/*        width: sidebarWidth,*/}
+                    {/*        flexShrink: 0,*/}
+                    {/*        '& .MuiDrawer-paper': {*/}
+                    {/*            width: sidebarWidth,*/}
+                    {/*            boxSizing: 'border-box',*/}
+                    {/*        },*/}
+                    {/*    }}*/}
+                    {/*    variant="persistent"*/}
+                    {/*    anchor="left"*/}
+                    {/*    open*/}
+                    {/*>*/}
+                    {/*    {drawer}*/}
+                    {/*</Drawer>*/}
+                </Space.Top>}
+
                 <Space.Fill>
-                    {/* app bar */}
-                    {!hideBars && <Space.Top size={barWidth}>
-                        {/* TODO: fix it so the card line would be see and it would align with the logo*/}
-                        <AppBar style={{minHeight: "99%"}}  color="background" position="static">
-                            <Toolbar>
-                                <IconButton
-                                    size="large"
-                                    aria-label="account of current user"
-                                    aria-controls="menu-appbar"
-                                    aria-haspopup="true"
-                                    color="inherit"
-                                >
-                                    <AccountCircle />
-                                </IconButton>
-                                <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                                    {greetings_string}
-                                </Typography>
-                                <Button onClick={() => handleLogout()} color="inherit">{logout_button_string}</Button>
-                            </Toolbar>
-                        </AppBar>
-                    </Space.Top>}
+                    {/*/!* sidebar *!/*/}
+                    {/*{!hideBars && <Space.Right size={sidebarWidth}>*/}
+                    {/*    <Drawer*/}
+                    {/*        sx={{*/}
+                    {/*            width: sidebarWidth,*/}
+                    {/*            flexShrink: 0,*/}
+                    {/*            '& .MuiDrawer-paper': {*/}
+                    {/*                width: sidebarWidth,*/}
+                    {/*                boxSizing: 'border-box',*/}
+                    {/*            },*/}
+                    {/*        }}*/}
+                    {/*        variant="persistent"*/}
+                    {/*        anchor="left"*/}
+                    {/*        open*/}
+                    {/*    >*/}
+                    {/*        {drawer}*/}
+                    {/*    </Drawer>*/}
+                    {/*</Space.Right>}*/}
                     <Space.Fill>
                         {/* routes to the different screens */}
                         <Routes>
@@ -204,7 +234,7 @@ function App(){
                                     <Route path="goalsManagement" element={<GoalsManagement/>}/>}}}
 
                                 {(type === "SUPERVISOR" || type === "SYSTEM_MANAGER") &&
-                                    <Route path="home" element={<ManageUsers setAuthCallBack={setAuthCallback} setAuthCalleePage={setAuthCalleePage}/>}/>}
+                                    <Route path="home" element={<ManageUsers setAuthCallBack={setAuthCallback} setAuthCalleePage={setAuthCalleePage} setHideBars={setHideBars}/>}/>}
 
                                 {type === "INSTRUCTOR" &&
                                     <Route path="home" element={<WorkPlan/>}/>}

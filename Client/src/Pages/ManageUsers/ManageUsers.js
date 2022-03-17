@@ -21,7 +21,7 @@ import {
     IconButton, InputAdornment,
     List,
     ListItem,
-    ListItemText, Stack, TextField, Typography
+    ListItemText, Snackbar, Stack, TextField, Typography
 } from "@mui/material";
 import Button from "@mui/material/Button";
 import {useNavigate} from "react-router-dom";
@@ -29,6 +29,7 @@ import * as Space from 'react-spaces';
 import Connection from "../../Communication/Connection";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Visibility from "@mui/icons-material/Visibility";
+import NotificationSnackbar from "../../CommonComponents/NotificationSnackbar";
 
 
 /**
@@ -165,9 +166,11 @@ function DeleteUserDialog(props){
 
 function ChangePasswordDialog(props){
     const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const title_string = "שינוי סיסמה עבור";
     const password_string = "סיסמה חדשה";
+    const confirm_password_string = "אימות סיסמה";
     const change_string = "שנה/י";
     const cancel_string = "ביטול";
 
@@ -179,13 +182,17 @@ function ChangePasswordDialog(props){
         event.preventDefault();
         const data = new FormData(event.currentTarget);
 
-        if (data.get("password") === ''){
+        if (data.get("password") === '' || data.get('confirmPassword') === ''){
             // todo: raise error
         }
         else{
-            props.callback(props.selectedUser, data.get("password"))
+            if (data.get('password') === data.get('confirmPassword')){
+                props.callback(props.selectedUser, data.get("password"), data.get("confirmPassword"));
+            }
+            else{
+                // todo: raise error
+            }
         }
-
     }
 
     return (
@@ -208,6 +215,24 @@ function ChangePasswordDialog(props){
                                            onMouseDown={(event) => event.preventDefault()}
                                        >
                                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                                       </IconButton>
+                                   </InputAdornment>
+                               ),
+                           }}/>
+                {/*confirm password*/}
+                <TextField name="confirmPassword"
+                           sx={{paddingBottom: 1, width: "50%"}}
+                           label={confirm_password_string}
+                           variant="outlined"
+                           type={showConfirmPassword ? 'text' : 'password'}
+                           InputProps={{
+                               endAdornment: (
+                                   <InputAdornment position="end">
+                                       <IconButton
+                                           onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                           onMouseDown={(event) => event.preventDefault()}
+                                       >
+                                           {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
                                        </IconButton>
                                    </InputAdornment>
                                ),
@@ -236,10 +261,17 @@ const rows = [
 
 export default function ManageUsers(props){
     const [tableRows, setTableRows] = useState([]);
+
+    // dialogs
     const [openCPDialog, setOpenCPDialog] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [selectedUser, setSelectedUser] = useState('');
     const [selectedName, setSelectedName] = useState('');
+
+    // snackbar
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackbarSeverity, setSnackbarSeverity] = useState('');
+    const [snackbarMessage, setSnackbarMessage] = useState('');
 
     const table_name_col_string = 'שם';
     const table_role_col_string = 'תפקיד';
@@ -248,6 +280,7 @@ export default function ManageUsers(props){
     let navigate = useNavigate();
 
     useEffect(() => {
+        props.setHideBars(false);
         Connection.getInstance().getAppointedUsers(window.sessionStorage.getItem('username'), handleReceivedData)
     }, []);
 
@@ -292,15 +325,6 @@ export default function ManageUsers(props){
     }
 
     /**
-     * callback for the response of the server for the deletion of a user request
-     * @param data the response from the server
-     */
-    const userDeletionCallback = (data) => {
-        console.log(data)
-        // TODO: do something
-    }
-
-    /**
      * handles the opening of the dialog to delete a selected user
      * @param username the selected user
      * @param name the name of the selected user
@@ -319,15 +343,24 @@ export default function ManageUsers(props){
     }
 
     /**
+     * callback for the response of the server for the deletion of a user request
+     * @param data the response from the server
+     */
+    const userDeletionCallback = (data) => {
+        console.log(data)
+        // TODO: do something
+    }
+
+    /**
      * handler for deleting a user. sends a request to the server to delete the given user
      * @param username the user to delete
      */
     const handleUserDeletion = (username) => {
         console.log("please don't delete me");
 
-        props.setAuthCallBack(() =>
+        props.setAuthCallBack(() => () =>
             Connection.getInstance().removeUser(window.sessionStorage.getItem('username'), username, userDeletionCallback)
-        )
+        );
 
         props.setAuthCalleePage('../home');
         navigate(`../auth`, {replace: true})
@@ -356,20 +389,30 @@ export default function ManageUsers(props){
      * @param data the response from the server
      */
     const userChangePasswordCallback = (data) => {
-        console.log(data);
-        //todo: do something
+        //TODO: doesn't work cause the page is not loaded when this part runs
+        if (!data.failure){
+            setSnackbarSeverity('success');
+            setSnackbarMessage('הסיסמה שונתה בהצלחה');
+            setOpenSnackbar(true);
+        }
+        else{
+            setSnackbarSeverity('error');
+            setSnackbarMessage('הסיסמה לא שונתה'); // todo: better error?
+            setOpenSnackbar(true);
+        }
     }
 
     /**
      * handler for changing the password of a user. sends a request to the server to change the password of the given user
      * @param username the user to change the password to
      * @param newPassword the new password of the user
+     * @param newPasswordConfirmation confirmation of the password
      */
-    const handleUserChangePassword = (username, newPassword) => {
-        console.log('sup');
+    const handleUserChangePassword = (username, newPassword, newPasswordConfirmation) => {
         setOpenCPDialog(false);
-        // TODO: check what to send
-        props.setAuthCallBack(() => console.log("dunno what to send here"));
+
+        props.setAuthCallBack(() => () => Connection.getInstance().changePasswordToUser(window.sessionStorage.getItem('username'),
+            username, newPassword, newPasswordConfirmation, userChangePasswordCallback));
 
         props.setAuthCalleePage('../home');
         navigate(`../auth`, {replace: true})
@@ -417,6 +460,12 @@ export default function ManageUsers(props){
                     onClose={handleCloseDeleteDialog}
                     callback={handleUserDeletion}
                 />
+            {/*    snackbar for notification on actions*/}
+                <NotificationSnackbar
+                    open={openSnackbar}
+                    setOpen={setOpenSnackbar}
+                    severity={snackbarSeverity}
+                    message={snackbarMessage}/>
             </div>
         </Space.Fill>
     )

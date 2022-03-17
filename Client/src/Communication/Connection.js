@@ -147,7 +147,7 @@ class Connection{
         this.sendPOST('/user/removeUser',
             {
                 currUser: currUser,
-                usernameToRemove: usernameToRemove
+                userToRemove: usernameToRemove
             },
             callback)
     }
@@ -181,7 +181,7 @@ class Connection{
      * @param callback a callback function to call once there's a response
      */
     authenticatePassword(currentUser, password, callback){
-        this.sendPOST('/survey/authenticatePassword',
+        this.sendPOST('/user/authenticatePassword',
             {
                 currUser: currentUser,
                 password: password,
@@ -199,6 +199,25 @@ class Connection{
         this.sendPOST('/user/getAppointedUsers',
             {
                 currUser: currentUser,
+            },
+            callback);
+    }
+
+    /**
+     * changed the password to a selected user
+     * @param currentUser the user who requested the action
+     * @param affectedUser the user to change the password to
+     * @param newPassword the new password
+     * @param confirmNewPassword confirmation for the new password
+     * @param callback a callback function to call once there's a response
+     */
+    changePasswordToUser(currentUser, affectedUser, newPassword, confirmNewPassword, callback){
+        this.sendPOST('/user/changePasswordToUser',
+            {
+                currUser: currentUser,
+                userToChangePassword: affectedUser,
+                newPassword: newPassword,
+                confirmPassword: confirmNewPassword
             },
             callback);
     }

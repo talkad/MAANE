@@ -15,10 +15,10 @@ export default function PasswordAuthentication(props){
 
     let navigate = useNavigate();
 
-    const auth_password_string = "אימות סיסמה"
-    const explanation_string = 'בבקשה הכניס/י את הסיסמה שלך לצורך אימות'
-    const password_string = "סיסמה"
-    const auth_string = "אימות"
+    const auth_password_string = "אימות סיסמה";
+    const explanation_string = 'בבקשה הכניס/י את הסיסמה שלך לצורך אימות';
+    const password_string = "סיסמה";
+    const auth_string = "אימות";
 
     useEffect(() => {
         props.setHideBars(true);
@@ -30,13 +30,13 @@ export default function PasswordAuthentication(props){
      */
     const submitCallback = (data) => {
 
-        if (data.failure){
+        if (!data.result){
             //TODO: raise an error
         }
         else{
+            //props.setHideBars(false); todo: not working for some reason
+            navigate(props.callee, {replace: true});
             props.callback(); // sending the message after received positive authentication
-            props.setHideBars(false);
-            navigate(props.callee, {replace: true})
         }
     }
 

@@ -472,7 +472,6 @@ export default function GoalsManagement(props){
      * @param goalID the id of the goal
      */
     const handleDeleteGoal = (goalID) => {
-        console.log("GOAL ID IS:" + goalID);
 
         Connection.getInstance().removeGoal(
             window.sessionStorage.getItem('username'),
