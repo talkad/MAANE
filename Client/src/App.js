@@ -46,9 +46,11 @@ import MenuIcon from '@mui/icons-material/Menu';
 // TODO: prevent users from going through the site by entering paths in the url
 // TODO: currently saving everything in local storage but IT IS NOT SAFE
 // TODO: change the usage of document.location.href with the useNavigate hook (example in SurveyMenu.js) in the whole project
+// TODO: when the user closes the window log the user out before it closes
 
 function App(){
     const [type, setType] = useState('SUPERVISOR') //TODO: change back to 'GUEST' when not developing
+    const [openSidebar, setOpenSidebar] = useState(false);
     const [hideBars, setHideBars] = useState(true);
     const [authCallback, setAuthCallback] = useState(() => () => {console.log("not auth callback")});
     const [authCalleePage, setAuthCalleePage] = useState(''); // todo: is there's a better way to do it? i do it that way cause i override the history stack and can't just go back
@@ -56,12 +58,20 @@ function App(){
     let navigate = useNavigate();
 
     //let type = "SUPERVISOR";
-    const barWidth = "8%";
+    const barWidth = "10%";
     const sidebarWidth = "15%";
     const page_does_not_exist_string = "דף זה אינו קיים";
     const logout_button_string = "יציאה";
     // TODO: the greetings currently doesn't work well. but perhaps once TAL implements what i asked then it will (return the username with the response for the request)
     const greetings_string = "שלום " + window.sessionStorage.getItem('username') // TODO: instead of the username, use the actual name of the user
+
+    const styles = theme => ({
+        appBar: {
+            zIndex: theme.zIndex.drawer + 1,
+        },
+
+        toolbar: theme.mixins.toolbar,
+    })
 
     /**
      * a callback to call when the result of the logout request got back
@@ -91,48 +101,44 @@ function App(){
     // sidebar
     const drawer = (
         <Space.Fill>
-            {/*sidebar content*/}
-            <Space.Fill>
-                <Divider/>
-                {/*TODO: show buttons based on permissions*/}
-                <List>
-                    {/*home button*/}
-                    <ListItem button onClick={() => navigate(`user/home`, {replace: true})}>
-                        <ListItemIcon>
-                            <HomeIcon/>
-                        </ListItemIcon>
-                        <ListItemText primary="בית"/>
-                    </ListItem>
-                    {/*survey button*/}
-                    <ListItem button onClick={() => navigate(`survey/menu`, {replace: true})}>
-                        <ListItemIcon>
-                            <PollIcon/>
-                        </ListItemIcon>
-                        <ListItemText primary="סקרים"/>
-                    </ListItem>
-                    {/*guiding baskets button*/}
-                    <ListItem button onClick={() => navigate(`user/guidingBasketsSearch`, {replace: true})}>
-                        <ListItemIcon>
-                            <ShoppingBasketIcon/>
-                        </ListItemIcon>
-                        <ListItemText primary="סלי הדרכה"/>
-                    </ListItem>
-                    {/*work report button*/}
-                    <ListItem button onClick={() => navigate(`user/workReport`, {replace: true})}>
-                        <ListItemIcon>
-                            <SummarizeIcon/>
-                        </ListItemIcon>
-                        <ListItemText primary='דו"ח עבודה'/>
-                    </ListItem>
-                    {/*goals management button*/}
-                    <ListItem button onClick={() => navigate(`user/goalsManagement`, {replace: true})}>
-                        <ListItemIcon>
-                            <TaskIcon/>
-                        </ListItemIcon>
-                        <ListItemText primary='ניהול יעדים'/>
-                    </ListItem>
-                </List>
-            </Space.Fill>
+            {/*TODO: show buttons based on permissions*/}
+            <List>
+                {/*home button*/}
+                <ListItem button onClick={() => navigate(`user/home`, {replace: true})}>
+                    <ListItemIcon>
+                        <HomeIcon/>
+                    </ListItemIcon>
+                    <ListItemText primary="בית"/>
+                </ListItem>
+                {/*survey button*/}
+                <ListItem button onClick={() => navigate(`survey/menu`, {replace: true})}>
+                    <ListItemIcon>
+                        <PollIcon/>
+                    </ListItemIcon>
+                    <ListItemText primary="סקרים"/>
+                </ListItem>
+                {/*guiding baskets button*/}
+                <ListItem button onClick={() => navigate(`user/guidingBasketsSearch`, {replace: true})}>
+                    <ListItemIcon>
+                        <ShoppingBasketIcon/>
+                    </ListItemIcon>
+                    <ListItemText primary="סלי הדרכה"/>
+                </ListItem>
+                {/*work report button*/}
+                <ListItem button onClick={() => navigate(`user/workReport`, {replace: true})}>
+                    <ListItemIcon>
+                        <SummarizeIcon/>
+                    </ListItemIcon>
+                    <ListItemText primary='דו"ח עבודה'/>
+                </ListItem>
+                {/*goals management button*/}
+                <ListItem button onClick={() => navigate(`user/goalsManagement`, {replace: true})}>
+                    <ListItemIcon>
+                        <TaskIcon/>
+                    </ListItemIcon>
+                    <ListItemText primary='ניהול יעדים'/>
+                </ListItem>
+            </List>
         </Space.Fill>
     );
 
@@ -142,12 +148,13 @@ function App(){
                 {/* app bar */}
                 {!hideBars && <Space.Top size={barWidth}>
                     {/* TODO: fix it so the card line would be see and it would align with the logo*/}
-                    <AppBar color="background" position="static">
+                    <AppBar title='מענ"ה' color="background" position="static">
                         <Toolbar>
                             {/*menu button*/}
                             <IconButton
                                 color="inherit"
                                 aria-label="Menu"
+                                onClick={() => setOpenSidebar(!openSidebar)}
                             >
                                 <MenuIcon />
                             </IconButton>
@@ -177,92 +184,73 @@ function App(){
                             <Button onClick={() => handleLogout()} color="inherit">{logout_button_string}</Button>
                         </Toolbar>
                     </AppBar>
-                    {/*<Drawer*/}
-                    {/*    sx={{*/}
-                    {/*        width: sidebarWidth,*/}
-                    {/*        flexShrink: 0,*/}
-                    {/*        '& .MuiDrawer-paper': {*/}
-                    {/*            width: sidebarWidth,*/}
-                    {/*            boxSizing: 'border-box',*/}
-                    {/*        },*/}
-                    {/*    }}*/}
-                    {/*    variant="persistent"*/}
-                    {/*    anchor="left"*/}
-                    {/*    open*/}
-                    {/*>*/}
-                    {/*    {drawer}*/}
-                    {/*</Drawer>*/}
+                    {/*sidebar*/}
+                    {/*todo: make the drawer below the appbar*/}
+                    <Drawer
+                        sx={{
+                            width: sidebarWidth,
+                            flexShrink: 0,
+                            '& .MuiDrawer-paper': {
+                                width: sidebarWidth,
+                                boxSizing: 'border-box',
+                            },
+                        }}
+                        variant="persistent"
+                        anchor="left"
+                        open={openSidebar}
+                    >
+                        {drawer}
+                    </Drawer>
                 </Space.Top>}
-
                 <Space.Fill>
-                    {/*/!* sidebar *!/*/}
-                    {/*{!hideBars && <Space.Right size={sidebarWidth}>*/}
-                    {/*    <Drawer*/}
-                    {/*        sx={{*/}
-                    {/*            width: sidebarWidth,*/}
-                    {/*            flexShrink: 0,*/}
-                    {/*            '& .MuiDrawer-paper': {*/}
-                    {/*                width: sidebarWidth,*/}
-                    {/*                boxSizing: 'border-box',*/}
-                    {/*            },*/}
-                    {/*        }}*/}
-                    {/*        variant="persistent"*/}
-                    {/*        anchor="left"*/}
-                    {/*        open*/}
-                    {/*    >*/}
-                    {/*        {drawer}*/}
-                    {/*    </Drawer>*/}
-                    {/*</Space.Right>}*/}
-                    <Space.Fill>
-                        {/* routes to the different screens */}
-                        <Routes>
-                            {/*TODO: find a more elegant way for the permissions*/}
-                            <Route path="user">
-                                <Route path="login" element={<Login changeType={setType} setHideBars={setHideBars}/>}/>
-                                <Route path="auth" element={<PasswordAuthentication callback={authCallback} callee={authCalleePage} setHideBars={setHideBars}/>}/>
+                    {/* routes to the different screens */}
+                    <Routes>
+                        {/*TODO: find a more elegant way for the permissions*/}
+                        <Route path="user">
+                            <Route path="login" element={<Login changeType={setType} setHideBars={setHideBars}/>}/>
+                            <Route path="auth" element={<PasswordAuthentication callback={authCallback} callee={authCalleePage} setHideBars={setHideBars}/>}/>
 
-                                {(type === "SUPERVISOR" || type === "INSTRUCTOR") &&
-                                    <Route path="guidingBasketsSearch" element={<GuidingBaskets/>}/>}
+                            {(type === "SUPERVISOR" || type === "INSTRUCTOR") &&
+                                <Route path="guidingBasketsSearch" element={<GuidingBaskets/>}/>}
 
-                                {(type === "SUPERVISOR" || type === "INSTRUCTOR") &&
-                                    <Route path="workReport" element={<WorkReport/>}/>}
+                            {(type === "SUPERVISOR" || type === "INSTRUCTOR") &&
+                                <Route path="workReport" element={<WorkReport/>}/>}
 
-                                {(type === "SUPERVISOR" || type === "SYSTEM_MANAGER") &&
-                                    <Route path="registerUsers" element={<RegisterUsers type={type}/>}/>}
+                            {(type === "SUPERVISOR" || type === "SYSTEM_MANAGER") &&
+                                <Route path="registerUsers" element={<RegisterUsers type={type}/>}/>}
 
-                                {(type === "SUPERVISOR" || type === "SYSTEM_MANAGER") &&
-                                    <Route path="goalsManagement" element={<GoalsManagement/>}/>}}}
+                            {(type === "SUPERVISOR" || type === "SYSTEM_MANAGER") &&
+                                <Route path="goalsManagement" element={<GoalsManagement/>}/>}}}
 
-                                {(type === "SUPERVISOR" || type === "SYSTEM_MANAGER") &&
-                                    <Route path="home" element={<ManageUsers setAuthCallBack={setAuthCallback} setAuthCalleePage={setAuthCalleePage} setHideBars={setHideBars}/>}/>}
+                            {(type === "SUPERVISOR" || type === "SYSTEM_MANAGER") &&
+                                <Route path="home" element={<ManageUsers setAuthCallBack={setAuthCallback} setAuthCalleePage={setAuthCalleePage} setHideBars={setHideBars}/>}/>}
 
-                                {type === "INSTRUCTOR" &&
-                                    <Route path="home" element={<WorkPlan/>}/>}
+                            {type === "INSTRUCTOR" &&
+                                <Route path="home" element={<WorkPlan/>}/>}
 
-                                {type === "GENERAL_SUPERVISOR" &&
-                                    <Route path="home" element={<InfoViewer/>}/>}
+                            {type === "GENERAL_SUPERVISOR" &&
+                                <Route path="home" element={<InfoViewer/>}/>}
 
-                            {/*TODO: maybe put survey inside user?*/}
-                            </Route>
+                        {/*TODO: maybe put survey inside user?*/}
+                        </Route>
 
-                            {type === "SUPERVISOR" &&
-                                <Route path="survey">
-                                    <Route path="menu" element={<SurveyMenu />}/>
-                                    <Route path="createSurvey" element={<SurveyBuilder/>}/>
-                                    <Route path="getSurvey" element={<Survey/>}/>
-                                    <Route path="surveyConstraint" element={<SurveyConstraintBuilder/>}/>
-                                </Route>}
+                        {type === "SUPERVISOR" &&
+                            <Route path="survey">
+                                <Route path="menu" element={<SurveyMenu />}/>
+                                <Route path="createSurvey" element={<SurveyBuilder/>}/>
+                                <Route path="getSurvey" element={<Survey/>}/>
+                                <Route path="surveyConstraint" element={<SurveyConstraintBuilder/>}/>
+                            </Route>}
 
-                            <Route
-                                path="*"
-                                element={
-                                    <main style={{ padding: "1rem" }}> {/*todo: make this page prettier */}
-                                        <p>{page_does_not_exist_string}</p>
-                                    </main>
-                                }
-                            />
-                        </Routes>
-                    </Space.Fill>
+                        <Route
+                            path="*"
+                            element={
+                                <main style={{ padding: "1rem" }}> {/*todo: make this page prettier */}
+                                    <p>{page_does_not_exist_string}</p>
+                                </main>
+                            }
+                        />
+                    </Routes>
                 </Space.Fill>
             </Space.ViewPort>
         </div>
