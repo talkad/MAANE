@@ -27,6 +27,8 @@ export default function Login(props){
      * before the page loads, sends a request to the server to set up the user (as guest) and handles it
      */
     useEffect(() => {
+        props.setHideBars(true);
+
         const callback = function(data) {
 
             //UserInfo.getInstance().setUsername(data.result);

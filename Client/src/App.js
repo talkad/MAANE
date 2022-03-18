@@ -42,6 +42,8 @@ import Connection from "./Communication/Connection";
 import PasswordAuthentication from "./Pages/Credentials/PasswordAuthentication";
 import GoalsManagement from "./Pages/GoalsManagement/GoalsManagement";
 import MenuIcon from '@mui/icons-material/Menu';
+import ProfilePage from "./Pages/Profile/ProfilePage";
+import AccountBoxIcon from '@mui/icons-material/AccountBox';
 
 // TODO: prevent users from going through the site by entering paths in the url
 // TODO: currently saving everything in local storage but IT IS NOT SAFE
@@ -52,7 +54,7 @@ function App(){
     // general state data
     const [type, setType] = useState('SUPERVISOR') //TODO: change back to 'GUEST' when not developing
     const [openSidebar, setOpenSidebar] = useState(false);
-    const [hideBars, setHideBars] = useState(true);
+    const [hideBars, setHideBars] = useState(false);
 
     // authentication related
     const [authAvailability, setAuthAvailability] = useState(false);
@@ -108,35 +110,42 @@ function App(){
             {/*TODO: show buttons based on permissions*/}
             <List>
                 {/*home button*/}
-                <ListItem button onClick={() => navigate(`user/home`, {replace: true})}>
+                <ListItem button onClick={() => navigate(`user/home`, {replace: false})}>
                     <ListItemIcon>
                         <HomeIcon/>
                     </ListItemIcon>
                     <ListItemText primary="בית"/>
                 </ListItem>
+                {/*profile button*/}
+                <ListItem button onClick={() => navigate(`user/profile`, {replace: false})}>
+                    <ListItemIcon>
+                        <AccountBoxIcon/>
+                    </ListItemIcon>
+                    <ListItemText primary="פרופיל"/>
+                </ListItem>
                 {/*survey button*/}
-                <ListItem button onClick={() => navigate(`survey/menu`, {replace: true})}>
+                <ListItem button onClick={() => navigate(`survey/menu`, {replace: false})}>
                     <ListItemIcon>
                         <PollIcon/>
                     </ListItemIcon>
                     <ListItemText primary="סקרים"/>
                 </ListItem>
                 {/*guiding baskets button*/}
-                <ListItem button onClick={() => navigate(`user/guidingBasketsSearch`, {replace: true})}>
+                <ListItem button onClick={() => navigate(`user/guidingBasketsSearch`, {replace: false})}>
                     <ListItemIcon>
                         <ShoppingBasketIcon/>
                     </ListItemIcon>
                     <ListItemText primary="סלי הדרכה"/>
                 </ListItem>
                 {/*work report button*/}
-                <ListItem button onClick={() => navigate(`user/workReport`, {replace: true})}>
+                <ListItem button onClick={() => navigate(`user/workReport`, {replace: false})}>
                     <ListItemIcon>
                         <SummarizeIcon/>
                     </ListItemIcon>
                     <ListItemText primary='דו"ח עבודה'/>
                 </ListItem>
                 {/*goals management button*/}
-                <ListItem button onClick={() => navigate(`user/goalsManagement`, {replace: true})}>
+                <ListItem button onClick={() => navigate(`user/goalsManagement`, {replace: false})}>
                     <ListItemIcon>
                         <TaskIcon/>
                     </ListItemIcon>
@@ -177,6 +186,7 @@ function App(){
                                 aria-controls="menu-appbar"
                                 aria-haspopup="true"
                                 color="inherit"
+                                onClick={() => navigate(`user/profile`, {replace: false})}
                             >
                                 <AccountCircle />
                             </IconButton>
@@ -213,6 +223,7 @@ function App(){
                         <Route path="user">
                             <Route path="login" element={<Login changeType={setType} setHideBars={setHideBars}/>}/>
                             {authAvailability && <Route path="auth" element={<PasswordAuthentication callback={authCallback} callee={authCalleePage} setHideBars={setHideBars}/>}/>}
+                            <Route path="profile" element={<ProfilePage/>}/>
 
                             {(type === "SUPERVISOR" || type === "INSTRUCTOR") &&
                                 <Route path="guidingBasketsSearch" element={<GuidingBaskets/>}/>}

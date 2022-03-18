@@ -62,7 +62,7 @@ public class ProxyBridgeUser implements UserService {
     }
 
     @Override
-    public Response<User> registerUser(UserDTO user) {
+    public Response<String> registerUser(UserDTO user) {
         if (real != null){
             return real.registerUser(user);
         }
@@ -71,7 +71,7 @@ public class ProxyBridgeUser implements UserService {
     }
 
     @Override
-    public Response<User> registerUserBySystemManager(UserDTO user, String optionalSupervisor) {
+    public Response<String> registerUserBySystemManager(UserDTO user, String optionalSupervisor) {
         if (real != null){
             return real.registerUserBySystemManager(user, optionalSupervisor);
         }
@@ -168,6 +168,15 @@ public class ProxyBridgeUser implements UserService {
         return new Response<>(null, true, "not implemented");
     }
 
+    @Override
+    public Response<UserDTO> getUserInfo(String currUser){
+        if (real != null){
+            return real.getUserInfo(currUser);
+        }
+
+        return new Response<>(null, true, "not implemented");
+    }
+
     public Response<Boolean> changePasswordToUser(String currUser, String userToChangePassword, String newPassword, String confirmPassword) {
         if (real != null){
             return real.changePasswordToUser(currUser, userToChangePassword, newPassword, confirmPassword);
@@ -176,9 +185,9 @@ public class ProxyBridgeUser implements UserService {
         return new Response<>(null, true, "not implemented");
     }
 
-    public Response<Boolean> changePassword(String currUser, String newPassword, String confirmPassword) {
+    public Response<Boolean> changePassword(String currUser, String currPassword, String newPassword, String confirmPassword) {
         if (real != null){
-            return real.changePassword(currUser, newPassword, confirmPassword);
+            return real.changePassword(currUser, currPassword, newPassword, confirmPassword);
         }
 
         return new Response<>(null, true, "not implemented");

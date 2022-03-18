@@ -76,8 +76,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Response<User> registerUser(UserDTO user) {
-        Response<User> res = UserController.getInstance().registerUser(user.getCurrUser(), user.getUserToRegister(), user.getPassword(),
+    public Response<String> registerUser(UserDTO user) {
+        Response<String> res = UserController.getInstance().registerUser(user.getCurrUser(), user.getUserToRegister(), user.getPassword(),
                 user.getUserStateEnum(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getPhoneNumber(), user.getCity());
 
         if (res.isFailure())
@@ -89,8 +89,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Response<User> registerUserBySystemManager(UserDTO user, String optionalSupervisor) {
-        Response<User> res = UserController.getInstance().registerUserBySystemManager(user.getCurrUser(), user.getUserToRegister(), user.getPassword(), user.getUserStateEnum(), optionalSupervisor, user.getWorkField(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getPhoneNumber(), user.getCity());
+    public Response<String> registerUserBySystemManager(UserDTO user, String optionalSupervisor) {
+        Response<String> res = UserController.getInstance().registerUserBySystemManager(user.getCurrUser(), user.getUserToRegister(), user.getPassword(), user.getUserStateEnum(), optionalSupervisor, user.getWorkField(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getPhoneNumber(), user.getCity());
 
         if (res.isFailure())
             log.error("failed to register user {}", user.getUserToRegister());
@@ -203,7 +203,16 @@ public class UserServiceImpl implements UserService {
         return res;
     }
 
-    public Response<Boolean> changePasswordToUser(String currUser, String userToChangePassword, String newPassword, String confirmPassword) {
+    public Response<UserDTO> getUserInfo(String currUser) {
+        Response<UserDTO> res = UserController.getInstance().getUserInfo(currUser);
+        if (res.isFailure())
+            log.error("failed to get {}'s info", currUser);
+        else
+            log.info("successfully acquired {}'s info", currUser);
+        return res;
+    }
+
+        public Response<Boolean> changePasswordToUser(String currUser, String userToChangePassword, String newPassword, String confirmPassword) {
         Response<Boolean> res = UserController.getInstance().changePasswordToUser(currUser, userToChangePassword, newPassword, confirmPassword);
         if (res.isFailure())
             log.error("failed to update {}'s password", userToChangePassword);
@@ -212,8 +221,8 @@ public class UserServiceImpl implements UserService {
         return res;
     }
 
-    public Response<Boolean> changePassword(String currUser, String newPassword, String confirmPassword) {
-        Response<Boolean> res = UserController.getInstance().changePassword(currUser, newPassword, confirmPassword);
+    public Response<Boolean> changePassword(String currUser, String currPassword, String newPassword, String confirmPassword) {
+        Response<Boolean> res = UserController.getInstance().changePassword(currUser, currPassword, newPassword, confirmPassword);
         if (res.isFailure())
             log.error("failed to update {}'s password", currUser);
         else

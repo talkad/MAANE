@@ -52,7 +52,7 @@ public class AnnualScheduleGenerator {
         else{
             return new Response<>(false, true, surveyRes.getErrMsg());
         }
-        return null; //todo
+        return new Response<>(true, false, "successfully generated work plans");
     }
 
     public int indexOfMaxGoal(List<Pair<String, Goal>> goalsPriorityQueue){

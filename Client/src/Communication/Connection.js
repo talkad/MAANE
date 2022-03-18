@@ -1,5 +1,7 @@
 import axios from "axios";
 
+// TODO: better docs
+
 class Connection{
     static #instance = null;
 
@@ -75,6 +77,8 @@ class Connection{
             });
     }
 
+    // GENERAL USER REQUESTS
+
     /**
      * sends a GET request to set up the user (getting guest id)
      * @param callback a callback function to call once there's a response
@@ -112,6 +116,79 @@ class Connection{
             },
             callback)
     }
+
+    /**
+     * sends a POST request to authenticate the password of the current user
+     * @param currentUser the current user
+     * @param password the password of the user
+     * @param callback a callback function to call once there's a response
+     */
+    authenticatePassword(currentUser, password, callback){
+        this.sendPOST('/user/authenticatePassword',
+            {
+                currUser: currentUser,
+                password: password,
+            },
+            callback
+        );
+    }
+
+    /**
+     * request to change password to the current user
+     * @param currentUser the current user requesting the change
+     * @param currentPassword the current password of the user
+     * @param newPassword the new password to update
+     * @param confirmNewPassword confirmation of the new password to update
+     * @param callback a callback function to call once there's a response
+     */
+    changePassword(currentUser, currentPassword, newPassword, confirmNewPassword, callback){
+        this.sendPOST('/user/changePassword',
+            {
+                currUser: currentUser,
+                currPassword: currentPassword,
+                newPassword: newPassword,
+                confirmPassword: confirmNewPassword
+            },
+            callback);
+    }
+
+    /**
+     * request to get the profile information from the server
+     * @param currentUser the current user asking for the info
+     * @param callback a callback function to call once there's a response
+     */
+    getProfileInfo(currentUser, callback){
+        this.sendPOST('/user/getUserInfo',
+            {
+                currUser: currentUser,
+            },
+            callback);
+    }
+
+    /**
+     * request to change the profile info of the current user
+     * @param currentUser the current user active
+     * @param firstName updated first name
+     * @param lastName  updated last name
+     * @param email updated email
+     * @param phoneNumber updated phone number
+     * @param city updated city
+     * @param callback a callback function to call once there's a response
+     */
+    updateProfileInfo(currentUser, firstName, lastName, email, phoneNumber, city, callback){
+        this.sendPOST('/user/updateInfo',
+            {
+                currUser: currentUser,
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                phoneNumber: phoneNumber,
+                city: city,
+            },
+            callback);
+    }
+
+    // MANAGE USERS REQUESTS
 
     /**
      * sends a POST request to register a new user to the system
@@ -153,6 +230,40 @@ class Connection{
     }
 
     /**
+     * getting all the users appointed by currentUser
+     * @param currentUser the current user who asks for his appointed user
+     * @param callback a callback function to call once there's a response
+     */
+    getAppointedUsers(currentUser, callback){
+        this.sendPOST('/user/getAppointedUsers',
+            {
+                currUser: currentUser,
+            },
+            callback);
+    }
+
+    /**
+     * change the password to a selected user
+     * @param currentUser the user who requested the action
+     * @param affectedUser the user to change the password to
+     * @param newPassword the new password
+     * @param confirmNewPassword confirmation for the new password
+     * @param callback a callback function to call once there's a response
+     */
+    changePasswordToUser(currentUser, affectedUser, newPassword, confirmNewPassword, callback){
+        this.sendPOST('/user/changePasswordToUser',
+            {
+                currUser: currentUser,
+                userToChangePassword: affectedUser,
+                newPassword: newPassword,
+                confirmPassword: confirmNewPassword
+            },
+            callback);
+    }
+
+    // SURVEY REQUESTS
+
+    /**
      * sends a POST request to create a new survey
      * @param title the title of the survey
      * @param description the description of the survey
@@ -174,53 +285,7 @@ class Connection{
             callback);
     }
 
-    /**
-     * sends a POST request to authenticate the password of the current user
-     * @param currentUser the current user
-     * @param password the password of the user
-     * @param callback a callback function to call once there's a response
-     */
-    authenticatePassword(currentUser, password, callback){
-        this.sendPOST('/user/authenticatePassword',
-            {
-                currUser: currentUser,
-                password: password,
-            },
-            callback
-        );
-    }
-
-    /**
-     * getting all the users appointed by currentUser
-     * @param currentUser the current user who asks for his appointed user
-     * @param callback a callback function to call once there's a response
-     */
-    getAppointedUsers(currentUser, callback){
-        this.sendPOST('/user/getAppointedUsers',
-            {
-                currUser: currentUser,
-            },
-            callback);
-    }
-
-    /**
-     * changed the password to a selected user
-     * @param currentUser the user who requested the action
-     * @param affectedUser the user to change the password to
-     * @param newPassword the new password
-     * @param confirmNewPassword confirmation for the new password
-     * @param callback a callback function to call once there's a response
-     */
-    changePasswordToUser(currentUser, affectedUser, newPassword, confirmNewPassword, callback){
-        this.sendPOST('/user/changePasswordToUser',
-            {
-                currUser: currentUser,
-                userToChangePassword: affectedUser,
-                newPassword: newPassword,
-                confirmPassword: confirmNewPassword
-            },
-            callback);
-    }
+    // GOALS
 
     /**
      * getting the goals of a user for a given year

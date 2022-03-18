@@ -12,6 +12,7 @@ public class Registered extends UserState {
         this.allowedFunctions.add(Permissions.LOGOUT);
         this.allowedFunctions.add(Permissions.CHANGE_PASSWORD);
         this.allowedFunctions.add(Permissions.UPDATE_INFO);
+        this.allowedFunctions.add(Permissions.VIEW_INFO);
     }
 
     @Override

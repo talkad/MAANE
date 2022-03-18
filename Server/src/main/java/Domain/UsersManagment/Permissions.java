@@ -7,11 +7,13 @@ public enum Permissions {
     /** Registered User **/
     LOGOUT,
     UPDATE_INFO,
+    VIEW_INFO,
     CHANGE_PASSWORD,
 
     /** Instructor User **/
     FILL_MONTHLY_REPORT,
     VIEW_WORK_PLAN,
+    ADD_BASKET,
 
     /** Supervisor User **/
     ASSIGN_SCHOOLS_TO_USER,
@@ -24,6 +26,7 @@ public enum Permissions {
     GET_GOALS,
     ADD_GOALS,
     REMOVE_GOALS,
+    REMOVE_BASKET,
 
     /** System Manager User **/
     REGISTER_SUPERVISOR,

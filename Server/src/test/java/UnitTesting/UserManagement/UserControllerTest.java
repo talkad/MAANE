@@ -5,6 +5,7 @@ import Communication.DTOs.UserDTO;
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.*;
+import Domain.WorkPlan.GoalsManagement;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,6 +17,7 @@ public class UserControllerTest {
     @Before
     public void setup(){
         UserController.getInstance().clearUsers();
+        GoalsManagement.getInstance().clearGoals();
     }
 
     @Test
@@ -87,7 +89,7 @@ public class UserControllerTest {
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         userController.login(userController.addGuest().getResult(), "sup1", "sup1");
         userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "", "", "");
-        Response<User> res = userController.registerUserBySystemManager(adminName, "ins1", "ins1", UserStateEnum.INSTRUCTOR, "sup1", "", "", "", "", "", "");
+        Response<String> res = userController.registerUserBySystemManager(adminName, "ins1", "ins1", UserStateEnum.INSTRUCTOR, "sup1", "", "", "", "", "", "");
         Assert.assertTrue(res.isFailure());
     }
 
@@ -198,7 +200,7 @@ public class UserControllerTest {
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         guestName = userController.logout(adminName).getResult();
         Response<Pair<String, UserStateEnum>> supervisorName = userController.login(guestName, "sup1", "sup1");
-        userController.changePassword("sup1", "1234", "1234");
+        userController.changePassword("sup1","sup1", "1234", "1234");
         guestName = userController.logout("sup1").getResult();
         Assert.assertFalse(userController.getConnectedUsers().containsKey("sup1"));
         userController.login(guestName, "sup1", "1234");

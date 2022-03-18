@@ -39,7 +39,7 @@ public class AnnualScheduleGeneratorTest {
         userController.addGoal(supervisorName, new GoalDTO(2, "2", "desc", 1,4), year);
         userController.addGoal(supervisorName, new GoalDTO(3, "4","desc", 1, 1), year);
 
-        String instructorName = userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "", "", "").getResult().getUsername();
+        String instructorName = userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "", "", "").getResult();
         List<String> schools = new Vector<>();
         schools.add("1");
         schools.add("2");

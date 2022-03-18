@@ -1,5 +1,6 @@
 package Domain.UsersManagment;
 
+import Communication.DTOs.UserDTO;
 import Domain.CommonClasses.Response;
 
 import java.util.List;
@@ -60,6 +61,20 @@ public class User {
         }
     }
 
+    private UserDTO getUserDTO(){
+        UserDTO userDTO = new UserDTO();
+        userDTO.setCurrUser(this.username);
+        userDTO.setWorkField(this.workField);
+        userDTO.setFirstName(this.firstName);
+        userDTO.setLastName(this.lastName);
+        userDTO.setEmail(this.email);
+        userDTO.setUserStateEnum(this.state.getStateEnum());
+        userDTO.setPhoneNumber(this.phoneNumber);
+        userDTO.setCity(this.city);
+        userDTO.setSchools(this.schools);
+        return userDTO;
+    }
+
     private UserState inferUserType(UserStateEnum userStateEnum) {
         UserState state;
 
@@ -116,7 +131,7 @@ public class User {
                 return new Response<>(false, true, " the user " + userToAssign + " was not assigned by you");
             }
         }
-        else return new Response<>(false, true, "user not allowed to remove schools from users");
+        else return new Response<>(false, true, "user not allowed to assign schools to users");
     }
 
     public Response<Boolean> removeUser(String username) { //todo can a user even be appointed twice? if so needs to be removed from all personal that he was appointed by
@@ -218,8 +233,13 @@ public class User {
     }
 
     public Response<String> createBasket(String basketId) {
-        this.baskets.add(basketId);
-        return new Response<>(basketId, false, "user is allowed to create basket");
+        if(this.state.allowed(Permissions.ADD_BASKET, this)){
+            this.baskets.add(basketId);
+            return new Response<>(basketId, false, "user successfully added basket");
+        }
+        else {
+            return new Response<>(null, true, "user not allowed to add baskets");//todo is null ok?
+        }
     }
 
     public Response<Integer> removeSurvey(int surveyId) {
@@ -233,12 +253,17 @@ public class User {
     }
 
     public Response<String> removeBasket(String basketId) {
-        if(!hasCreatedBasket(basketId).isFailure()){
-            this.baskets.remove(basketId);
-            return new Response<>(basketId, false, "user is allowed to remove survey");
+        if(this.state.allowed(Permissions.REMOVE_BASKET, this)) {
+            if (!hasCreatedBasket(basketId).isFailure()) {
+                this.baskets.remove(basketId);
+                return new Response<>(basketId, false, "successfully removed basket");
+            }
+            else {
+                return new Response<>("", true, "user isn't allowed to remove a basket he didn't create");
+            }
         }
         else {
-            return new Response<>("", true, "user not allowed to remove basket");
+            return new Response<>("", true, "user not allowed to remove basket");//todo result should be null?
         }
     }
 
@@ -283,7 +308,7 @@ public class User {
 
     public Response<String> getGoals() {//todo this and add goals are pretty much the same maybe call this function structure goal_management
         if(this.state.allowed(Permissions.GET_GOALS, this)){
-            return new Response<>(this.workField, false, "successfully acquired work field");
+            return new Response<>(this.workField, false, "user allowed to view goals");
         }
         else {
             return new Response<>("", true, "user not allowed to get goals");
@@ -320,16 +345,11 @@ public class User {
     }
 
     public Response<Boolean> hasCreatedBasket(String basketId) {
-        if(this.state.getStateEnum() == UserStateEnum.SUPERVISOR)
-        {
-            if(this.baskets.contains(basketId))
-                return new Response<>(true, false, "user created this basket");
+        if(this.baskets.contains(basketId)) {
+            return new Response<>(true, false, "user created this basket");
+        }
 
-            return new Response<>(false, true, "user not created this basket");
-        }
-        else {
-            return new Response<>(false, true, "user is not a supervisor");
-        }
+        return new Response<>(false, true, "user didn't create this basket");
     }
 
     public Response<User> updateInfo(String firstName, String lastName, String email, String phoneNumber, String city) {
@@ -480,6 +500,16 @@ public class User {
         }
         else {
             return new Response<>(null, true, "not allowed to acquire work field");
+        }
+    }
+
+    public Response<UserDTO> getInfo() {
+        if (this.state.allowed(Permissions.VIEW_INFO, this))
+        {
+            return new Response<>(getUserDTO(), false, "user dto successfully acquired");
+        }
+        else {
+            return new Response<>(null, true, "user not allowed to view info");
         }
     }
 }

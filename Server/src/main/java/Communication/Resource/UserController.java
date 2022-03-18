@@ -45,10 +45,16 @@ public class UserController {
                 .body(service.logout((String)body.get("name")));
     }
 
-    @RequestMapping(value = "/registerUser", method = RequestMethod.POST)
-    public ResponseEntity<Response<User>> registerUser(@RequestBody UserDTO user) {
+    @RequestMapping(value = "/registerUser", method = RequestMethod.POST)//todo aviad
+    public ResponseEntity<Response<String>> registerUser(@RequestBody UserDTO user) {
         return ResponseEntity.ok()
                 .body(service.registerUser(user));
+    }
+
+    @RequestMapping(value = "/registerUserBySystemManager", method = RequestMethod.POST)//todo aviad
+    public ResponseEntity<Response<String>> registerUserBySystemManager(@RequestBody Map<String, Object>  body) {
+        return ResponseEntity.ok()
+                .body(service.registerUserBySystemManager((UserDTO) body.get("user"), (String)body.get("optionalSupervisor")));
     }
 
 /*    @RequestMapping(value = "/registerUserBySystemManager", method = RequestMethod.POST)
@@ -119,7 +125,7 @@ public class UserController {
                 .body(service.getGoals((String)body.get("currUser"), (String)body.get("year")));
     }
 
-   @RequestMapping(value = "/updateInfo", method = RequestMethod.POST)//todo aviad
+   @RequestMapping(value = "/updateInfo", method = RequestMethod.POST)
     public ResponseEntity<Response<Boolean>> updateInfo(@RequestBody Map<String, Object>  body){
         return ResponseEntity.ok()
                 .body(service.updateInfo((String)body.get("currUser"), (String)body.get("firstName"), (String)body.get("lastName"), (String)body.get("email"), (String)body.get("phoneNumber"), (String)body.get("city")));
@@ -131,10 +137,10 @@ public class UserController {
                 .body(service.changePasswordToUser((String)body.get("currUser"), (String)body.get("userToChangePassword"), (String)body.get("newPassword"), (String)body.get("confirmPassword")));
     }
 
-    @RequestMapping(value = "/changePassword", method = RequestMethod.POST)//todo aviad
+    @RequestMapping(value = "/changePassword", method = RequestMethod.POST)
     public ResponseEntity<Response<Boolean>> changePassword(@RequestBody Map<String, Object>  body){
         return ResponseEntity.ok()
-                .body(service.changePassword((String)body.get("currUser"), (String)body.get("newPassword"), (String)body.get("confirmPassword")));
+                .body(service.changePassword((String)body.get("currUser"), (String)body.get("currPassword"), (String)body.get("newPassword"), (String)body.get("confirmPassword")));
     }
 
     @RequestMapping(value = "/getAllUsers", method = RequestMethod.POST)//todo aviad
@@ -153,5 +159,11 @@ public class UserController {
     public ResponseEntity<Response<Boolean>> removeSchoolsFromUser(@RequestBody SchoolManagementDTO schoolManagementDTO){
         return ResponseEntity.ok()
                 .body(service.removeSchoolsFromUser(schoolManagementDTO.getCurrUser(), schoolManagementDTO.getAffectedUser(), schoolManagementDTO.getSchools()));
+    }
+
+    @RequestMapping(value = "/getUserInfo", method = RequestMethod.POST)
+    public ResponseEntity<Response<UserDTO>> getUserInfo(@RequestBody Map<String, Object>  body){
+        return ResponseEntity.ok()
+                .body(service.getUserInfo((String)body.get("currUser")));
     }
 }

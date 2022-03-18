@@ -138,16 +138,16 @@ public class UserController {
      * @param city city
      * @return User object of the new user upon success
      */
-    public Response<User> registerUser(String currUser, String userToRegister, String password, UserStateEnum userStateEnum, String firstName, String lastName, String email, String phoneNumber, String city){
+    public Response<String> registerUser(String currUser, String userToRegister, String password, UserStateEnum userStateEnum, String firstName, String lastName, String email, String phoneNumber, String city){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             if (!userToRegister.startsWith("Guest") && !registeredUsers.containsKey(userToRegister)){
                 Response<User> result = user.registerUser(userToRegister, userStateEnum, firstName, lastName, email, phoneNumber, city);
                 if (!result.isFailure()) {
                     registeredUsers.put(userToRegister, new Pair<>(result.getResult(), security.sha256(password)));
-                    result = new Response<>(result.getResult(), false, "Registration occurred");
+                    return new Response<>(result.getResult().getUsername(), false, "Registration occurred");
                 }
-                return result;
+                return new Response<>(null, result.isFailure(), result.getErrMsg());
             }
             else {
                 return new Response<>(null, true, "username already exists"); // null may be a problem
@@ -158,7 +158,7 @@ public class UserController {
         }
     }
 
-    public Response<User> registerUserBySystemManager(String currUser, String userToRegister, String password, UserStateEnum userStateEnum, String optionalSupervisor, String workField, String firstName, String lastName, String email, String phoneNumber, String city){
+    public Response<String> registerUserBySystemManager(String currUser, String userToRegister, String password, UserStateEnum userStateEnum, String optionalSupervisor, String workField, String firstName, String lastName, String email, String phoneNumber, String city){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             if (!userToRegister.startsWith("Guest") && !registeredUsers.containsKey(userToRegister)){
@@ -166,11 +166,10 @@ public class UserController {
                     Response<User> result = user.registerSupervisor(userToRegister, userStateEnum, workField, firstName, lastName, email, phoneNumber, city);
                     if (!result.isFailure()) {
                         registeredUsers.put(userToRegister, new Pair<>(result.getResult(), security.sha256(password)));
-                        result = new Response<>(result.getResult(), false, "Registration occurred");
-                        goalsManagement.addGoalsField(workField);//todo verify field doesnt exist already
-                        //goalsManagement.
+                        goalsManagement.addGoalsField(workField);
+                        return new Response<>(result.getResult().getUsername(), false, "Registration occurred");
                     }
-                    return result;
+                    return new Response<>(null, result.isFailure(), result.getErrMsg());
                 }
                 else {
                     if(user.appointments.contains(optionalSupervisor)){
@@ -182,20 +181,20 @@ public class UserController {
                                 Response<Boolean> appointmentRes = supervisor.addAppointment(userToRegister);
                                 if(appointmentRes.getResult()){
                                     registeredUsers.put(userToRegister, new Pair<>(result.getResult(), security.sha256(password)));
-                                    result = new Response<>(result.getResult(), false, "Registration occurred");
+                                    return new Response<>(result.getResult().getUsername(), false, "Registration occurred");
                                 }
                                 else{
                                     return new Response<>(null, true, appointmentRes.getErrMsg());
                                 }
                             }
-                            return result;
+                            return new Response<>(null, result.isFailure(), result.getErrMsg());
                         }
                         else{
-                            return new Response<>(null, true, "chosen user as supervisor isn't actually a supervisor");
+                            return new Response<>(null, true, "optional supervisor isn't a supervisor");
                         }
                     }
                     else{
-                        return new Response<>(null, true, "chosen user as supervisor isn't actually a supervisor");
+                        return new Response<>(null, true, "optional supervisor doesn't exist");
                     }
                 }
             }
@@ -230,11 +229,11 @@ public class UserController {
                 }
             }
             else{
-                return new Response<>(null, true, "user is not allowed to get view supervisors");
+                return new Response<>(null, true, "user is not allowed to view supervisors");
             }
         }
         else {
-            return new Response<>(null, true, "user is not logged in");
+            return new Response<>(null, true, "User not connected");
         }
     }
 
@@ -385,7 +384,7 @@ public class UserController {
         }
     }
 
-    private UserDTO createUserDTOS(String username){
+    private UserDTO createUserDTOS(String username){//todo either move this to user or move the one in User here
         UserDTO userDTO = new UserDTO();
         userDTO.setCurrUser(username);
         userDTO.setWorkField(registeredUsers.get(username).getFirst().getWorkField());
@@ -477,18 +476,23 @@ public class UserController {
         }
     }
 
-    public Response<Boolean> changePassword(String currUser, String newPassword, String confirmPassword){
+    public Response<Boolean> changePassword(String currUser, String currPassword, String newPassword, String confirmPassword){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
-            if(newPassword.equals(confirmPassword)) {
-                Response<Boolean> res = user.changePassword();
-                if(res.getResult()){
-                    registeredUsers.get(currUser).setSecond(security.sha256(newPassword));
+            if (security.sha256(currPassword).equals(registeredUsers.get(currUser).getSecond()))
+            {
+                if (newPassword.equals(confirmPassword)) {
+                    Response<Boolean> res = user.changePassword();
+                    if (res.getResult()) {
+                        registeredUsers.get(currUser).setSecond(security.sha256(newPassword));
+                    }
+                    return res;
+                } else {
+                    return new Response<>(false, true, "new password does not match the confirmed password");
                 }
-                return res;
             }
             else {
-                return new Response<>(false, true, "new password does not match the confirmed password");
+                return new Response<>(false, true, "current password is incorrect");
             }
         }
         else {
@@ -655,30 +659,6 @@ public class UserController {
         }
     }
 
-    public Response<List<SurveyDTO>> getSurveys(String currUser){
-        if(connectedUsers.containsKey(currUser)) {
-            User user = connectedUsers.get(currUser);
-            Response<List<Integer>> res = user.getSurveys();
-            if(!res.isFailure()){
-                List<SurveyDTO> surveyDTOList = new Vector<>();
-                for (Integer surveyId: res.getResult()) {
-                    SurveyDTO surveyDTO = new SurveyDTO();
-                    surveyDTO.setId(surveyId);
-                    surveyDTO.setTitle(surveyController.getSurvey(surveyId).getResult().getTitle());//todo make sure no fails although there shouldn't be any
-                    surveyDTO.setDescription(surveyController.getSurvey(surveyId).getResult().getDescription());//todo make sure no fails although there shouldn't be any
-                    surveyDTOList.add(surveyDTO);
-                }
-                return new Response<>(surveyDTOList, false, "successfully generated surveys details");
-            }
-            else{
-                return new Response<>(null, true, res.getErrMsg());
-            }
-        }
-        else {
-            return new Response<>(null, true, "User not connected");
-        }
-    }
-
     public Response<WorkPlanDTO> viewWorkPlan(String currUser, String year){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
@@ -712,5 +692,14 @@ public class UserController {
         }
         return workPlanDTO;
     }
-
+    
+    public Response<UserDTO> getUserInfo(String currUser){
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            return user.getInfo();
+        }
+        else {
+            return new Response<>(null, true, "User not connected");
+        }
+    }
 }

@@ -18,8 +18,8 @@ public interface UserService {
     Response<Pair<String, UserStateEnum>> login(String currUser, String userToLogin, String password);
     Response<String> logout(String name);
 
-    Response<User> registerUser(UserDTO user);
-    Response<User> registerUserBySystemManager(UserDTO user, String optionalSupervisor);
+    Response<String> registerUser(UserDTO user);
+    Response<String> registerUserBySystemManager(UserDTO user, String optionalSupervisor);
 
     Response<Boolean> removeUser(String currUser, String userToRemove);
 
@@ -39,11 +39,13 @@ public interface UserService {
 
     Response<Boolean> verifyUser(String currUser, String password);
 
+    Response<UserDTO> getUserInfo(String currUser);
+
     Response<Boolean> updateInfo(String currUser, String firstName, String lastName, String email, String phoneNumber, String city);
 
     Response<Boolean> changePasswordToUser(String currUser, String userToChangePassword, String newPassword, String confirmPassword);
 
-    Response<Boolean> changePassword(String currUser, String newPassword, String confirmPassword);
+    Response<Boolean> changePassword(String currUser, String currPassword, String newPassword, String confirmPassword);
 
     Response<List<UserDTO>> getAllUsers(String currUser);
 
