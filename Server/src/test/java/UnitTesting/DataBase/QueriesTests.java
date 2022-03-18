@@ -8,6 +8,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
 
 
 public class QueriesTests {
@@ -15,7 +17,9 @@ public class QueriesTests {
 
     @Before
     public void setUp(){
-        surveyDTO = new SurveyDTO(2,"survey2", "some desc", null, null, null);
+        List <String> questions = new LinkedList<>();
+        questions.add("q1"); questions.add("q2"); questions.add("q3");
+        surveyDTO = new SurveyDTO(2,"survey2", "some desc", questions, null, null);
     }
 
     @Test
