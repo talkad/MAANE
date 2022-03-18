@@ -4,6 +4,7 @@ import Communication.DTOs.GoalDTO;
 import Communication.DTOs.SurveyAnswersDTO;
 import Communication.DTOs.SurveyDTO;
 import Communication.DTOs.UserDTO;
+import Domain.CommonClasses.Response;
 import Domain.DataManagement.AnswerState.AnswerType;
 import Domain.DataManagement.FaultDetector.Rules.Comparison;
 import Domain.DataManagement.FaultDetector.Rules.MultipleChoiceBaseRule;
@@ -67,7 +68,7 @@ public class SupervisorTests extends AcceptanceTests{
             List<List<String>> possibleAnswers = Arrays.asList(Arrays.asList("No", "Yes"), Arrays.asList("No", "Yes"), Arrays.asList("No", "Yes"));
             List<AnswerType> questionTypes = Arrays.asList(MULTIPLE_CHOICE, MULTIPLE_CHOICE, MULTIPLE_CHOICE);;
 
-            surveyDTO.setId(-1);
+            surveyDTO.setId("");
             surveyDTO.setTitle("testing survey");
             surveyDTO.setDescription("testing survey");
             surveyDTO.setQuestions(questions);
@@ -79,7 +80,7 @@ public class SupervisorTests extends AcceptanceTests{
             answersDTO1.setAnswers(answers1);
             answersDTO1.setTypes(questionTypes);
             answersDTO1.setSymbol("1");
-            answersDTO1.setId(0);
+            answersDTO1.setId("");
 
 
             answersDTO2 = new SurveyAnswersDTO();
@@ -87,7 +88,7 @@ public class SupervisorTests extends AcceptanceTests{
             answersDTO2.setAnswers(answers2);
             answersDTO2.setTypes(questionTypes);
             answersDTO2.setSymbol("2");
-            answersDTO2.setId(0);
+            answersDTO2.setId("");
 
 
             answersDTO3 = new SurveyAnswersDTO();
@@ -95,7 +96,7 @@ public class SupervisorTests extends AcceptanceTests{
             answersDTO3.setAnswers(answers3);
             answersDTO3.setTypes(questionTypes);
             answersDTO3.setSymbol("3");
-            answersDTO3.setId(0);
+            answersDTO3.setId("");
 
 
             answersDTO4 = new SurveyAnswersDTO();
@@ -103,7 +104,7 @@ public class SupervisorTests extends AcceptanceTests{
             answersDTO4.setAnswers(answers4);
             answersDTO4.setTypes(questionTypes);
             answersDTO4.setSymbol("4");
-            answersDTO4.setId(0);
+            answersDTO4.setId("");
 
 
             answersDTO5 = new SurveyAnswersDTO();
@@ -111,7 +112,7 @@ public class SupervisorTests extends AcceptanceTests{
             answersDTO5.setAnswers(answers5);
             answersDTO5.setTypes(questionTypes);
             answersDTO5.setSymbol("5");
-            answersDTO5.setId(0);
+            answersDTO5.setId("");
 
 
             answersDTO6 = new SurveyAnswersDTO();
@@ -119,7 +120,7 @@ public class SupervisorTests extends AcceptanceTests{
             answersDTO6.setAnswers(answers3);
             answersDTO6.setTypes(questionTypes);
             answersDTO6.setSymbol("6");
-            answersDTO6.setId(0);
+            answersDTO6.setId("");
         }
     }
 
@@ -142,7 +143,14 @@ public class SupervisorTests extends AcceptanceTests{
         userBridge.addGoal(supervisorName1, new GoalDTO(1, "private hours", "", 1, 2), year);
         userBridge.addGoal(supervisorName1, new GoalDTO(2, "maintenance", "", 1, 4), year);
 
-        surveyBridge.createSurvey(supervisorName1, surveyDTO);
+        Response<String> res = surveyBridge.createSurvey(supervisorName1, surveyDTO);
+        answersDTO1.setId(res.getResult());
+        answersDTO2.setId(res.getResult());
+        answersDTO3.setId(res.getResult());
+        answersDTO4.setId(res.getResult());
+        answersDTO5.setId(res.getResult());
+        answersDTO6.setId(res.getResult());
+
         surveyBridge.addAnswers(answersDTO1);
         surveyBridge.addAnswers(answersDTO2);
         surveyBridge.addAnswers(answersDTO3);
@@ -150,10 +158,9 @@ public class SupervisorTests extends AcceptanceTests{
         surveyBridge.addAnswers(answersDTO5);
         surveyBridge.addAnswers(answersDTO6);
 
-        surveyBridge.addRule(supervisorName1, 0, new MultipleChoiceBaseRule(0, 0), 0);
-        surveyBridge.addRule(supervisorName1, 0, new MultipleChoiceBaseRule(1, 0), 1);
-        surveyBridge.addRule(supervisorName1, 0, new MultipleChoiceBaseRule(2, 0), 2);
-
+        surveyBridge.addRule(supervisorName1, res.getResult(), new MultipleChoiceBaseRule(0, 0), 0);
+        surveyBridge.addRule(supervisorName1, res.getResult(), new MultipleChoiceBaseRule(1, 0), 1);
+        surveyBridge.addRule(supervisorName1, res.getResult(), new MultipleChoiceBaseRule(2, 0), 2);
 
         String guestName = userBridge.addGuest().getResult();
         userBridge.login(guestName, instructorName1, instructorName1);
@@ -163,7 +170,7 @@ public class SupervisorTests extends AcceptanceTests{
         userBridge.assignSchoolsToUser(supervisorName1, instructorName1, Arrays.asList("1", "2", "3"));
         userBridge.assignSchoolsToUser(supervisorName1, instructorName2, Arrays.asList("4", "5", "6"));
 
-        scheduleBridge.generateSchedule(supervisorName1, 0, year);
+        scheduleBridge.generateSchedule(supervisorName1, res.getResult(), year);
 
         userBridge.getUserRes(instructorName1).getResult().getWorkPlan(year).getResult().printMe();
         userBridge.getUserRes(instructorName2).getResult().getWorkPlan(year).getResult().printMe();

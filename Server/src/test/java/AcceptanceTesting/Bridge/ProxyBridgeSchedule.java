@@ -18,7 +18,8 @@ public class ProxyBridgeSchedule implements AnnualScheduleGeneratorService {
         }
     }
     @Override
-    public Response<Boolean> generateSchedule(String supervisor, int surveyId, String year) {
+    public Response<Boolean> generateSchedule(String supervisor, String surveyId, String year) {
+
         if (real != null){
             return real.generateSchedule(supervisor, surveyId, year);
         }

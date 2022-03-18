@@ -10,7 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 public class SurveyAnswersDTO {
 
-    private int id;
+    private String id;
     private String symbol;
     private List<String> answers;
     private List<AnswerType> types;
@@ -23,7 +23,7 @@ public class SurveyAnswersDTO {
         return types;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
@@ -31,7 +31,7 @@ public class SurveyAnswersDTO {
         return symbol;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

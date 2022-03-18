@@ -18,12 +18,12 @@ public class Survey {
     private String title;
     private String description;
     private List<Question> questions;
-    private final int index;
+    private final String index;
     private int version; // usually the version will be the current year
     private int indexer;
 
 
-    private Survey (int index, String title, String description){
+    private Survey (String index, String title, String description){
         this.title = title;
         this.description = description;
         this.index = index;
@@ -32,7 +32,7 @@ public class Survey {
         this.indexer = 0;
     }
 
-    public static Response<Survey> createSurvey(int index, String title, String description){
+    public static Response<Survey> createSurvey(String index, String title, String description){
         if(title.length() == 0)
             return new Response<>(null, true, "title cannot be empty");
 
@@ -42,7 +42,7 @@ public class Survey {
         return new Response<>(new Survey(index, title, description), false, "OK");
     }
 
-    public static Response<Survey> createSurvey(int index, SurveyDTO surveyDTO){
+    public static Response<Survey> createSurvey(String index, SurveyDTO surveyDTO){
         AnswerType type;
         Response<Integer> questionRes;
         Response<Boolean> answerRes;
@@ -172,7 +172,7 @@ public class Survey {
         this.title = title;
     }
 
-    public int getIndex() {
+    public String getIndex() {
         return index;
     }
 

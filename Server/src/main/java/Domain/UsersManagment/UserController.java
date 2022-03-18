@@ -500,13 +500,13 @@ public class UserController {
         }
     }
 
-    public Response<Integer> createSurvey(String currUser, int surveyId) {
+    public Response<String> createSurvey(String currUser, String surveyId) {
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             return user.createSurvey(surveyId);
         }
         else {
-            return new Response<>(-1, true, "User not connected");
+            return new Response<>("", true, "User not connected");
         }
     }
 
@@ -520,7 +520,7 @@ public class UserController {
         }
     }
 
-    public Response<Boolean> hasCreatedSurvey(String currUser, int surveyId) {
+    public Response<Boolean> hasCreatedSurvey(String currUser, String surveyId) {
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             return user.hasCreatedSurvey(surveyId);
@@ -540,13 +540,13 @@ public class UserController {
         }
     }
 
-    public Response<Integer> removeSurvey(String currUser, int surveyId) {
+    public Response<String> removeSurvey(String currUser, String surveyId) {
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             return user.removeSurvey(surveyId);
         }
         else {
-            return new Response<>(-1, true, "User not connected");
+            return new Response<>("", true, "User not connected");
         }
     }
 
@@ -639,20 +639,30 @@ public class UserController {
         logout("admin");
     }
 
-    public void notifySurveyCreation(String username, int indexer) {
+    public void notifySurveyCreation(String username, String indexer) {
         // todo - publisher and subscribers
     }
 
-    public Response<Boolean> removeGoal(String currUser, String year, int goalId){
-        if(connectedUsers.containsKey(currUser)) {
+
+    public Response<Boolean> removeGoal(String currUser, String year, int goalId) {
+        if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             Response<String> res = user.removeGoal();
-            if(!res.isFailure()){
+            if (!res.isFailure()) {
                 return goalsManagement.removeGoal(user.workField, year, goalId);
-            }
-            else{
+            } else {
                 return new Response<>(null, true, res.getErrMsg());
             }
+        }
+        else {
+            return new Response<>(null, true, "User not connected");
+        }
+    }
+
+    public Response<List<String>> getSurveys(String currUser){
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            return user.getSurveys();
         }
         else {
             return new Response<>(null, true, "User not connected");

@@ -30,12 +30,14 @@ public class AnnualScheduleGenerator {
         return AnnualScheduleGenerator.CreateSafeThreadSingleton.INSTANCE;
     }
 
-    public Response<Boolean> generateSchedule(String supervisor, int surveyId, String year){
+    public Response<Boolean> generateSchedule(String supervisor, String surveyId, String year){
+
         Response<List<SurveyAnswers>> surveyRes = surveyController.getAnswersForSurvey(surveyId);
         String workField;
         if(!surveyRes.isFailure()){
             Response<String> workFieldRes = userController.generateSchedule(supervisor);
             if(!workFieldRes.isFailure()){
+
                 workField = workFieldRes.getResult();
                 Response<List<Goal>> goalsRes = goalsManagement.getGoals(workField, year);
                 if(!goalsRes.isFailure()){
@@ -67,7 +69,8 @@ public class AnnualScheduleGenerator {
         return maxGoalIndex;
     }
 
-    public void algorithm(String supervisor, int surveyId, String workField, List<Goal> goals, String year) {
+    public void algorithm(String supervisor, String surveyId, String workField, List<Goal> goals, String year) {
+
         //1 - sort Goals by their weight (goal is per workfield)
         //2 - for every instructors under workField:
         //3 - workDay = the work day of the current instructor

@@ -35,7 +35,7 @@ public class SurveyIntegrationTests {
         List<List<String>> answers1 = Arrays.asList(new LinkedList<>(), Arrays.asList("1", "2"), Arrays.asList("1", "2"));
         List<AnswerType> types1 = Arrays.asList(NUMERIC_ANSWER, MULTIPLE_CHOICE, MULTIPLE_CHOICE);;
 
-        surveyDTO.setId(-1);
+        surveyDTO.setId("");
         surveyDTO.setTitle("title");
         surveyDTO.setDescription("description");
         surveyDTO.setQuestions(questions1);
@@ -47,6 +47,7 @@ public class SurveyIntegrationTests {
         List<String> answers2 = Arrays.asList("30", "1", "2");
         List<AnswerType> types2 = Arrays.asList(NUMERIC_ANSWER, MULTIPLE_CHOICE, MULTIPLE_CHOICE);
 
+        answersDTO.setId("");
         answersDTO.setSymbol("A123");
         answersDTO.setAnswers(answers2);
         answersDTO.setTypes(types2);
@@ -58,7 +59,7 @@ public class SurveyIntegrationTests {
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
         String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
-        userController.registerUserBySystemManager(adminName, "Miri", "Band", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         String newGuestName = userController.logout(adminName).getResult();
         userController.login(newGuestName, "Dvorit", "Dvorit");
 
@@ -89,10 +90,11 @@ public class SurveyIntegrationTests {
         String newGuestName = userController.logout(adminName).getResult();
         userController.login(newGuestName, "Dvorit", "Dvorit");
 
-        surveyController.createSurvey("Dvorit", surveyDTO);
+        Response<String> res = surveyController.createSurvey("Dvorit", surveyDTO);
+        answersDTO.setId(res.getResult());
         surveyController.addAnswers(answersDTO);
 
-        faults = surveyController.detectFault("Dvorit", 0, year);
+        faults = surveyController.detectFault("Dvorit", res.getResult(), year);
 
         Assert.assertFalse(faults.isFailure());
     }
@@ -112,10 +114,11 @@ public class SurveyIntegrationTests {
         userController.login(newGuestName, "Dvorit", "Dvorit");
         userController.login(newGuestName, "Shosh", "Bar");
 
-        surveyController.createSurvey("Dvorit", surveyDTO);
+        Response<String> res = surveyController.createSurvey("Dvorit", surveyDTO);
+        answersDTO.setId(res.getResult());
         surveyController.addAnswers(answersDTO);
 
-        faults = surveyController.detectFault("Shosh", 0, year);
+        faults = surveyController.detectFault("Shosh", res.getResult(), year);
 
         Assert.assertTrue(faults.isFailure());
     }
@@ -129,8 +132,8 @@ public class SurveyIntegrationTests {
         String newGuestName = userController.logout(adminName).getResult();
         userController.login(newGuestName, "Dvorit", "Dvorit");
 
-        surveyController.createSurvey("Dvorit", surveyDTO);
-        Response<Boolean> res = surveyController.addRule("Dvorit", 0, new NumericBaseRule(0, Comparison.GREATER_THEN, 28), 0);
+        Response<String> res2 = surveyController.createSurvey("Dvorit", surveyDTO);
+        Response<Boolean> res = surveyController.addRule("Dvorit", res2.getResult(), new NumericBaseRule(0, Comparison.GREATER_THEN, 28), 0);
 
         Assert.assertFalse(res.isFailure());
     }
@@ -147,8 +150,8 @@ public class SurveyIntegrationTests {
         userController.login(newGuestName, "Dvorit", "Dvorit");
         userController.login(newGuestName, "Levana", "Zoharim");
 
-        surveyController.createSurvey("Dvorit", surveyDTO);
-        Response<Boolean> res = surveyController.addRule("Levana", 0, new NumericBaseRule(0, Comparison.GREATER_THEN, 28), 0);
+        Response<String> res2 = surveyController.createSurvey("Dvorit", surveyDTO);
+        Response<Boolean> res = surveyController.addRule("Levana", res2.getResult(), new NumericBaseRule(0, Comparison.GREATER_THEN, 28), 0);
 
         Assert.assertTrue(res.isFailure());
     }
@@ -162,9 +165,9 @@ public class SurveyIntegrationTests {
         String newGuestName = userController.logout(adminName).getResult();
         userController.login(newGuestName, "Dvorit", "Dvorit");
 
-        surveyController.createSurvey("Dvorit", surveyDTO);
-        surveyController.addRule("Dvorit", 0, new NumericBaseRule(0, Comparison.GREATER_THEN, 28), 0);
-        Response<Boolean> res = surveyController.removeRule("Dvorit", 0, 0);
+        Response<String> res2 = surveyController.createSurvey("Dvorit", surveyDTO);
+        surveyController.addRule("Dvorit", res2.getResult(), new NumericBaseRule(0, Comparison.GREATER_THEN, 28), 0);
+        Response<Boolean> res = surveyController.removeRule("Dvorit", res2.getResult(), 0);
 
         Assert.assertFalse(res.isFailure());
     }
@@ -178,8 +181,8 @@ public class SurveyIntegrationTests {
         String newGuestName = userController.logout(adminName).getResult();
         userController.login(newGuestName, "Dvorit", "Dvorit");
 
-        surveyController.createSurvey("Dvorit", surveyDTO);
-        Response<Boolean> res = surveyController.removeRule("Dvorit", 0, 0);
+        Response<String> res2 = surveyController.createSurvey("Dvorit", surveyDTO);
+        Response<Boolean> res = surveyController.removeRule("Dvorit", res2.getResult(), 0);
 
         Assert.assertTrue(res.isFailure());
     }
@@ -196,9 +199,9 @@ public class SurveyIntegrationTests {
         userController.login(newGuestName, "Dvorit", "Dvorit");
         userController.login(newGuestName, "Levana", "Zoharim");
 
-        surveyController.createSurvey("Dvorit", surveyDTO);
-        surveyController.addRule("Levana", 0, new NumericBaseRule(0, Comparison.GREATER_THEN, 28), 0);
-        Response<Boolean> res = surveyController.removeRule("Levana", 0, 0);
+        Response<String> res2 = surveyController.createSurvey("Dvorit", surveyDTO);
+        surveyController.addRule("Levana", res2.getResult(), new NumericBaseRule(0, Comparison.GREATER_THEN, 28), 0);
+        Response<Boolean> res = surveyController.removeRule("Levana", res2.getResult(), 0);
 
         Assert.assertTrue(res.isFailure());
     }

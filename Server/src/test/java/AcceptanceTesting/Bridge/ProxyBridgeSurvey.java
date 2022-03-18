@@ -24,7 +24,7 @@ public class ProxyBridgeSurvey implements SurveyService {
     }
 
     @Override
-    public Response<Integer> createSurvey(String username, SurveyDTO surveyDTO) {
+    public Response<String> createSurvey(String username, SurveyDTO surveyDTO) {
         if (real != null){
             return real.createSurvey(username, surveyDTO);
         }
@@ -42,7 +42,7 @@ public class ProxyBridgeSurvey implements SurveyService {
     }
 
     @Override
-    public Response<SurveyDTO> getSurvey(int surveyID) {
+    public Response<SurveyDTO> getSurvey(String surveyID) {
         if (real != null){
             return real.getSurvey(surveyID);
         }
@@ -51,7 +51,7 @@ public class ProxyBridgeSurvey implements SurveyService {
     }
 
     @Override
-    public Response<Boolean> addRule(String username, int surveyID, Rule rule, int goalID) {
+    public Response<Boolean> addRule(String username, String surveyID, Rule rule, int goalID) {
         if (real != null){
             return real.addRule(username, surveyID, rule, goalID);
         }
@@ -60,7 +60,7 @@ public class ProxyBridgeSurvey implements SurveyService {
     }
 
     @Override
-    public Response<Boolean> removeRule(String username, int surveyID, int ruleID) {
+    public Response<Boolean> removeRule(String username, String surveyID, int ruleID) {
         if (real != null){
             return real.removeRule(username, surveyID, ruleID);
         }
@@ -69,7 +69,25 @@ public class ProxyBridgeSurvey implements SurveyService {
     }
 
     @Override
-    public Response<List<List<String>>> detectFault(String username, int surveyID, String year) {
+    public Response<List<String>> getSurveys(String username) {
+        if (real != null){
+            return real.getSurveys(username);
+        }
+
+        return new Response<>(null, true, "not implemented");
+    }
+
+    @Override
+    public Response<List<Rule>> getRules(String surveyID) {
+        if (real != null){
+            return real.getRules(surveyID);
+        }
+
+        return new Response<>(null, true, "not implemented");
+    }
+
+    @Override
+    public Response<List<List<String>>> detectFault(String username, String surveyID, String year) {
         if (real != null){
             return real.detectFault(username, surveyID, year);
         }

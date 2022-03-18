@@ -10,15 +10,19 @@ import java.util.List;
 public interface SurveyService {
 
     // Data Management Module
-    Response<Integer> createSurvey(String username, SurveyDTO surveyDTO);
+    Response<String> createSurvey(String username, SurveyDTO surveyDTO);
 
     Response<Boolean> addAnswers(SurveyAnswersDTO answersDTO);
 
-    Response<SurveyDTO> getSurvey(int surveyID);
+    Response<SurveyDTO> getSurvey(String surveyID);
 
-    Response<Boolean> addRule(String username, int surveyID, Rule rule, int goalID);
+    Response<Boolean> addRule(String username, String surveyID, Rule rule, int goalID);
 
-    Response<Boolean> removeRule(String username, int surveyID, int ruleID);
+    Response<Boolean> removeRule(String username, String surveyID, int ruleID);
+
+    Response<List<String>> getSurveys(String username);
+
+    Response<List<Rule>> getRules(String surveyID);
 
 //    Response<Boolean> removeSurvey(String username, int id);
 //
@@ -38,7 +42,8 @@ public interface SurveyService {
 //
 //    Response<Boolean> removeRule(String username, int id, int index);
 
-    Response<List<List<String>>> detectFault(String username, int surveyID, String year);
+    Response<List<List<String>>> detectFault(String username, String surveyID, String year);
+
 
 
 }

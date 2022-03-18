@@ -3,5 +3,6 @@ package Service.Interfaces;
 import Domain.CommonClasses.Response;
 
 public interface AnnualScheduleGeneratorService {
-    public Response<Boolean> generateSchedule(String supervisor, int surveyId, String year);
+    public Response<Boolean> generateSchedule(String supervisor, String surveyId, String year);
+
 }
