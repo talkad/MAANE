@@ -8,6 +8,8 @@ import LockIcon from '@mui/icons-material/Lock';
 import NotificationSnackbar from "../../CommonComponents/NotificationSnackbar";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Visibility from "@mui/icons-material/Visibility";
+import EditIcon from '@mui/icons-material/Edit';
+import EditOffIcon from '@mui/icons-material/EditOff';
 
 /**
  * tab viewer
@@ -49,6 +51,8 @@ function InfoTabPanel(props){
         phoneNumber: props.profileInfo.phoneNumber,
         city: props.profileInfo.city
     });
+
+    const [edit, setEdit] = useState(false);
 
     const first_name_label_string = "שם פרטי";
     const last_name_label_string = "שם משפחה";
@@ -100,12 +104,26 @@ function InfoTabPanel(props){
 
     return (
         <Grid container spacing={2} rowSpacing={4} sx={{paddingTop: 1}}>
+            {/*edit button*/}
+            <Grid item xs={4}>
+                <IconButton
+                    onClick={() => setEdit(!edit)}
+                    onMouseDown={(event) => event.preventDefault()}
+                >
+                    {edit? <EditOffIcon />  : <EditIcon />}
+                </IconButton>
+            </Grid>
+            <Grid item xs={8}/>
+
             {/*first name*/}
             <Grid item xs={6}>
                 <TextField
                     value={values.firstName}
                     onChange={handleChange('firstName')}
                     label={first_name_label_string}
+                    inputProps={{
+                        readOnly: !edit,
+                    }}
                     fullWidth
                 />
             </Grid>
@@ -116,6 +134,9 @@ function InfoTabPanel(props){
                     value={values.lastName}
                     onChange={handleChange('lastName')}
                     label={last_name_label_string}
+                    inputProps={{
+                        readOnly: !edit,
+                    }}
                     fullWidth
                 />
             </Grid>
@@ -126,6 +147,9 @@ function InfoTabPanel(props){
                     value={values.email}
                     onChange={handleChange('email')}
                     label={email_label_string}
+                    inputProps={{
+                        readOnly: !edit,
+                    }}
                     fullWidth
                 />
             </Grid>
@@ -136,6 +160,9 @@ function InfoTabPanel(props){
                     value={values.phoneNumber}
                     onChange={handleChange('phoneNumber')}
                     label={phone_number_label_string}
+                    inputProps={{
+                        readOnly: !edit,
+                    }}
                     fullWidth
                 />
             </Grid>
@@ -146,13 +173,16 @@ function InfoTabPanel(props){
                     value={values.city}
                     onChange={handleChange('city')}
                     label={city_label_string}
+                    inputProps={{
+                        readOnly: !edit,
+                    }}
                     fullWidth
                 />
             </Grid>
 
             {/*save button*/}
             <Grid item xs={4}>
-                <Button onClick={saveInfoHandler} variant="contained" fullWidth>{save_button_string}</Button>
+                <Button disabled={!edit} onClick={saveInfoHandler} variant="contained" fullWidth>{save_button_string}</Button>
             </Grid>
         </Grid>
     )
