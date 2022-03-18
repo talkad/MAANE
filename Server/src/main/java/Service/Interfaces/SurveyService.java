@@ -20,6 +20,10 @@ public interface SurveyService {
 
     Response<Boolean> removeRule(String username, String surveyID, int ruleID);
 
+    Response<List<String>> getSurveys(String username);
+
+    Response<List<Rule>> getRules(String surveyID);
+
 //    Response<Boolean> removeSurvey(String username, int id);
 //
 //    Response<Survey> getSurvey(int id);

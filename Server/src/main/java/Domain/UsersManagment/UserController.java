@@ -637,24 +637,10 @@ public class UserController {
         // todo - publisher and subscribers
     }
 
-    public Response<List<SurveyDTO>> getSurveys(String currUser){
+    public Response<List<String>> getSurveys(String currUser){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
-            Response<List<String>> res = user.getSurveys();
-            if(!res.isFailure()){
-                List<SurveyDTO> surveyDTOList = new Vector<>();
-                for (String surveyId: res.getResult()) {
-                    SurveyDTO surveyDTO = new SurveyDTO();
-                    surveyDTO.setId(surveyId);
-                    surveyDTO.setTitle(surveyController.getSurvey(surveyId).getResult().getTitle());//todo make sure no fails although there shouldn't be any
-                    surveyDTO.setDescription(surveyController.getSurvey(surveyId).getResult().getDescription());//todo make sure no fails although there shouldn't be any
-                    surveyDTOList.add(surveyDTO);
-                }
-                return new Response<>(surveyDTOList, false, "successfully generated surveys details");
-            }
-            else{
-                return new Response<>(null, true, res.getErrMsg());
-            }
+            return user.getSurveys();
         }
         else {
             return new Response<>(null, true, "User not connected");

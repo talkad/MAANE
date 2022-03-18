@@ -247,7 +247,7 @@ public class User {
 
     public Response<List<String>> getSurveys() {
         if(this.state.allowed(Permissions.SURVEY_MANAGEMENT, this)){
-            return new Response<>(surveys, false, "");
+            return new Response<>(this.surveys, false, "");
         }
         else {
             return new Response<>(null, true, "user not allowed to view surveys");

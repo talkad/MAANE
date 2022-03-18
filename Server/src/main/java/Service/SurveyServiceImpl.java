@@ -87,6 +87,30 @@ public class SurveyServiceImpl implements SurveyService {
     }
 
     @Override
+    public Response<List<String>> getSurveys(String username) {
+        Response<List<String>> res = SurveyController.getInstance().getSurveys(username);
+
+        if(res.isFailure())
+            log.error(res.getErrMsg());
+        else
+            log.info("get surveys");
+
+        return res;
+    }
+
+    @Override
+    public Response<List<Rule>> getRules(String surveyID) {
+        Response<List<Rule>> res = SurveyController.getInstance().getRules(surveyID);
+
+        if(res.isFailure())
+            log.error(res.getErrMsg());
+        else
+            log.info("get rules");
+
+        return res;
+    }
+
+    @Override
     public Response<List<List<String>>> detectFault(String username, String surveyID) {
         Response<List<List<String>>> res = SurveyController.getInstance().detectFault(username, surveyID);
 

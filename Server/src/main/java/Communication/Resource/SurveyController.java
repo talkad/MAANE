@@ -69,7 +69,17 @@ public class SurveyController {
                 .body(service.detectFault(username, surveyID));
     }
 
+    @GetMapping("/getSurveys/username={username}")
+    public ResponseEntity<Response<List<String>>> getSurveys(@PathVariable("username") String username){
+        return ResponseEntity.ok()
+                .body(service.getSurveys(username));
+    }
 
+    @GetMapping("/getRules/ruleID={ruleID}")
+    public ResponseEntity<Response<List<Rule>>> getRules(@PathVariable("ruleID") String ruleID){
+        return ResponseEntity.ok()
+                .body(service.getRules(ruleID));
+    }
 
     private Rule RuleConverter(RuleDTO ruleDTO) {
         Rule rule;

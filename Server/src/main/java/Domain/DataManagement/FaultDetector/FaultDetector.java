@@ -58,4 +58,8 @@ public class FaultDetector {
 
         return new Response<>(faults, false, "details");
     }
+
+    public List<Pair<Rule, Integer>> getRules() {
+        return rules;
+    }
 }

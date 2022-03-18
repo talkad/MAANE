@@ -7,6 +7,7 @@ import Domain.CommonClasses.Response;
 import Domain.DataManagement.AnswerState.AnswerType;
 import Domain.DataManagement.FaultDetector.FaultDetector;
 import Domain.DataManagement.FaultDetector.Rules.Rule;
+import Domain.UsersManagment.User;
 import Domain.WorkPlan.Goal;
 import Domain.UsersManagment.UserController;
 
@@ -244,6 +245,34 @@ public class SurveyController {
         else{
             return new Response<>(null, true, "survey doesn't exist");
         }
+    }
+
+    public Response<List<Rule>> getRules(String surveyID){
+        FaultDetector fd;
+        List<Rule> rules = new LinkedList<>();
+
+        if(!surveys.containsKey(surveyID))
+            return new Response<>(null, true, "Survey " + surveyID + " does not exists");
+
+        fd = surveys.get(surveyID).getSecond();
+        for(Pair<Rule, Integer> p: fd.getRules()){
+            rules.add(p.getFirst());
+        }
+
+        return new Response<>(rules, false, "success");
+    }
+
+    public Response<List<String>> getSurveys(String username){
+        Response<List<String>> res = UserController.getInstance().getSurveys(username);
+        List<String> titles = new LinkedList<>();
+
+        if(res.isFailure())
+            return res;
+
+        for(String surveyID: res.getResult())
+            titles.add(surveys.get(surveyID).getFirst().getTitle());
+
+        return new Response<>(titles, false, "success");
     }
 
     public void setAnswers(Map<String, List<SurveyAnswers>> answers) {
