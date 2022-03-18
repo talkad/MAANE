@@ -500,13 +500,13 @@ public class UserController {
         }
     }
 
-    public Response<Integer> createSurvey(String currUser, int surveyId) {
+    public Response<String> createSurvey(String currUser, String surveyId) {
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             return user.createSurvey(surveyId);
         }
         else {
-            return new Response<>(-1, true, "User not connected");
+            return new Response<>("", true, "User not connected");
         }
     }
 
@@ -520,7 +520,7 @@ public class UserController {
         }
     }
 
-    public Response<Boolean> hasCreatedSurvey(String currUser, int surveyId) {
+    public Response<Boolean> hasCreatedSurvey(String currUser, String surveyId) {
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             return user.hasCreatedSurvey(surveyId);
@@ -540,13 +540,13 @@ public class UserController {
         }
     }
 
-    public Response<Integer> removeSurvey(String currUser, int surveyId) {
+    public Response<String> removeSurvey(String currUser, String surveyId) {
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             return user.removeSurvey(surveyId);
         }
         else {
-            return new Response<>(-1, true, "User not connected");
+            return new Response<>("", true, "User not connected");
         }
     }
 
@@ -633,17 +633,17 @@ public class UserController {
         registeredUsers.put(username, new Pair<>(user, security.sha256(password)));
     }
 
-    public void notifySurveyCreation(String username, int indexer) {
+    public void notifySurveyCreation(String username, String indexer) {
         // todo - publisher and subscribers
     }
 
     public Response<List<SurveyDTO>> getSurveys(String currUser){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
-            Response<List<Integer>> res = user.getSurveys();
+            Response<List<String>> res = user.getSurveys();
             if(!res.isFailure()){
                 List<SurveyDTO> surveyDTOList = new Vector<>();
-                for (Integer surveyId: res.getResult()) {
+                for (String surveyId: res.getResult()) {
                     SurveyDTO surveyDTO = new SurveyDTO();
                     surveyDTO.setId(surveyId);
                     surveyDTO.setTitle(surveyController.getSurvey(surveyId).getResult().getTitle());//todo make sure no fails although there shouldn't be any

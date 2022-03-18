@@ -23,7 +23,7 @@ public class SurveyController {
     private final SurveyService service = SurveyServiceImpl.getInstance();
 
     @RequestMapping(value = "/createSurvey", method = RequestMethod.POST)
-    public ResponseEntity<Response<Integer>> createSurvey(@RequestBody Map<String, Object> body){
+    public ResponseEntity<Response<String>> createSurvey(@RequestBody Map<String, Object> body){
         SurveyDTO surveyDTO = gson.fromJson((String)body.get("surveyDTO"), SurveyDTO.class);
 
         return ResponseEntity.ok(
@@ -39,7 +39,7 @@ public class SurveyController {
     }
 
     @GetMapping("/get/surveyID={surveyID}")
-    public ResponseEntity<Response<SurveyDTO>> getSurvey(@PathVariable("surveyID") int surveyID){
+    public ResponseEntity<Response<SurveyDTO>> getSurvey(@PathVariable("surveyID") String surveyID){
         return ResponseEntity.ok()
                 .body(service.getSurvey(surveyID));
     }
@@ -53,18 +53,18 @@ public class SurveyController {
             return ResponseEntity.ok()
                     .body(new Response<>(false, true, "rule converter failed"));
         return ResponseEntity.ok()
-                .body( service.addRule((String)body.get("username"), (Integer)body.get("surveyID"), rule, (Integer)body.get("goalID")));
+                .body( service.addRule((String)body.get("username"), (String)body.get("surveyID"), rule, (Integer)body.get("goalID")));
     }
 
     @RequestMapping(value = "/removeRule", method = RequestMethod.POST)
     public ResponseEntity<Response<Boolean>> removeRule(@RequestBody Map<String, Object> body){
 
         return ResponseEntity.ok()
-                .body(service.removeRule((String)body.get("username"), (Integer)body.get("surveyID"), (Integer)body.get("ruleID")));
+                .body(service.removeRule((String)body.get("username"), (String)body.get("surveyID"), (Integer)body.get("ruleID")));
     }
 
     @GetMapping("/detectFault/username={username}&surveyID={surveyID}")
-    public ResponseEntity<Response<List<List<String>>>> detectFault(@PathVariable("username") String username, @PathVariable("surveyID") int surveyID){
+    public ResponseEntity<Response<List<List<String>>>> detectFault(@PathVariable("username") String username, @PathVariable("surveyID") String surveyID){
         return ResponseEntity.ok()
                 .body(service.detectFault(username, surveyID));
     }

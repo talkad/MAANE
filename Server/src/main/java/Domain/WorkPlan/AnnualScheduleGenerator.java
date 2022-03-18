@@ -30,16 +30,16 @@ public class AnnualScheduleGenerator {
         return AnnualScheduleGenerator.CreateSafeThreadSingleton.INSTANCE;
     }
 
-    public Response<Boolean> generateSchedule(String supervisor, int surveyId){
+    public Response<Boolean> generateSchedule(String supervisor, String surveyId){
         Response<List<SurveyAnswers>> surveyRes = surveyController.getAnswersForSurvey(surveyId);
         String workField;
         if(!surveyRes.isFailure()){
             Response<String> workFieldRes = userController.generateSchedule(supervisor);
             if(!workFieldRes.isFailure()){
-                List<String> schoolIds = new Vector<>();//todo missing something?
-                for (SurveyAnswers surveyAnswers: surveyRes.getResult()) {
-                    schoolIds.add(surveyAnswers.getSymbol());
-                }
+//                List<String> schoolIds = new Vector<>();//todo missing something?
+//                for (SurveyAnswers surveyAnswers: surveyRes.getResult()) {
+//                    schoolIds.add(surveyAnswers.getSymbol());
+//                }
                 workField = workFieldRes.getResult();
                 Response<List<Goal>> goalsRes = goalsManagement.getGoals(workField);
                 if(!goalsRes.isFailure()){
@@ -56,7 +56,7 @@ public class AnnualScheduleGenerator {
         else{
             return new Response<>(false, true, surveyRes.getErrMsg());
         }
-        return null; //todo
+        return new Response<>(true, false, "successfully generated work plans");
     }
 
     public int indexOfMaxGoal(List<Pair<String, Goal>> goalsPriorityQueue){
@@ -71,7 +71,7 @@ public class AnnualScheduleGenerator {
         return maxGoalIndex;
     }
 
-    public void algorithm(String supervisor, int surveyId, String workField, List<Goal> goals) {
+    public void algorithm(String supervisor, String surveyId, String workField, List<Goal> goals) {
         //1 - sort Goals by their weight (goal is per workfield)
         //2 - for every instructors under workField:
         //3 - workDay = the work day of the current instructor

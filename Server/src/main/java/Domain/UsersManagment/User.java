@@ -17,7 +17,7 @@ public class User {
     protected String city;
     protected List<String> schools;
     protected Appointment appointments;
-    protected List<Integer> surveys;
+    protected List<String> surveys;
     protected List<String> baskets;
 //    private MonthlyReport monthlyReport; //todo monthly reports history??
     protected WorkPlan workPlan;
@@ -210,13 +210,13 @@ public class User {
         }
     }
 
-    public Response<Integer> createSurvey(int surveyId) {
+    public Response<String> createSurvey(String surveyId) {
         if(this.state.allowed(Permissions.SURVEY_MANAGEMENT, this)){
             this.surveys.add(surveyId);
             return new Response<>(surveyId, false, "user is allowed to create survey");
         }
         else {
-            return new Response<>(-1, true, "user not allowed to create survey");
+            return new Response<>("", true, "user not allowed to create survey");
         }
     }
 
@@ -225,13 +225,13 @@ public class User {
         return new Response<>(basketId, false, "user is allowed to create basket");
     }
 
-    public Response<Integer> removeSurvey(int surveyId) {
+    public Response<String> removeSurvey(String surveyId) {
         if(this.state.allowed(Permissions.SURVEY_MANAGEMENT, this)){
-            this.surveys.remove(Integer.valueOf(surveyId));
+            this.surveys.remove(surveyId);
             return new Response<>(surveyId, false, "user is allowed to remove survey");
         }
         else {
-            return new Response<>(-1, true, "user not allowed to remove survey");
+            return new Response<>("", true, "user not allowed to remove survey");
         }
     }
 
@@ -245,7 +245,7 @@ public class User {
         }
     }
 
-    public Response<List<Integer>> getSurveys() {
+    public Response<List<String>> getSurveys() {
         if(this.state.allowed(Permissions.SURVEY_MANAGEMENT, this)){
             return new Response<>(surveys, false, "");
         }
@@ -312,7 +312,7 @@ public class User {
         }
     }
 
-    public Response<Boolean> hasCreatedSurvey(int surveyId) {
+    public Response<Boolean> hasCreatedSurvey(String surveyId) {
         if(this.state.getStateEnum() == UserStateEnum.SUPERVISOR)
         {
             return new Response<>(this.surveys.contains(surveyId), false, "user is supervisor");
@@ -419,7 +419,7 @@ public class User {
         this.appointments = appointments;
     }
 
-    public void setSurveys(List<Integer> surveys) {
+    public void setSurveys(List<String> surveys) {
         this.surveys = surveys;
     }
 

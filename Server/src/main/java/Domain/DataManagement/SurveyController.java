@@ -10,15 +10,18 @@ import Domain.DataManagement.FaultDetector.Rules.Rule;
 import Domain.WorkPlan.Goal;
 import Domain.UsersManagment.UserController;
 
+import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SurveyController {
-    private Map<Integer, Pair<Survey, FaultDetector>> surveys;
-    private Map<Integer, List<SurveyAnswers>> answers;
-    private int indexer;
+    private final Map<String, Pair<Survey, FaultDetector>> surveys;
+    private Map<String, List<SurveyAnswers>> answers;
+    private final SecureRandom secureRandom;
+    private final Base64.Encoder base64Encoder;
 
     private static class CreateSafeThreadSingleton {
         private static final SurveyController INSTANCE = new SurveyController();
@@ -31,7 +34,8 @@ public class SurveyController {
     public SurveyController(){
         answers = new ConcurrentHashMap<>();
         surveys = new ConcurrentHashMap<>();
-        indexer = 0;
+        secureRandom = new SecureRandom();
+        base64Encoder = Base64.getUrlEncoder();
     }
 
     /**
@@ -40,31 +44,33 @@ public class SurveyController {
      * @param surveyDTO is the questions and their types that the generated survey will contain
      * @return response with result of the new surveyID on success, -1 on failure
      */
-    public Response<Integer> createSurvey(String username, SurveyDTO surveyDTO){
-        Response<Integer> permissionRes;
+    public Response<String> createSurvey(String username, SurveyDTO surveyDTO){
+        Response<String> permissionRes;
         Response<Survey> surveyRes;
+
+        String indexer = createToken();
 
         permissionRes = UserController.getInstance().createSurvey(username, indexer);
 
-        if(permissionRes.getResult() < 0)
-            return new Response<>(-1, true, permissionRes.getErrMsg());
+        if(permissionRes.getResult().length() == 0)
+            return new Response<>("", true, permissionRes.getErrMsg());
 
         surveyRes = Survey.createSurvey(indexer, surveyDTO);
 
         if(surveyRes.isFailure()) {
-            Response<Integer> res = UserController.getInstance().removeSurvey(username, indexer);
+            Response<String> res = UserController.getInstance().removeSurvey(username, indexer);
 
             if(res.isFailure())
                 return res;
 
-            return new Response<>(-1, true, surveyRes.getErrMsg());
+            return new Response<>("", true, surveyRes.getErrMsg());
         }
 
         surveys.put(indexer, new Pair<>(surveyRes.getResult(), new FaultDetector()));
 
         UserController.getInstance().notifySurveyCreation(username, indexer);
 
-        return new Response<>(indexer++, false, "new survey created successfully");
+        return new Response<>(indexer, false, "new survey created successfully");
     }
 
     /**
@@ -106,7 +112,7 @@ public class SurveyController {
      * @param id of the desired survey
      * @return the survey with the given ID if exists, failure response otherwise
      */
-    public Response<SurveyDTO> getSurvey(int id){
+    public Response<SurveyDTO> getSurvey(String id){
         Survey survey;
         SurveyDTO surveyDTO = new SurveyDTO();
         List<String> questions = new LinkedList<>();
@@ -143,7 +149,7 @@ public class SurveyController {
      * @param goalID the goal the rule represents
      * @return success response if the arguments are legal. failure otherwise
      */
-    public Response<Boolean> addRule(String username, int id, Rule rule, int goalID){
+    public Response<Boolean> addRule(String username, String id, Rule rule, int goalID){
         Pair<Survey, FaultDetector> surveyPair;
         FaultDetector faultDetector;
         Response<Boolean> legalAdd = UserController.getInstance().hasCreatedSurvey(username, id);
@@ -170,7 +176,7 @@ public class SurveyController {
      * @param ruleID id of the rule to be removed
      * @return successful response if the {@username} created the survey in first place
      */
-    public Response<Boolean> removeRule(String username, int id, int ruleID){
+    public Response<Boolean> removeRule(String username, String id, int ruleID){
         Pair<Survey, FaultDetector> surveyPair;
         FaultDetector faultDetector;
         Response<Boolean> legalAdd = UserController.getInstance().hasCreatedSurvey(username, id);
@@ -196,7 +202,7 @@ public class SurveyController {
      * @param id of the survey
      * @return response contains list of all goals that not consistent with the rules, for each answer
      */
-    public Response<List<List<String>>> detectFault(String username, int id){
+    public Response<List<List<String>>> detectFault(String username, String id){
         List<List<String>> faults = new LinkedList<>();
         FaultDetector faultDetector;
         List<Goal> goals = UserController.getInstance().getGoals(username).getResult();
@@ -223,15 +229,15 @@ public class SurveyController {
         return new Response<>(faults, false, "faults detected");
     }
 
-    public Map<Integer, Pair<Survey, FaultDetector>> getSurveys() {
+    public Map<String, Pair<Survey, FaultDetector>> getSurveys() {
         return surveys;
     }
 
-    public Map<Integer, List<SurveyAnswers>> getAnswers() {
+    public Map<String, List<SurveyAnswers>> getAnswers() {
         return answers;
     }
 
-    public Response<List<SurveyAnswers>> getAnswersForSurvey(int surveyId) {
+    public Response<List<SurveyAnswers>> getAnswersForSurvey(String surveyId) {
         if(answers.containsKey(surveyId)) {
             return new Response<>(answers.get(surveyId), false, "");
         }
@@ -240,7 +246,7 @@ public class SurveyController {
         }
     }
 
-    public void setAnswers(Map<Integer, List<SurveyAnswers>> answers) {
+    public void setAnswers(Map<String, List<SurveyAnswers>> answers) {
         this.answers = answers;
     }
 
@@ -251,14 +257,14 @@ public class SurveyController {
      * @param symbol of the school
      * @return list of all goals that not consistent with the rules
      */
-    public Response<List<String>> detectSchoolFault(String username, int id, String symbol){
+    public Response<List<String>> detectSchoolFault(String username, String id, String symbol){
         FaultDetector faultDetector;
         List<Goal> goals = UserController.getInstance().getGoals(username).getResult();
-        List<String> currentFaults = new LinkedList<>();;
+        List<String> currentFaults = new LinkedList<>();
         Response<Boolean> legalAdd = UserController.getInstance().hasCreatedSurvey(username, id);
 
         if(!legalAdd.getResult())
-            return new Response<>(null, true, username + " does not created survey " + id);
+            return new Response<>(null, true, username + " did not create survey " + id);
 
         if(!surveys.containsKey(id))
             return new Response<>(null, true, "The survey doesn't exists");
@@ -287,10 +293,15 @@ public class SurveyController {
         return new Response<>(null, false, "faults detected");
     }
 
+    private String createToken(){
+        byte[] randomBytes = new byte[32];
+        secureRandom.nextBytes(randomBytes);
+        return base64Encoder.encodeToString(randomBytes);
+    }
+
     // for testing purpose only
     public void clearCache(){
         surveys.clear();
         answers.clear();
-        indexer = 0;
     }
 }

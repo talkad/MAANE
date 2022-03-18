@@ -27,8 +27,8 @@ public class SurveyServiceImpl implements SurveyService {
     }
 
     @Override
-    public Response<Integer> createSurvey(String username, SurveyDTO surveyDTO) {
-        Response<Integer> res = SurveyController.getInstance().createSurvey(username, surveyDTO);
+    public Response<String> createSurvey(String username, SurveyDTO surveyDTO) {
+        Response<String> res = SurveyController.getInstance().createSurvey(username, surveyDTO);
 
         if(res.isFailure())
             log.error("{} failed to create new survey", username);
@@ -51,7 +51,7 @@ public class SurveyServiceImpl implements SurveyService {
     }
 
     @Override
-    public Response<SurveyDTO> getSurvey(int surveyID) {
+    public Response<SurveyDTO> getSurvey(String surveyID) {
         Response<SurveyDTO> res = SurveyController.getInstance().getSurvey(surveyID);
 
         if(res.isFailure())
@@ -63,7 +63,7 @@ public class SurveyServiceImpl implements SurveyService {
     }
 
     @Override
-    public Response<Boolean> addRule(String username, int surveyID, Rule rule, int goalID) {
+    public Response<Boolean> addRule(String username, String surveyID, Rule rule, int goalID) {
         Response<Boolean> res = SurveyController.getInstance().addRule(username, surveyID, rule, goalID);
 
         if(res.isFailure())
@@ -75,7 +75,7 @@ public class SurveyServiceImpl implements SurveyService {
     }
 
     @Override
-    public Response<Boolean> removeRule(String username, int surveyID, int ruleID) {
+    public Response<Boolean> removeRule(String username, String surveyID, int ruleID) {
         Response<Boolean> res = SurveyController.getInstance().removeRule(username, surveyID, ruleID);
 
         if(res.isFailure())
@@ -87,7 +87,7 @@ public class SurveyServiceImpl implements SurveyService {
     }
 
     @Override
-    public Response<List<List<String>>> detectFault(String username, int surveyID) {
+    public Response<List<List<String>>> detectFault(String username, String surveyID) {
         Response<List<List<String>>> res = SurveyController.getInstance().detectFault(username, surveyID);
 
         if(res.isFailure())

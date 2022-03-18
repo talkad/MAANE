@@ -26,7 +26,7 @@ public class AnnualScheduleGeneratorServiceImpl implements AnnualScheduleGenerat
     }
 
     @Override
-    public Response<Boolean> generateSchedule(String supervisor, int surveyId){
+    public Response<Boolean> generateSchedule(String supervisor, String surveyId){
         Response<Boolean> res = AnnualScheduleGenerator.getInstance().generateSchedule(supervisor, surveyId);
 
         if(res.isFailure())
