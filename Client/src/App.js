@@ -49,9 +49,13 @@ import MenuIcon from '@mui/icons-material/Menu';
 // TODO: when the user closes the window log the user out before it closes
 
 function App(){
+    // general state data
     const [type, setType] = useState('SUPERVISOR') //TODO: change back to 'GUEST' when not developing
     const [openSidebar, setOpenSidebar] = useState(false);
     const [hideBars, setHideBars] = useState(true);
+
+    // authentication related
+    const [authAvailability, setAuthAvailability] = useState(false);
     const [authCallback, setAuthCallback] = useState(() => () => {console.log("not auth callback")});
     const [authCalleePage, setAuthCalleePage] = useState(''); // todo: is there's a better way to do it? i do it that way cause i override the history stack and can't just go back
 
@@ -208,7 +212,7 @@ function App(){
                         {/*TODO: find a more elegant way for the permissions*/}
                         <Route path="user">
                             <Route path="login" element={<Login changeType={setType} setHideBars={setHideBars}/>}/>
-                            <Route path="auth" element={<PasswordAuthentication callback={authCallback} callee={authCalleePage} setHideBars={setHideBars}/>}/>
+                            {authAvailability && <Route path="auth" element={<PasswordAuthentication callback={authCallback} callee={authCalleePage} setHideBars={setHideBars}/>}/>}
 
                             {(type === "SUPERVISOR" || type === "INSTRUCTOR") &&
                                 <Route path="guidingBasketsSearch" element={<GuidingBaskets/>}/>}
@@ -223,7 +227,7 @@ function App(){
                                 <Route path="goalsManagement" element={<GoalsManagement/>}/>}}}
 
                             {(type === "SUPERVISOR" || type === "SYSTEM_MANAGER") &&
-                                <Route path="home" element={<ManageUsers setAuthCallBack={setAuthCallback} setAuthCalleePage={setAuthCalleePage} setHideBars={setHideBars}/>}/>}
+                                <Route path="home" element={<ManageUsers setAuthAvailability={setAuthAvailability} setAuthCallBack={setAuthCallback} setAuthCalleePage={setAuthCalleePage} setHideBars={setHideBars}/>}/>}
 
                             {type === "INSTRUCTOR" &&
                                 <Route path="home" element={<WorkPlan/>}/>}

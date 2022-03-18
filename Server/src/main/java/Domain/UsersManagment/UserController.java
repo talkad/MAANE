@@ -628,11 +628,11 @@ public class UserController {
         User user = new User(username, UserStateEnum.SYSTEM_MANAGER);
         registeredUsers.put(username, new Pair<>(user, security.sha256(password)));
         //todo temp static data
-/*        String guest_name_temp = addGuest().getResult();
+        String guest_name_temp = addGuest().getResult();
         login(guest_name_temp,"admin", "admin");
         registerUserBySystemManager("admin", "ronit", "ronit", UserStateEnum.SUPERVISOR, "", "science", "ronit", "ronit", "ronit@gmail.com", "", "");
         registerUserBySystemManager("admin", "shoshi", "shoshi", UserStateEnum.INSTRUCTOR, "ronit", "", "shoshi", "shoshi", "shoshi@gmail.com", "", "");
-        logout("admin");*/
+        logout("admin");
     }
 
     public void notifySurveyCreation(String username, int indexer) {

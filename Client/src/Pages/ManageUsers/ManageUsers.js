@@ -347,6 +347,7 @@ export default function ManageUsers(props){
      * @param data the response from the server
      */
     const userDeletionCallback = (data) => {
+        props.setAuthAvailability(false);
         console.log(data)
         // TODO: do something
     }
@@ -361,7 +362,7 @@ export default function ManageUsers(props){
         props.setAuthCallBack(() => () =>
             Connection.getInstance().removeUser(window.sessionStorage.getItem('username'), username, userDeletionCallback)
         );
-
+        props.setAuthAvailability(true);
         props.setAuthCalleePage('../home');
         navigate(`../auth`, {replace: true})
     }
@@ -389,6 +390,7 @@ export default function ManageUsers(props){
      * @param data the response from the server
      */
     const userChangePasswordCallback = (data) => {
+        props.setAuthAvailability(false);
         //TODO: doesn't work cause the page is not loaded when this part runs
         if (!data.failure){
             setSnackbarSeverity('success');
@@ -413,7 +415,7 @@ export default function ManageUsers(props){
 
         props.setAuthCallBack(() => () => Connection.getInstance().changePasswordToUser(window.sessionStorage.getItem('username'),
             username, newPassword, newPasswordConfirmation, userChangePasswordCallback));
-
+        props.setAuthAvailability(true);
         props.setAuthCalleePage('../home');
         navigate(`../auth`, {replace: true})
     }
