@@ -40,6 +40,15 @@ public class UserController {
         registeredUsers.get(instructor).getFirst().assignWorkPlan(workPlan, year);//todo validate and prevent errors
     }
 
+    public Response<String> getPassword(String currUser) {
+        if(registeredUsers.containsKey(currUser)){
+            return new Response<>(registeredUsers.get(currUser).getSecond(), false, "successfully acquired password");
+        }
+        else{
+            return new Response<>(null, true, "failed to acquire password");
+        }
+    }
+
     private static class CreateSafeThreadSingleton {
         private static final UserController INSTANCE = new UserController();
     }
