@@ -52,7 +52,7 @@ import AccountBoxIcon from '@mui/icons-material/AccountBox';
 
 function App(){
     // general state data
-    const [type, setType] = useState('SUPERVISOR') //TODO: change back to 'GUEST' when not developing
+    const [type, setType] = useState('GUEST') //TODO: change back to 'GUEST' when not developing
     const [openSidebar, setOpenSidebar] = useState(false);
     const [hideBars, setHideBars] = useState(false);
 
@@ -238,7 +238,7 @@ function App(){
                                 <Route path="goalsManagement" element={<GoalsManagement/>}/>}}}
 
                             {(type === "SUPERVISOR" || type === "SYSTEM_MANAGER") &&
-                                <Route path="home" element={<ManageUsers setAuthAvailability={setAuthAvailability} setAuthCallBack={setAuthCallback} setAuthCalleePage={setAuthCalleePage} setHideBars={setHideBars}/>}/>}
+                                <Route path="home" element={<ManageUsers userType={type} setAuthAvailability={setAuthAvailability} setAuthCallBack={setAuthCallback} setAuthCalleePage={setAuthCalleePage} setHideBars={setHideBars}/>}/>}
 
                             {type === "INSTRUCTOR" &&
                                 <Route path="home" element={<WorkPlan/>}/>}

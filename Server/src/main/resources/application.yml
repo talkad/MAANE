@@ -12,15 +12,15 @@
 #        format_sql: true
 #    show-sql: true
 
-
-server:
-  port: 8443
-  ssl:
-    enabled: true
-    key-alias: skipper
-    key-store: Server/skipper.keystore
-    key-store-type: jks
-    key-store-password: skipper
-    key-password: skipper
-
+#
+#server:
+#  port: 8443
+#  ssl:
+#    enabled: true
+#    key-alias: skipper
+#    key-store: Server/skipper.keystore
+#    key-store-type: jks
+#    key-store-password: skipper
+#    key-password: skipper
+#
 

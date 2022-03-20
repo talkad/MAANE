@@ -243,6 +243,19 @@ class Connection{
     }
 
     /**
+     * getting all the users of the system (system manager call)
+     * @param currentUser the current user who asks for all the users
+     * @param callback a callback function to call once there's a response
+     */
+    getAllUsers(currentUser, callback){
+        this.sendPOST('/user/getAllUsers',
+            {
+                currUser: currentUser,
+            },
+            callback);
+    }
+
+    /**
      * change the password to a selected user
      * @param currentUser the user who requested the action
      * @param affectedUser the user to change the password to

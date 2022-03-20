@@ -281,7 +281,13 @@ export default function ManageUsers(props){
 
     useEffect(() => {
         props.setHideBars(false);
-        Connection.getInstance().getAppointedUsers(window.sessionStorage.getItem('username'), handleReceivedData)
+        if(props.userType === "SUPERVISOR"){
+            Connection.getInstance().getAppointedUsers(window.sessionStorage.getItem('username'), handleReceivedData);
+        }
+        else if(props.userType === "SYSTEM_MANAGER"){
+            Connection.getInstance().getAllUsers(window.sessionStorage.getItem('username'), handleReceivedData); // TODO: check this (logging in with admin)
+        }
+
     }, []);
 
 
