@@ -64,12 +64,17 @@ function Row(props) {
     const { row } = props;
     const [open, setOpen] = React.useState(false);
 
+    // actions
     const delete_user_button_string = 'מחיקת משתמש';
     const change_password_button_string = 'שינוי סיסמה';
+    const edit_schools_button_string = 'עריכת בתי ספר';
+
+    // data
     const user_email_string = 'דוא"ל';
     const user_phone_number_string = 'מספר פלאפון';
     const city = 'עיר';
     const schools = 'בתי ספר';
+    const actions = 'פעולות:';
 
     return (
         <React.Fragment>
@@ -120,13 +125,21 @@ function Row(props) {
                                 <ListItem>
                                     <ListItemText primary={schools} secondary={row.schools.reduce((previous, current) => previous + `${current}, `, '')} />
                                 </ListItem>
+                                <Divider component="li" />
+                                <ListItem>
+                                    <ListItemText primary={actions}/>
+                                </ListItem>
                             </List>
                             <br/>
                             {/* the action buttons for each user */}
-                            {/*TODO: have a warning beforehand and a verification */}
+                            <Grid sx={{marginBottom: 1}} container spacing={1}>
+                                {/*editing actions*/}
+                                <Grid item xs={1.5}><Button fullWidth onClick={() => props.handleOpenCPDialog(row.username, row.name)} color="secondary" variant="outlined">{change_password_button_string}</Button></Grid>
+                                <Grid item xs={1.5}><Button fullWidth onClick={() => props.handleOpenEditSchoolsDialog(row.username, row.name, row.schools)} color="secondary" variant="outlined">{edit_schools_button_string}</Button></Grid>
+                            </Grid>
                             <Grid container spacing={1}>
-                                <Grid item xs={2.5}><Button onClick={() => props.handleOpenDeleteDialog(row.username, row.name)} color="error" variant="outlined">{delete_user_button_string}</Button></Grid>
-                                <Grid item xs={2}><Button onClick={() => props.handleOpenCPDialog(row.username, row.name)} color="secondary" variant="outlined">{change_password_button_string}</Button></Grid>
+                                {/*removing user*/}
+                                <Grid item xs={1.5}><Button fullWidth onClick={() => props.handleOpenDeleteDialog(row.username, row.name)} color="error" variant="outlined">{delete_user_button_string}</Button></Grid>
                             </Grid>
                         </Box>
                     </Collapse>
@@ -136,6 +149,11 @@ function Row(props) {
     );
 }
 
+/**
+ * a dialog element for removing a user
+ * @param props the properties the element gets
+ * @returns {JSX.Element} the element
+ */
 function DeleteUserDialog(props){
 
     const title_string = "האם את/ה בטוח/ה שהינך רוצה למחוק את";
@@ -163,7 +181,11 @@ function DeleteUserDialog(props){
     )
 }
 
-
+/**
+ * a dialog element for changing a password for a user
+ * @param props the properties the element gets
+ * @returns {JSX.Element} the element
+ */
 function ChangePasswordDialog(props){
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -253,6 +275,25 @@ function ChangePasswordDialog(props){
     )
 }
 
+/**
+ * a dialog element for editing the assigned school of a user
+ * @param props the properties the element gets
+ * @returns {JSX.Element} the element
+ */
+function EditSchoolsDialog(props){
+    const [error, setError] = useState(null);
+    const [isLoaded, setIsLoaded] = useState(false);
+    const [items, setItems] = useState([]);
+
+    const title_string = "עריכת בתי ספר תחת";
+
+    return (
+        <Dialog fullWidth maxWidth="sm" onClose={props.onClose} open={props.open}>
+            <DialogTitle><Typography variant="h5" align="center">{title_string} {props.selectedName}</Typography></DialogTitle>
+        </Dialog>
+    )
+}
+
 // data for offline testing
 const rows = [
     createData("Ronit", 'רונית', "מפקחת", "ronit@post.bgu.ac.il", "000-123-4567", "פתח תקווה", ["מקיף ז'", "רגר"]),
@@ -260,13 +301,15 @@ const rows = [
 ];
 
 export default function ManageUsers(props){
-    const [tableRows, setTableRows] = useState([]);
+    const [tableRows, setTableRows] = useState(rows);
 
     // dialogs
     const [openCPDialog, setOpenCPDialog] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+    const [openEditSchoolsDialog, setOpenEditSchoolsDialog] = useState(false);
     const [selectedUser, setSelectedUser] = useState('');
     const [selectedName, setSelectedName] = useState('');
+    const [selectedSchools, setSelectedSchools] = useState([]);
 
     // snackbar
     const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -330,6 +373,8 @@ export default function ManageUsers(props){
         }
     }
 
+    // USER DELETION DIALOG
+
     /**
      * handles the opening of the dialog to delete a selected user
      * @param username the selected user
@@ -372,6 +417,8 @@ export default function ManageUsers(props){
         props.setAuthCalleePage('../home');
         navigate(`../auth`, {replace: true})
     }
+
+    // CHANGE USER PASSWORD DIALOG
 
     /**
      * handles the opening of the dialog to change password to a selected user
@@ -426,6 +473,46 @@ export default function ManageUsers(props){
         navigate(`../auth`, {replace: true})
     }
 
+    // EDIT SCHOOLS DIALOG
+
+    /**
+     * handles the opening of the dialog to edit the assigned school of a selected user
+     * @param username the selected user
+     * @param name the name of the selected user
+     * @param schools the schools of the selected user
+     */
+    const handleOpenEditSchoolsDialog = (username, name, schools) => {
+        setOpenEditSchoolsDialog(true);
+        setSelectedUser(username);
+        setSelectedName(name);
+        setSelectedSchools(schools)
+    }
+
+    /**
+     * handles the closing of the dialog for editing the assigned schools of a selected user
+     */
+    const handleCloseEditSchoolsDialog = () => {
+        setOpenEditSchoolsDialog(false);
+    }
+
+    /**
+     * a callback for the response from the server regarding editing the assigned schools of a user request
+     * @param data the response from the server
+     */
+    const userEditSchoolsCallback = (data) => {
+        // todo: implement
+    }
+
+    /**
+     * handler for sending a request to change the schools assigned to a selected user
+     * @param username the selected user
+     * @param schools the schools to assign to the selected user
+     */
+    const handleUserEditSchools = (username, schools) => {
+        // todo: implement
+    }
+
+
     return (
         <Space.Fill scrollable>
             <div id="Manage-users">
@@ -447,7 +534,7 @@ export default function ManageUsers(props){
                         </TableHead>
                         <TableBody>
                             {tableRows.map((tableRows) => (
-                                <Row key={tableRows.username} row={tableRows} handleOpenCPDialog={handleOpenCPDialog} handleOpenDeleteDialog={handleOpenDeleteDialog}/>
+                                <Row key={tableRows.username} row={tableRows} handleOpenEditSchoolsDialog={handleOpenEditSchoolsDialog} handleOpenCPDialog={handleOpenCPDialog} handleOpenDeleteDialog={handleOpenDeleteDialog}/>
                             ))}
                         </TableBody>
                     </Table>
@@ -468,7 +555,14 @@ export default function ManageUsers(props){
                     onClose={handleCloseDeleteDialog}
                     callback={handleUserDeletion}
                 />
-            {/*    snackbar for notification on actions*/}
+                {/*edit schools dialog pop up*/}
+                <EditSchoolsDialog
+                    selectedUser={selectedUser}
+                    selectedName={selectedName}
+                    open={openEditSchoolsDialog}
+                    onClose={handleCloseEditSchoolsDialog}
+                    callback={handleUserEditSchools}/>
+                {/*snackbar for notification on actions*/}
                 <NotificationSnackbar
                     open={openSnackbar}
                     setOpen={setOpenSnackbar}
