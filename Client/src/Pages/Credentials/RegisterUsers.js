@@ -64,11 +64,24 @@ export default function RegisterUsers(props){
      * before the screen loads sets the relevant components according to the type of user who got to the screen
      */
     useEffect(() => {
-        let selected_roles = props.type === 'SUPERVISOR' ? roles_supervisor : roles_system_manager
-        setRoles(selected_roles)
-        setRoleChoiceEnum(selected_roles[0]['ruleEnum'])
-        setRoleChoice(selected_roles[0]['role'])
-    },[props.type]);
+        let selected_roles = props.type === 'SUPERVISOR' ? roles_supervisor : roles_system_manager;
+        setRoles(selected_roles);
+        setRoleChoiceEnum(selected_roles[0]['ruleEnum']);
+        setRoleChoice(selected_roles[0]['role']);
+
+        if (props.type === "SYSTEM_MANAGER"){
+            // todo: send request to get all the supervisors
+        }
+    },[]);
+
+    const arrangeSupervisorsCallback = (data) => {
+        if (data.failure){
+            // todo: raise error
+        }
+        else {
+
+        }
+    }
 
     /**
      * onChange handler for the text-fields
@@ -191,6 +204,7 @@ export default function RegisterUsers(props){
                         </Select>
                         <FormHelperText>{select_helper_text_string}</FormHelperText>
                     </FormControl>
+                    {/*todo: have a select for supervisors when choosing instructor or general-supervisor*/}
                     {/*optional text-field if the user chose to register a supervisor*/}
                     {roleChoice === supervisor_string &&
                         <TextField
