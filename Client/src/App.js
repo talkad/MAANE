@@ -17,7 +17,7 @@ import WorkReport from "./Pages/WorkReport/WorkReport";
 
 // COMPONENTS
 import {
-    AppBar,
+    AppBar, Backdrop,
     Button,
     Divider,
     Drawer, IconButton,
@@ -55,6 +55,7 @@ function App(){
     const [type, setType] = useState('SYSTEM_MANAGER'); //TODO: change back to 'GUEST' when not developing
     const [openSidebar, setOpenSidebar] = useState(false);
     const [hideBars, setHideBars] = useState(false);
+    const [openBackdrop, setOpenBackdrop] = useState(false);
 
     // authentication related
     const [authAvailability, setAuthAvailability] = useState(false);
@@ -107,6 +108,7 @@ function App(){
     // sidebar
     const drawer = (
         <Space.Fill>
+            <Toolbar />
             {/*TODO: show buttons based on permissions*/}
             <List>
                 {/*home button*/}
@@ -160,14 +162,19 @@ function App(){
             <Space.ViewPort>
                 {/* app bar */}
                 {!hideBars && <Space.Top size={barWidth}>
-                    {/* TODO: fix it so the card line would be see and it would align with the logo*/}
-                    <AppBar title='מענ"ה' color="background" position="static">
+                    <AppBar color="background" position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
                         <Toolbar>
                             {/*menu button*/}
                             <IconButton
                                 color="inherit"
                                 aria-label="Menu"
-                                onClick={() => setOpenSidebar(!openSidebar)}
+                                onClick={
+                                    function () {
+                                        setOpenSidebar(!openSidebar);
+                                        setOpenBackdrop(!openBackdrop);
+                                    }
+                            }
+
                             >
                                 <MenuIcon />
                             </IconButton>
@@ -199,7 +206,6 @@ function App(){
                         </Toolbar>
                     </AppBar>
                     {/*sidebar*/}
-                    {/*todo: make the drawer below the appbar*/}
                     <Drawer
                         sx={{
                             width: sidebarWidth,
@@ -266,6 +272,7 @@ function App(){
                             }
                         />
                     </Routes>
+                    <Backdrop open={openBackdrop}/>
                 </Space.Fill>
             </Space.ViewPort>
         </div>
@@ -273,140 +280,4 @@ function App(){
 }
 
 export default App;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// function App() {
-//
-//     const barWidth = "10%"
-//
-//     const drawer_list =
-//         <Space.Fill>
-//             <h2>מענ"ה</h2>
-//             <Divider/>
-//             <List>
-//                 <ListItem button onClick={() => document.location.href = window.location.origin + '/user/workPlan'}>
-//                     <ListItemText primary="בית" />
-//                 </ListItem>
-//             </List>
-//             {window.sessionStorage.getItem('type') === "INSTRUCTOR" &&
-//                 <List>
-//                     <ListItem button onClick={() => document.location.href = window.location.origin + '/user/workPlan'}>
-//                         <ListItemText primary="בית" />
-//                     </ListItem>
-//                 </List>}
-//
-//             {(window.sessionStorage.getItem('type') === "SUPERVISOR" || window.sessionStorage.getItem('type') === "SYSTEM_MANAGER") &&
-//             <List>
-//                 <ListItem button onClick={() => document.location.href = window.location.origin + '/user/manageUsers'}>
-//                     <ListItemText primary="בית" />
-//                 </ListItem>
-//                 <ListItem button onClick={() => document.location.href = window.location.origin + '/survey'}>
-//                     <ListItemText primary="סקרים" />
-//                 </ListItem>
-//             </List>}
-//
-//             {window.sessionStorage.getItem('type') === "GENERAL_SUPERVISOR" &&
-//             <List>
-//                 <ListItem button onClick={() => document.location.href = window.location.origin + '/user/InfoViewer'}>
-//                     <ListItemText primary="בית" />
-//                 </ListItem>
-//             </List>}
-//         </Space.Fill>
-//
-//   const page_does_not_exist_string = "דף זה אינו קיים"
-//   return (
-//     <Space.ViewPort dir="rtl" className="App">
-//         {!document.location.href.includes("login") &&
-//             <Space.Right size="20%">
-//                 <Space.Top size={barWidth}>
-//                     <h1>מענ"ה</h1>
-//                 </Space.Top>
-//                 <Space.Fill>
-//                     <Drawer
-//                         variant="permanent"
-//                         ModalProps={{
-//                             keepMounted: true,
-//                         }}
-//                     >
-//                         <List>
-//                             {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-//                                 <ListItem button key={text}>
-//                                     <ListItemIcon>
-//                                         <DeleteIcon />
-//                                     </ListItemIcon>
-//                                     <ListItemText primary={text} />
-//                                 </ListItem>
-//                             ))}
-//                         </List>
-//                     </Drawer>
-//                 </Space.Fill>
-//             </Space.Right>
-//         }
-//         <Space.Fill>
-//             <Space.Top centerContent="vertical" size={barWidth}>
-//                 <AppBar color="background">
-//                     <Toolbar variant="dense">
-//                         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-//                             {/*
-//                         </Typography>
-//                         {/*
-//                         <Button color="inherit">יציאה</Button>
-//                     </Toolbar>
-//                 </AppBar>
-//             </Space.Top>
-//             <Space.Fill centerContent="vertical">
-//                 <Routes>
-//                     <Route path="user/login" element={<Login/>}/>
-//                     <Route path="user/registerUsers" element={<RegisterUsers/>}/>
-//                     <Route path="user/workPlan" element={<WorkPlan/>}/>
-//                     <Route path="user/manageUsers" element={<ManageUsers/>}/>
-//                     <Route path="user/InfoViewer" element={<InfoViewer/>}/>
-//                     <Route exact path="/survey" element={<SurveyMenu />}/>
-//                     <Route path="survey/createSurvey" element={<SurveyBuilder/>}/>
-//                     {/*
-//                     <Route path="survey/survey" element={<Survey/>}/>
-//                     <Route
-//                         path="*"
-//                         element={
-//                             <main style={{ padding: "1rem" }}> {/*
-//                                 <p>{page_does_not_exist_string}</p>
-//                             </main>
-//                         }
-//                     />
-//                 </Routes>
-//             </Space.Fill>
-//         </Space.Fill>
-//     </Space.ViewPort>
-//   );
-// }
 
