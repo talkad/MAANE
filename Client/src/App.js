@@ -47,7 +47,6 @@ import AccountBoxIcon from '@mui/icons-material/AccountBox';
 
 // TODO: prevent users from going through the site by entering paths in the url
 // TODO: currently saving everything in local storage but IT IS NOT SAFE
-// TODO: change the usage of document.location.href with the useNavigate hook (example in SurveyMenu.js) in the whole project
 // TODO: when the user closes the window log the user out before it closes
 
 function App(){
@@ -61,6 +60,7 @@ function App(){
     const [authAvailability, setAuthAvailability] = useState(false);
     const [authCallback, setAuthCallback] = useState(() => () => {console.log("not auth callback")});
     const [authCalleePage, setAuthCalleePage] = useState(''); // todo: is there's a better way to do it? i do it that way cause i override the history stack and can't just go back
+    const [authGoToPage, setAuthGoToPage] = useState('');
 
     let navigate = useNavigate();
 
@@ -100,10 +100,6 @@ function App(){
            window.sessionStorage.getItem('username'),
             logoutCallback)
     }
-
-    useEffect(() => {
-        // TODO: needed?
-    }, );
 
     // sidebar
     const drawer = (
@@ -228,7 +224,7 @@ function App(){
                         {/*TODO: find a more elegant way for the permissions*/}
                         <Route path="user">
                             <Route path="login" element={<Login changeType={setType} setHideBars={setHideBars}/>}/>
-                            {authAvailability && <Route path="auth" element={<PasswordAuthentication callback={authCallback} callee={authCalleePage} setHideBars={setHideBars}/>}/>}
+                            {authAvailability && <Route path="auth" element={<PasswordAuthentication callback={authCallback} callee={authCalleePage} goto={authGoToPage} setHideBars={setHideBars}/>}/>}
                             <Route path="profile" element={<ProfilePage/>}/>
 
                             {(type === "SUPERVISOR" || type === "INSTRUCTOR") &&
@@ -244,7 +240,7 @@ function App(){
                                 <Route path="goalsManagement" element={<GoalsManagement/>}/>}}}
 
                             {(type === "SUPERVISOR" || type === "SYSTEM_MANAGER") &&
-                                <Route path="home" element={<ManageUsers userType={type} setAuthAvailability={setAuthAvailability} setAuthCallBack={setAuthCallback} setAuthCalleePage={setAuthCalleePage} setHideBars={setHideBars}/>}/>}
+                                <Route path="home" element={<ManageUsers userType={type} setAuthAvailability={setAuthAvailability} setAuthCallBack={setAuthCallback} setAuthCalleePage={setAuthCalleePage} setAuthGoToPage={setAuthGoToPage} setHideBars={setHideBars}/>}/>}
 
                             {type === "INSTRUCTOR" &&
                                 <Route path="home" element={<WorkPlan/>}/>}

@@ -505,6 +505,7 @@ export default function ManageUsers(props){
         );
         props.setAuthAvailability(true);
         props.setAuthCalleePage('../home');
+        props.setAuthGoToPage('../home');
         navigate(`../auth`, {replace: true})
     }
 
@@ -560,6 +561,7 @@ export default function ManageUsers(props){
             username, newPassword, newPasswordConfirmation, userChangePasswordCallback));
         props.setAuthAvailability(true);
         props.setAuthCalleePage('../home');
+        props.setAuthGoToPage('../home');
         navigate(`../auth`, {replace: true})
     }
 
