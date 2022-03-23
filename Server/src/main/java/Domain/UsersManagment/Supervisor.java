@@ -16,6 +16,8 @@ public class Supervisor extends Instructor{
         allowedFunctions.add(Permissions.CHANGE_PASSWORD_TO_USER);
         allowedFunctions.add(Permissions.VIEW_USERS_INFO);
         allowedFunctions.add(Permissions.REMOVE_GOALS);
+        allowedFunctions.add(Permissions.SEND_SURVEY_EMAIL);
+
     }
 
     @Override

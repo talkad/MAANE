@@ -40,6 +40,9 @@ public class UserController {
         registeredUsers.get(instructor).getFirst().assignWorkPlan(workPlan, year);//todo validate and prevent errors
     }
 
+    public Response<List<String>> getCoordinatorEmails(String currUser) {//todo implement
+    }
+
     private static class CreateSafeThreadSingleton {
         private static final UserController INSTANCE = new UserController();
     }

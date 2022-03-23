@@ -1,6 +1,9 @@
 package Domain.EmailManagement;
 
 
+import Domain.CommonClasses.Response;
+import Domain.UsersManagment.UserController;
+
 import java.util.*;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
@@ -11,6 +14,7 @@ import javax.mail.internet.MimeMultipart;
 
 public class EmailController {
     final private Properties prop = new Properties();
+    UserController userController;
 
     private EmailController(){
         prop.put("mail.smtp.username", "invalidinvalid9@gmail.com");
@@ -19,6 +23,7 @@ public class EmailController {
         prop.put("mail.smtp.port", "587");
         prop.put("mail.smtp.auth", "true");
         prop.put("mail.smtp.starttls.enable", "true"); // TLS
+        userController = UserController.getInstance();
     }
 
     private static class CreateSafeThreadSingleton {
@@ -29,7 +34,8 @@ public class EmailController {
         return EmailController.CreateSafeThreadSingleton.INSTANCE;
     }
 
-    public void sendEmail() throws MessagingException {
+    public void sendEmail(String currUser, String surveyLink) throws MessagingException {//todo surveyLink?
+        Response<List<String>> emailsTo = userController.getCoordinatorEmails(currUser);//todo implement
         Session mailSession = Session.getInstance(prop, new javax.mail.Authenticator() {
             @Override
             protected javax.mail.PasswordAuthentication getPasswordAuthentication() {
@@ -59,7 +65,7 @@ public class EmailController {
 
         /* Step 1: Create MimeBodyPart and set content and its Mime Type */
         BodyPart mimeBody = new MimeBodyPart();
-        mimeBody.setContent("<h1> This is HTML content </h1><br> https://www.youtube.com/ <b> User </b>", "text/html");
+        mimeBody.setContent("<h1> This is HTML content </h1><br> <b> User </b>" + " " +  surveyLink, "text/html");//todo add surveyId as well?
 
         /* Step 2: Create MimeMultipart and  wrap the mimebody to it */
         Multipart multiPart = new MimeMultipart();

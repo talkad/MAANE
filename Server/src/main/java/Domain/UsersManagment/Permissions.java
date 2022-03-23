@@ -27,6 +27,7 @@ public enum Permissions {
     ADD_GOALS,
     REMOVE_GOALS,
     REMOVE_BASKET,
+    SEND_SURVEY_EMAIL,
 
     /** System Manager User **/
     REGISTER_SUPERVISOR,
