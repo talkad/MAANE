@@ -239,6 +239,16 @@ public class UserServiceImpl implements UserService {
         return res;
     }
 
+    @Override
+    public Response<List<UserDTO>> getSupervisors(String currUser) {
+        Response<List<UserDTO>> res = UserController.getInstance().getSupervisors(currUser);
+        if (res.isFailure())
+            log.error("failed to acquire supervisors by the user {}", currUser);
+        else
+            log.info("successfully acquired supervisors by the user {}", currUser);
+        return res;
+    }
+
     public Response<Boolean> removeSchoolsFromUser(String currUser, String userToRemoveSchoolsName, List<String> schools) {
         Response<Boolean> res = UserController.getInstance().removeSchoolsFromUser(currUser, userToRemoveSchoolsName, schools);
         if (res.isFailure())

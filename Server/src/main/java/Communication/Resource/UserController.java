@@ -171,4 +171,10 @@ public class UserController {
         return ResponseEntity.ok()
                 .body(service.getUserInfo((String)body.get("currUser")));
     }
+
+    @RequestMapping(value = "/getSupervisors", method = RequestMethod.POST)
+    public ResponseEntity<Response<List<UserDTO>>> getSupervisors(@RequestBody Map<String, Object>  body){
+        return ResponseEntity.ok()
+                .body(service.getSupervisors((String)body.get("currUser")));
+    }
 }

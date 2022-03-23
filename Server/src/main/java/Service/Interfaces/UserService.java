@@ -49,4 +49,5 @@ public interface UserService {
 
     Response<List<UserDTO>> getAllUsers(String currUser);
 
+    Response<List<UserDTO>> getSupervisors(String currUser);
 }

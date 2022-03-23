@@ -200,4 +200,13 @@ public class ProxyBridgeUser implements UserService {
 
         return new Response<>(null, true, "not implemented");
     }
+
+    @Override
+    public Response<List<UserDTO>> getSupervisors(String currUser) {
+        if (real != null){
+            return real.getSupervisors(currUser);
+        }
+
+        return new Response<>(null, true, "not implemented");
+    }
 }
