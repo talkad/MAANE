@@ -191,17 +191,18 @@ class Connection{
     // MANAGE USERS REQUESTS
 
     /**
-     * sends a POST request to register a new user to the system
+     * sends a POST request to register a new user to the system by a supervisor
      * @param currUser the current user which is logged in
      * @param usernameToRegister the username of the registered user
      * @param password the password of the registered user
      * @param userStateEnum the userStateEnum of the registered user
      * @param callback a callback function to call once there's a response
      */
-    register(currUser, usernameToRegister, password, userStateEnum, callback){
+    registerUser(currUser, usernameToRegister, password, userStateEnum, callback){
         this.sendPOST('/user/registerUser',
             {
                 currUser: currUser,
+                workField: "",
                 userToRegister: usernameToRegister,
                 password: password,
                 userStateEnum: userStateEnum,
@@ -209,7 +210,39 @@ class Connection{
                 lastName: "",
                 email: "",
                 phoneNumber: "",
-                city: ""
+                city: "",
+                schools: [],
+            },
+            callback)
+    }
+
+    /**
+     * sends a POST request to register a new user to the system by a system manager
+     * @param currUser the current user which is logged in
+     * @param usernameToRegister the username of the registered user
+     * @param password the password of the registered user
+     * @param userStateEnum the userStateEnum of the registered user
+     * @param fieldChoice if registering a supervisor, then his field is required
+     * @param optionalSupervisor if registering an instructor or general supervisor, then his supervisor is required
+     * @param callback a callback function to call once there's a response
+     */
+    registerUserBySystemManager(currUser, usernameToRegister, password, userStateEnum, fieldChoice, optionalSupervisor, callback){
+        this.sendPOST('/user/registerUserBySystemManager',
+            {
+                user: {
+                    currUser: currUser,
+                    workField: fieldChoice,
+                    userToRegister: usernameToRegister,
+                    password: password,
+                    userStateEnum: userStateEnum,
+                    firstName: "",
+                    lastName: "",
+                    email: "",
+                    phoneNumber: "",
+                    city: "",
+                    schools: [],
+                },
+                optionalSupervisor: optionalSupervisor,
             },
             callback)
     }
@@ -249,6 +282,19 @@ class Connection{
      */
     getAllUsers(currentUser, callback){
         this.sendPOST('/user/getAllUsers',
+            {
+                currUser: currentUser,
+            },
+            callback);
+    }
+
+    /**
+     * getting all the supervisors of the system
+     * @param currentUser the current user who asks for all the supervisors
+     * @param callback a callback function to call once there's a response
+     */
+    getSupervisors(currentUser, callback){
+        this.sendPOST('/user/getSupervisors',
             {
                 currUser: currentUser,
             },

@@ -13,7 +13,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import Box from "@mui/material/Box";
 import {
     Alert,
-    Avatar, Card,
+    Avatar,
     Collapse,
     Dialog,
     DialogTitle,
@@ -22,7 +22,7 @@ import {
     IconButton, InputAdornment,
     List,
     ListItem,
-    ListItemText, Snackbar, Stack, TextField, Tooltip, Typography
+    ListItemText, Stack, TextField, Tooltip, Typography
 } from "@mui/material";
 import Button from "@mui/material/Button";
 import {useNavigate} from "react-router-dom";
@@ -429,6 +429,11 @@ export default function ManageUsers(props){
                 // for live updating of the dialog while adding school to a user
                 if (selectedUser === row.currUser){
                     setSelectedSchools(row.schools);
+                }
+
+                // not including admins in the table
+                if(row.currUser === 'admin'){ //todo: is that considered hardcoded?
+                    continue;
                 }
 
                 rows.push(createData(
