@@ -21,7 +21,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/user")
-//@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = "*", maxAge = 3600)
 public class UserController {
     ObjectMapper objectMapper = new ObjectMapper();
     private Gson gson = new Gson();

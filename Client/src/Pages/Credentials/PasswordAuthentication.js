@@ -7,6 +7,8 @@ import Visibility from "@mui/icons-material/Visibility";
 import {useNavigate} from "react-router-dom";
 import Connection from "../../Communication/Connection";
 
+// todo: check that the changes made here didn't break the page functionality
+
 export default function PasswordAuthentication(props){
     const [showPassword, setShowPassword] = useState(false);
 
@@ -32,7 +34,6 @@ export default function PasswordAuthentication(props){
             //TODO: raise an error
         }
         else{
-            //props.setHideBars(false); todo: not working for some reason
             navigate(props.goto, {replace: true});
             props.callback(); // sending the message after received positive authentication
         }
