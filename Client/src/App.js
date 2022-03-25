@@ -51,7 +51,7 @@ import AccountBoxIcon from '@mui/icons-material/AccountBox';
 
 function App(){
     // general state data
-    const [type, setType] = useState('GUEST'); //TODO: change back to 'GUEST' when not developing
+    const [type, setType] = useState('SUPERVISOR'); //TODO: change back to 'GUEST' when not developing
     const [openSidebar, setOpenSidebar] = useState(false);
     const [hideBars, setHideBars] = useState(false);
     const [openBackdrop, setOpenBackdrop] = useState(false);

@@ -9,7 +9,7 @@ import {
     InputLabel,
     MenuItem,
     Paper,
-    Select
+    Select, Typography
 } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
@@ -90,6 +90,10 @@ export default function RegisterUsers(props){
 
     // STRINGS
     const header_string = 'רישום משתמשים';
+
+    const user_credentials_string = 'פרטי התחברות:';
+    const user_info_string = 'פרטים אישיים:';
+    const user_assign_info = 'הקצאות:'
 
     const username_label_string = 'שם משתמש';
     const password_label_string = 'סיסמה';
@@ -247,10 +251,14 @@ export default function RegisterUsers(props){
             <div className="Register-users">
                 <h1>{header_string}</h1>
                 <Paper className="Register-users-paper" sx={{width: "25%"}} elevation={3}>
-                    {/*TODO: fix how this grid is behaving*/}
-                    <Grid container spacing={1} direction="column" alignItems="center" justifyContent="center">
+                    <Grid container spacing={1} >
 
+                        {/*user credentials sub-title*/}
                         <Grid item xs={12} sx={{marginRight: "3%", marginLeft: "3%", marginTop: "3%"}}>
+                            <Typography variant="h7">{user_credentials_string}</Typography>
+                        </Grid>
+
+                        <Grid item xs={12} sx={{marginRight: "3%", marginLeft: "3%"}}>
                             {/* username text field */}
                             <TextField
                                 color="secondary"
@@ -296,6 +304,11 @@ export default function RegisterUsers(props){
                                     ),
                                 }}
                             />
+                        </Grid>
+
+                        {/*user into sub-title*/}
+                        <Grid item xs={12} sx={{marginRight: "3%", marginLeft: "3%", marginTop: "3%"}}>
+                            <Typography variant="h7">{user_info_string}</Typography>
                         </Grid>
 
                         <Grid item xs={12} sx={{marginRight: "3%", marginLeft: "3%"}}>
@@ -372,7 +385,12 @@ export default function RegisterUsers(props){
                             </Grid>
                         </Grid>
 
-                        <Grid item xs={12}>
+                        {/*user into sub-title*/}
+                        <Grid item xs={12} sx={{marginRight: "3%", marginLeft: "3%", marginTop: "3%"}}>
+                            <Typography variant="h7">{user_assign_info}</Typography>
+                        </Grid>
+
+                        <Grid item xs={12} sx={{marginRight: "3%", marginLeft: "3%"}}>
                             {/* role choice form */}
                             <FormControl color="secondary" sx={{ m: 1, minWidth: 120 }}>
                                 <InputLabel id="role-select-helper-label">{select_role_label_string}</InputLabel>
@@ -388,7 +406,7 @@ export default function RegisterUsers(props){
                             </FormControl>
                         </Grid>
 
-                        <Grid item xs={12}>
+                        <Grid item xs={12} sx={{marginRight: "3%", marginLeft: "3%"}}>
                             {/*optional select if the user is admin and want to register a non-supervisor user under an existing supervisor*/}
                             {props.type === 'SYSTEM_MANAGER' && (roleChoiceEnum === "INSTRUCTOR" || roleChoiceEnum === "GENERAL_SUPERVISOR") &&
                                 <FormControl color="secondary" sx={{ m: 1, minWidth: 120 }}>
@@ -405,8 +423,7 @@ export default function RegisterUsers(props){
                                 </FormControl>}
                         </Grid>
 
-
-                        <Grid item xs={12}>
+                        <Grid item xs={12} sx={{marginRight: "3%", marginLeft: "3%"}}>
                             {/*optional text-field if the user chose to register a supervisor*/}
                             {roleChoiceEnum === "SUPERVISOR" &&
                                 <TextField
@@ -422,12 +439,13 @@ export default function RegisterUsers(props){
                                 />}
                         </Grid>
 
-                        <Grid item xs={12}>
+                        <Grid item xs={12} sx={{marginRight: "3%", marginLeft: "3%"}}>
                             {/*alert for errors*/}
                             {showError && <Alert severity="error">{errorMessage}</Alert>}
                         </Grid>
 
-                        <Grid item xs={12}>
+                        <Grid item xs={4}/>
+                        <Grid item xs={8}>
                             {/* submit register button */}
                             <Button
                                 color="secondary"
@@ -441,7 +459,8 @@ export default function RegisterUsers(props){
                             </Button>
                         </Grid>
 
-                        <Grid item xs={12}>
+                        <Grid item xs={4}/>
+                        <Grid item xs={8}>
                             <Button sx={{marginBottom: 1, width: "50%"}} color='success' fullWidth variant="contained" onClick={() => navigate(-1)}>{finished_button_string}</Button>
                         </Grid>
 
