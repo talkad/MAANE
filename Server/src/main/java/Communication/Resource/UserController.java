@@ -56,7 +56,7 @@ public class UserController {
                 .body(service.registerUser(user));
     }
 
-    @RequestMapping(value = "/registerUserBySystemManager", method = RequestMethod.POST)//todo aviad
+    @RequestMapping(value = "/registerUserBySystemManager", method = RequestMethod.POST)
     public ResponseEntity<Response<String>> registerUserBySystemManager(@RequestBody Map<String, Object>  body) {
 
         String user = "";
@@ -157,7 +157,7 @@ public class UserController {
                 .body(service.changePassword((String)body.get("currUser"), (String)body.get("currPassword"), (String)body.get("newPassword"), (String)body.get("confirmPassword")));
     }
 
-    @RequestMapping(value = "/getAllUsers", method = RequestMethod.POST)//todo aviad
+    @RequestMapping(value = "/getAllUsers", method = RequestMethod.POST)
     public ResponseEntity<Response<List<UserDTO>>> getAllUsers(@RequestBody Map<String, Object>  body){
         return ResponseEntity.ok()
                 .body(service.getAllUsers((String)body.get("currUser")));
