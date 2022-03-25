@@ -6,15 +6,14 @@ import Communication.DTOs.UserDTO;
 import Communication.DTOs.WorkPlanDTO;
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
-import Domain.UsersManagment.User;
 import Domain.UsersManagment.UserStateEnum;
-import Domain.WorkPlan.Goal;
 import Service.UserServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import java.util.List;
 import java.util.Map;
 
@@ -50,13 +49,13 @@ public class UserController {
                 .body(service.logout((String)body.get("name")));
     }
 
-    @RequestMapping(value = "/registerUser", method = RequestMethod.POST)//todo aviad
+    @RequestMapping(value = "/registerUser", method = RequestMethod.POST)
     public ResponseEntity<Response<String>> registerUser(@RequestBody UserDTO user) {
         return ResponseEntity.ok()
                 .body(service.registerUser(user));
     }
 
-    @RequestMapping(value = "/registerUserBySystemManager", method = RequestMethod.POST)//todo aviad
+    @RequestMapping(value = "/registerUserBySystemManager", method = RequestMethod.POST)
     public ResponseEntity<Response<String>> registerUserBySystemManager(@RequestBody Map<String, Object>  body) {
         return ResponseEntity.ok()
                 .body(service.registerUserBySystemManager((UserDTO) body.get("user"), (String)body.get("optionalSupervisor")));
@@ -66,7 +65,7 @@ public class UserController {
     public ResponseEntity<Response<User>> registerUserBySystemManager(@RequestBody UserDTO user) {
         return ResponseEntity.ok()
                 .body(service.registerUserBySystemManager(user));
-    }*/ //todo fix dto so it adds opt sup
+    }*/
 
     @RequestMapping(value = "/removeUser", method = RequestMethod.POST)
     public ResponseEntity<Response<Boolean>> removeUser(@RequestBody Map<String, Object>  body){
@@ -148,7 +147,7 @@ public class UserController {
                 .body(service.changePassword((String)body.get("currUser"), (String)body.get("currPassword"), (String)body.get("newPassword"), (String)body.get("confirmPassword")));
     }
 
-    @RequestMapping(value = "/getAllUsers", method = RequestMethod.POST)//todo aviad
+    @RequestMapping(value = "/getAllUsers", method = RequestMethod.POST)
     public ResponseEntity<Response<List<UserDTO>>> getAllUsers(@RequestBody Map<String, Object>  body){
         return ResponseEntity.ok()
                 .body(service.getAllUsers((String)body.get("currUser")));
@@ -171,4 +170,11 @@ public class UserController {
         return ResponseEntity.ok()
                 .body(service.getUserInfo((String)body.get("currUser")));
     }
+
+    @RequestMapping(value = "/sendCoordinatorEmails", method = RequestMethod.POST)//todo aviad
+    public ResponseEntity<Response<Boolean>> sendCoordinatorEmails(@RequestBody Map<String, Object>  body) throws MessagingException {
+        return ResponseEntity.ok()
+                .body(service.sendCoordinatorEmails((String)body.get("currUser"), (String)body.get("surveyLink"), (String)body.get("surveyToken")));
+    }
+
 }

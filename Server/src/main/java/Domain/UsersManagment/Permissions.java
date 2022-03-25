@@ -14,6 +14,8 @@ public enum Permissions {
     FILL_MONTHLY_REPORT,
     VIEW_WORK_PLAN,
     ADD_BASKET,
+    REGISTER_COORDINATOR,
+    REMOVE_COORDINATOR,
 
     /** Supervisor User **/
     ASSIGN_SCHOOLS_TO_USER,
@@ -35,5 +37,5 @@ public enum Permissions {
     GET_ALL_SUPERVISORS,
     VIEW_ALL_USERS_INFO,
     REMOVE_USER,
-    CHANGE_PASSWORD_TO_USER
+    CHANGE_PASSWORD_TO_USER;
 }

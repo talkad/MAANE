@@ -7,8 +7,8 @@ import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.User;
 import Domain.UsersManagment.UserStateEnum;
-import Domain.WorkPlan.Goal;
 
+import javax.mail.MessagingException;
 import java.util.List;
 
 public interface UserService {
@@ -49,4 +49,5 @@ public interface UserService {
 
     Response<List<UserDTO>> getAllUsers(String currUser);
 
+    Response<Boolean> sendCoordinatorEmails(String currUser, String surveyLink, String surveyToken) throws MessagingException;
 }

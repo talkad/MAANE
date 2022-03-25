@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Appointment {//todo go over entire class and fit it to what we need
+public class Appointment {//todo is appointment relevant?
 
     private Map<String, List<String>> userAppointments;
 
@@ -33,7 +33,7 @@ public class Appointment {//todo go over entire class and fit it to what we need
         return new Response<>(false, false, "appointment already exists");
     }
 
-    public Response<String> removeSchoolAppointment(String name, int schoolId){
+    public Response<String> removeSchoolAppointment(String name, String schoolId){
         Response<String> response;
         if(this.userAppointments.containsKey(name) && this.userAppointments.get(name).contains(schoolId)) {
             response = new Response<>(name, false, "successfully removed school assignment");
@@ -48,11 +48,11 @@ public class Appointment {//todo go over entire class and fit it to what we need
     public Response<Boolean> removeAppointment(String name){
         Response<Boolean> response;
         if(this.userAppointments.containsKey(name)) {
-            response = new Response<>(true, false, "successfully removed school assignment");
+            response = new Response<>(true, false, "successfully removed appointment");
             this.userAppointments.remove(name);
         }
         else{
-            response = new Response<>(null, true, "Tried removing school assignment for a nonexistent appointment");
+            response = new Response<>(null, true, "Tried removing a nonexistent appointment");
         }
         return response;
     }
@@ -61,7 +61,7 @@ public class Appointment {//todo go over entire class and fit it to what we need
         return new Response<>(new Vector<>(this.userAppointments.keySet()), false, "successfully generated instructors details");
     }
 
-    public boolean contains(String appointee, int schoolId){
+    public boolean contains(String appointee, String schoolId){
         if(this.userAppointments.containsKey(appointee)){
             return this.userAppointments.get(appointee).contains(schoolId);
         }
@@ -86,7 +86,7 @@ public class Appointment {//todo go over entire class and fit it to what we need
 
     public List<String> getSchools(String appointee){
         if(contains(appointee)){
-            return userAppointments.get(appointee);//todo add schools to appointee list schools
+            return userAppointments.get(appointee);
         }
         return new Vector<>();//todo error
     }

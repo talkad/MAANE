@@ -1,7 +1,9 @@
 package AcceptanceTesting.Bridge;
 
 import Service.AnnualScheduleGeneratorServiceImpl;
+import Service.DataServiceImpl;
 import Service.Interfaces.AnnualScheduleGeneratorService;
+import Service.Interfaces.DataService;
 import Service.Interfaces.SurveyService;
 import Service.Interfaces.UserService;
 import Service.SurveyServiceImpl;
@@ -30,6 +32,15 @@ public abstract class Driver {
         ProxyBridgeSchedule bridge = new ProxyBridgeSchedule(); // proxy bridge
 
         AnnualScheduleGeneratorServiceImpl real = AnnualScheduleGeneratorServiceImpl.getInstance(); // real bridge
+        bridge.setRealBridge(real);
+
+        return bridge;
+    }
+
+    public static DataService getDataBridge(){
+        ProxyBridgeData bridge = new ProxyBridgeData(); // proxy bridge
+
+        DataServiceImpl real = DataServiceImpl.getInstance(); // real bridge
         bridge.setRealBridge(real);
 
         return bridge;

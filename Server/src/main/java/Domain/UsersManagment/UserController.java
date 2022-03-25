@@ -3,9 +3,12 @@ package Domain.UsersManagment;
 import Communication.DTOs.*;
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
+import Domain.DataManagement.DataController;
 import Domain.DataManagement.SurveyController;
+import Domain.EmailManagement.EmailController;
 import Domain.WorkPlan.GoalsManagement;
 
+import javax.mail.MessagingException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -17,6 +20,8 @@ public class UserController {
     private Security security;
     private GoalsManagement goalsManagement;
     private SurveyController surveyController;
+    private EmailController emailController;
+    private DataController dataController;
 
     private UserController() {
         this.availableId = new AtomicInteger(1);
@@ -25,6 +30,8 @@ public class UserController {
         this.registeredUsers = new ConcurrentHashMap<>();
         this.goalsManagement = GoalsManagement.getInstance();
         this.surveyController = SurveyController.getInstance();
+        this.emailController = EmailController.getInstance();
+        this.dataController = DataController.getInstance();
         adminBoot("admin", "admin");
     }
 
@@ -40,7 +47,19 @@ public class UserController {
         registeredUsers.get(instructor).getFirst().assignWorkPlan(workPlan, year);//todo validate and prevent errors
     }
 
-    public Response<List<String>> getCoordinatorEmails(String currUser) {//todo implement
+    public Response<Boolean> sendCoordinatorEmails(String currUser, String surveyLink, String surveyToken) throws MessagingException {
+        if (connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            if(user.isSupervisor().getResult()){
+                return emailController.sendEmail(user.getWorkField(),  surveyLink,  surveyToken);//todo verify existence of the link and survey token
+            }
+            else{
+                return new Response<>(null, true, "user isn't supervisor");
+            }
+        }
+        else {
+            return new Response<>(null, true, "user is not logged in");
+        }
     }
 
     private static class CreateSafeThreadSingleton {
@@ -165,14 +184,19 @@ public class UserController {
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             if (!userToRegister.startsWith("Guest") && !registeredUsers.containsKey(userToRegister)){
-                if(userStateEnum == UserStateEnum.SUPERVISOR){
-                    Response<User> result = user.registerSupervisor(userToRegister, userStateEnum, workField, firstName, lastName, email, phoneNumber, city);
-                    if (!result.isFailure()) {
-                        registeredUsers.put(userToRegister, new Pair<>(result.getResult(), security.sha256(password)));
-                        goalsManagement.addGoalsField(workField);
-                        return new Response<>(result.getResult().getUsername(), false, "Registration occurred");
+                if(userStateEnum == UserStateEnum.SUPERVISOR){//todo create supervising transfer
+                    if(onlyOneSupervisorPerWorkField(user, workField)) {
+                        Response<User> result = user.registerSupervisor(userToRegister, userStateEnum, workField, firstName, lastName, email, phoneNumber, city);
+                        if (!result.isFailure()) {
+                            registeredUsers.put(userToRegister, new Pair<>(result.getResult(), security.sha256(password)));
+                            goalsManagement.addGoalsField(workField);
+                            return new Response<>(result.getResult().getUsername(), false, "Registration occurred");
+                        }
+                        return new Response<>(null, result.isFailure(), result.getErrMsg());
                     }
-                    return new Response<>(null, result.isFailure(), result.getErrMsg());
+                    else{
+                       return new Response<>(null, true, "a supervisor was already appointed to the work field");
+                    }
                 }
                 else {
                     if(user.appointments.contains(optionalSupervisor)){
@@ -208,6 +232,19 @@ public class UserController {
         else {
             return new Response<>(null, true, "User not connected");
         }
+    }
+
+    private boolean onlyOneSupervisorPerWorkField(User user, String workField) {
+        Response<List<String>> appointees = user.getAppointments().getAppointees();
+        if(!appointees.isFailure()){
+            for (String appointee: appointees.getResult()) {
+                User u = registeredUsers.get(appointee).getFirst();
+                if(u.getWorkField().equals(workField)){
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     public Response<List<UserDTO>> getSupervisors(String currUser){
@@ -269,6 +306,9 @@ public class UserController {
             Response<Boolean> response = user.removeUser(userToRemove);
             if(!response.isFailure()){
                 if(registeredUsers.containsKey(userToRemove)){
+                    if(response.getResult()){
+                        findSupervisorAndRemoveAppointment(user, userToRemove);
+                    }
                     registeredUsers.remove(userToRemove);
                     connectedUsers.remove(userToRemove);
                     return response;
@@ -281,6 +321,25 @@ public class UserController {
         }
         else{
             return new Response<>(null, true, "User not connected");
+        }
+    }
+
+    private void findSupervisorAndRemoveAppointment(User user, String userToRemove) {//todo maybe return bool and check in removeUser
+        Response<List<String>> appointeesRes = user.getAppointees();
+        String userToRemoveWorkField = registeredUsers.get(userToRemove).getFirst().getWorkField();
+        if(!appointeesRes.isFailure()){
+            for (String appointee: appointeesRes.getResult()) {
+                if(registeredUsers.containsKey(appointee)){
+                    User u = registeredUsers.get(appointee).getFirst();
+                    if(u.getWorkField().equals(userToRemoveWorkField)){
+                        u.removeAppointment(userToRemove);
+                        if(connectedUsers.containsKey(u.getUsername())){
+                            connectedUsers.get(u.getUsername()).removeAppointment(userToRemove);
+                        }
+                        break;
+                    }
+                }
+            }
         }
     }
 
@@ -413,7 +472,7 @@ public class UserController {
                 return new Response<>(users, false, "");
             }
             else {
-                return new Response<>(null, true, viewAllUsersRes.getErrMsg());//todo should be isFailure false?
+                return new Response<>(null, true, viewAllUsersRes.getErrMsg());
             }
         }
         else{
@@ -715,4 +774,34 @@ public class UserController {
             return new Response<>(null, true, "User not connected");
         }
     }
+
+    public Response<UserDTO> assignCoordinator(String currUser, String workField, String firstName, String lastName, String email, String phoneNumber, String school){
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            Response<UserDTO> result = user.assignCoordinator(workField, school, firstName, lastName, email, phoneNumber);
+            if (!result.isFailure()) {
+                return new Response<>(result.getResult(), false, "assigned coordinator");
+            }
+            return new Response<>(null, result.isFailure(), result.getErrMsg());
+        }
+        else {
+            return new Response<>(null, true, "User not connected");
+        }
+    }
+
+    public Response<String> removeCoordinator(String currUser, String workField, String school){
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);//todo make sure when displaying coordinators only display the ones from the same workField
+            return user.removeCoordinator(school, workField);
+            /*if (!result.isFailure()) {
+                return new Response<>(re, false, "removed coordinator");
+            }
+            return new Response<>(null, result.isFailure(), result.getErrMsg());*/
+        }
+        else {
+            return new Response<>(null, true, "User not connected");
+        }
+    }
+
+
 }

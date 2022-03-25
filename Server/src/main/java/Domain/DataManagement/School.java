@@ -1,5 +1,10 @@
 package Domain.DataManagement;
 
+import Communication.DTOs.UserDTO;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 /*
  * Represents School that gets his information from exel
  */
@@ -7,19 +12,15 @@ public class School {
     String symbol;
     String manager;
     String managerPhone;
-    String coordinator;
-    String coordinatorPhone;
-    String coordinatorEmail;
+    Map<String, UserDTO> coordinators;
     String city;
     // status?
 
-    public School (String symbol, String manager, String managerPhone, String coordinator, String coordinatorPhone,String coordinatorEmail, String city){
+    public School (String symbol, String manager, String managerPhone, String city){
         this.symbol = symbol;
         this.manager = manager;
         this.managerPhone = managerPhone;
-        this.coordinator = coordinator;
-        this.coordinatorPhone = coordinatorPhone;
-        this.coordinatorEmail = coordinatorEmail;
+        coordinators = new ConcurrentHashMap<>();
         this.city = city;
     }
 
@@ -47,35 +48,19 @@ public class School {
         this.managerPhone = managerPhone;
     }
 
-    public String getCoordinator() {
-        return coordinator;
-    }
-
-    public void setCoordinator(String coordinator) {
-        this.coordinator = coordinator;
-    }
-
-    public String getCoordinatorPhone() {
-        return coordinatorPhone;
-    }
-
-    public void setCoordinatorPhone(String coordinatorPhone) {
-        this.coordinatorPhone = coordinatorPhone;
-    }
-
-    public String getCoordinatorEmail() {
-        return coordinatorEmail;
-    }
-
-    public void setCoordinatorEmail(String coordinatorEmail) {
-        this.coordinatorEmail = coordinatorEmail;
-    }
-
     public String getCity() {
         return city;
     }
 
     public void setCity(String city) {
         this.city = city;
+    }
+
+    public Map<String, UserDTO> getCoordinators() {
+        return coordinators;
+    }
+
+    public void setCoordinators(Map<String, UserDTO> coordinators) {
+        this.coordinators = coordinators;
     }
 }

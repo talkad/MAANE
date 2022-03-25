@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.mail.MessagingException;
 import java.util.List;
 
 @Service
@@ -125,7 +126,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Response<List<UserDTO>> getAppointedUsers(String currUser) {//todo implement on client side
+    public Response<List<UserDTO>> getAppointedUsers(String currUser) {
         Response<List<UserDTO>> res = UserController.getInstance().getAppointedUsers(currUser);
 
         if (res.isFailure())
@@ -245,6 +246,16 @@ public class UserServiceImpl implements UserService {
             log.error("failed to remove school from user by {}", currUser);
         else
             log.info("successfully removed schools from the user {} by {}", userToRemoveSchoolsName, currUser);
+        return res;
+    }
+
+    @Override
+    public Response<Boolean> sendCoordinatorEmails(String currUser, String surveyLink, String surveyToken) throws MessagingException {
+        Response<Boolean> res = UserController.getInstance().sendCoordinatorEmails(currUser, surveyLink, surveyToken);
+        if (res.isFailure())
+            log.error("failed send emails by {}", currUser);
+        else
+            log.info("{} successfully sent the emails", currUser);
         return res;
     }
 }

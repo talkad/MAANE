@@ -75,6 +75,21 @@ public class User {
         return userDTO;
     }
 
+
+    private UserDTO getCoordinatorDTO(String firstName, String lastName, String email, String phoneNumber, String school, String otherWorkField){
+        UserDTO userDTO = new UserDTO();
+        userDTO.setWorkField(otherWorkField);
+        userDTO.setFirstName(firstName);
+        userDTO.setLastName(lastName);
+        userDTO.setEmail(email);
+        userDTO.setUserStateEnum(UserStateEnum.COORDINATOR);
+        userDTO.setPhoneNumber(phoneNumber);
+        List<String> coordinatorSchool = new Vector<>();
+        coordinatorSchool.add(school);
+        userDTO.setSchools(coordinatorSchool);
+        return userDTO;
+    }
+
     private UserState inferUserType(UserStateEnum userStateEnum) {
         UserState state;
 
@@ -135,7 +150,16 @@ public class User {
     }
 
     public Response<Boolean> removeUser(String username) { //todo can a user even be appointed twice? if so needs to be removed from all personal that he was appointed by
-        if(this.state.allowed(Permissions.REMOVE_USER, this)) {
+        if(this.state.getStateEnum() == UserStateEnum.SYSTEM_MANAGER){
+            if (!appointments.contains(username)) {
+                return new Response<>(true, false, "removing a user by system manager");
+            }
+            else {
+                return new Response<>(false, true, "cannot delete supervisor, try transferring supervisor");
+            }
+        }
+
+        else if(this.state.allowed(Permissions.REMOVE_USER, this)) {
             if (appointments.contains(username)) {
                 Response<Boolean> response = appointments.removeAppointment(username);
                 if (!response.isFailure()) {
@@ -178,7 +202,7 @@ public class User {
     }
 
     public Response<User> registerSupervisor(String username, UserStateEnum registerUserStateEnum, String workField, String firstName, String lastName, String email, String phoneNumber, String city) {
-        if(this.state.allowed(Permissions.REGISTER_SUPERVISOR, this) && (registerUserStateEnum == UserStateEnum.SUPERVISOR) && !appointments.contains(username)){
+        if(this.state.allowed(Permissions.REGISTER_SUPERVISOR, this) && !appointments.contains(username)){
             appointments.addAppointment(username);
             return new Response<>(new User(username, registerUserStateEnum, workField, firstName, lastName, email, phoneNumber, city), false, "supervisor successfully assigned");
         }
@@ -238,7 +262,7 @@ public class User {
             return new Response<>(basketId, false, "user successfully added basket");
         }
         else {
-            return new Response<>(null, true, "user not allowed to add baskets");//todo is null ok?
+            return new Response<>(null, true, "user not allowed to add baskets");
         }
     }
 
@@ -263,7 +287,7 @@ public class User {
             }
         }
         else {
-            return new Response<>("", true, "user not allowed to remove basket");//todo result should be null?
+            return new Response<>(null, true, "user not allowed to remove basket");
         }
     }
 
@@ -510,6 +534,54 @@ public class User {
         }
         else {
             return new Response<>(null, true, "user not allowed to view info");
+        }
+    }
+
+    public Response<UserDTO> assignCoordinator(String workField, String school, String firstName, String lastName, String email, String phoneNumber) {
+        if (this.state.allowed(Permissions.REGISTER_COORDINATOR, this))
+        {
+            if(this.state.getStateEnum() == UserStateEnum.SUPERVISOR) {
+                return new Response<>(getCoordinatorDTO(firstName, lastName, email, phoneNumber, school, this.workField), false, "successfully assigned coordinator");
+            }
+            else if(this.state.getStateEnum() == UserStateEnum.INSTRUCTOR) {
+                if(this.schools.contains(school)){
+                    return new Response<>(getCoordinatorDTO(firstName, lastName, email, phoneNumber, school, this.workField), false, "successfully assigned coordinator");
+                }
+                else{
+                    return new Response<>(null, true, "user not allowed to assign coordinator to the given school");
+                }
+            }
+            else if(this.state.getStateEnum() == UserStateEnum.SYSTEM_MANAGER){
+                return new Response<>(getCoordinatorDTO(firstName, lastName, email, phoneNumber, school, workField), false, "successfully assigned coordinator");
+            }
+        }
+        return new Response<>(null, true, "user not allowed to assign coordinator");
+    }
+
+    public Response<String> removeCoordinator(String school, String workField) {
+        if (this.state.allowed(Permissions.REMOVE_COORDINATOR, this))
+        {
+            if(this.state.getStateEnum() == UserStateEnum.SUPERVISOR) {//todo tell aviad to remove the ability to assign workfield if u r not system manager
+                return new Response<>(this.workField, false, "successfully removed coordinator");
+            }
+            else if(this.state.getStateEnum() == UserStateEnum.INSTRUCTOR) {
+                if(this.schools.contains(school)){
+                    return new Response<>(this.workField, false, "successfully removed coordinator");
+                }
+                else{
+                    return new Response<>(null, true, "user not allowed to remove coordinator from the given school");
+                }
+            }
+            else if(this.state.getStateEnum() == UserStateEnum.SYSTEM_MANAGER){
+                return new Response<>(workField, false, "successfully removed coordinator");
+            }
+        }
+        return new Response<>(null, true, "user not allowed to remove coordinator");
+    }
+
+    public void removeAppointment(String userToRemove) {
+        if(this.appointments.contains(userToRemove)){
+            this.appointments.removeAppointment(userToRemove);
         }
     }
 }

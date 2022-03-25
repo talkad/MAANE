@@ -10,6 +10,7 @@ import Domain.UsersManagment.UserStateEnum;
 import Domain.WorkPlan.Goal;
 import Service.Interfaces.UserService;
 
+import javax.mail.MessagingException;
 import java.util.List;
 
 public class ProxyBridgeUser implements UserService {
@@ -196,6 +197,15 @@ public class ProxyBridgeUser implements UserService {
     public Response<List<UserDTO>> getAllUsers(String currUser) {
         if (real != null){
             return real.getAllUsers(currUser);
+        }
+
+        return new Response<>(null, true, "not implemented");
+    }
+
+    @Override
+    public Response<Boolean> sendCoordinatorEmails(String currUser, String surveyLink, String surveyToken) throws MessagingException {
+        if (real != null){
+            return real.sendCoordinatorEmails(currUser, surveyLink, surveyToken);
         }
 
         return new Response<>(null, true, "not implemented");

@@ -13,6 +13,8 @@ public class SystemManager extends Registered{
         allowedFunctions.add(Permissions.VIEW_ALL_USERS_INFO);
         allowedFunctions.add(Permissions.REGISTER_BY_ADMIN);//todo maybe useless
         allowedFunctions.add(Permissions.GET_ALL_SUPERVISORS);//todo maybe useless
+        allowedFunctions.add(Permissions.REGISTER_COORDINATOR);
+        allowedFunctions.add(Permissions.REMOVE_COORDINATOR);
     }
 
     @Override

@@ -285,4 +285,33 @@ public class UserControllerTest {
         List<UserDTO> allUsers = userController.getAllUsers(adminName).getResult();
         Assert.assertTrue(allUsers.size() == 3);
     }
+
+    @Test
+    public void assigningTwoSupervisorsToTheSameWorkFieldFail(){
+        UserController userController = UserController.getInstance();
+        String guestName = userController.addGuest().getResult();
+        String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
+        userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        Response<String> res = userController.registerUserBySystemManager(adminName, "sup2", "sup2", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        Assert.assertTrue(res.isFailure());
+        Assert.assertTrue(userController.getRegisteredUsers().containsKey("sup1"));
+        Assert.assertFalse(userController.getRegisteredUsers().containsKey("sup2"));
+    }
+
+    @Test
+    public void RemovingInstructorAssignedBySupervisorBySystemManagerSuccess(){
+        UserController userController = UserController.getInstance();
+        String guestName = userController.addGuest().getResult();
+        String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
+        userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        guestName = userController.logout(adminName).getResult();
+        userController.login(guestName, "sup1", "sup1");
+        userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "", "", "");
+        guestName = userController.logout("sup1").getResult();
+        userController.login(guestName, "admin", "admin");
+        Response<Boolean> res = userController.removeUser(adminName, "ins1");
+        Assert.assertFalse(res.isFailure());
+        Assert.assertFalse(userController.getRegisteredUsers().containsKey("ins1"));
+        Assert.assertFalse(userController.getRegisteredUsers().get("sup1").getFirst().getAppointees().getResult().contains("ins1"));
+    }
 }

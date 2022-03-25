@@ -7,7 +7,9 @@ public class Instructor extends Registered{
         super();
         this.allowedFunctions.add(Permissions.VIEW_WORK_PLAN);
         this.allowedFunctions.add(Permissions.ADD_BASKET);
-        allowedFunctions.add(Permissions.REMOVE_BASKET);
+        this.allowedFunctions.add(Permissions.REMOVE_BASKET);
+        this.allowedFunctions.add(Permissions.REGISTER_COORDINATOR);
+        this.allowedFunctions.add(Permissions.REMOVE_COORDINATOR);
     }
 
 
