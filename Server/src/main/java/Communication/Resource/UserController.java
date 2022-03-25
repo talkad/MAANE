@@ -50,7 +50,7 @@ public class UserController {
                 .body(service.logout((String)body.get("name")));
     }
 
-    @RequestMapping(value = "/registerUser", method = RequestMethod.POST)//todo aviad
+    @RequestMapping(value = "/registerUser", method = RequestMethod.POST)
     public ResponseEntity<Response<String>> registerUser(@RequestBody UserDTO user) {
         return ResponseEntity.ok()
                 .body(service.registerUser(user));
@@ -58,8 +58,17 @@ public class UserController {
 
     @RequestMapping(value = "/registerUserBySystemManager", method = RequestMethod.POST)//todo aviad
     public ResponseEntity<Response<String>> registerUserBySystemManager(@RequestBody Map<String, Object>  body) {
+
+        String user = "";
+
+        try {
+            user = objectMapper.writeValueAsString(body.get("user"));
+        }catch(Exception e){
+            System.out.println("This exception shouldn't occur");
+        }
+
         return ResponseEntity.ok()
-                .body(service.registerUserBySystemManager((UserDTO) body.get("user"), (String)body.get("optionalSupervisor")));
+                .body(service.registerUserBySystemManager(gson.fromJson(user, UserDTO.class), (String)body.get("optionalSupervisor")));
     }
 
 /*    @RequestMapping(value = "/registerUserBySystemManager", method = RequestMethod.POST)

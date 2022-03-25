@@ -122,6 +122,10 @@ export default function RegisterUsers(props){
         }
     },[]);
 
+    const refresh_supervisors = () => {
+        Connection.getInstance().getSupervisors(window.sessionStorage.getItem('username'), arrangeSupervisorsCallback)
+    }
+
     const arrangeSupervisorsCallback = (data) => {
         if (data.failure){
             // todo: needed?
@@ -214,6 +218,10 @@ export default function RegisterUsers(props){
                     supervisorChoiceUsername,
                     registerCallback
                 );
+
+                if (roleChoiceEnum === "SUPERVISOR") {
+                    refresh_supervisors();
+                }
             }
         }
     }
