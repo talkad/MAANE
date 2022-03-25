@@ -196,9 +196,14 @@ class Connection{
      * @param usernameToRegister the username of the registered user
      * @param password the password of the registered user
      * @param userStateEnum the userStateEnum of the registered user
+     * @param firstName the first name of the registered user
+     * @param lastName the last name of the registered user
+     * @param email the email of the registered user
+     * @param phoneNumber the phone number of the registered user
+     * @param city the city of the registered user
      * @param callback a callback function to call once there's a response
      */
-    registerUser(currUser, usernameToRegister, password, userStateEnum, callback){
+    registerUser(currUser, usernameToRegister, password, userStateEnum, firstName, lastName, email, phoneNumber, city, callback){
         this.sendPOST('/user/registerUser',
             {
                 currUser: currUser,
@@ -206,11 +211,11 @@ class Connection{
                 userToRegister: usernameToRegister,
                 password: password,
                 userStateEnum: userStateEnum,
-                firstName: "",
-                lastName: "",
-                email: "",
-                phoneNumber: "",
-                city: "",
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                phoneNumber: phoneNumber,
+                city: city,
                 schools: [],
             },
             callback)
@@ -222,11 +227,16 @@ class Connection{
      * @param usernameToRegister the username of the registered user
      * @param password the password of the registered user
      * @param userStateEnum the userStateEnum of the registered user
+     * @param firstName the first name of the registered user
+     * @param lastName the last name of the registered user
+     * @param email the email of the registered user
+     * @param phoneNumber the phone number of the registered user
+     * @param city the city of the registered user
      * @param fieldChoice if registering a supervisor, then his field is required
      * @param optionalSupervisor if registering an instructor or general supervisor, then his supervisor is required
      * @param callback a callback function to call once there's a response
      */
-    registerUserBySystemManager(currUser, usernameToRegister, password, userStateEnum, fieldChoice, optionalSupervisor, callback){
+    registerUserBySystemManager(currUser, usernameToRegister, password, userStateEnum, firstName, lastName, email, phoneNumber, city, fieldChoice, optionalSupervisor, callback){
         this.sendPOST('/user/registerUserBySystemManager',
             {
                 user: {
@@ -235,11 +245,11 @@ class Connection{
                     userToRegister: usernameToRegister,
                     password: password,
                     userStateEnum: userStateEnum,
-                    firstName: "",
-                    lastName: "",
-                    email: "",
-                    phoneNumber: "",
-                    city: "",
+                    firstName: firstName,
+                    lastName: lastName,
+                    email: email,
+                    phoneNumber: phoneNumber,
+                    city: city,
                     schools: [],
                 },
                 optionalSupervisor: optionalSupervisor,

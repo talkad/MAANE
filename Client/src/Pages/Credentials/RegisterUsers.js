@@ -1,6 +1,16 @@
 import React, {useEffect, useState} from "react";
 import './RegisterUsers.css'
-import {Alert, FormHelperText, IconButton, InputAdornment, InputLabel, MenuItem, Paper, Select} from "@mui/material";
+import {
+    Alert,
+    FormHelperText,
+    Grid,
+    IconButton,
+    InputAdornment,
+    InputLabel,
+    MenuItem,
+    Paper,
+    Select
+} from "@mui/material";
 import TextField from "@mui/material/TextField";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Visibility from "@mui/icons-material/Visibility";
@@ -10,6 +20,7 @@ import FormControl from "@mui/material/FormControl";
 import Connection from "../../Communication/Connection";
 import NotificationSnackbar from "../../CommonComponents/NotificationSnackbar";
 import {useNavigate} from "react-router-dom";
+import * as Space from 'react-spaces';
 
 // for offline testing
 const roles_system_manager = [
@@ -46,6 +57,11 @@ export default function RegisterUsers(props){
         username: '',
         password: '',
         workField: '',
+        firstName: '',
+        lastName: '',
+        email: '',
+        phoneNumber: '',
+        city: '',
     });
 
     // password
@@ -74,12 +90,21 @@ export default function RegisterUsers(props){
 
     // STRINGS
     const header_string = 'רישום משתמשים';
+
     const username_label_string = 'שם משתמש';
     const password_label_string = 'סיסמה';
+    const first_name_label_string = 'שם פרטי';
+    const last_name_label_string = 'שם משפחה';
+    const email_label_string = 'דוא"ל';
+    const phone_number_label_string = 'מספר טלפון';
+    const city_label_string = 'עיר מגורים';
+
     const register_button_string = 'בצע/י רישום';
     const finished_button_string = 'סיום';
+
     const work_field_button_string = 'תחום';
     const select_role_label_string = 'תפקיד';
+
     const select_supervisor_label_string = 'מפקח/ת';
     const select_role_helper_text_string = 'תפקיד המשתמש הנרשם';
     const select_supervisor_helper_text_string = 'המפקח/ת שתחתיו/ה המשתמש יוגדר';
@@ -129,6 +154,11 @@ export default function RegisterUsers(props){
                username: '',
                password: '',
                workField: '',
+               firstName: '',
+               lastName: '',
+               email: '',
+               phoneNumber: '',
+               city: '',
            });
            setRoleChoiceEnum('');
            setOpenSnackbar(true);
@@ -144,14 +174,13 @@ export default function RegisterUsers(props){
      */
     const handleSubmit = (event) => {
         event.preventDefault();
-        const data = new FormData(event.currentTarget);
 
-        if(data.get('username') === '' || data.get('password') === '' || roleChoiceEnum === undefined || roleChoiceEnum === '' ||
-            (roleChoiceEnum === 'SUPERVISOR' && data.get('workField') === '') ||
+        if(values.username === '' || values.password === '' || roleChoiceEnum === undefined || roleChoiceEnum === '' ||
+            (roleChoiceEnum === 'SUPERVISOR' && values.workField === '') ||
             (props.type === "SYSTEM_MANAGER" && (roleChoiceEnum === "INSTRUCTOR" || roleChoiceEnum === "GENERAL_SUPERVISOR") && supervisorChoiceUsername === '')){
 
             setShowError(true);
-            setErrorMessage('נא למלא את כל השדות')
+            setErrorMessage('נא למלא את כל שדות החובה')
         }
         else{
             setShowError(false);
@@ -159,19 +188,29 @@ export default function RegisterUsers(props){
             if (props.type === 'SUPERVISOR'){
                 Connection.getInstance().registerUser(
                     window.sessionStorage.getItem('username'),
-                    data.get('username'),
-                    data.get('password'),
+                    values.username,
+                    values.password,
                     roleChoiceEnum,
+                    values.firstName,
+                    values.lastName,
+                    values.email,
+                    values.phoneNumber,
+                    values.city,
                     registerCallback);
             }
 
             if (props.type === 'SYSTEM_MANAGER'){
                 Connection.getInstance().registerUserBySystemManager(
                     window.sessionStorage.getItem('username'),
-                    data.get('username'),
-                    data.get('password'),
+                    values.username,
+                    values.password,
                     roleChoiceEnum,
-                    data.get('workField'),
+                    values.firstName,
+                    values.lastName,
+                    values.email,
+                    values.phoneNumber,
+                    values.city,
+                    values.workField,
                     supervisorChoiceUsername,
                     registerCallback
                 );
@@ -196,122 +235,216 @@ export default function RegisterUsers(props){
     }
 
     return (
-        <div className="Register-users">
-            <h1>{header_string}</h1>
-            <Paper className="Register-users-paper" elevation={3}>
-                <Box className="Register-users-form" component="form" onSubmit={handleSubmit} noValidate sx={{mt: 1, }}>
-                    {/* username text field */}
-                    <TextField
-                        color="secondary"
-                        value={values.username}
-                        onChange={handleTextFieldsChange('username')}
-                        error={showError}
-                        margin="normal"
-                        variant="standard"
-                        required
-                        fullWidth
-                        id="username"
-                        label={ username_label_string }
-                        name="username"
-                        autoComplete="username"
-                        autoFocus
-                    />
+        <Space.Fill scrollable>
+            <div className="Register-users">
+                <h1>{header_string}</h1>
+                <Paper className="Register-users-paper" sx={{width: "25%"}} elevation={3}>
+                    {/*TODO: fix how this grid is behaving*/}
+                    <Grid container spacing={1} direction="column" alignItems="center" justifyContent="center">
 
-                    {/* password text field */}
-                    <TextField
-                        color="secondary"
-                        value={values.password}
-                        onChange={handleTextFieldsChange('password')}
-                        error={showError}
-                        margin="normal"
-                        variant="standard"
-                        required
-                        fullWidth
-                        name="password"
-                        label={password_label_string}
-                        type={showPassword ? 'text' : 'password'}
-                        id="password"
-                        autoComplete="current-password"
-                        InputProps={{
-                            endAdornment: (
-                                <InputAdornment position="end">
-                                    <IconButton
-                                        onClick={() => setShowPassword(!showPassword)}
-                                        onMouseDown={(event) => event.preventDefault()}
+                        <Grid item xs={12} sx={{marginRight: "3%", marginLeft: "3%", marginTop: "3%"}}>
+                            {/* username text field */}
+                            <TextField
+                                color="secondary"
+                                value={values.username}
+                                onChange={handleTextFieldsChange('username')}
+                                error={showError}
+                                margin="normal"
+                                variant="outlined"
+                                required
+                                fullWidth
+                                label={ username_label_string }
+                                name="username"
+                                autoComplete="username"
+                                autoFocus
+                            />
+                        </Grid>
+
+                        <Grid item xs={12} sx={{marginRight: "3%", marginLeft: "3%"}}>
+                            {/* password text field */}
+                            <TextField
+                                color="secondary"
+                                value={values.password}
+                                onChange={handleTextFieldsChange('password')}
+                                error={showError}
+                                margin="normal"
+                                variant="outlined"
+                                required
+                                fullWidth
+                                name="password"
+                                label={password_label_string}
+                                type={showPassword ? 'text' : 'password'}
+                                autoComplete="current-password"
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                onClick={() => setShowPassword(!showPassword)}
+                                                onMouseDown={(event) => event.preventDefault()}
+                                            >
+                                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+                        </Grid>
+
+                        <Grid item xs={12} sx={{marginRight: "3%", marginLeft: "3%"}}>
+                            {/*additional information fields*/}
+                            <Grid container spacing={1}>
+                                {/*first name*/}
+                                <Grid item xs={6}>
+                                    <TextField
+                                        color="secondary"
+                                        variant="outlined"
+                                        margin="normal"
+                                        label={first_name_label_string}
+                                        value={values.firstName}
+                                        onChange={handleTextFieldsChange('firstName')}
+                                        error={showError}
+                                        fullWidth
+                                        required
+                                    />
+                                </Grid>
+
+                                {/*last name*/}
+                                <Grid item xs={6}>
+                                    <TextField
+                                        color="secondary"
+                                        variant="outlined"
+                                        margin="normal"
+                                        label={last_name_label_string}
+                                        value={values.lastName}
+                                        onChange={handleTextFieldsChange('lastName')}
+                                        error={showError}
+                                        fullWidth
+                                        required
+                                    />
+                                </Grid>
+
+                                {/*email name*/}
+                                <Grid item xs={12}>
+                                    <TextField
+                                        color="secondary"
+                                        variant="outlined"
+                                        margin="normal"
+                                        label={email_label_string}
+                                        value={values.email}
+                                        onChange={handleTextFieldsChange('email')}
+                                        fullWidth
+                                    />
+                                </Grid>
+
+                                {/*phone number name*/}
+                                <Grid item xs={12}>
+                                    <TextField
+                                        color="secondary"
+                                        variant="outlined"
+                                        margin="normal"
+                                        label={phone_number_label_string}
+                                        value={values.phoneNumber}
+                                        onChange={handleTextFieldsChange('phoneNumber')}
+                                        fullWidth
+                                    />
+                                </Grid>
+
+                                {/*city name*/}
+                                <Grid item xs={12}>
+                                    <TextField
+                                        color="secondary"
+                                        variant="outlined"
+                                        margin="normal"
+                                        label={city_label_string}
+                                        value={values.city}
+                                        onChange={handleTextFieldsChange('city')}
+                                        fullWidth
+                                    />
+                                </Grid>
+                            </Grid>
+                        </Grid>
+
+                        <Grid item xs={12}>
+                            {/* role choice form */}
+                            <FormControl color="secondary" sx={{ m: 1, minWidth: 120 }}>
+                                <InputLabel id="role-select-helper-label">{select_role_label_string}</InputLabel>
+                                <Select
+                                    labelId="role-select-helper-label"
+                                    value={roleChoiceEnum}
+                                    label={select_role_label_string}
+                                    onChange={handleRoleChoiceChange}
+                                >
+                                    {roles.map(x => <MenuItem value={x['roleEnum']}>{x['role']}</MenuItem>)}
+                                </Select>
+                                <FormHelperText>{select_role_helper_text_string}</FormHelperText>
+                            </FormControl>
+                        </Grid>
+
+                        <Grid item xs={12}>
+                            {/*optional select if the user is admin and want to register a non-supervisor user under an existing supervisor*/}
+                            {props.type === 'SYSTEM_MANAGER' && (roleChoiceEnum === "INSTRUCTOR" || roleChoiceEnum === "GENERAL_SUPERVISOR") &&
+                                <FormControl color="secondary" sx={{ m: 1, minWidth: 120 }}>
+                                    <InputLabel id="supervisor-select-helper-label">{select_supervisor_label_string}</InputLabel>
+                                    <Select
+                                        labelId="supervisor-select-helper-label"
+                                        value={supervisorChoiceUsername}
+                                        label={select_supervisor_label_string}
+                                        onChange={handleSupervisorChoiceChange}
                                     >
-                                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                                    </IconButton>
-                                </InputAdornment>
-                            ),
-                        }}
-                    />
+                                        {supervisors.map(x => <MenuItem value={x['currUser']}>{x['firstName'] + " " + x['lastName'] + "בתחום " + x['workField']}</MenuItem>)}
+                                    </Select>
+                                    <FormHelperText>{select_supervisor_helper_text_string}</FormHelperText>
+                                </FormControl>}
+                        </Grid>
 
-                    {/* role choice form */}
-                    <FormControl color="secondary" sx={{ m: 1, minWidth: 120 }}>
-                        <InputLabel id="role-select-helper-label">{select_role_label_string}</InputLabel>
-                        <Select
-                            labelId="role-select-helper-label"
-                            value={roleChoiceEnum}
-                            label={select_role_label_string}
-                            onChange={handleRoleChoiceChange}
-                        >
-                            {roles.map(x => <MenuItem value={x['roleEnum']}>{x['role']}</MenuItem>)}
-                        </Select>
-                        <FormHelperText>{select_role_helper_text_string}</FormHelperText>
-                    </FormControl>
 
-                    {/*optional select if the user is admin and want to register a non-supervisor user under an existing supervisor*/}
-                    {props.type === 'SYSTEM_MANAGER' && (roleChoiceEnum === "INSTRUCTOR" || roleChoiceEnum === "GENERAL_SUPERVISOR") &&
-                        <FormControl color="secondary" sx={{ m: 1, minWidth: 120 }}>
-                        <InputLabel id="supervisor-select-helper-label">{select_supervisor_label_string}</InputLabel>
-                        <Select
-                            labelId="supervisor-select-helper-label"
-                            value={supervisorChoiceUsername}
-                            label={select_supervisor_label_string}
-                            onChange={handleSupervisorChoiceChange}
-                        >
-                            {supervisors.map(x => <MenuItem value={x['currUser']}>{x['firstName'] + "בתחום " + x['workField']}</MenuItem>)}
-                        </Select>
-                        <FormHelperText>{select_supervisor_helper_text_string}</FormHelperText>
-                    </FormControl>}
+                        <Grid item xs={12}>
+                            {/*optional text-field if the user chose to register a supervisor*/}
+                            {roleChoiceEnum === "SUPERVISOR" &&
+                                <TextField
+                                    color="secondary"
+                                    value={values.workField}
+                                    onChange={handleTextFieldsChange('workField')}
+                                    error={showError}
+                                    margin="normal"
+                                    variant="outlined"
+                                    required
+                                    fullWidth
+                                    label={ work_field_button_string }
+                                />}
+                        </Grid>
 
-                    {/*optional text-field if the user chose to register a supervisor*/}
-                    {roleChoiceEnum === "SUPERVISOR" &&
-                        <TextField
-                            color="secondary"
-                            value={values.workField}
-                            onChange={handleTextFieldsChange('workField')}
-                            error={showError}
-                            margin="normal"
-                            variant="standard"
-                            required
-                            fullWidth
-                            id="workField"
-                            label={ work_field_button_string }
-                            name="workField"
-                        />}
+                        <Grid item xs={12}>
+                            {/*alert for errors*/}
+                            {showError && <Alert severity="error">{errorMessage}</Alert>}
+                        </Grid>
 
-                    {/*alert for errors*/}
-                    {showError && <Alert severity="error">{errorMessage}</Alert>}
+                        <Grid item xs={12}>
+                            {/* submit register button */}
+                            <Button
+                                color="secondary"
+                                type="submit"
+                                fullWidth
+                                variant="contained"
+                                onClick={handleSubmit}
+                                sx={{ mt: 3, mb: 2, width: "50%" }}
+                            >
+                                {register_button_string}
+                            </Button>
+                        </Grid>
 
-                    {/* submit register button */}
-                    <Button
-                        color="secondary"
-                        type="submit"
-                        fullWidth
-                        variant="contained"
-                        sx={{ mt: 3, mb: 2 }}
-                    >
-                        {register_button_string}
-                    </Button>
-                    <Button sx={{marginBottom: 1, width: "50%"}} color='success' fullWidth variant="contained" onClick={() => navigate(-1)}>{finished_button_string}</Button>
-                </Box>
-            </Paper>
-            <NotificationSnackbar
-                open={openSnackbar}
-                setOpen={setOpenSnackbar}
-                severity={snackbarSeverity}
-                message={snackbarMessage}/>
-        </div>
+                        <Grid item xs={12}>
+                            <Button sx={{marginBottom: 1, width: "50%"}} color='success' fullWidth variant="contained" onClick={() => navigate(-1)}>{finished_button_string}</Button>
+                        </Grid>
+
+                    </Grid>
+                </Paper>
+                <NotificationSnackbar
+                    open={openSnackbar}
+                    setOpen={setOpenSnackbar}
+                    severity={snackbarSeverity}
+                    message={snackbarMessage}/>
+            </div>
+        </Space.Fill>
     )
 }

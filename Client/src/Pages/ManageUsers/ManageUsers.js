@@ -38,7 +38,7 @@ import AddIcon from '@mui/icons-material/Add';
 /**
  * a function to return an object of the data the tables accepts
  * @param username username of the user
- * @param name the name of the user
+ * @param name the full name of the user
  * @param role the role of the user
  * @param email the email of user
  * @param phoneNumber the phone number of the user
@@ -367,8 +367,8 @@ function EditSchoolsDialog(props){
 
 // data for offline testing
 const rows = [
-    createData("Ronit", 'רונית', "מפקחת", "ronit@post.bgu.ac.il", "000-123-4567", "פתח תקווה", ["מקיף ז'", "רגר"]),
-    createData("Shoshi", 'שושי', "מדריכה", "shoshi@post.bgu.ac.il", "002-123-4567", "ירוחם", ["יהלום", "שהם"]),
+    createData("Ronit", 'רונית שושי', "מפקחת", "ronit@post.bgu.ac.il", "000-123-4567", "פתח תקווה", ["מקיף ז'", "רגר"]),
+    createData("Shoshi", 'שושי רונית', "מדריכה", "shoshi@post.bgu.ac.il", "002-123-4567", "ירוחם", ["יהלום", "שהם"]),
 ];
 
 export default function ManageUsers(props){
@@ -438,7 +438,7 @@ export default function ManageUsers(props){
 
                 rows.push(createData(
                     row.currUser,
-                    row.firstName,
+                    row.firstName + " " + row.lastName,
                     role,
                     row.email,
                     row.phoneNumber,
