@@ -1,5 +1,8 @@
 package Communication.maane;
 
+import Communication.DTOs.UserDTO;
+import Service.Interfaces.UserService;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -10,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class MaaneApplication {
 
 	public static void main(String[] args) {
+		System.out.println("asdddddddddddddd");
 		SpringApplication.run(MaaneApplication.class, args);
 	}
 
@@ -17,6 +21,12 @@ public class MaaneApplication {
 	PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
+
+//	CommandLineRunner run(UserService service){
+//		return args -> {
+//			service.registerUser(new UserDTO());
+//		};
+//	}
 
 //    @Bean
 //    public EmbeddedServletContainerFactory createServletContainer() {

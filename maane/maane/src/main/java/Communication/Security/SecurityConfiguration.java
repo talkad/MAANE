@@ -25,11 +25,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
+        System.out.println("ccccccccccccc");
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
+        System.out.println("bbbbbbbbbbbbbbb");
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.authorizeHttpRequests().anyRequest().permitAll();
         http.addFilter(new AuthenticationFilter(authenticationManagerBean()));
@@ -38,6 +40,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception{
+        System.out.println("ddddddddddddddddd");
         return super.authenticationManagerBean();
     }
 }

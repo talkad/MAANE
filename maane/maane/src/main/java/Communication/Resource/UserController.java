@@ -36,11 +36,11 @@ public class UserController {
                 .body(service.addGuest());
     }
 
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public ResponseEntity<Response<Pair<String, UserStateEnum>>> login(@RequestBody Map<String, Object> body){
-        return ResponseEntity.ok()
-                .body(service.login((String)body.get("currUser"), (String)body.get("userToLogin"), (String)body.get("password")));
-    }
+//    @RequestMapping(value = "/login", method = RequestMethod.POST)
+//    public ResponseEntity<Response<Pair<String, UserStateEnum>>> login(@RequestBody Map<String, Object> body){
+//        return ResponseEntity.ok()
+//                .body(service.login((String)body.get("currUser"), (String)body.get("userToLogin"), (String)body.get("password")));
+//    }
 //
 //    @RequestMapping(value = "/logout", method = RequestMethod.POST)
 //    public ResponseEntity<Response<String>> logout(@RequestBody Map<String, Object>  body){

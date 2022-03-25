@@ -35,7 +35,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-
+        System.out.println("xxxxxxxxxxxxxxxxxx");
         log.info("user {} attempts authentication", username);
 
         UsernamePasswordAuthenticationToken authenticationToken= new UsernamePasswordAuthenticationToken(username, password);
@@ -61,6 +61,8 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                 .withIssuer(request.getRequestURL().toString())
                 .withClaim("roles", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining()))
                 .sign(algorithm);
+
+        System.out.println("wwwwwwwwwwwwwwwwwwwwwwwwwwww");
 
         response.setHeader("accessToken", accessToken);
         response.setHeader("refreshToken", refreshToken);

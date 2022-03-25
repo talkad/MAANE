@@ -14,6 +14,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,12 +28,38 @@ import java.util.List;
 @Slf4j
 public class UserServiceImpl implements UserService, UserDetailsService {
 
+    private final PasswordEncoder passwordEncoder;
+
     private static class CreateSafeThreadSingleton {
         private static final UserServiceImpl INSTANCE = new UserServiceImpl();
     }
 
+    public UserServiceImpl(){
+        passwordEncoder = new BCryptPasswordEncoder();
+    }
+
     public static UserServiceImpl getInstance() {
         return CreateSafeThreadSingleton.INSTANCE;
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Response<User> userRes = UserController.getInstance().getUserRes(username);
+        Response<String> pwdRes = UserController.getInstance().getPassword(username);
+        User user = userRes.getResult();
+        System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaa");
+        if(userRes.isFailure() || pwdRes.isFailure()){
+            log.error("user not found");
+            throw new UsernameNotFoundException("user not found");
+        }
+        else {
+            log.info("user {} found", username);
+        }
+
+        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority(user.getState().getStateEnum().getState()));
+
+        return new org.springframework.security.core.userdetails.User(user.getUsername(), pwdRes.getResult(), authorities);
     }
 
     @Override
@@ -84,8 +112,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public Response<String> registerUser(UserDTO user) {
-        Response<String> res = UserController.getInstance().registerUser(user.getCurrUser(), user.getUserToRegister(), user.getPassword(),
-                user.getUserStateEnum(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getPhoneNumber(), user.getCity());
+        Response<String> res = UserController.getInstance().registerUser(user.getCurrUser(),
+                user.getUserToRegister(), passwordEncoder.encode(user.getPassword()), user.getUserStateEnum(), user.getFirstName(),
+                user.getLastName(), user.getEmail(), user.getPhoneNumber(), user.getCity());
 
         if (res.isFailure())
             log.error("failed to register user {}", user.getUserToRegister());
@@ -255,24 +284,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return res;
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Response<User> userRes = UserController.getInstance().getUserRes(username);
-        Response<String> pwdRes = UserController.getInstance().getPassword(username);
-        User user = userRes.getResult();
 
-        if(userRes.isFailure() || pwdRes.isFailure()){
-            log.error("user not found");
-            throw new UsernameNotFoundException("user not found");
-        }
-        else {
-            log.info("user {} found", username);
-        }
-
-        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(user.getState().getStateEnum().getState()));
-
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), pwdRes.getResult(), authorities);
-    }
 
 }
