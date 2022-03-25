@@ -15,7 +15,6 @@ import TextField from "@mui/material/TextField";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Visibility from "@mui/icons-material/Visibility";
 import Button from "@mui/material/Button";
-import Box from "@mui/material/Box";
 import FormControl from "@mui/material/FormControl";
 import Connection from "../../Communication/Connection";
 import NotificationSnackbar from "../../CommonComponents/NotificationSnackbar";

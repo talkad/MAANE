@@ -1,5 +1,5 @@
 import './App.css';
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import { Routes, Route } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
@@ -19,7 +19,6 @@ import WorkReport from "./Pages/WorkReport/WorkReport";
 import {
     AppBar, Backdrop,
     Button,
-    Divider,
     Drawer, IconButton,
     List,
     ListItem,

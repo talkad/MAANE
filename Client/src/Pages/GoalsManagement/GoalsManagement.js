@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import './GoalsManagement.css'
 import * as Space from 'react-spaces';
-import {
-    Accordion, AccordionDetails, AccordionSummary, Alert,
+import { Alert,
     Box, Button,
-    Collapse, Dialog, DialogTitle, FormControl, Grid, Grow,
+    Collapse, Dialog, DialogTitle, FormControl, Grid,
     IconButton, InputLabel, List, ListItem, ListItemText, MenuItem,
     Paper, Select, Snackbar, Stack,
     Table,

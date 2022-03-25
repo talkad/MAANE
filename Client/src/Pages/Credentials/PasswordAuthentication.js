@@ -3,8 +3,6 @@ import * as Space from 'react-spaces';
 import {
     Alert,
     Button,
-    Card,
-    CardContent,
     Grid,
     IconButton,
     InputAdornment,
@@ -12,7 +10,6 @@ import {
     Stack,
     TextField
 } from "@mui/material";
-import Box from "@mui/material/Box";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Visibility from "@mui/icons-material/Visibility";
 import {useNavigate} from "react-router-dom";
