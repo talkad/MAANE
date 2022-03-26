@@ -26,7 +26,8 @@ import java.util.List;
 @Service
 @Transactional
 @Slf4j
-public class UserServiceImpl implements UserService, UserDetailsService {
+//public class UserServiceImpl implements UserService, UserDetailsService {
+public class UserServiceImpl implements UserService{
 
     private final PasswordEncoder passwordEncoder;
 
@@ -42,25 +43,25 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return CreateSafeThreadSingleton.INSTANCE;
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Response<User> userRes = UserController.getInstance().getUserRes(username);
-        Response<String> pwdRes = UserController.getInstance().getPassword(username);
-        User user = userRes.getResult();
-        System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaa");
-        if(userRes.isFailure() || pwdRes.isFailure()){
-            log.error("user not found");
-            throw new UsernameNotFoundException("user not found");
-        }
-        else {
-            log.info("user {} found", username);
-        }
-
-        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(user.getState().getStateEnum().getState()));
-
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), pwdRes.getResult(), authorities);
-    }
+//    @Override
+//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+//        Response<User> userRes = UserController.getInstance().getUserRes(username);
+//        Response<String> pwdRes = UserController.getInstance().getPassword(username);
+//        User user = userRes.getResult();
+//        System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaa");
+//        if(userRes.isFailure() || pwdRes.isFailure()){
+//            log.error("user not found");
+//            throw new UsernameNotFoundException("user not found");
+//        }
+//        else {
+//            log.info("user {} found", username);
+//        }
+//
+//        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+//        authorities.add(new SimpleGrantedAuthority(user.getState().getStateEnum().getState()));
+//
+//        return new org.springframework.security.core.userdetails.User(user.getUsername(), pwdRes.getResult(), authorities);
+//    }
 
     @Override
     public Response<String> addGuest() {

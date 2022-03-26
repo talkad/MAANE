@@ -4,6 +4,7 @@ import Communication.DTOs.GoalDTO;
 import Communication.DTOs.SchoolManagementDTO;
 import Communication.DTOs.UserDTO;
 import Communication.DTOs.WorkPlanDTO;
+import Communication.UserPersistency.Entity.UserInfo;
 import Communication.UserPersistency.Service.UserInfoService;
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
@@ -33,8 +34,12 @@ public class UserController {
 
     @GetMapping("/test")
     public ResponseEntity<String> testSSL(){
-        System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaa");
         return ResponseEntity.ok().body("hello world");
+    }
+
+    @GetMapping("/test2")
+    public ResponseEntity<UserInfo> test2(){
+        return ResponseEntity.ok().body(userInfoService.getUser("tal"));
     }
 
 //    @GetMapping("/startup")

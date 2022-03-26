@@ -1,7 +1,13 @@
 package Communication;
 
+import Communication.UserPersistency.Entity.UserInfo;
+import Communication.UserPersistency.Service.UserInfoService;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootApplication
 public class MaaneApplication {
@@ -10,16 +16,18 @@ public class MaaneApplication {
 		SpringApplication.run(MaaneApplication.class, args);
 	}
 
-//	@Bean
-//	PasswordEncoder passwordEncoder(){
-//        return new BCryptPasswordEncoder();
-//    }
+	@Bean
+	PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder();
+    }
 
-//	CommandLineRunner run(UserService service){
-//		return args -> {
-//			service.registerUser(new UserDTO());
-//		};
-//	}
+	@Bean
+	CommandLineRunner run(UserInfoService service){
+		return args -> {
+			service.saveUserInfo(new UserInfo("tal", "1234", "supervisor"));
+			service.saveUserInfo(new UserInfo("shoshi", "1234", "admin"));
+		};
+	}
 
 //    @Bean
 //    public EmbeddedServletContainerFactory createServletContainer() {
