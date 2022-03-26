@@ -25,20 +25,28 @@ public class SurveyQueries {
     }
 
     private static void insertQuestions (int surveyId, List<String> questions) throws SQLException {
-        String sql = "INSERT INTO \"Questions\" (survey_id, question) VALUES (?, ?)";
+        String sql = "INSERT INTO \"Questions\" (survey_id, index, question) VALUES (?, ?, ?)";
         PreparedStatement preparedStatement = Connect.conn.prepareStatement(sql);
         for (String question : questions){
             preparedStatement.setInt(1, surveyId);
-            preparedStatement.setString(2, question);
+            preparedStatement.setInt(2, questions.indexOf(question));
+            preparedStatement.setString(3, question);
             preparedStatement.executeUpdate();
         }
     }
 
-    private static void insertAnswers (int surveyId, List<List<String>> answers, List<AnswerType> answerTypes){
-//        for (String answers : questions){
-//            preparedStatement.setInt(1, surveyId);
-//            preparedStatement.setString(2, question);
-//            preparedStatement.executeUpdate();
-//        }
+    private static void insertAnswers (int surveyId, List<List<String>> answers, List<AnswerType> answerTypes) throws SQLException {
+        String sql = "INSERT INTO \"Answers\" (survey_id, question_index, answer_index, answer_type, answer) VALUES (?, ?, ?, ?, ?)";
+        PreparedStatement preparedStatement = Connect.conn.prepareStatement(sql);
+        for (List<String> answersList : answers){
+            for (String answer: answersList) {
+                preparedStatement.setInt(1, surveyId);
+                preparedStatement.setInt(2, answers.indexOf(answersList));
+                preparedStatement.setInt(3, answersList.indexOf(answer));
+                preparedStatement.setString(4, answerTypes.get(answers.indexOf(answersList)).toString());
+                preparedStatement.setString(5, answer);
+                preparedStatement.executeUpdate();
+            }
+        }
     }
 }

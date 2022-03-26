@@ -1,6 +1,7 @@
 package UnitTesting.DataBase;
 
 import Communication.DTOs.SurveyDTO;
+import Domain.DataManagement.AnswerState.AnswerType;
 import Domain.DataManagement.Survey;
 import Persistence.SurveyQueries;
 import org.junit.Assert;
@@ -18,8 +19,19 @@ public class QueriesTests {
     @Before
     public void setUp(){
         List <String> questions = new LinkedList<>();
-        questions.add("q1"); questions.add("q2"); questions.add("q3");
-        surveyDTO = new SurveyDTO(2,"survey2", "some desc", questions, null, null);
+        questions.add("q1"); questions.add("q2");
+
+        List <AnswerType> answerTypes = new LinkedList<>();
+        answerTypes.add(AnswerType.NUMERIC_ANSWER); answerTypes.add(AnswerType.OPEN_ANSWER);
+
+        List <List<String>> answers = new LinkedList<>();
+        List <String> answers1 = new LinkedList<>();
+        answers1.add("10"); answers1.add("20"); answers1.add("30"); answers1.add("40");
+        List <String> answers2 = new LinkedList<>();
+        answers2.add("aa"); answers2.add("bb"); answers2.add("cc"); answers2.add("dd");
+        answers.add(answers1); answers.add(answers2);
+
+        surveyDTO = new SurveyDTO(1,"survey2", "some desc", questions, answers, answerTypes);
     }
 
     @Test
