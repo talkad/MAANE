@@ -4,12 +4,14 @@ import Communication.DTOs.GoalDTO;
 import Communication.DTOs.SchoolManagementDTO;
 import Communication.DTOs.UserDTO;
 import Communication.DTOs.WorkPlanDTO;
+import Communication.UserPersistency.Service.UserInfoService;
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.UserStateEnum;
 import Service.UserServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,24 +20,29 @@ import java.util.Map;
 
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/user")
 //@CrossOrigin(origins = "*", maxAge = 3600)
 public class UserController {
-    ObjectMapper objectMapper = new ObjectMapper();
-    private final Gson gson = new Gson();
-    private static final UserServiceImpl service = UserServiceImpl.getInstance();
 
-    @RequestMapping(value="/test")
-    public String testSSL(){
-        return "success";
+//    ObjectMapper objectMapper = new ObjectMapper();
+//    private final Gson gson = new Gson();
+//    private static final UserServiceImpl service = UserServiceImpl.getInstance();
+
+    private final UserInfoService userInfoService;
+
+    @GetMapping("/test")
+    public ResponseEntity<String> testSSL(){
+        System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaa");
+        return ResponseEntity.ok().body("hello world");
     }
 
-    @GetMapping("/startup")
-    public ResponseEntity<Response<String>> startup(){
-        return ResponseEntity.ok()
-                .body(service.addGuest());
-    }
-
+//    @GetMapping("/startup")
+//    public ResponseEntity<Response<String>> startup(){
+//        return ResponseEntity.ok()
+//                .body(service.addGuest());
+//    }
+//
 //    @RequestMapping(value = "/login", method = RequestMethod.POST)
 //    public ResponseEntity<Response<Pair<String, UserStateEnum>>> login(@RequestBody Map<String, Object> body){
 //        return ResponseEntity.ok()

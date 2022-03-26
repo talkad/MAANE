@@ -1,6 +1,6 @@
-package Communication.UserPersistency.service;
+package Communication.UserPersistency.Service;
 
-import Communication.UserPersistency.UserInfo;
+import Communication.UserPersistency.Entity.UserInfo;
 
 public interface UserInfoService {
 
