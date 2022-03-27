@@ -258,4 +258,14 @@ public class UserServiceImpl implements UserService {
             log.info("{} successfully sent the emails", currUser);
         return res;
     }
+
+    @Override
+    public Response<Boolean> transferSupervision(String currUser, String currSupervisor, String newSupervisor, String password, String firstName, String lastName, String email, String phoneNumber, String city) {
+        Response<Boolean> res = UserController.getInstance().transferSupervision(currUser, currSupervisor, newSupervisor, password, firstName, lastName, email, phoneNumber, city);
+        if (res.isFailure())
+            log.error("failed to transfer supervision from {} to {} by {}", currSupervisor,  newSupervisor, currUser);
+        else
+            log.info("successfully transferred supervision from {} to {} by {}", currSupervisor,  newSupervisor, currUser);
+        return res;
+    }
 }

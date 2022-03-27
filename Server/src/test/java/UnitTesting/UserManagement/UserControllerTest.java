@@ -283,7 +283,7 @@ public class UserControllerTest {
         guestName = userController.logout("sup1").getResult();
         userController.login(guestName, adminName, adminName);
         List<UserDTO> allUsers = userController.getAllUsers(adminName).getResult();
-        Assert.assertTrue(allUsers.size() == 3);
+        Assert.assertTrue(allUsers.size() == 3);//todo probably need to change to fit mock db
     }
 
     @Test
@@ -313,5 +313,38 @@ public class UserControllerTest {
         Assert.assertFalse(res.isFailure());
         Assert.assertFalse(userController.getRegisteredUsers().containsKey("ins1"));
         Assert.assertFalse(userController.getRegisteredUsers().get("sup1").getFirst().getAppointees().getResult().contains("ins1"));
+    }
+
+    @Test
+    public void transferSupervisionSuccess(){
+        UserController userController = UserController.getInstance();
+        String guestName = userController.addGuest().getResult();
+        String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
+        userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        guestName = userController.logout(adminName).getResult();
+        userController.login(guestName, "sup1", "sup1");
+        userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "", "", "");
+        guestName = userController.logout("sup1").getResult();
+        userController.login(guestName, adminName, adminName);
+        Response<Boolean> res = userController.transferSupervision(adminName, "sup1", "new_sup", "new_sup", "", "", "", "", "");
+        Assert.assertFalse(res.isFailure());
+        Assert.assertTrue(userController.getRegisteredUsers().containsKey("new_sup"));
+        Assert.assertFalse(userController.getRegisteredUsers().containsKey("sup1"));
+        Assert.assertTrue(userController.getRegisteredUsers().get("new_sup").getFirst().getAppointees().getResult().contains("ins1"));
+    }
+
+    @Test
+    public void transferSupervisionFail(){
+        UserController userController = UserController.getInstance();
+        String guestName = userController.addGuest().getResult();
+        String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
+        userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        guestName = userController.logout(adminName).getResult();
+        userController.login(guestName, "sup1", "sup1");
+        userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "", "", "");
+        guestName = userController.logout("sup1").getResult();
+        userController.login(guestName, adminName, adminName);
+        Response<Boolean> res = userController.transferSupervision(adminName, "sup1", "sup1", "new_sup", "", "", "", "", "");
+        Assert.assertTrue(res.isFailure());
     }
 }

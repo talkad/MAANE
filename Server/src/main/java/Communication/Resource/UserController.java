@@ -177,4 +177,9 @@ public class UserController {
                 .body(service.sendCoordinatorEmails((String)body.get("currUser"), (String)body.get("surveyLink"), (String)body.get("surveyToken")));
     }
 
+    @RequestMapping(value = "/transferSupervision", method = RequestMethod.POST)//todo aviad
+    public ResponseEntity<Response<Boolean>> transferSupervision(@RequestBody Map<String, Object>  body){
+        return ResponseEntity.ok()
+                .body(service.transferSupervision((String)body.get("currUser"), (String)body.get("currSupervisor"), (String)body.get("newSupervisor"), (String)body.get("password"), (String)body.get("firstName"), (String)body.get("lastName"), (String)body.get("email"), (String)body.get("phoneNumber"), (String)body.get("city")));
+    }
 }

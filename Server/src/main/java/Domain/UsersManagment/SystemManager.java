@@ -15,6 +15,7 @@ public class SystemManager extends Registered{
         allowedFunctions.add(Permissions.GET_ALL_SUPERVISORS);//todo maybe useless
         allowedFunctions.add(Permissions.REGISTER_COORDINATOR);
         allowedFunctions.add(Permissions.REMOVE_COORDINATOR);
+        allowedFunctions.add(Permissions.TRANSFER_SUPERVISION);
     }
 
     @Override

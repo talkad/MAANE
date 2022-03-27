@@ -50,4 +50,6 @@ public interface UserService {
     Response<List<UserDTO>> getAllUsers(String currUser);
 
     Response<Boolean> sendCoordinatorEmails(String currUser, String surveyLink, String surveyToken) throws MessagingException;
+
+    Response<Boolean> transferSupervision(String currUser, String currSupervisor, String newSupervisor, String password, String firstName, String lastName, String email, String phoneNumber, String city);
 }

@@ -158,7 +158,6 @@ public class User {
                 return new Response<>(false, true, "cannot delete supervisor, try transferring supervisor");
             }
         }
-
         else if(this.state.allowed(Permissions.REMOVE_USER, this)) {
             if (appointments.contains(username)) {
                 Response<Boolean> response = appointments.removeAppointment(username);
@@ -582,6 +581,16 @@ public class User {
     public void removeAppointment(String userToRemove) {
         if(this.appointments.contains(userToRemove)){
             this.appointments.removeAppointment(userToRemove);
+        }
+    }
+
+    public Response<Boolean> transferSupervision(String currSupervisor) {
+        if (this.state.allowed(Permissions.TRANSFER_SUPERVISION, this) && this.appointments.contains(currSupervisor))
+        {
+            return new Response<>(true, false, "user allowed to transfer supervision");
+        }
+        else {
+            return new Response<>(null, true, "user not allowed to transfer supervision");
         }
     }
 }

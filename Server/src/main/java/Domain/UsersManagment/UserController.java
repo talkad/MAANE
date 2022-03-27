@@ -803,5 +803,37 @@ public class UserController {
         }
     }
 
+    public Response<Boolean> transferSupervision(String currUser, String currSupervisor, String newSupervisor, String password, String firstName, String lastName, String email, String phoneNumber, String city){
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            Response<Boolean> transferSupervisionRes = user.transferSupervision(currSupervisor);
+            if(!transferSupervisionRes.isFailure()){
+                if(!newSupervisor.startsWith("Guest") && !registeredUsers.containsKey(newSupervisor)){
+                    User supervisor = registeredUsers.get(currSupervisor).getFirst();
+                    Response<User> result = user.registerSupervisor(newSupervisor, UserStateEnum.SUPERVISOR, supervisor.getWorkField(), firstName, lastName, email, phoneNumber, city);
+                    if(!result.isFailure()){
+                        result.getResult().setAppointments(supervisor.getAppointments());
+                        result.getResult().setSurveys(supervisor.getSurveys().getResult());
+                        registeredUsers.put(newSupervisor, new Pair<>(result.getResult(), security.sha256(password)));
+                        registeredUsers.remove(currSupervisor);
+                        connectedUsers.remove(currSupervisor);
+                        return transferSupervisionRes;
+                    }
+                    else{
+                        return new Response<>(false, true, result.getErrMsg());
+                    }
+                }
+                else{
+                    return new Response<>(false, true, "chosen supervisor doesn't exist");
+                }
+            }
+            else{
+                return transferSupervisionRes;
+            }
+        }
+        else {
+            return new Response<>(null, true, "User not connected");
+        }
+    }
 
 }
