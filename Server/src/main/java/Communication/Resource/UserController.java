@@ -20,7 +20,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/user")
-//@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = "*", maxAge = 3600)
 public class UserController {
     ObjectMapper objectMapper = new ObjectMapper();
     private Gson gson = new Gson();
@@ -57,8 +57,17 @@ public class UserController {
 
     @RequestMapping(value = "/registerUserBySystemManager", method = RequestMethod.POST)
     public ResponseEntity<Response<String>> registerUserBySystemManager(@RequestBody Map<String, Object>  body) {
+
+        String user = "";
+
+        try {
+            user = objectMapper.writeValueAsString(body.get("user"));
+        }catch(Exception e){
+            System.out.println("This exception shouldn't occur");
+        }
+
         return ResponseEntity.ok()
-                .body(service.registerUserBySystemManager((UserDTO) body.get("user"), (String)body.get("optionalSupervisor")));
+                .body(service.registerUserBySystemManager(gson.fromJson(user, UserDTO.class), (String)body.get("optionalSupervisor")));
     }
 
 /*    @RequestMapping(value = "/registerUserBySystemManager", method = RequestMethod.POST)
@@ -170,7 +179,6 @@ public class UserController {
         return ResponseEntity.ok()
                 .body(service.getUserInfo((String)body.get("currUser")));
     }
-
     @RequestMapping(value = "/sendCoordinatorEmails", method = RequestMethod.POST)//todo aviad
     public ResponseEntity<Response<Boolean>> sendCoordinatorEmails(@RequestBody Map<String, Object>  body) throws MessagingException {
         return ResponseEntity.ok()
@@ -181,5 +189,11 @@ public class UserController {
     public ResponseEntity<Response<Boolean>> transferSupervision(@RequestBody Map<String, Object>  body){
         return ResponseEntity.ok()
                 .body(service.transferSupervision((String)body.get("currUser"), (String)body.get("currSupervisor"), (String)body.get("newSupervisor"), (String)body.get("password"), (String)body.get("firstName"), (String)body.get("lastName"), (String)body.get("email"), (String)body.get("phoneNumber"), (String)body.get("city")));
+    }
+
+    @RequestMapping(value = "/getSupervisors", method = RequestMethod.POST)
+    public ResponseEntity<Response<List<UserDTO>>> getSupervisors(@RequestBody Map<String, Object>  body){
+        return ResponseEntity.ok()
+                .body(service.getSupervisors((String)body.get("currUser")));
     }
 }

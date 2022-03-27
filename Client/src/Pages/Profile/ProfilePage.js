@@ -1,7 +1,7 @@
 import * as Space from 'react-spaces';
 import React, {useEffect, useState} from "react";
 import Connection from "../../Communication/Connection";
-import {Box, Button, Divider, Grid, IconButton, InputAdornment, Tab, Tabs, TextField, Typography} from "@mui/material";
+import {Button, Grid, IconButton, InputAdornment, Tab, Tabs, TextField, Typography} from "@mui/material";
 
 import InfoIcon from '@mui/icons-material/Info';
 import LockIcon from '@mui/icons-material/Lock';

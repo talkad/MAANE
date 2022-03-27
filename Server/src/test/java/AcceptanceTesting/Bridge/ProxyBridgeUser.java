@@ -203,6 +203,7 @@ public class ProxyBridgeUser implements UserService {
     }
 
     @Override
+
     public Response<Boolean> sendCoordinatorEmails(String currUser, String surveyLink, String surveyToken) throws MessagingException {
         if (real != null){
             return real.sendCoordinatorEmails(currUser, surveyLink, surveyToken);
@@ -213,8 +214,17 @@ public class ProxyBridgeUser implements UserService {
 
     @Override
     public Response<Boolean> transferSupervision(String currUser, String currSupervisor, String newSupervisor, String password, String firstName, String lastName, String email, String phoneNumber, String city) {
-        if (real != null){
+        if (real != null) {
             return real.transferSupervision(currUser, currSupervisor, newSupervisor, password, firstName, lastName, email, phoneNumber, city);
+        }
+
+        return new Response<>(null, true, "not implemented");
+    }
+
+    public Response<List<UserDTO>> getSupervisors(String currUser) {
+        if (real != null){
+            return real.getSupervisors(currUser);
+
         }
 
         return new Response<>(null, true, "not implemented");

@@ -12,7 +12,7 @@
 #        format_sql: true
 #    show-sql: true
 
-
+#
 #server:
 #  port: 8443
 #  ssl:
@@ -22,5 +22,5 @@
 #    key-store-type: jks
 #    key-store-password: skipper
 #    key-password: skipper
-
+#
 

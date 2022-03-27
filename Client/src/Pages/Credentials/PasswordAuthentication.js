@@ -1,17 +1,24 @@
 import React, { useState, useEffect } from "react";
 import * as Space from 'react-spaces';
-import {Button, Card, CardContent, IconButton, InputAdornment, Paper, Stack, TextField} from "@mui/material";
-import Box from "@mui/material/Box";
+import {
+    Alert,
+    Button,
+    Grid,
+    IconButton,
+    InputAdornment,
+    Paper,
+    Stack,
+    TextField
+} from "@mui/material";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Visibility from "@mui/icons-material/Visibility";
 import {useNavigate} from "react-router-dom";
 import Connection from "../../Communication/Connection";
 
-
-// todo: make this screen get the previous and next pages to go to
-
 export default function PasswordAuthentication(props){
     const [showPassword, setShowPassword] = useState(false);
+    const [error, setError] = useState(false);
+    const [alertMessage, setAlertMessage] = useState('');
 
     let navigate = useNavigate();
 
@@ -19,6 +26,7 @@ export default function PasswordAuthentication(props){
     const explanation_string = 'בבקשה הכניס/י את הסיסמה שלך לצורך אימות';
     const password_string = "סיסמה";
     const auth_string = "אימות";
+    const cancel_string = "ביטול";
 
     useEffect(() => {
         props.setHideBars(true);
@@ -29,13 +37,13 @@ export default function PasswordAuthentication(props){
      * @param data the response from the server
      */
     const submitCallback = (data) => {
-
         if (!data.result){
-            //TODO: raise an error
+            setError(true);
+            setAlertMessage('סיסמה לא נכונה. נא נסה/י שנית');
         }
         else{
-            //props.setHideBars(false); todo: not working for some reason
-            navigate(props.callee, {replace: true});
+            setError(false);
+            navigate(props.goto, {replace: true});
             props.callback(); // sending the message after received positive authentication
         }
     }
@@ -43,9 +51,16 @@ export default function PasswordAuthentication(props){
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        //TODO: check input is not empty and raise an error
 
-        Connection.getInstance().authenticatePassword(window.sessionStorage.getItem('username'), data.get('password'), submitCallback)
+        if (data.get('password') === ''){
+            setError(true);
+            setAlertMessage('נא להכניס סיסמה');
+        }
+        else{
+            setError(false);
+            Connection.getInstance().authenticatePassword(window.sessionStorage.getItem('username'), data.get('password'), submitCallback)
+        }
+
     }
 
     return (
@@ -62,6 +77,7 @@ export default function PasswordAuthentication(props){
                                    label={password_string}
                                    variant="outlined"
                                    type={showPassword ? 'text' : 'password'}
+                                   error={error}
                                    InputProps={{
                                        endAdornment: (
                                            <InputAdornment position="end">
@@ -74,7 +90,18 @@ export default function PasswordAuthentication(props){
                                            </InputAdornment>
                                        ),
                                    }}/>
-                        <Button type="submit" sx={{marginBottom: 1, width: "20%"}} variant="outlined">{auth_string}</Button>
+                        {error && <Alert severity="error">
+                            {alertMessage}
+                        </Alert>}
+                        <Grid container spacing={1} alignItems="center" justifyContent="center">
+                            <Grid item xs={2.5}>
+                                <Button fullWidth type="submit" sx={{marginBottom: 1, marginTop: 1}} variant="outlined">{auth_string}</Button>
+                            </Grid>
+                            <Grid item xs={0.5}/>
+                            <Grid item xs={2.5}>
+                                <Button onClick={() => navigate(props.callee, {replace: true})} fullWidth color="error" sx={{marginBottom: 1, marginTop: 1}} variant="outlined">{cancel_string}</Button>
+                            </Grid>
+                        </Grid>
                     </Stack>
                 </Paper>
             </Space.Centered>

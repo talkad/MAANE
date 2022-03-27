@@ -12,6 +12,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import Box from "@mui/material/Box";
 import {
+    Alert,
     Avatar,
     Collapse,
     Dialog,
@@ -21,7 +22,7 @@ import {
     IconButton, InputAdornment,
     List,
     ListItem,
-    ListItemText, Snackbar, Stack, TextField, Typography
+    ListItemText, Stack, TextField, Tooltip, Typography
 } from "@mui/material";
 import Button from "@mui/material/Button";
 import {useNavigate} from "react-router-dom";
@@ -30,12 +31,14 @@ import Connection from "../../Communication/Connection";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Visibility from "@mui/icons-material/Visibility";
 import NotificationSnackbar from "../../CommonComponents/NotificationSnackbar";
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
 
 
 /**
  * a function to return an object of the data the tables accepts
  * @param username username of the user
- * @param name the name of the user
+ * @param name the full name of the user
  * @param role the role of the user
  * @param email the email of user
  * @param phoneNumber the phone number of the user
@@ -64,12 +67,17 @@ function Row(props) {
     const { row } = props;
     const [open, setOpen] = React.useState(false);
 
+    // actions
     const delete_user_button_string = 'מחיקת משתמש';
     const change_password_button_string = 'שינוי סיסמה';
+    const edit_schools_button_string = 'עריכת בתי ספר';
+
+    // data
     const user_email_string = 'דוא"ל';
     const user_phone_number_string = 'מספר פלאפון';
     const city = 'עיר';
     const schools = 'בתי ספר';
+    const actions = 'פעולות:';
 
     return (
         <React.Fragment>
@@ -120,13 +128,21 @@ function Row(props) {
                                 <ListItem>
                                     <ListItemText primary={schools} secondary={row.schools.reduce((previous, current) => previous + `${current}, `, '')} />
                                 </ListItem>
+                                <Divider component="li" />
+                                <ListItem>
+                                    <ListItemText primary={actions}/>
+                                </ListItem>
                             </List>
                             <br/>
                             {/* the action buttons for each user */}
-                            {/*TODO: have a warning beforehand and a verification */}
+                            <Grid sx={{marginBottom: 1}} container spacing={1}>
+                                {/*editing actions*/}
+                                <Grid item xs={1.5}><Button fullWidth onClick={() => props.handleOpenCPDialog(row.username, row.name)} color="secondary" variant="outlined">{change_password_button_string}</Button></Grid>
+                                <Grid item xs={1.5}><Button fullWidth onClick={() => props.handleOpenEditSchoolsDialog(row.username, row.name, row.schools)} color="secondary" variant="outlined">{edit_schools_button_string}</Button></Grid>
+                            </Grid>
                             <Grid container spacing={1}>
-                                <Grid item xs={2.5}><Button onClick={() => props.handleOpenDeleteDialog(row.username, row.name)} color="error" variant="outlined">{delete_user_button_string}</Button></Grid>
-                                <Grid item xs={2}><Button onClick={() => props.handleOpenCPDialog(row.username, row.name)} color="secondary" variant="outlined">{change_password_button_string}</Button></Grid>
+                                {/*removing user*/}
+                                <Grid item xs={1.5}><Button fullWidth onClick={() => props.handleOpenDeleteDialog(row.username, row.name)} color="error" variant="outlined">{delete_user_button_string}</Button></Grid>
                             </Grid>
                         </Box>
                     </Collapse>
@@ -136,6 +152,11 @@ function Row(props) {
     );
 }
 
+/**
+ * a dialog element for removing a user
+ * @param props the properties the element gets
+ * @returns {JSX.Element} the element
+ */
 function DeleteUserDialog(props){
 
     const title_string = "האם את/ה בטוח/ה שהינך רוצה למחוק את";
@@ -163,7 +184,11 @@ function DeleteUserDialog(props){
     )
 }
 
-
+/**
+ * a dialog element for changing a password for a user
+ * @param props the properties the element gets
+ * @returns {JSX.Element} the element
+ */
 function ChangePasswordDialog(props){
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -253,20 +278,109 @@ function ChangePasswordDialog(props){
     )
 }
 
+/**
+ * a dialog element for editing the assigned school of a user
+ * @param props the properties the element gets
+ * @returns {JSX.Element} the element
+ */
+function EditSchoolsDialog(props){
+    const [addSchoolName, setAddSchoolName] = useState('');
+    const [error, setError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+
+    const title_string = "עריכת בתי ספר תחת";
+
+    // tooltips' strings
+    const delete_tooltip_string = "הסרת בית ספר";
+    const add_tooltip_string = "הוספת בית ספר";
+
+    const handleAddSchoolNameChange = (event) => {
+        setAddSchoolName(event.target.value);
+    }
+
+    const addSchool = () => {
+        if (addSchoolName === ''){
+            setError(true);
+            setErrorMessage("נא להכניס שם בית ספר")
+        }
+        else{
+            setError(false);
+            setAddSchoolName('');
+            props.addSchoolCallback(props.selectedUser, addSchoolName);
+        }
+    }
+
+    return (
+        <Dialog fullWidth maxWidth="sm" onClose={props.onClose} open={props.open}>
+            <DialogTitle><Typography variant="h5" align="center">{title_string} {props.selectedName}</Typography></DialogTitle>
+            <Stack sx={{alignItems: "center"}}>
+                {/*a list of the current schools assigned to the user*/}
+                <List sx={{width: "50%"}}>
+                    {props.selectedSchools.map((school) =>
+                        <div>
+                            {/*representation of each school*/}
+                            <ListItem
+                                secondaryAction={
+                                    <Tooltip title={delete_tooltip_string}>
+                                        <IconButton onClick={() => props.removeSchoolCallback(props.selectedUser, school)} edge="end">
+                                            <DeleteIcon />
+                                        </IconButton>
+                                    </Tooltip>
+                                }
+                            >
+                                <ListItemText
+                                    primary={school}
+                                />
+
+                            </ListItem>
+                            <Divider component="li" />
+                        </div>
+                    )}
+                    <ListItem>
+                        {/*field for adding new school to a givel user*/}
+                        <TextField
+                            value={addSchoolName}
+                            onChange={handleAddSchoolNameChange}
+                            error={error}
+                            fullWidth
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <Tooltip title={add_tooltip_string}>
+                                            <IconButton
+                                                onClick={addSchool}
+                                                onMouseDown={(event) => event.preventDefault()}
+                                            >
+                                                <AddIcon color="primary"/>
+                                            </IconButton>
+                                        </Tooltip>
+                                    </InputAdornment>
+                                ),
+                            }}/>
+                    </ListItem>
+                </List>
+                {error && <Alert sx={{marginBottom: 1}} severity="error">{errorMessage}</Alert>}
+            </Stack>
+        </Dialog>
+    )
+}
+
 // data for offline testing
 const rows = [
-    createData("Ronit", 'רונית', "מפקחת", "ronit@post.bgu.ac.il", "000-123-4567", "פתח תקווה", ["מקיף ז'", "רגר"]),
-    createData("Shoshi", 'שושי', "מדריכה", "shoshi@post.bgu.ac.il", "002-123-4567", "ירוחם", ["יהלום", "שהם"]),
+    createData("Ronit", 'רונית שושי', "מפקחת", "ronit@post.bgu.ac.il", "000-123-4567", "פתח תקווה", ["מקיף ז'", "רגר"]),
+    createData("Shoshi", 'שושי רונית', "מדריכה", "shoshi@post.bgu.ac.il", "002-123-4567", "ירוחם", ["יהלום", "שהם"]),
 ];
 
 export default function ManageUsers(props){
-    const [tableRows, setTableRows] = useState([]);
+    const [tableRows, setTableRows] = useState(rows);
 
     // dialogs
     const [openCPDialog, setOpenCPDialog] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+    const [openEditSchoolsDialog, setOpenEditSchoolsDialog] = useState(false);
     const [selectedUser, setSelectedUser] = useState('');
     const [selectedName, setSelectedName] = useState('');
+    const [selectedSchools, setSelectedSchools] = useState([]);
 
     // snackbar
     const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -281,7 +395,13 @@ export default function ManageUsers(props){
 
     useEffect(() => {
         props.setHideBars(false);
-        Connection.getInstance().getAppointedUsers(window.sessionStorage.getItem('username'), handleReceivedData)
+        if(props.userType === "SUPERVISOR"){
+            Connection.getInstance().getAppointedUsers(window.sessionStorage.getItem('username'), handleReceivedData);
+        }
+        else if(props.userType === "SYSTEM_MANAGER"){
+            Connection.getInstance().getAllUsers(window.sessionStorage.getItem('username'), handleReceivedData); // TODO: check this (logging in with admin)
+        }
+
     }, []);
 
 
@@ -306,9 +426,19 @@ export default function ManageUsers(props){
                     role = "מפקח/ת כללי/ת";
                 }
 
+                // for live updating of the dialog while adding school to a user
+                if (selectedUser === row.currUser){
+                    setSelectedSchools(row.schools);
+                }
+
+                // not including admins in the table
+                if(row.currUser === 'admin'){ //todo: is that considered hardcoded?
+                    continue;
+                }
+
                 rows.push(createData(
                     row.currUser,
-                    row.firstName,
+                    row.firstName + " " + row.lastName,
                     role,
                     row.email,
                     row.phoneNumber,
@@ -323,6 +453,22 @@ export default function ManageUsers(props){
             //TODO: needed?
         }
     }
+
+    /**
+     * refreshes the new table
+     */
+    const refreshData = () => {
+        if(props.userType === "SUPERVISOR"){
+            Connection.getInstance().getAppointedUsers(window.sessionStorage.getItem('username'), handleReceivedData);
+        }
+        else if(props.userType === "SYSTEM_MANAGER"){
+            Connection.getInstance().getAllUsers(window.sessionStorage.getItem('username'), handleReceivedData); // TODO: check this (logging in with admin)
+        }
+
+        //TODO: have a loading animation
+    }
+
+    // USER DELETION DIALOG
 
     /**
      * handles the opening of the dialog to delete a selected user
@@ -364,8 +510,11 @@ export default function ManageUsers(props){
         );
         props.setAuthAvailability(true);
         props.setAuthCalleePage('../home');
+        props.setAuthGoToPage('../home');
         navigate(`../auth`, {replace: true})
     }
+
+    // CHANGE USER PASSWORD DIALOG
 
     /**
      * handles the opening of the dialog to change password to a selected user
@@ -417,8 +566,86 @@ export default function ManageUsers(props){
             username, newPassword, newPasswordConfirmation, userChangePasswordCallback));
         props.setAuthAvailability(true);
         props.setAuthCalleePage('../home');
+        props.setAuthGoToPage('../home');
         navigate(`../auth`, {replace: true})
     }
+
+    // EDIT SCHOOLS DIALOG
+
+    /**
+     * handles the opening of the dialog to edit the assigned school of a selected user
+     * @param username the selected user
+     * @param name the name of the selected user
+     * @param schools the schools of the selected user
+     */
+    const handleOpenEditSchoolsDialog = (username, name, schools) => {
+        setOpenEditSchoolsDialog(true);
+        setSelectedUser(username);
+        setSelectedName(name);
+        setSelectedSchools(schools)
+    }
+
+    /**
+     * handles the closing of the dialog for editing the assigned schools of a selected user
+     */
+    const handleCloseEditSchoolsDialog = () => {
+        setOpenEditSchoolsDialog(false);
+    }
+
+    /**
+     * a callback for the response from the server regarding adding an assigned school to a user request
+     * @param data the response from the server
+     */
+    const userAddSchoolCallback = (data) => {
+        if (!data.failure){
+            setSnackbarSeverity('success');
+            setSnackbarMessage('בית הספר הוסף בהצלחה למשתמש');
+            setOpenSnackbar(true);
+        }
+        else {
+            setSnackbarSeverity('error');
+            setSnackbarMessage('הפעולה להוספת בית ספר למשתמש נכשלה'); // todo: better error?
+            setOpenSnackbar(true);
+            refreshData();
+        }
+    }
+
+    /**
+     * handler for sending a request to add a school assigned to a selected user
+     * @param username the selected user
+     * @param school the school to assign to the selected user
+     */
+    const handleUserAddSchool = (username, school) => {
+        // todo: send
+    }
+
+    /**
+     * a callback for the response from the server regarding removing an assigned school from a user request
+     * @param data the response from the server
+     */
+    const userRemoveSchoolCallback = (data) => {
+        if (!data.failure){
+            setSnackbarSeverity('success');
+            setSnackbarMessage('בית הספר הוסר בהצלחה מהמשתמש');
+            setOpenSnackbar(true);
+            refreshData();
+        }
+        else {
+            setSnackbarSeverity('error');
+            setSnackbarMessage('הפעולה להסרת בית ספר ממשתמש נכשלה'); // todo: better error?
+            setOpenSnackbar(true);
+        }
+    }
+
+    /**
+     * handler for sending a request to add a school assigned to a selected user
+     * @param username the selected user
+     * @param school the school to remove from the selected user
+     */
+    const handleUserRemoveSchool = (username, school) => {
+        // todo: send
+    }
+
 
     return (
         <Space.Fill scrollable>
@@ -441,7 +668,7 @@ export default function ManageUsers(props){
                         </TableHead>
                         <TableBody>
                             {tableRows.map((tableRows) => (
-                                <Row key={tableRows.username} row={tableRows} handleOpenCPDialog={handleOpenCPDialog} handleOpenDeleteDialog={handleOpenDeleteDialog}/>
+                                <Row key={tableRows.username} row={tableRows} handleOpenEditSchoolsDialog={handleOpenEditSchoolsDialog} handleOpenCPDialog={handleOpenCPDialog} handleOpenDeleteDialog={handleOpenDeleteDialog}/>
                             ))}
                         </TableBody>
                     </Table>
@@ -462,7 +689,16 @@ export default function ManageUsers(props){
                     onClose={handleCloseDeleteDialog}
                     callback={handleUserDeletion}
                 />
-            {/*    snackbar for notification on actions*/}
+                {/*edit schools dialog pop up*/}
+                <EditSchoolsDialog
+                    selectedUser={selectedUser}
+                    selectedName={selectedName}
+                    selectedSchools={selectedSchools}
+                    open={openEditSchoolsDialog}
+                    onClose={handleCloseEditSchoolsDialog}
+                    addSchoolCallback={handleUserAddSchool}
+                    removeSchoolCallback={handleUserRemoveSchool}/>
+                {/*snackbar for notification on actions*/}
                 <NotificationSnackbar
                     open={openSnackbar}
                     setOpen={setOpenSnackbar}

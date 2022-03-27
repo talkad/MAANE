@@ -1,10 +1,8 @@
 import React, { useState } from "react";
 import './SurveyBuilder.css'
-import {Collapse, Fade, Paper, Typography, Zoom} from "@mui/material";
+import {Paper} from "@mui/material";
 import TextField from "@mui/material/TextField";
-import SurveyQuestion from "./SurveyBuilderQuestion";
 import Button from "@mui/material/Button";
-import { TransitionGroup } from 'react-transition-group';
 import SurveyQuestionBuilder from "./SurveyBuilderQuestion";
 import Connection from "../../Communication/Connection";
 import * as Space from 'react-spaces';

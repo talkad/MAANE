@@ -1,7 +1,5 @@
 import axios from "axios";
 
-// TODO: better docs
-
 class Connection{
     static #instance = null;
 
@@ -89,7 +87,7 @@ class Connection{
 
     /**
      * sends a POST request to log in the user with the given credentials
-     * @param currUser the current logged-in user
+     * @param currUser the token (mostly the user's username) of the active user in the current session
      * @param username the username of the user to log in
      * @param password the password of the user to log in
      * @param callback a callback function to call once there's a response
@@ -106,7 +104,7 @@ class Connection{
 
     /**
      * sends a POST request to log out the current user
-     * @param username the username of the user to log out
+     * @param username the token (mostly the user's username) of the active user in the current session to log out
      * @param callback a callback function to call once there's a response
      */
     logout(username, callback){
@@ -119,8 +117,8 @@ class Connection{
 
     /**
      * sends a POST request to authenticate the password of the current user
-     * @param currentUser the current user
-     * @param password the password of the user
+     * @param currentUser the token (mostly the user's username) of the active user in the current session to authenticate
+     * @param password the password of the current user
      * @param callback a callback function to call once there's a response
      */
     authenticatePassword(currentUser, password, callback){
@@ -134,10 +132,10 @@ class Connection{
     }
 
     /**
-     * request to change password to the current user
-     * @param currentUser the current user requesting the change
+     * sends a POST request to change the password of the current user
+     * @param currentUser the token (mostly the user's username) of the active user in the current session
      * @param currentPassword the current password of the user
-     * @param newPassword the new password to update
+     * @param newPassword the new password to update to
      * @param confirmNewPassword confirmation of the new password to update
      * @param callback a callback function to call once there's a response
      */
@@ -153,8 +151,8 @@ class Connection{
     }
 
     /**
-     * request to get the profile information from the server
-     * @param currentUser the current user asking for the info
+     * sends a POST request to get the profile information from the server of the current user
+     * @param currentUser the token (mostly the user's username) of the active user in the current session
      * @param callback a callback function to call once there's a response
      */
     getProfileInfo(currentUser, callback){
@@ -166,8 +164,8 @@ class Connection{
     }
 
     /**
-     * request to change the profile info of the current user
-     * @param currentUser the current user active
+     * sends a POST request to change the profile info of the current user
+     * @param currentUser the token (mostly the user's username) of the active user in the current session
      * @param firstName updated first name
      * @param lastName  updated last name
      * @param email updated email
@@ -191,32 +189,75 @@ class Connection{
     // MANAGE USERS REQUESTS
 
     /**
-     * sends a POST request to register a new user to the system
-     * @param currUser the current user which is logged in
+     * sends a POST request to register a new user to the system by a supervisor
+     * @param currUser the token (mostly the user's username) of the active user in the current session
      * @param usernameToRegister the username of the registered user
      * @param password the password of the registered user
      * @param userStateEnum the userStateEnum of the registered user
+     * @param firstName the first name of the registered user
+     * @param lastName the last name of the registered user
+     * @param email the email of the registered user
+     * @param phoneNumber the phone number of the registered user
+     * @param city the city of the registered user
      * @param callback a callback function to call once there's a response
      */
-    register(currUser, usernameToRegister, password, userStateEnum, callback){
+    registerUser(currUser, usernameToRegister, password, userStateEnum, firstName, lastName, email, phoneNumber, city, callback){
         this.sendPOST('/user/registerUser',
             {
                 currUser: currUser,
+                workField: "",
                 userToRegister: usernameToRegister,
                 password: password,
                 userStateEnum: userStateEnum,
-                firstName: "",
-                lastName: "",
-                email: "",
-                phoneNumber: "",
-                city: ""
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                phoneNumber: phoneNumber,
+                city: city,
+                schools: [],
+            },
+            callback)
+    }
+
+    /**
+     * sends a POST request to register a new user to the system by a system manager
+     * @param currUser the token (mostly the user's username) of the active user in the current session
+     * @param usernameToRegister the username of the registered user
+     * @param password the password of the registered user
+     * @param userStateEnum the userStateEnum of the registered user
+     * @param firstName the first name of the registered user
+     * @param lastName the last name of the registered user
+     * @param email the email of the registered user
+     * @param phoneNumber the phone number of the registered user
+     * @param city the city of the registered user
+     * @param fieldChoice if registering a supervisor, then his field is required
+     * @param optionalSupervisor if registering an instructor or general supervisor, then his supervisor is required
+     * @param callback a callback function to call once there's a response
+     */
+    registerUserBySystemManager(currUser, usernameToRegister, password, userStateEnum, firstName, lastName, email, phoneNumber, city, fieldChoice, optionalSupervisor, callback){
+        this.sendPOST('/user/registerUserBySystemManager',
+            {
+                user: {
+                    currUser: currUser,
+                    workField: fieldChoice,
+                    userToRegister: usernameToRegister,
+                    password: password,
+                    userStateEnum: userStateEnum,
+                    firstName: firstName,
+                    lastName: lastName,
+                    email: email,
+                    phoneNumber: phoneNumber,
+                    city: city,
+                    schools: [],
+                },
+                optionalSupervisor: optionalSupervisor,
             },
             callback)
     }
 
     /**
      * sends a POST request to remove a user from the system
-     * @param currUser the current user active
+     * @param currUser the token (mostly the user's username) of the active user in the current session
      * @param usernameToRemove the user to remove from the system
      * @param callback a callback function to call once there's a response
      */
@@ -230,8 +271,8 @@ class Connection{
     }
 
     /**
-     * getting all the users appointed by currentUser
-     * @param currentUser the current user who asks for his appointed user
+     * sends a POST request for getting all the users appointed by currentUser
+     * @param currentUser the token (mostly the user's username) of the active user in the current session
      * @param callback a callback function to call once there's a response
      */
     getAppointedUsers(currentUser, callback){
@@ -243,8 +284,34 @@ class Connection{
     }
 
     /**
-     * change the password to a selected user
-     * @param currentUser the user who requested the action
+     * sends a POST request ofr getting all the users of the system (system manager call)
+     * @param currentUser the token (mostly the user's username) of the active user in the current session
+     * @param callback a callback function to call once there's a response
+     */
+    getAllUsers(currentUser, callback){
+        this.sendPOST('/user/getAllUsers',
+            {
+                currUser: currentUser,
+            },
+            callback);
+    }
+
+    /**
+     * sends a POST request for getting all the supervisors of the system
+     * @param currentUser the token (mostly the user's username) of the active user in the current session
+     * @param callback a callback function to call once there's a response
+     */
+    getSupervisors(currentUser, callback){
+        this.sendPOST('/user/getSupervisors',
+            {
+                currUser: currentUser,
+            },
+            callback);
+    }
+
+    /**
+     * sends a POST request to change the password to a selected user
+     * @param currentUser the token (mostly the user's username) of the active user in the current session
      * @param affectedUser the user to change the password to
      * @param newPassword the new password
      * @param confirmNewPassword confirmation for the new password
@@ -288,8 +355,8 @@ class Connection{
     // GOALS
 
     /**
-     * getting the goals of a user for a given year
-     * @param currentUser the current user getting the info
+     * sends a POST request for getting the goals of a user for a given year
+     * @param currentUser the token (mostly the user's username) of the active user in the current session
      * @param year the selected year
      * @param callback a callback function to call once there's a response
      */
@@ -303,8 +370,8 @@ class Connection{
     }
 
     /**
-     * adding a goal
-     * @param currentUser the current user adding the goal
+     * sends a POST request for adding a goal
+     * @param currentUser the token (mostly the user's username) of the active user in the current session
      * @param goalDTO an object representing the goal
      * @param year the hebrew year the goal is assigned to
      * @param callback a callback function to call once there's a response
@@ -320,8 +387,8 @@ class Connection{
     }
 
     /**
-     * removeing a gaol
-     * @param currentUser the current user removing the goal
+     * sends a POST request for removing a gaol
+     * @param currentUser the token (mostly the user's username) of the active user in the current session
      * @param year the year of the goal
      * @param goalId the id of the goal
      * @param callback a callback function to call once there's a response

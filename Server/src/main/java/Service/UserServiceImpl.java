@@ -3,10 +3,10 @@ package Service;
 import Communication.DTOs.GoalDTO;
 import Communication.DTOs.UserDTO;
 import Communication.DTOs.WorkPlanDTO;
+import Domain.UsersManagment.UserController;
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.User;
-import Domain.UsersManagment.UserController;
 import Domain.UsersManagment.UserStateEnum;
 import Service.Interfaces.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -237,6 +237,16 @@ public class UserServiceImpl implements UserService {
             log.error("failed to acquire all users by {}", currUser);
         else
             log.info("successfully to acquired all users by {}", currUser);
+        return res;
+    }
+
+    @Override
+    public Response<List<UserDTO>> getSupervisors(String currUser) {
+        Response<List<UserDTO>> res = UserController.getInstance().getSupervisors(currUser);
+        if (res.isFailure())
+            log.error("failed to acquire supervisors by the user {}", currUser);
+        else
+            log.info("successfully acquired supervisors by the user {}", currUser);
         return res;
     }
 
