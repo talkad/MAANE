@@ -71,14 +71,6 @@ function App(){
     // TODO: the greetings currently doesn't work well. but perhaps once TAL implements what i asked then it will (return the username with the response for the request)
     const greetings_string = "שלום " + window.sessionStorage.getItem('username') // TODO: instead of the username, use the actual name of the user
 
-    const styles = theme => ({
-        appBar: {
-            zIndex: theme.zIndex.drawer + 1,
-        },
-
-        toolbar: theme.mixins.toolbar,
-    })
-
     /**
      * a callback to call when the result of the logout request got back
      * @param data the response for the logout request
