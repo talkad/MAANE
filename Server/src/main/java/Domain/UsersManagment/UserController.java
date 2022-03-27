@@ -205,7 +205,7 @@ public class UserController {
                         {
                             Response<User> result = user.registerUserBySystemManager(userToRegister, userStateEnum, supervisor.getWorkField(), firstName, lastName, email, phoneNumber, city);
                             if (!result.isFailure()) {
-                                Response<Boolean> appointmentRes = supervisor.addAppointment(userToRegister);
+                                Response<Boolean> appointmentRes = supervisor.addAppointment(userToRegister);//todo check it
                                 if(appointmentRes.getResult()){
                                     registeredUsers.put(userToRegister, new Pair<>(result.getResult(), security.sha256(password)));
                                     return new Response<>(result.getResult().getUsername(), false, "Registration occurred");
@@ -235,13 +235,10 @@ public class UserController {
     }
 
     private boolean onlyOneSupervisorPerWorkField(User user, String workField) {
-        Response<List<String>> appointees = user.getAppointments().getAppointees();
-        if(!appointees.isFailure()){
-            for (String appointee: appointees.getResult()) {
-                User u = registeredUsers.get(appointee).getFirst();
-                if(u.getWorkField().equals(workField)){
-                    return false;
-                }
+        for (String appointee: user.getAppointments()) {
+            User u = registeredUsers.get(appointee).getFirst();
+            if(u.getWorkField().equals(workField)){
+                return false;
             }
         }
         return true;
@@ -793,10 +790,6 @@ public class UserController {
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);//todo make sure when displaying coordinators only display the ones from the same workField
             return user.removeCoordinator(school, workField);
-            /*if (!result.isFailure()) {
-                return new Response<>(re, false, "removed coordinator");
-            }
-            return new Response<>(null, result.isFailure(), result.getErrMsg());*/
         }
         else {
             return new Response<>(null, true, "User not connected");
