@@ -107,42 +107,72 @@ function App(){
             {/*TODO: show buttons based on permissions*/}
             <List>
                 {/*home button*/}
-                <ListItem button onClick={() => navigate(`user/home`, {replace: false})}>
+                <ListItem button onClick={
+                    function () {
+                        navigate(`user/home`, {replace: false});
+                        setOpenSidebar(false);
+                        setOpenBackdrop(false);
+                    }}>
                     <ListItemIcon>
                         <HomeIcon/>
                     </ListItemIcon>
                     <ListItemText primary="בית"/>
                 </ListItem>
                 {/*profile button*/}
-                <ListItem button onClick={() => navigate(`user/profile`, {replace: false})}>
+                <ListItem button onClick={
+                    function () {
+                        navigate(`user/profile`, {replace: false});
+                        setOpenSidebar(false);
+                        setOpenBackdrop(false);
+                }}>
                     <ListItemIcon>
                         <AccountBoxIcon/>
                     </ListItemIcon>
                     <ListItemText primary="פרופיל"/>
                 </ListItem>
                 {/*survey button*/}
-                <ListItem button onClick={() => navigate(`survey/menu`, {replace: false})}>
+                <ListItem button onClick={
+                    function () {
+                        navigate(`survey/menu`, {replace: false});
+                        setOpenSidebar(false);
+                        setOpenBackdrop(false);
+                    }}>
                     <ListItemIcon>
                         <PollIcon/>
                     </ListItemIcon>
                     <ListItemText primary="סקרים"/>
                 </ListItem>
                 {/*guiding baskets button*/}
-                <ListItem button onClick={() => navigate(`user/guidingBasketsSearch`, {replace: false})}>
+                <ListItem button onClick={
+                    function () {
+                        navigate(`user/guidingBasketsSearch`, {replace: false});
+                        setOpenSidebar(false);
+                        setOpenBackdrop(false);
+                    }}>
                     <ListItemIcon>
                         <ShoppingBasketIcon/>
                     </ListItemIcon>
                     <ListItemText primary="סלי הדרכה"/>
                 </ListItem>
                 {/*work report button*/}
-                <ListItem button onClick={() => navigate(`user/workReport`, {replace: false})}>
+                <ListItem button onClick={
+                    function () {
+                        navigate(`user/workReport`, {replace: false});
+                        setOpenSidebar(false);
+                        setOpenBackdrop(false);
+                    }}>
                     <ListItemIcon>
                         <SummarizeIcon/>
                     </ListItemIcon>
                     <ListItemText primary='דו"ח עבודה'/>
                 </ListItem>
                 {/*goals management button*/}
-                <ListItem button onClick={() => navigate(`user/goalsManagement`, {replace: false})}>
+                <ListItem button onClick={
+                    function () {
+                        navigate(`user/goalsManagement`, {replace: false});
+                        setOpenSidebar(false);
+                        setOpenBackdrop(false);
+                    }}>
                     <ListItemIcon>
                         <TaskIcon/>
                     </ListItemIcon>
