@@ -184,7 +184,7 @@ public class UserController {
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             if (!userToRegister.startsWith("Guest") && !registeredUsers.containsKey(userToRegister)){
-                if(userStateEnum == UserStateEnum.SUPERVISOR){//todo create supervising transfer
+                if(userStateEnum == UserStateEnum.SUPERVISOR){
                     if(onlyOneSupervisorPerWorkField(user, workField)) {
                         Response<User> result = user.registerSupervisor(userToRegister, userStateEnum, workField, firstName, lastName, email, phoneNumber, city);
                         if (!result.isFailure()) {
