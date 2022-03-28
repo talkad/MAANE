@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import './ManageUsers.css'
+import './UsersManagement.css'
 
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -397,7 +397,7 @@ const rows = [
     createData("Shoshi", 'שושי רונית', "מדריכה", "shoshi@post.bgu.ac.il", "002-123-4567", "ירוחם", ["יהלום", "שהם"]),
 ];
 
-export default function ManageUsers(props){
+export default function UsersManagement(props){
     const [tableRows, setTableRows] = useState(rows);
 
     // dialogs

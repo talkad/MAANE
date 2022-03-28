@@ -9,7 +9,7 @@ import SurveyBuilder from "./Pages/SurveyBuilder/SurveyBuilder";
 import RegisterUsers from "./Pages/Credentials/RegisterUsers";
 import Survey from "./Pages/Survey/Survey";
 import WorkPlan from "./Pages/WorkPlan/WorkPlan";
-import ManageUsers from "./Pages/ManageUsers/ManageUsers";
+import UsersManagement from "./Pages/UsersManagement/UsersManagement";
 import InfoViewer from "./Pages/GeneralSupervisorInfoViewer/InfoViewer";
 import SurveyConstraintBuilder from "./Pages/SurveyConstraints/SurveyConstraintBuilder";
 import GuidingBaskets from "./Pages/GuidingBaskets/GuidingBaskets";
@@ -43,6 +43,8 @@ import GoalsManagement from "./Pages/GoalsManagement/GoalsManagement";
 import MenuIcon from '@mui/icons-material/Menu';
 import ProfilePage from "./Pages/Profile/ProfilePage";
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import SchoolsManagement from "./Pages/SchoolsManagement/SchoolsManagement";
+import SchoolIcon from '@mui/icons-material/School';
 
 // TODO: prevent users from going through the site by entering paths in the url
 // TODO: currently saving everything in local storage but IT IS NOT SAFE
@@ -170,6 +172,18 @@ function App(){
                     </ListItemIcon>
                     <ListItemText primary='ניהול יעדים'/>
                 </ListItem>
+                {/*schools button*/}
+                <ListItem button onClick={
+                    function () {
+                        navigate(`user/schools`, {replace: false});
+                        setOpenSidebar(false);
+                        setOpenBackdrop(false);
+                    }}>
+                    <ListItemIcon>
+                        <SchoolIcon/>
+                    </ListItemIcon>
+                    <ListItemText primary="בתי ספר"/>
+                </ListItem>
             </List>
         </Space.Fill>
     );
@@ -245,8 +259,13 @@ function App(){
                         {/*TODO: find a more elegant way for the permissions*/}
                         <Route path="user">
                             <Route path="login" element={<Login changeType={setType} setHideBars={setHideBars}/>}/>
+
                             {authAvailability && <Route path="auth" element={<PasswordAuthentication callback={authCallback} callee={authCalleePage} goto={authGoToPage} setHideBars={setHideBars}/>}/>}
+
                             <Route path="profile" element={<ProfilePage/>}/>
+
+                            {/*todo: is this restriction is ok?*/}
+                            {(type !== "GUEST") && <Route path="schools" element={<SchoolsManagement/>}/>}
 
                             {(type === "SUPERVISOR" || type === "INSTRUCTOR") &&
                                 <Route path="guidingBasketsSearch" element={<GuidingBaskets/>}/>}
@@ -261,7 +280,7 @@ function App(){
                                 <Route path="goalsManagement" element={<GoalsManagement/>}/>}}}
 
                             {(type === "SUPERVISOR" || type === "SYSTEM_MANAGER") &&
-                                <Route path="home" element={<ManageUsers userType={type} setAuthAvailability={setAuthAvailability} setAuthCallBack={setAuthCallback} setAuthCalleePage={setAuthCalleePage} setAuthGoToPage={setAuthGoToPage} setHideBars={setHideBars}/>}/>}
+                                <Route path="home" element={<UsersManagement userType={type} setAuthAvailability={setAuthAvailability} setAuthCallBack={setAuthCallback} setAuthCalleePage={setAuthCalleePage} setAuthGoToPage={setAuthGoToPage} setHideBars={setHideBars}/>}/>}
 
                             {type === "INSTRUCTOR" &&
                                 <Route path="home" element={<WorkPlan/>}/>}
