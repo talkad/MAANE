@@ -796,10 +796,10 @@ public class UserController {
         }
     }
 
-    public Response<Boolean> transferSupervision(String currUser, String currSupervisor, String newSupervisor, String password, String firstName, String lastName, String email, String phoneNumber, String city){
+    public Response<Boolean> transferSupervision(String currUser, String currSupervisor, String newSupervisor, String password, String firstName, String lastName, String email, String phoneNumber, String city){//todo transfer to existing user
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
-            Response<Boolean> transferSupervisionRes = user.transferSupervision(currSupervisor);
+            Response<Boolean> transferSupervisionRes = user.transferSupervision(currSupervisor, newSupervisor);
             if(!transferSupervisionRes.isFailure()){
                 if(!newSupervisor.startsWith("Guest") && !registeredUsers.containsKey(newSupervisor)){
                     User supervisor = registeredUsers.get(currSupervisor).getFirst();
@@ -815,6 +815,42 @@ public class UserController {
                     else{
                         return new Response<>(false, true, result.getErrMsg());
                     }
+                }
+                else{
+                    return new Response<>(false, true, "chosen supervisor doesn't exist");
+                }
+            }
+            else{
+                return transferSupervisionRes;
+            }
+        }
+        else {
+            return new Response<>(null, true, "User not connected");
+        }
+    }
+
+    public Response<Boolean> transferSupervisionToExistingUser(String currUser, String currSupervisor, String newSupervisor){
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            Response<Boolean> transferSupervisionRes = user.transferSupervision(currSupervisor, newSupervisor);
+            if(!transferSupervisionRes.isFailure()){
+                if(registeredUsers.containsKey(newSupervisor) && registeredUsers.containsKey(currSupervisor)){
+                    User currSup = registeredUsers.get(currSupervisor).getFirst();
+                    User newSup = registeredUsers.get(newSupervisor).getFirst();
+                    newSup.setState(UserStateEnum.SUPERVISOR);
+                    newSup.setAppointments(currSup.getAppointments());
+                    newSup.removeAppointment(newSupervisor);//remove yourself from your own appointment
+                    newSup.setSurveys(currSup.getSurveys().getResult());
+                    registeredUsers.remove(currSupervisor);
+                    connectedUsers.remove(currSupervisor);//todo maybe dont delete old sup just change his role
+                    if(connectedUsers.containsKey(newSupervisor)){
+                        newSup = connectedUsers.get(newSupervisor);
+                        newSup.setState(UserStateEnum.SUPERVISOR);
+                        newSup.setAppointments(currSup.getAppointments());
+                        newSup.removeAppointment(newSupervisor);//remove yourself from your own appointment
+                        newSup.setSurveys(currSup.getSurveys().getResult());
+                    }
+                    return transferSupervisionRes;
                 }
                 else{
                     return new Response<>(false, true, "chosen supervisor doesn't exist");

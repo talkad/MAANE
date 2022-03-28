@@ -196,4 +196,10 @@ public class UserController {
         return ResponseEntity.ok()
                 .body(service.getSupervisors((String)body.get("currUser")));
     }
+
+    @RequestMapping(value = "/transferSupervisionToExistingUser", method = RequestMethod.POST)//todo aviad
+    public ResponseEntity<Response<Boolean>> transferSupervisionToExistingUser(@RequestBody Map<String, Object>  body){
+        return ResponseEntity.ok()
+                .body(service.transferSupervisionToExistingUser((String)body.get("currUser"), (String)body.get("currSupervisor"), (String)body.get("newSupervisor")));
+    }
 }

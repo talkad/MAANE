@@ -412,8 +412,9 @@ public class User {
         return state;
     }
 
-    public void setState(UserState state) {
-        this.state = state;
+    public void setState(UserStateEnum state) {
+        this.state = inferUserType(state);
+        //this.state = state;
     }
 
     public String getFirstName() {
@@ -583,13 +584,13 @@ public class User {
         this.appointments.remove(userToRemove);
     }
 
-    public Response<Boolean> transferSupervision(String currSupervisor) {
-        if (this.state.allowed(Permissions.TRANSFER_SUPERVISION, this) && this.appointments.contains(currSupervisor))
+    public Response<Boolean> transferSupervision(String currSupervisor, String newSupervisor) {
+        if (this.state.allowed(Permissions.TRANSFER_SUPERVISION, this) && this.appointments.contains(currSupervisor) && !this.appointments.contains(newSupervisor))
         {
             return new Response<>(true, false, "user allowed to transfer supervision");
         }
         else {
-            return new Response<>(null, true, "user not allowed to transfer supervision");
+            return new Response<>(false, true, "user not allowed to transfer supervision");
         }
     }
 }
