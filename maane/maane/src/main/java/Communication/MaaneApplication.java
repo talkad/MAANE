@@ -7,9 +7,11 @@ import Domain.UsersManagment.UserStateEnum;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 @SpringBootApplication
 public class MaaneApplication {
@@ -23,6 +25,11 @@ public class MaaneApplication {
 	PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
+
+	@Bean
+	public ServletListenerRegistrationBean<HttpSessionEventPublisher> httpSessionEventPublisher() {
+		return new ServletListenerRegistrationBean<>(new HttpSessionEventPublisher());
+	}
 
 	@Bean
 	CommandLineRunner run(UserServiceImpl service){
