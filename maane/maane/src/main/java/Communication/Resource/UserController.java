@@ -1,36 +1,21 @@
 package Communication.Resource;
 
-import Communication.DTOs.GoalDTO;
-import Communication.DTOs.SchoolManagementDTO;
-import Communication.DTOs.UserDTO;
-import Communication.DTOs.WorkPlanDTO;
 import Communication.Security.KeyLoader;
-import Communication.UserPersistency.Entity.UserInfo;
-import Communication.UserPersistency.Service.UserInfoService;
-import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
-import Domain.UsersManagment.UserStateEnum;
-import Service.UserServiceImpl;
+import Domain.UsersManagment.User;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.util.Arrays.stream;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -48,7 +33,6 @@ public class UserController {
 //    private final Gson gson = new Gson();
 //    private static final UserServiceImpl service = UserServiceImpl.getInstance();
 
-    private final UserInfoService userInfoService;
 
     @GetMapping("/refreshToken")
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -64,12 +48,12 @@ public class UserController {
                 DecodedJWT decodedJWT = verifier.verify(refreshToken);
                 String username = decodedJWT.getSubject();
 
-                UserInfo userInfo = userInfoService.getUser(username);
+                Response<User> user = Domain.UsersManagment.UserController.getInstance().getUserRes(username);
                 List<String> authorities = new LinkedList<>();
-                authorities.add(userInfo.getRole());
+                authorities.add(user.getResult().getState().getStateEnum().getState());
 
                 String accessToken = JWT.create()
-                        .withSubject(userInfo.getUsername())
+                        .withSubject(username)
                         .withExpiresAt(new Date(System.currentTimeMillis() + 30 * 60 * 1000))
                         .withIssuer(request.getRequestURL().toString())
                         .withClaim("roles", authorities)
@@ -106,8 +90,8 @@ public class UserController {
     }
 
     @GetMapping("/test2")
-    public ResponseEntity<UserInfo> test2(){
-        return ResponseEntity.ok().body(userInfoService.getUser("tal"));
+    public ResponseEntity<User> test2(){
+        return ResponseEntity.ok().body(Domain.UsersManagment.UserController.getInstance().getUser("admin"));
     }
 
 //    @GetMapping("/startup")

@@ -1,11 +1,11 @@
-package Service;
+package Communication.Service;
 
 import Communication.DTOs.SurveyAnswersDTO;
 import Communication.DTOs.SurveyDTO;
+import Communication.Service.Interfaces.SurveyService;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.FaultDetector.Rules.Rule;
 import Domain.DataManagement.SurveyController;
-import Service.Interfaces.SurveyService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

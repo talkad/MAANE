@@ -1,4 +1,4 @@
-package Service.Interfaces;
+package Communication.Service.Interfaces;
 
 import Communication.DTOs.GoalDTO;
 import Communication.DTOs.UserDTO;

@@ -1,7 +1,7 @@
 package AcceptanceTesting.Bridge;
 
 import Domain.CommonClasses.Response;
-import Service.Interfaces.AnnualScheduleGeneratorService;
+import Communication.Service.Interfaces.AnnualScheduleGeneratorService;
 
 public class ProxyBridgeSchedule implements AnnualScheduleGeneratorService {
 

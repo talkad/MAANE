@@ -1,17 +1,18 @@
 package AcceptanceTesting.Bridge;
 
-import Service.AnnualScheduleGeneratorServiceImpl;
-import Service.Interfaces.AnnualScheduleGeneratorService;
-import Service.Interfaces.SurveyService;
-import Service.Interfaces.UserService;
-import Service.SurveyServiceImpl;
-import Service.UserServiceImpl;
+import Communication.Service.AnnualScheduleGeneratorServiceImpl;
+import Communication.Service.Interfaces.AnnualScheduleGeneratorService;
+import Communication.Service.Interfaces.SurveyService;
+import Communication.Service.Interfaces.UserService;
+import Communication.Service.SurveyServiceImpl;
+import Communication.Service.UserServiceImpl;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public abstract class Driver {
     public static UserService getUserBridge(){
         ProxyBridgeUser bridge = new ProxyBridgeUser(); // proxy bridge
 
-        UserServiceImpl real = UserServiceImpl.getInstance(); // real bridge
+        UserService real = new UserServiceImpl(new BCryptPasswordEncoder()); // real bridge
         bridge.setRealBridge(real);
 
         return bridge;

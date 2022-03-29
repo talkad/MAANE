@@ -1,8 +1,9 @@
 package Communication;
 
-import Communication.Security.KeyLoader;
-import Communication.UserPersistency.Entity.UserInfo;
-import Communication.UserPersistency.Service.UserInfoService;
+import Communication.DTOs.UserDTO;
+import Communication.Service.UserServiceImpl;
+import Domain.UsersManagment.UserController;
+import Domain.UsersManagment.UserStateEnum;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -10,8 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
+import java.util.List;
 
 @SpringBootApplication
 public class MaaneApplication {
@@ -27,10 +27,14 @@ public class MaaneApplication {
     }
 
 	@Bean
-	CommandLineRunner run(UserInfoService service){
+	CommandLineRunner run(UserServiceImpl service){
 		return args -> {
-			service.saveUserInfo(new UserInfo("tal", "1234", "supervisor"));
-			service.saveUserInfo(new UserInfo("shoshi", "1234", "admin"));
+			UserController userController = UserController.getInstance();
+			String guestName = userController.addGuest().getResult();
+			userController.login(guestName, "admin", "admin");
+
+			service.registerUser(new UserDTO("admin", "tech", "tal", "1234", UserStateEnum.GENERAL_SUPERVISOR,
+					"tal", "kad", "", "", "", null));
 		};
 	}
 

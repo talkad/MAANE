@@ -1,9 +1,9 @@
 package AcceptanceTesting.Tests;
 
 import AcceptanceTesting.Bridge.Driver;
-import Service.Interfaces.AnnualScheduleGeneratorService;
-import Service.Interfaces.SurveyService;
-import Service.Interfaces.UserService;
+import Communication.Service.Interfaces.AnnualScheduleGeneratorService;
+import Communication.Service.Interfaces.SurveyService;
+import Communication.Service.Interfaces.UserService;
 
 public abstract class AcceptanceTests {
 

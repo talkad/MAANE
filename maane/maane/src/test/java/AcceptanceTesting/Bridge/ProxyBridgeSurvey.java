@@ -4,7 +4,7 @@ import Communication.DTOs.SurveyAnswersDTO;
 import Communication.DTOs.SurveyDTO;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.FaultDetector.Rules.Rule;
-import Service.Interfaces.SurveyService;
+import Communication.Service.Interfaces.SurveyService;
 
 import java.util.List;
 

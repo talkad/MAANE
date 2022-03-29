@@ -7,7 +7,7 @@ import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.User;
 import Domain.UsersManagment.UserStateEnum;
-import Service.Interfaces.UserService;
+import Communication.Service.Interfaces.UserService;
 
 import java.util.List;
 

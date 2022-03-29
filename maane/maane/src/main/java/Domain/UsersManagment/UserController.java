@@ -156,7 +156,7 @@ public class UserController {
             if (!userToRegister.startsWith("Guest") && !registeredUsers.containsKey(userToRegister)){
                 Response<User> result = user.registerUser(userToRegister, userStateEnum, firstName, lastName, email, phoneNumber, city);
                 if (!result.isFailure()) {
-                    registeredUsers.put(userToRegister, new Pair<>(result.getResult(), security.sha256(password)));
+                    registeredUsers.put(userToRegister, new Pair<>(result.getResult(), password));
                     return new Response<>(result.getResult().getUsername(), false, "Registration occurred");
                 }
                 return new Response<>(null, result.isFailure(), result.getErrMsg());

@@ -1,4 +1,4 @@
-package Service.Interfaces;
+package Communication.Service.Interfaces;
 
 import Communication.DTOs.SurveyAnswersDTO;
 import Communication.DTOs.SurveyDTO;

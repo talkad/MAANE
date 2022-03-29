@@ -1,14 +1,16 @@
-package Service;
+package Communication.Service;
 
 import Communication.DTOs.GoalDTO;
 import Communication.DTOs.UserDTO;
 import Communication.DTOs.WorkPlanDTO;
+import Communication.Service.Interfaces.UserService;
+import DataManagement.DataController;
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.User;
 import Domain.UsersManagment.UserController;
 import Domain.UsersManagment.UserStateEnum;
-import Service.Interfaces.UserService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,22 +27,28 @@ import java.util.List;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 @Slf4j
-//public class UserServiceImpl implements UserService, UserDetailsService {
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final PasswordEncoder passwordEncoder;
 
-    private static class CreateSafeThreadSingleton {
-        private static final UserServiceImpl INSTANCE = new UserServiceImpl();
-    }
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Response<User> userRes = UserController.getInstance().getUserRes(username);
 
-    public UserServiceImpl(){
-        passwordEncoder = new BCryptPasswordEncoder();
-    }
+        if(userRes.isFailure()){
+            log.error("user not exist");
+            throw new UsernameNotFoundException("user not found");
+        }
+        else{
+            log.info("user {} found", username);
+        }
 
-    public static UserServiceImpl getInstance() {
-        return CreateSafeThreadSingleton.INSTANCE;
+        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority(userRes.getResult().getState().getStateEnum().getState()));
+
+        return new org.springframework.security.core.userdetails.User(username, DataController.getInstance().loadPassword(username), authorities); //todo - implement the function that loads a password by username
     }
 
 //    @Override

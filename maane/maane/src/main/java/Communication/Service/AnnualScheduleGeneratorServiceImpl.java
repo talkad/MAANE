@@ -1,8 +1,8 @@
-package Service;
+package Communication.Service;
 
 import Domain.CommonClasses.Response;
 import Domain.WorkPlan.AnnualScheduleGenerator;
-import Service.Interfaces.AnnualScheduleGeneratorService;
+import Communication.Service.Interfaces.AnnualScheduleGeneratorService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
