@@ -21,8 +21,6 @@ import static Domain.DataManagement.AnswerState.AnswerType.MULTIPLE_CHOICE;
 
 public class SupervisorTests extends AcceptanceTests{
 
-    private static boolean initialized = false;
-    private String adminName;
     private String supervisorName1;
     private String instructorName1;
     private String instructorName2;
@@ -31,10 +29,11 @@ public class SupervisorTests extends AcceptanceTests{
 
     @Before
     public void setUp() /*throws InterruptedException*/ {
+        boolean initialized = false;
         if(!initialized) {
             super.setUp(true);
             String guestName = userBridge.addGuest().getResult();
-            adminName = "admin";
+            String adminName = "admin";
             supervisorName1 = "supervisor1";
             instructorName1 = "instructor1";
             instructorName2 = "instructor2";

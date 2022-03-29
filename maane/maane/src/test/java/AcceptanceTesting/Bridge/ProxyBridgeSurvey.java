@@ -2,9 +2,9 @@ package AcceptanceTesting.Bridge;
 
 import Communication.DTOs.SurveyAnswersDTO;
 import Communication.DTOs.SurveyDTO;
+import Communication.Service.Interfaces.SurveyService;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.FaultDetector.Rules.Rule;
-import Communication.Service.Interfaces.SurveyService;
 
 import java.util.List;
 
