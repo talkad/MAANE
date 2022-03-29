@@ -1,0 +1,22 @@
+package AcceptanceTesting.Tests;
+
+import AcceptanceTesting.Bridge.Driver;
+import Communication.Service.Interfaces.AnnualScheduleGeneratorService;
+import Communication.Service.Interfaces.SurveyService;
+import Communication.Service.Interfaces.UserService;
+
+public abstract class AcceptanceTests {
+
+    protected static UserService userBridge;
+    protected static SurveyService surveyBridge;
+    protected static AnnualScheduleGeneratorService scheduleBridge;
+
+
+    public void setUp(boolean toInit) {
+        if (toInit) {
+            userBridge = Driver.getUserBridge();
+            surveyBridge = Driver.getSurveyBridge();
+            scheduleBridge = Driver.getScheduleBridge();
+        }
+    }
+}
