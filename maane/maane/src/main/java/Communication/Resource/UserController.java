@@ -1,6 +1,7 @@
 package Communication.Resource;
 
 import Communication.Security.KeyLoader;
+import Communication.Service.UserServiceImpl;
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.User;
 import com.auth0.jwt.JWT;
@@ -31,7 +32,8 @@ public class UserController {
 
 //    ObjectMapper objectMapper = new ObjectMapper();
 //    private final Gson gson = new Gson();
-//    private static final UserServiceImpl service = UserServiceImpl.getInstance();
+    private final UserServiceImpl service;
+    private final SessionHandler sessionHandler;
 
 
     @GetMapping("/refreshToken")
@@ -85,7 +87,8 @@ public class UserController {
     }
 
     @GetMapping("/test")
-    public ResponseEntity<String> testSSL(){
+    public ResponseEntity<String> testSSL(@RequestHeader(value = "Authorization") String token){
+        System.out.println("the user is belong to " + sessionHandler.getUsernameByToken(token));
         return ResponseEntity.ok().body("hello world");
     }
 

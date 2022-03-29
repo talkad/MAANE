@@ -33,18 +33,15 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         if(request.getServletPath().equals("/user/login") || request.getServletPath().equals("/user/refreshToken")){
             filterChain.doFilter(request, response);
         }
         else {
-            System.out.println("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
 
             String authorizationHeader = request.getHeader(AUTHORIZATION);
             System.out.println(authorizationHeader);
 
             if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")){
-                System.out.println("cccccccccccccccccccccccccccccccccccc");
 
                 try{
                     String token = authorizationHeader.substring("Bearer ".length());
@@ -61,16 +58,13 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                     });
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, null, authorities);
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                    System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxx");
                     filterChain.doFilter(request, response);
 
                 }catch(Exception e){
-                    System.out.println("ddddddddddddddddddddddddddddddddddddddddddd");
 
                     log.error("Error logging in: {}", e.getMessage());
                     response.setHeader("error", e.getMessage());
                     response.setStatus(FORBIDDEN.value());
-//                    response.sendError(FORBIDDEN.value());
 
                     Map<String, String> error = new HashMap<>();
                     error.put("error_message",  e.getMessage());
@@ -80,7 +74,6 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                 }
             }
             else {
-                System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
 
                 filterChain.doFilter(request, response);
             }

@@ -40,7 +40,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-        System.out.println("xxxxxxxxxxxxxxxxxx");
+
         log.info("user {} attempts authentication", username);
 
         UsernamePasswordAuthenticationToken authenticationToken= new UsernamePasswordAuthenticationToken(username, password);
@@ -65,8 +65,6 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
                 .withExpiresAt(new Date(System.currentTimeMillis() + 7 * 24 * 60 * 60 * 1000))
                 .withIssuer(request.getRequestURL().toString())
                 .sign(algorithm);
-
-        System.out.println("wwwwwwwwwwwwwwwwwwwwwwwwwwww");
 
 //        response.setHeader("access_token", accessToken);
 //        response.setHeader("refresh_token", refreshToken);
