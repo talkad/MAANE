@@ -1,5 +1,9 @@
 package Communication.Resource;
 
+import Communication.DTOs.GoalDTO;
+import Communication.DTOs.SchoolManagementDTO;
+import Communication.DTOs.UserDTO;
+import Communication.DTOs.WorkPlanDTO;
 import Communication.Security.KeyLoader;
 import Communication.Service.UserServiceImpl;
 import Domain.CommonClasses.Response;
@@ -9,6 +13,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,8 +35,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 //@CrossOrigin(origins = "*", maxAge = 3600)
 public class UserController {
 
-//    ObjectMapper objectMapper = new ObjectMapper();
-//    private final Gson gson = new Gson();
+    private final ObjectMapper objectMapper;
+    private final Gson gson;
     private final UserServiceImpl service;
     private final SessionHandler sessionHandler;
 
@@ -97,143 +102,131 @@ public class UserController {
         return ResponseEntity.ok().body(Domain.UsersManagment.UserController.getInstance().getUser("admin"));
     }
 
-//    @GetMapping("/startup")
-//    public ResponseEntity<Response<String>> startup(){
+    @PostMapping(value = "/logout")
+    public ResponseEntity<Response<String>> logout(@RequestHeader(value = "Authorization") String token){
+        return ResponseEntity.ok()
+                .body(service.logout(sessionHandler.getUsernameByToken(token).getResult()));
+    }
+
+    @PostMapping(value = "/registerUser") //todo aviad
+    public ResponseEntity<Response<String>> registerUser(@RequestHeader(value = "Authorization") String token, @RequestBody UserDTO user) {
+        return ResponseEntity.ok()
+                .body(service.registerUser(sessionHandler.getUsernameByToken(token).getResult(), user));
+    }
+
+    @PostMapping(value = "/registerUserBySystemManager")//todo aviad
+    public ResponseEntity<Response<String>> registerUserBySystemManager(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object>  body) {
+        return ResponseEntity.ok()
+                .body(service.registerUserBySystemManager(sessionHandler.getUsernameByToken(token).getResult(), (UserDTO) body.get("user"), (String)body.get("optionalSupervisor")));
+    }
+
+/*    @RequestMapping(value = "/registerUserBySystemManager", method = RequestMethod.POST)
+    public ResponseEntity<Response<User>> registerUserBySystemManager(@RequestBody UserDTO user) {
+        return ResponseEntity.ok()
+                .body(service.registerUserBySystemManager(user));
+    }*/ //todo fix dto so it adds opt sup
+
+    @PostMapping(value = "/removeUser")
+    public ResponseEntity<Response<Boolean>> removeUser(@RequestHeader(value = "Authorization") String token, @RequestBody String  userToRemove){
+        return ResponseEntity.ok()
+                .body(service.removeUser(sessionHandler.getUsernameByToken(token).getResult(), userToRemove));
+    }
+
+    @GetMapping(value = "/viewWorkPlan/year={year}")
+    public ResponseEntity<Response<WorkPlanDTO>> viewWorkPlan(@RequestHeader(value = "Authorization") String token, @PathVariable("year") String year){
+        return ResponseEntity.ok()
+                .body(service.viewWorkPlan(sessionHandler.getUsernameByToken(token).getResult(), year));
+    }
+
+    @PostMapping(value = "/authenticatePassword")
+    public ResponseEntity<Response<Boolean>> verifyUser(@RequestHeader(value = "Authorization") String token, @RequestBody String  password){
+        return ResponseEntity.ok()
+                .body(service.verifyUser(sessionHandler.getUsernameByToken(token).getResult(), password));
+    }
+
+///*    @GetMapping("/getAppointedUsers/username={currUser}")
+//        public ResponseEntity<Response<List<UserDTO>>> getAppointedUsers(@PathVariable("currUser") String currUser){
+//            return ResponseEntity.ok()
+//                    .body(service.getAppointedUsers(currUser));
+//        }*/
+
+    @GetMapping(value = "/getAppointedUsers")
+    public ResponseEntity<Response<List<UserDTO>>> getAppointedUsers(@RequestHeader(value = "Authorization") String token){
+        return ResponseEntity.ok()
+                .body(service.getAppointedUsers(sessionHandler.getUsernameByToken(token).getResult()));
+    }
+
+//    @RequestMapping(value = "/generateSchedule", method = RequestMethod.POST)
+//    public ResponseEntity<Response<Boolean>> generateSchedule(@RequestBody Map<String, Object>  body){
 //        return ResponseEntity.ok()
-//                .body(service.addGuest());
+//                .body(service.generateSchedule((String)body.get("supervisor"), (Integer) body.get("surveyID")));
 //    }
-//
-//    @RequestMapping(value = "/login", method = RequestMethod.POST)
-//    public ResponseEntity<Response<Pair<String, UserStateEnum>>> login(@RequestBody Map<String, Object> body){
-//        return ResponseEntity.ok()
-//                .body(service.login((String)body.get("currUser"), (String)body.get("userToLogin"), (String)body.get("password")));
-//    }
-//
-//    @RequestMapping(value = "/logout", method = RequestMethod.POST)
-//    public ResponseEntity<Response<String>> logout(@RequestBody Map<String, Object>  body){
-//        return ResponseEntity.ok()
-//                .body(service.logout((String)body.get("name")));
-//    }
-//
-//    @RequestMapping(value = "/registerUser", method = RequestMethod.POST)//todo aviad
-//    public ResponseEntity<Response<String>> registerUser(@RequestBody UserDTO user) {
-//        return ResponseEntity.ok()
-//                .body(service.registerUser(user));
-//    }
-//
-//    @RequestMapping(value = "/registerUserBySystemManager", method = RequestMethod.POST)//todo aviad
-//    public ResponseEntity<Response<String>> registerUserBySystemManager(@RequestBody Map<String, Object>  body) {
-//        return ResponseEntity.ok()
-//                .body(service.registerUserBySystemManager((UserDTO) body.get("user"), (String)body.get("optionalSupervisor")));
-//    }
-//
-///*    @RequestMapping(value = "/registerUserBySystemManager", method = RequestMethod.POST)
-//    public ResponseEntity<Response<User>> registerUserBySystemManager(@RequestBody UserDTO user) {
-//        return ResponseEntity.ok()
-//                .body(service.registerUserBySystemManager(user));
-//    }*/ //todo fix dto so it adds opt sup
-//
-//    @RequestMapping(value = "/removeUser", method = RequestMethod.POST)
-//    public ResponseEntity<Response<Boolean>> removeUser(@RequestBody Map<String, Object>  body){
-//        return ResponseEntity.ok()
-//                .body(service.removeUser((String)body.get("currUser"), (String)body.get("userToRemove")));
-//    }
-//
-//    @RequestMapping(value = "/viewWorkPlan", method = RequestMethod.POST)
-//    public ResponseEntity<Response<WorkPlanDTO>> viewWorkPlan(@RequestBody Map<String, Object>  body){
-//        return ResponseEntity.ok()
-//                .body(service.viewWorkPlan((String)body.get("username"), (String)body.get("year")));
-//    }
-//
-//    @RequestMapping(value = "/authenticatePassword", method = RequestMethod.POST)
-//    public ResponseEntity<Response<Boolean>> verifyUser(@RequestBody Map<String, Object>  body){
-//        return ResponseEntity.ok()
-//                .body(service.verifyUser((String)body.get("currUser"), (String)body.get("password")));
-//    }
-//
-/////*    @GetMapping("/getAppointedUsers/username={currUser}")
-////        public ResponseEntity<Response<List<UserDTO>>> getAppointedUsers(@PathVariable("currUser") String currUser){
-////            return ResponseEntity.ok()
-////                    .body(service.getAppointedUsers(currUser));
-////        }*/
-//
-//    @RequestMapping(value = "/getAppointedUsers", method = RequestMethod.POST)
-//    public ResponseEntity<Response<List<UserDTO>>> getAppointedUsers(@RequestBody Map<String, Object>  body){
-//        return ResponseEntity.ok()
-//                .body(service.getAppointedUsers((String)body.get("currUser")));
-//    }
-//
-////    @RequestMapping(value = "/generateSchedule", method = RequestMethod.POST)
-////    public ResponseEntity<Response<Boolean>> generateSchedule(@RequestBody Map<String, Object>  body){
-////        return ResponseEntity.ok()
-////                .body(service.generateSchedule((String)body.get("supervisor"), (Integer) body.get("surveyID")));
-////    }
-//
-//    @RequestMapping(value = "/addGoal", method = RequestMethod.POST)
-//    public ResponseEntity<Response<Boolean>> addGoal(@RequestBody Map<String, Object>  body){
-//        String goal = "";
-//
-//        try {
-//            goal = objectMapper.writeValueAsString(body.get("goalDTO"));
-//        }catch(Exception e){
-//            System.out.println("This exception shouldn't occur");
-//        }
-//
-//        return ResponseEntity.ok()
-//                .body(service.addGoal((String)body.get("currUser"), gson.fromJson(goal, GoalDTO.class), (String)body.get("year")));
-//    }
-//
-//    @RequestMapping(value = "/removeGoal", method = RequestMethod.POST)
-//    public ResponseEntity<Response<Boolean>> removeGoal(@RequestBody Map<String, Object>  body){
-//        return ResponseEntity.ok()
-//                .body(service.removeGoal((String)body.get("currUser"), (String)body.get("year"), (int)body.get("goalId")));
-//    }
-//
-//    @RequestMapping(value = "/getGoals", method = RequestMethod.POST)
-//    public ResponseEntity<Response<List<GoalDTO>>> getGoals(@RequestBody Map<String, Object>  body){
-//        return ResponseEntity.ok()
-//                .body(service.getGoals((String)body.get("currUser"), (String)body.get("year")));
-//    }
-//
-//   @RequestMapping(value = "/updateInfo", method = RequestMethod.POST)
-//    public ResponseEntity<Response<Boolean>> updateInfo(@RequestBody Map<String, Object>  body){
-//        return ResponseEntity.ok()
-//                .body(service.updateInfo((String)body.get("currUser"), (String)body.get("firstName"), (String)body.get("lastName"), (String)body.get("email"), (String)body.get("phoneNumber"), (String)body.get("city")));
-//    }
-//
-//    @RequestMapping(value = "/changePasswordToUser", method = RequestMethod.POST)
-//    public ResponseEntity<Response<Boolean>> changePasswordToUser(@RequestBody Map<String, Object>  body){
-//        return ResponseEntity.ok()
-//                .body(service.changePasswordToUser((String)body.get("currUser"), (String)body.get("userToChangePassword"), (String)body.get("newPassword"), (String)body.get("confirmPassword")));
-//    }
-//
-//    @RequestMapping(value = "/changePassword", method = RequestMethod.POST)
-//    public ResponseEntity<Response<Boolean>> changePassword(@RequestBody Map<String, Object>  body){
-//        return ResponseEntity.ok()
-//                .body(service.changePassword((String)body.get("currUser"), (String)body.get("currPassword"), (String)body.get("newPassword"), (String)body.get("confirmPassword")));
-//    }
-//
-//    @RequestMapping(value = "/getAllUsers", method = RequestMethod.POST)//todo aviad
-//    public ResponseEntity<Response<List<UserDTO>>> getAllUsers(@RequestBody Map<String, Object>  body){
-//        return ResponseEntity.ok()
-//                .body(service.getAllUsers((String)body.get("currUser")));
-//    }
-//
-//    @RequestMapping(value = "/assignSchoolsToUser", method = RequestMethod.POST)//todo aviad
-//    public ResponseEntity<Response<Boolean>> assignSchoolsToUser(@RequestBody SchoolManagementDTO schoolManagementDTO){
-//        return ResponseEntity.ok()
-//                .body(service.assignSchoolsToUser(schoolManagementDTO.getCurrUser(), schoolManagementDTO.getAffectedUser(), schoolManagementDTO.getSchools()));
-//    }
-//
-//    @RequestMapping(value = "/removeSchoolsFromUser", method = RequestMethod.POST)//todo aviad
-//    public ResponseEntity<Response<Boolean>> removeSchoolsFromUser(@RequestBody SchoolManagementDTO schoolManagementDTO){
-//        return ResponseEntity.ok()
-//                .body(service.removeSchoolsFromUser(schoolManagementDTO.getCurrUser(), schoolManagementDTO.getAffectedUser(), schoolManagementDTO.getSchools()));
-//    }
-//
-//    @RequestMapping(value = "/getUserInfo", method = RequestMethod.POST)
-//    public ResponseEntity<Response<UserDTO>> getUserInfo(@RequestBody Map<String, Object>  body){
-//        return ResponseEntity.ok()
-//                .body(service.getUserInfo((String)body.get("currUser")));
-//    }
+
+    @PostMapping(value = "/addGoal")
+    public ResponseEntity<Response<Boolean>> addGoal(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object>  body){
+        String goal = "";
+
+        try {
+            goal = objectMapper.writeValueAsString(body.get("goalDTO"));
+        }catch(Exception e){
+            System.out.println("This exception shouldn't occur");
+        }
+
+        return ResponseEntity.ok()
+                .body(service.addGoal(sessionHandler.getUsernameByToken(token).getResult(), gson.fromJson(goal, GoalDTO.class), (String)body.get("year")));
+    }
+
+    @PostMapping(value = "/removeGoal")
+    public ResponseEntity<Response<Boolean>> removeGoal(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object>  body){
+        return ResponseEntity.ok()
+                .body(service.removeGoal(sessionHandler.getUsernameByToken(token).getResult(), (String)body.get("year"), (Integer)body.get("goalId")));
+    }
+
+    @GetMapping(value = "/getGoals/year={year}")
+    public ResponseEntity<Response<List<GoalDTO>>> getGoals(@RequestHeader(value = "Authorization") String token, @PathVariable("year") String year){
+        return ResponseEntity.ok()
+                .body(service.getGoals(sessionHandler.getUsernameByToken(token).getResult(), year));
+    }
+
+   @PostMapping(value = "/updateInfo")
+    public ResponseEntity<Response<Boolean>> updateInfo(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object>  body){
+        return ResponseEntity.ok()
+                .body(service.updateInfo(sessionHandler.getUsernameByToken(token).getResult(), (String)body.get("firstName"), (String)body.get("lastName"), (String)body.get("email"), (String)body.get("phoneNumber"), (String)body.get("city")));
+    }
+
+    @PostMapping(value = "/changePasswordToUser")
+    public ResponseEntity<Response<Boolean>> changePasswordToUser(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object>  body){
+        return ResponseEntity.ok()
+                .body(service.changePasswordToUser(sessionHandler.getUsernameByToken(token).getResult(), (String)body.get("userToChangePassword"), (String)body.get("newPassword"), (String)body.get("confirmPassword")));
+    }
+
+    @PostMapping(value = "/changePassword")
+    public ResponseEntity<Response<Boolean>> changePassword(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object>  body){
+        return ResponseEntity.ok()
+                .body(service.changePassword(sessionHandler.getUsernameByToken(token).getResult(), (String)body.get("currPassword"), (String)body.get("newPassword"), (String)body.get("confirmPassword")));
+    }
+
+    @GetMapping(value = "/getAllUsers")//todo aviad
+    public ResponseEntity<Response<List<UserDTO>>> getAllUsers(@RequestHeader(value = "Authorization") String token){
+        return ResponseEntity.ok()
+                .body(service.getAllUsers(sessionHandler.getUsernameByToken(token).getResult()));
+    }
+
+    @PostMapping(value = "/assignSchoolsToUser")//todo aviad
+    public ResponseEntity<Response<Boolean>> assignSchoolsToUser(@RequestHeader(value = "Authorization") String token, @RequestBody SchoolManagementDTO schoolManagementDTO){
+        return ResponseEntity.ok()
+                .body(service.assignSchoolsToUser(sessionHandler.getUsernameByToken(token).getResult(), schoolManagementDTO.getAffectedUser(), schoolManagementDTO.getSchools()));
+    }
+
+    @PostMapping(value = "/removeSchoolsFromUser")//todo aviad
+    public ResponseEntity<Response<Boolean>> removeSchoolsFromUser(@RequestHeader(value = "Authorization") String token, @RequestBody SchoolManagementDTO schoolManagementDTO){
+        return ResponseEntity.ok()
+                .body(service.removeSchoolsFromUser(sessionHandler.getUsernameByToken(token).getResult(), schoolManagementDTO.getAffectedUser(), schoolManagementDTO.getSchools()));
+    }
+
+    @GetMapping(value = "/getUserInfo")
+    public ResponseEntity<Response<UserDTO>> getUserInfo(@RequestHeader(value = "Authorization") String token){
+        return ResponseEntity.ok()
+                .body(service.getUserInfo(sessionHandler.getUsernameByToken(token).getResult()));
+    }
 }

@@ -228,7 +228,6 @@ public class UserController {
                     List<UserDTO> supervisorsDTOs = new Vector<>();
                     for (String username : appointeesRes.getResult()) {
                         UserDTO userDTO = new UserDTO();
-                        userDTO.setCurrUser(registeredUsers.get(username).getFirst().getUsername());
                         userDTO.setWorkField(registeredUsers.get(username).getFirst().getWorkField());
                         userDTO.setFirstName(registeredUsers.get(username).getFirst().getFirstName());
                         userDTO.setLastName(registeredUsers.get(username).getFirst().getLastName());
@@ -398,7 +397,6 @@ public class UserController {
 
     private UserDTO createUserDTOS(String username){//todo either move this to user or move the one in User here
         UserDTO userDTO = new UserDTO();
-        userDTO.setCurrUser(username);
         userDTO.setWorkField(registeredUsers.get(username).getFirst().getWorkField());
         userDTO.setFirstName(registeredUsers.get(username).getFirst().getFirstName());
         userDTO.setLastName(registeredUsers.get(username).getFirst().getLastName());

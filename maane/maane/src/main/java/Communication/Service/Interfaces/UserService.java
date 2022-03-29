@@ -17,8 +17,8 @@ public interface UserService {
     Response<Pair<String, UserStateEnum>> login(String currUser, String userToLogin, String password);
     Response<String> logout(String name);
 
-    Response<String> registerUser(UserDTO user);
-    Response<String> registerUserBySystemManager(UserDTO user, String optionalSupervisor);
+    Response<String> registerUser(String currUser, UserDTO user);
+    Response<String> registerUserBySystemManager(String currUser, UserDTO user, String optionalSupervisor);
 
     Response<Boolean> removeUser(String currUser, String userToRemove);
 

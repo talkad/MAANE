@@ -120,8 +120,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public Response<String> registerUser(UserDTO user) {
-        Response<String> res = UserController.getInstance().registerUser(user.getCurrUser(),
+    public Response<String> registerUser(String currUser, UserDTO user) {
+        Response<String> res = UserController.getInstance().registerUser(currUser,
                 user.getUserToRegister(), passwordEncoder.encode(user.getPassword()), user.getUserStateEnum(), user.getFirstName(),
                 user.getLastName(), user.getEmail(), user.getPhoneNumber(), user.getCity());
 
@@ -134,8 +134,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public Response<String> registerUserBySystemManager(UserDTO user, String optionalSupervisor) {
-        Response<String> res = UserController.getInstance().registerUserBySystemManager(user.getCurrUser(), user.getUserToRegister(), user.getPassword(), user.getUserStateEnum(), optionalSupervisor, user.getWorkField(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getPhoneNumber(), user.getCity());
+    public Response<String> registerUserBySystemManager(String currUser, UserDTO user, String optionalSupervisor) {
+        Response<String> res = UserController.getInstance().registerUserBySystemManager(currUser, user.getUserToRegister(), user.getPassword(), user.getUserStateEnum(), optionalSupervisor, user.getWorkField(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getPhoneNumber(), user.getCity());
 
         if (res.isFailure())
             log.error("failed to register user {}", user.getUserToRegister());

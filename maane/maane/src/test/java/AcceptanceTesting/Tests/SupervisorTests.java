@@ -47,10 +47,10 @@ public class SupervisorTests extends AcceptanceTests{
             ins2Schools.add("5");
             ins2Schools.add("6");
             userBridge.login(guestName, adminName, adminName);
-            userBridge.registerUserBySystemManager(new UserDTO(adminName, "science", supervisorName1, supervisorName1, UserStateEnum.SUPERVISOR,"Ronit", "Blisco", "ronit@gmail.com", "0501111111", "Tel Aviv", new Vector<>()), "");
+            userBridge.registerUserBySystemManager(adminName, new UserDTO("science", supervisorName1, supervisorName1, UserStateEnum.SUPERVISOR,"Ronit", "Blisco", "ronit@gmail.com", "0501111111", "Tel Aviv", new Vector<>()), "");
 
-            userBridge.registerUserBySystemManager(new UserDTO(adminName, "", instructorName1, instructorName1, UserStateEnum.INSTRUCTOR, "dan", "dani", "dan@gmail.com", "0501111111", "Tel Aviv", ins1Schools), supervisorName1);
-            userBridge.registerUserBySystemManager(new UserDTO(adminName, "", instructorName2, instructorName2, UserStateEnum.INSTRUCTOR, "ben", "beni", "ben@gmail.com", "0501111111", "Tel Aviv", ins2Schools), supervisorName1);
+            userBridge.registerUserBySystemManager(adminName, new UserDTO("", instructorName1, instructorName1, UserStateEnum.INSTRUCTOR, "dan", "dani", "dan@gmail.com", "0501111111", "Tel Aviv", ins1Schools), supervisorName1);
+            userBridge.registerUserBySystemManager(adminName, new UserDTO("", instructorName2, instructorName2, UserStateEnum.INSTRUCTOR, "ben", "beni", "ben@gmail.com", "0501111111", "Tel Aviv", ins2Schools), supervisorName1);
             guestName = userBridge.addGuest().getResult();
             userBridge.login(guestName, supervisorName1, supervisorName1);
 

@@ -1,33 +1,15 @@
 package Communication.DTOs;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.List;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
 public class SchoolManagementDTO {
-    private String currUser;
     private String affectedUser;
     private List<String> schools;
-
-    public String getCurrUser() {
-        return currUser;
-    }
-
-    public void setCurrUser(String currUser) {
-        this.currUser = currUser;
-    }
-
-    public String getAffectedUser() {
-        return affectedUser;
-    }
-
-    public void setAffectedUser(String affectedUser) {
-        this.affectedUser = affectedUser;
-    }
-
-    public List<String> getSchools() {
-        return schools;
-    }
-
-    public void setSchools(List<String> schools) {
-        this.schools = schools;
-    }
 }

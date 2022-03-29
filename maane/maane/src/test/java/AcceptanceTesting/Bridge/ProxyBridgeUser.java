@@ -61,18 +61,18 @@ public class ProxyBridgeUser implements UserService {
     }
 
     @Override
-    public Response<String> registerUser(UserDTO user) {
+    public Response<String> registerUser(String currUser, UserDTO user) {
         if (real != null){
-            return real.registerUser(user);
+            return real.registerUser(currUser, user);
         }
 
         return new Response<>(null, true, "not implemented");
     }
 
     @Override
-    public Response<String> registerUserBySystemManager(UserDTO user, String optionalSupervisor) {
+    public Response<String> registerUserBySystemManager(String currUser, UserDTO user, String optionalSupervisor) {
         if (real != null){
-            return real.registerUserBySystemManager(user, optionalSupervisor);
+            return real.registerUserBySystemManager(currUser, user, optionalSupervisor);
         }
 
         return new Response<>(null, true, "not implemented");
