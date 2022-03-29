@@ -4,6 +4,7 @@ import Communication.DTOs.GoalDTO;
 import Communication.DTOs.SchoolManagementDTO;
 import Communication.DTOs.UserDTO;
 import Communication.DTOs.WorkPlanDTO;
+import Communication.Security.KeyLoader;
 import Communication.UserPersistency.Entity.UserInfo;
 import Communication.UserPersistency.Service.UserInfoService;
 import Domain.CommonClasses.Pair;
@@ -57,7 +58,7 @@ public class UserController {
 
             try{
                 String refreshToken = authorizationHeader.substring("Bearer ".length());
-                Algorithm algorithm = Algorithm.HMAC256("secret".getBytes(StandardCharsets.UTF_8)); // todo: decrypt and encrypt this key in production
+                Algorithm algorithm = Algorithm.HMAC256(KeyLoader.getInstance().getEncryptionKey());
                 JWTVerifier verifier = JWT.require(algorithm).build();
 
                 DecodedJWT decodedJWT = verifier.verify(refreshToken);

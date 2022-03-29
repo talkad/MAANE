@@ -1,6 +1,7 @@
 package Communication.Filter;
 
 
+import Communication.Security.KeyLoader;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -50,7 +51,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
         User user = (User)authentication.getPrincipal();
-        Algorithm algorithm = Algorithm.HMAC256("secret".getBytes(StandardCharsets.UTF_8)); // todo: decrypt and encrypt this key in production
+        Algorithm algorithm = Algorithm.HMAC256(KeyLoader.getInstance().getEncryptionKey());
 
         String accessToken = JWT.create()
                 .withSubject(user.getUsername())

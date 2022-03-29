@@ -1,5 +1,6 @@
 package Communication.Filter;
 
+import Communication.Security.KeyLoader;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -47,7 +48,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
                 try{
                     String token = authorizationHeader.substring("Bearer ".length());
-                    Algorithm algorithm = Algorithm.HMAC256("secret".getBytes(StandardCharsets.UTF_8)); // todo: decrypt and encrypt this key in production
+                    Algorithm algorithm = Algorithm.HMAC256(KeyLoader.getInstance().getEncryptionKey());
                     JWTVerifier verifier = JWT.require(algorithm).build();
 
                     DecodedJWT decodedJWT = verifier.verify(token);
