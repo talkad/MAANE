@@ -40,9 +40,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http.authorizeRequests().antMatchers("/user/login/**", "/user/refreshToken/**").permitAll();
-        http.authorizeRequests().antMatchers(GET, "/user/**").hasAuthority("GENERAL_SUPERVISOR");
+        http.authorizeRequests().antMatchers("/survey/createSurvey", "/survey/addRule", "/survey/removeRule",
+                "/survey/detectFault", "/survey/getSurveys").hasAuthority("SUPERVISOR");
+        // http.authorizeRequests().antMatchers(GET, "/user/**").hasAuthority("GENERAL_SUPERVISOR");
         http.authorizeRequests().anyRequest().authenticated();
-        //        http.authorizeHttpRequests().anyRequest().permitAll();
+        //  http.authorizeHttpRequests().anyRequest().permitAll();
         http.addFilter(authenticationFilter);
         http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
