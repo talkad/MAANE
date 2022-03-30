@@ -35,6 +35,14 @@ public class UserController {
         adminBoot("admin", "admin");
     }
 
+    private static class CreateSafeThreadSingleton {
+        private static final UserController INSTANCE = new UserController();
+    }
+
+    public static UserController getInstance() {
+        return UserController.CreateSafeThreadSingleton.INSTANCE;
+    }
+
     public Map<String, User> getConnectedUsers() {
         return this.connectedUsers;
     }
@@ -60,14 +68,6 @@ public class UserController {
         else {
             return new Response<>(null, true, "user is not logged in");
         }
-    }
-
-    private static class CreateSafeThreadSingleton {
-        private static final UserController INSTANCE = new UserController();
-    }
-
-    public static UserController getInstance() {
-        return UserController.CreateSafeThreadSingleton.INSTANCE;
     }
 
     /**
@@ -702,7 +702,6 @@ public class UserController {
         // todo - publisher and subscribers
     }
 
-
     public Response<Boolean> removeGoal(String currUser, String year, int goalId) {
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
@@ -796,7 +795,7 @@ public class UserController {
         }
     }
 
-    public Response<Boolean> transferSupervision(String currUser, String currSupervisor, String newSupervisor, String password, String firstName, String lastName, String email, String phoneNumber, String city){//todo transfer to existing user
+    public Response<Boolean> transferSupervision(String currUser, String currSupervisor, String newSupervisor, String password, String firstName, String lastName, String email, String phoneNumber, String city){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             Response<Boolean> transferSupervisionRes = user.transferSupervision(currSupervisor, newSupervisor);
@@ -841,6 +840,7 @@ public class UserController {
                     newSup.setAppointments(currSup.getAppointments());
                     newSup.removeAppointment(newSupervisor);//remove yourself from your own appointment
                     newSup.setSurveys(currSup.getSurveys().getResult());
+                    newSup.setSchools(new Vector<>());
                     registeredUsers.remove(currSupervisor);
                     connectedUsers.remove(currSupervisor);//todo maybe dont delete old sup just change his role
                     if(connectedUsers.containsKey(newSupervisor)){
@@ -849,6 +849,7 @@ public class UserController {
                         newSup.setAppointments(currSup.getAppointments());
                         newSup.removeAppointment(newSupervisor);//remove yourself from your own appointment
                         newSup.setSurveys(currSup.getSurveys().getResult());
+                        newSup.setSchools(new Vector<>());
                     }
                     return transferSupervisionRes;
                 }

@@ -34,7 +34,6 @@ public enum Permissions {
     /** System Manager User **/
     REGISTER_SUPERVISOR,
     REGISTER_BY_ADMIN,
-    GET_ALL_SUPERVISORS,
     VIEW_ALL_USERS_INFO,
     REMOVE_USER,
     CHANGE_PASSWORD_TO_USER,

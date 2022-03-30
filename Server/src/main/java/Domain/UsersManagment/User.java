@@ -414,7 +414,6 @@ public class User {
 
     public void setState(UserStateEnum state) {
         this.state = inferUserType(state);
-        //this.state = state;
     }
 
     public String getFirstName() {

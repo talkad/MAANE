@@ -2,7 +2,6 @@ package Service;
 
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.DataController;
-import Domain.UsersManagment.UserController;
 import Service.Interfaces.DataService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

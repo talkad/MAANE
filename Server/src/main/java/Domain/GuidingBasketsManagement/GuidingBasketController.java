@@ -119,7 +119,7 @@ public class GuidingBasketController {
      * removes a label from the selected basket
      * @param username the user who initiated the deletion
      * @param dto the guiding basket to remove from
-     * @param labelToRemove the lavel to remove
+     * @param labelToRemove the label to remove
      * @return response with the result of the operation
      */
     public Response<Boolean> removeBasketLabel(String username, GuidingBasketDTO dto, String labelToRemove){
