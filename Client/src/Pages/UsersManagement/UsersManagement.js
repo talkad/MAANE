@@ -400,7 +400,7 @@ const rows = [
 export default function UsersManagement(props){
     const [tableRows, setTableRows] = useState(rows);
 
-    // dialogs
+    // dialogs states
     const [openCPDialog, setOpenCPDialog] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [openEditSchoolsDialog, setOpenEditSchoolsDialog] = useState(false);
@@ -408,7 +408,7 @@ export default function UsersManagement(props){
     const [selectedName, setSelectedName] = useState('');
     const [selectedSchools, setSelectedSchools] = useState([]);
 
-    // snackbar
+    // snackbar states
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [snackbarSeverity, setSnackbarSeverity] = useState('');
     const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -701,6 +701,7 @@ export default function UsersManagement(props){
                         </TableBody>
                     </Table>
                 </TableContainer>
+
                 {/*change password dialog pop up*/}
                 <ChangePasswordDialog
                     selectedUser={selectedUser}
@@ -709,6 +710,7 @@ export default function UsersManagement(props){
                     onClose={handleCloseCPDialog}
                     callback={handleUserChangePassword}
                 />
+
                 {/*delete user dialog pop up*/}
                 <DeleteUserDialog
                     selectUser={selectedUser}
@@ -717,6 +719,7 @@ export default function UsersManagement(props){
                     onClose={handleCloseDeleteDialog}
                     callback={handleUserDeletion}
                 />
+
                 {/*edit schools dialog pop up*/}
                 <EditSchoolsDialog
                     selectedUser={selectedUser}
@@ -726,6 +729,7 @@ export default function UsersManagement(props){
                     onClose={handleCloseEditSchoolsDialog}
                     addSchoolCallback={handleUserAddSchool}
                     removeSchoolCallback={handleUserRemoveSchool}/>
+
                 {/*snackbar for notification on actions*/}
                 <NotificationSnackbar
                     open={openSnackbar}

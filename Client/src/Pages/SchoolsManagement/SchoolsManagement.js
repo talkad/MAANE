@@ -1,14 +1,14 @@
 import * as Space from 'react-spaces';
 import {
-    Box,
-    Collapse, Divider, Grid,
-    IconButton,
+    Box, Button,
+    Collapse, Dialog, DialogTitle, Divider, Grid,
+    IconButton, InputAdornment,
     List, ListItem, ListItemText,
-    Paper,
+    Paper, Stack,
     Table, TableBody, TableCell,
     TableContainer,
     TableHead,
-    TableRow
+    TableRow, TextField, Typography
 } from "@mui/material";
 import React, {useEffect, useState} from "react";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
@@ -16,6 +16,10 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 //css
 import "./SchoolsManagement.css"
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import Visibility from "@mui/icons-material/Visibility";
+import Connection from "../../Communication/Connection";
+import NotificationSnackbar from "../../CommonComponents/NotificationSnackbar";
 
 /**
  * a function that returns an object containing the data for a row in the table
@@ -84,6 +88,13 @@ function Row(props) {
     const sector_primary_string = "מגזר";
     const supervisor_primary_string = "מפקח/מדריך";
     const supervision_type_primary_string = "סוג פיקוח";
+
+    // coordinator's strings
+    const coordinator_title_string = "רכזים:";
+
+    // action strings
+    const action_title_string = "פעולות:";
+    const add_coordinator_string = "הוספת רכז/ת";
 
     return (
         <React.Fragment>
@@ -181,13 +192,93 @@ function Row(props) {
                                         </ListItem>
                                     </List>
                                 </Box>
-                            {/*    TODO: add coordinator button*/}
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Typography>{coordinator_title_string}</Typography>
+                            </Grid>
+                            <Grid item xs={12}>
+                            {/*    TODO: view the coordinators of the school*/}
+                            </Grid>
+
+                            <Grid item xs={12}>
+                                <Typography>{action_title_string}</Typography>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <Button onClick={() => props.handleOpenAddCoordinatorDialog(row.id, row.name)} variant="outlined" sx={{marginBottom: 1}}>{add_coordinator_string}</Button>
                             </Grid>
                         </Grid>
                     </Collapse>
                 </TableCell>
             </TableRow>
         </React.Fragment>
+    )
+}
+
+/**
+ * a dialog element for adding a coordinator to a selected school
+ * @param props the properties the element gets
+ * @returns {JSX.Element} the element
+ */
+function AddCoordinatorDialog(props){
+
+
+    const title_string = "שלום שם";
+
+    return (
+        <Dialog fullWidth maxWidth="sm" onClose={props.onClose} open={props.open}>
+            <DialogTitle><Typography variant="h5" align="center">{title_string} {props.schoolID} {props.schoolName}</Typography></DialogTitle>
+            {/*todo: implement the form*/}
+            {/*<Stack component="form" sx={{alignItems: "center"}} onSubmit={handleSubmit}>*/}
+            {/*    /!*the new password field*!/*/}
+            {/*    <TextField name="password"*/}
+            {/*               sx={{paddingBottom: 1, width: "50%"}}*/}
+            {/*               id="outlined-basic"*/}
+            {/*               label={password_string}*/}
+            {/*               variant="outlined"*/}
+            {/*               type={showPassword ? 'text' : 'password'}*/}
+            {/*               InputProps={{*/}
+            {/*                   endAdornment: (*/}
+            {/*                       <InputAdornment position="end">*/}
+            {/*                           <IconButton*/}
+            {/*                               onClick={() => setShowPassword(!showPassword)}*/}
+            {/*                               onMouseDown={(event) => event.preventDefault()}*/}
+            {/*                           >*/}
+            {/*                               {showPassword ? <VisibilityOff /> : <Visibility />}*/}
+            {/*                           </IconButton>*/}
+            {/*                       </InputAdornment>*/}
+            {/*                   ),*/}
+            {/*               }}/>*/}
+            {/*    /!*confirm password*!/*/}
+            {/*    <TextField name="confirmPassword"*/}
+            {/*               sx={{paddingBottom: 1, width: "50%"}}*/}
+            {/*               label={confirm_password_string}*/}
+            {/*               variant="outlined"*/}
+            {/*               type={showConfirmPassword ? 'text' : 'password'}*/}
+            {/*               InputProps={{*/}
+            {/*                   endAdornment: (*/}
+            {/*                       <InputAdornment position="end">*/}
+            {/*                           <IconButton*/}
+            {/*                               onClick={() => setShowConfirmPassword(!showConfirmPassword)}*/}
+            {/*                               onMouseDown={(event) => event.preventDefault()}*/}
+            {/*                           >*/}
+            {/*                               {showConfirmPassword ? <VisibilityOff /> : <Visibility />}*/}
+            {/*                           </IconButton>*/}
+            {/*                       </InputAdornment>*/}
+            {/*                   ),*/}
+            {/*               }}/>*/}
+            {/*    /!*the submit button*!/*/}
+            {/*    <Grid container justifyContent="center" spacing={0}>*/}
+            {/*        <Grid item align="center" xs={4}>*/}
+            {/*            /!*the cancel button*!/*/}
+            {/*            <Button onClick={() => props.onClose()} sx={{marginBottom: 1, width: "50%"}} variant="outlined">{cancel_string}</Button>*/}
+            {/*        </Grid>*/}
+            {/*        <Grid item align="center" xs={4}>*/}
+            {/*            /!*the change button*!/*/}
+            {/*            <Button type="submit" color="success" sx={{marginBottom: 1, width: "50%"}} variant="outlined">{change_string}</Button>*/}
+            {/*        </Grid>*/}
+            {/*    </Grid>*/}
+            {/*</Stack>*/}
+        </Dialog>
     )
 }
 
@@ -200,6 +291,16 @@ const rows = [
 export default function SchoolsManagement(props){
     const [schools, setSchools] = useState(rows);
 
+    // dialog states
+    const [openACDialog, setOpenACDialog] = useState(false);
+    const [selectedSchoolID, setSelectedSchoolID] = useState(-1);
+    const [selectedSchoolName, setSelectedSchoolName] = useState('');
+
+    // snackbar states
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackbarSeverity, setSnackbarSeverity] = useState('');
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+
     // STRINGS
     const page_title = "בתי הספר שלי";
     const school_id_cell_head_string = "סמל מוסד";
@@ -211,6 +312,10 @@ export default function SchoolsManagement(props){
 
         },[]);
 
+    /**
+     * arranges the school's data which got from the server
+     * @param data the response from the server for the request to get the schools
+     */
     const arrangeSchoolCallback = (data) => {
         if (!data.failure){
             setSchools(data.result);
@@ -218,6 +323,56 @@ export default function SchoolsManagement(props){
         else{
             // todo: needed?
         }
+    }
+
+    // add coordinator functions
+
+    /**
+     * handles the opening of the dialog to add a coordinator to a given school
+     * @param schoolID the id of the selected school
+     * @param schoolName the name of the selected school
+     */
+    const handleOpenAddCoordinatorDialog = (schoolID, schoolName) => {
+        setOpenACDialog(true);
+        setSelectedSchoolID(schoolID);
+        setSelectedSchoolName(schoolName);
+    }
+
+    /**
+     * an onClose handler for the AddCoordinator dialog
+     */
+    const handleCloseACDialog = () => {
+        setOpenACDialog(false);
+    }
+
+    /**
+     * a call back which handles the response from the server regarding the request to add a coordinator to a selected school
+     * @param data the response from the server
+     */
+    const addCoordinatorCallback = (data) => {
+        // TODO: implement
+    }
+
+    /**
+     * an handler for adding a coordinator to a given school
+     * @param workField the work field to which the coordinator is related to TODO: how do i get that?
+     * @param firstName the first name of the coordinator to add
+     * @param lastName the last name of the coordinator to add
+     * @param email the email of the coordinator to add
+     * @param phoneNumber the phone number of the coordinator to add
+     * @param schoolID the school id of the school to which add the coordinator to
+     */
+    const handleAddCoordinator = (workField, firstName, lastName, email, phoneNumber, schoolID) => {
+        Connection.getInstance().addCoordinator(
+            window.sessionStorage.getItem('username'),
+            workField,
+            firstName,
+            lastName,
+            email,
+            phoneNumber,
+            schoolID,
+            addCoordinatorCallback
+        )
     }
 
     return (
@@ -240,11 +395,27 @@ export default function SchoolsManagement(props){
                         {/*the body of the table containing the rows*/}
                         <TableBody>
                             {schools.map((tableRow) => (
-                                <Row key={tableRow.id} row={tableRow}/>
+                                <Row key={tableRow.id} row={tableRow} handleOpenAddCoordinatorDialog={handleOpenAddCoordinatorDialog}/>
                             ))}
                         </TableBody>
                     </Table>
                 </TableContainer>
+
+                {/*add coordinator dialog pop up*/}
+                <AddCoordinatorDialog
+                    schoolID={selectedSchoolID}
+                    schoolName={selectedSchoolName}
+                    open={openACDialog}
+                    onClose={handleCloseACDialog}
+                    callback={handleAddCoordinator}
+                />
+
+                {/*snackbar for notification on actions*/}
+                <NotificationSnackbar
+                    open={openSnackbar}
+                    setOpen={setOpenSnackbar}
+                    severity={snackbarSeverity}
+                    message={snackbarMessage}/>
             </div>
         </Space.Fill>
 

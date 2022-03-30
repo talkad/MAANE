@@ -1,5 +1,9 @@
 import axios from "axios";
 
+// TODO: tal finally implemented the connection like a normal person so i need to adjust to that (normal tokens and encryption)
+// TODO: do we really need to pass the "currentUser" each time? should change that so it "pushes" it implicitly
+// TODO: change to GET requests where it's proper instead of the POST requests
+
 class Connection{
     static #instance = null;
 
@@ -324,6 +328,33 @@ class Connection{
                 userToChangePassword: affectedUser,
                 newPassword: newPassword,
                 confirmPassword: confirmNewPassword
+            },
+            callback);
+    }
+
+    // MANAGE SCHOOLS REQUESTS
+
+    /**
+     * sends a POST request to add a coordinator to a given school
+     * @param currentUser the token (mostly the user's username) of the active user in the current session
+     * @param wordField the work field of the coordinator to add
+     * @param firstName the first name of the coordinator to add
+     * @param lastName the last name of the coordinator to add
+     * @param email the email of the coordinator to add
+     * @param phoneNumber the phone number of the coordinator to add
+     * @param schoolID the school id to which add the new coordinator
+     * @param callback a callback function to call once there's a response
+     */
+    addCoordinator(currentUser, wordField, firstName, lastName, email, phoneNumber, schoolID, callback){
+        this.sendPOST('/data/assignCoordinator',
+            {
+                currUser: currentUser,
+                wordField: wordField,
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                phoneNumber: phoneNumber,
+                school: schoolID,
             },
             callback);
     }
