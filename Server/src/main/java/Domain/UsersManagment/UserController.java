@@ -7,6 +7,8 @@ import Domain.DataManagement.DataController;
 import Domain.DataManagement.SurveyController;
 import Domain.EmailManagement.EmailController;
 import Domain.WorkPlan.GoalsManagement;
+import Persistence.UserDBDTO;
+import Persistence.UserQueries;
 
 import javax.mail.MessagingException;
 import java.util.*;
@@ -22,6 +24,7 @@ public class UserController {
     private SurveyController surveyController;
     private EmailController emailController;
     private DataController dataController;
+    private UserQueries userQueries;
 
     private UserController() {
         this.availableId = new AtomicInteger(1);
@@ -32,6 +35,7 @@ public class UserController {
         this.surveyController = SurveyController.getInstance();
         this.emailController = EmailController.getInstance();
         this.dataController = DataController.getInstance();
+        this.userQueries = UserQueries.getInstance();
         adminBoot("admin", "admin");
     }
 
@@ -689,7 +693,9 @@ public class UserController {
 
     public void adminBoot(String username, String password) {
         User user = new User(username, UserStateEnum.SYSTEM_MANAGER);
+        //userQueries.insertUser(new UserDBDTO(user, ));
         registeredUsers.put(username, new Pair<>(user, security.sha256(password)));
+
         //todo temp static data
         String guest_name_temp = addGuest().getResult();
         login(guest_name_temp,"admin", "admin");
