@@ -52,6 +52,9 @@ function InfoTabPanel(props){
         city: props.profileInfo.city
     });
 
+    // tracks if there were changes to any of the values
+    const [changes, setChanges] = useState(true);
+
     const [edit, setEdit] = useState(false);
 
     const first_name_label_string = "שם פרטי";
@@ -61,6 +64,16 @@ function InfoTabPanel(props){
     const city_label_string = "עיר";
     const save_button_string = "שמירה";
 
+    const edit_string = 'ערכית פרטים';
+
+    useEffect(() => {
+        if (changes) {
+            window.onbeforeunload = () => false
+        } else {
+            window.onbeforeunload = undefined
+        }
+    }, [])
+
     /**
      * handles the change of the text fields
      * @param prop the name of the value which has changed
@@ -68,6 +81,7 @@ function InfoTabPanel(props){
      */
     const handleChange = (prop) => (event) => {
         setValues({ ...values, [prop]: event.target.value });
+        setChanges(true);
     }
 
     /**
@@ -105,13 +119,10 @@ function InfoTabPanel(props){
     return (
         <Grid container spacing={2} rowSpacing={4} sx={{paddingTop: 1}}>
             {/*edit button*/}
-            <Grid item xs={4}>
-                <IconButton
-                    onClick={() => setEdit(!edit)}
-                    onMouseDown={(event) => event.preventDefault()}
-                >
-                    {edit? <EditOffIcon />  : <EditIcon />}
-                </IconButton>
+            <Grid item xs={6}>
+                <Button onClick={() => setEdit(!edit)} variant={edit ? "outlined" : "contained"} startIcon={edit? <EditOffIcon />  : <EditIcon />}>
+                    {edit_string}
+                </Button>
             </Grid>
             <Grid item xs={8}/>
 

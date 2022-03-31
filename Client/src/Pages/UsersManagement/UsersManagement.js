@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import './ManageUsers.css'
+import './UsersManagement.css'
 
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -12,7 +12,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import Box from "@mui/material/Box";
 import {
-    Alert,
+    Alert, Autocomplete,
     Avatar,
     Collapse,
     Dialog,
@@ -32,7 +32,6 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Visibility from "@mui/icons-material/Visibility";
 import NotificationSnackbar from "../../CommonComponents/NotificationSnackbar";
 import DeleteIcon from '@mui/icons-material/Delete';
-import AddIcon from '@mui/icons-material/Add';
 
 
 /**
@@ -278,35 +277,42 @@ function ChangePasswordDialog(props){
     )
 }
 
+// offline mock data for general testing of the Autocomplete component
+const schools = [
+    { label: "סתם", id: 1},
+    { label: "כלום", id: 2},
+]
+
 /**
  * a dialog element for editing the assigned school of a user
  * @param props the properties the element gets
  * @returns {JSX.Element} the element
  */
 function EditSchoolsDialog(props){
-    const [addSchoolName, setAddSchoolName] = useState('');
     const [error, setError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
 
+    const [schoolSearchValue, setSchoolSearchValue] = useState('');
+    const [selectedSchoolId, setSelectedSchoolId] = useState(-1);
+
     const title_string = "עריכת בתי ספר תחת";
+    const search_school_string = "חפש/י בית ספר";
+    const add_school_button_string = "הוספת בית ספר";
 
     // tooltips' strings
     const delete_tooltip_string = "הסרת בית ספר";
-    const add_tooltip_string = "הוספת בית ספר";
 
-    const handleAddSchoolNameChange = (event) => {
-        setAddSchoolName(event.target.value);
-    }
 
     const addSchool = () => {
-        if (addSchoolName === ''){
+        if (selectedSchoolId === -1){
             setError(true);
-            setErrorMessage("נא להכניס שם בית ספר")
+            setErrorMessage("נא לבחור בית ספר מהרשימה")
         }
         else{
             setError(false);
-            setAddSchoolName('');
-            props.addSchoolCallback(props.selectedUser, addSchoolName);
+            setSchoolSearchValue('');
+            setSelectedSchoolId(-1);
+            props.addSchoolCallback(props.selectedUser, schoolSearchValue, selectedSchoolId);
         }
     }
 
@@ -322,7 +328,7 @@ function EditSchoolsDialog(props){
                             <ListItem
                                 secondaryAction={
                                     <Tooltip title={delete_tooltip_string}>
-                                        <IconButton onClick={() => props.removeSchoolCallback(props.selectedUser, school)} edge="end">
+                                        <IconButton onClick={() => props.removeSchoolCallback(props.selectedUser, school.id)} edge="end">
                                             <DeleteIcon />
                                         </IconButton>
                                     </Tooltip>
@@ -338,25 +344,45 @@ function EditSchoolsDialog(props){
                     )}
                     <ListItem>
                         {/*field for adding new school to a givel user*/}
-                        <TextField
-                            value={addSchoolName}
-                            onChange={handleAddSchoolNameChange}
-                            error={error}
+                        {/*<TextField*/}
+                        {/*    value={addSchoolName}*/}
+                        {/*    onChange={handleAddSchoolNameChange}*/}
+                        {/*    error={error}*/}
+                        {/*    fullWidth*/}
+                        {/*    InputProps={{*/}
+                        {/*        endAdornment: (*/}
+                        {/*            <InputAdornment position="end">*/}
+                        {/*                <Tooltip title={add_tooltip_string}>*/}
+                        {/*                    <IconButton*/}
+                        {/*                        onClick={addSchool}*/}
+                        {/*                        onMouseDown={(event) => event.preventDefault()}*/}
+                        {/*                    >*/}
+                        {/*                        <AddIcon color="primary"/>*/}
+                        {/*                    </IconButton>*/}
+                        {/*                </Tooltip>*/}
+                        {/*            </InputAdornment>*/}
+                        {/*        ),*/}
+                        {/*    }}/>*/}
+
+                        <Autocomplete
+                            disablePortal
+                            value={schoolSearchValue}
+                            onChange={function (event, newValue){
+                                    if (newValue !== null){
+                                        setSchoolSearchValue(newValue.label);
+                                        setSelectedSchoolId(newValue.id);
+                                    }
+                                }
+                            }
+                            options={schools}
+                            // todo: is the below thingy bad?
+                            isOptionEqualToValue={(option, value) => true}
                             fullWidth
-                            InputProps={{
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <Tooltip title={add_tooltip_string}>
-                                            <IconButton
-                                                onClick={addSchool}
-                                                onMouseDown={(event) => event.preventDefault()}
-                                            >
-                                                <AddIcon color="primary"/>
-                                            </IconButton>
-                                        </Tooltip>
-                                    </InputAdornment>
-                                ),
-                            }}/>
+                            renderInput={(params) => <TextField {...params} label={search_school_string} error={error} />}
+                        />
+                    </ListItem>
+                    <ListItem style={{display:'flex', justifyContent:'flex-end'}}>
+                        <Button onClick={addSchool} disabled={selectedSchoolId === -1} variant='contained'>{add_school_button_string}</Button>
                     </ListItem>
                 </List>
                 {error && <Alert sx={{marginBottom: 1}} severity="error">{errorMessage}</Alert>}
@@ -371,10 +397,10 @@ const rows = [
     createData("Shoshi", 'שושי רונית', "מדריכה", "shoshi@post.bgu.ac.il", "002-123-4567", "ירוחם", ["יהלום", "שהם"]),
 ];
 
-export default function ManageUsers(props){
+export default function UsersManagement(props){
     const [tableRows, setTableRows] = useState(rows);
 
-    // dialogs
+    // dialogs states
     const [openCPDialog, setOpenCPDialog] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [openEditSchoolsDialog, setOpenEditSchoolsDialog] = useState(false);
@@ -382,7 +408,7 @@ export default function ManageUsers(props){
     const [selectedName, setSelectedName] = useState('');
     const [selectedSchools, setSelectedSchools] = useState([]);
 
-    // snackbar
+    // snackbar states
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [snackbarSeverity, setSnackbarSeverity] = useState('');
     const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -401,6 +427,7 @@ export default function ManageUsers(props){
         else if(props.userType === "SYSTEM_MANAGER"){
             Connection.getInstance().getAllUsers(window.sessionStorage.getItem('username'), handleReceivedData); // TODO: check this (logging in with admin)
         }
+        // todo: see about how i get the information about the school and how i arrange it
 
     }, []);
 
@@ -613,9 +640,10 @@ export default function ManageUsers(props){
     /**
      * handler for sending a request to add a school assigned to a selected user
      * @param username the selected user
-     * @param school the school to assign to the selected user
+     * @param schoolName the name of the school to assign to the selected user
+     * @param schoolId the id of the school to assign to the selected user
      */
-    const handleUserAddSchool = (username, school) => {
+    const handleUserAddSchool = (username, schoolName, schoolId) => {
         // todo: send
     }
 
@@ -640,9 +668,9 @@ export default function ManageUsers(props){
     /**
      * handler for sending a request to add a school assigned to a selected user
      * @param username the selected user
-     * @param school the school to remove from the selected user
+     * @param schoolId the id of the school to remove from the selected user
      */
-    const handleUserRemoveSchool = (username, school) => {
+    const handleUserRemoveSchool = (username, schoolId) => {
         // todo: send
     }
 
@@ -673,6 +701,7 @@ export default function ManageUsers(props){
                         </TableBody>
                     </Table>
                 </TableContainer>
+
                 {/*change password dialog pop up*/}
                 <ChangePasswordDialog
                     selectedUser={selectedUser}
@@ -681,6 +710,7 @@ export default function ManageUsers(props){
                     onClose={handleCloseCPDialog}
                     callback={handleUserChangePassword}
                 />
+
                 {/*delete user dialog pop up*/}
                 <DeleteUserDialog
                     selectUser={selectedUser}
@@ -689,6 +719,7 @@ export default function ManageUsers(props){
                     onClose={handleCloseDeleteDialog}
                     callback={handleUserDeletion}
                 />
+
                 {/*edit schools dialog pop up*/}
                 <EditSchoolsDialog
                     selectedUser={selectedUser}
@@ -698,6 +729,7 @@ export default function ManageUsers(props){
                     onClose={handleCloseEditSchoolsDialog}
                     addSchoolCallback={handleUserAddSchool}
                     removeSchoolCallback={handleUserRemoveSchool}/>
+
                 {/*snackbar for notification on actions*/}
                 <NotificationSnackbar
                     open={openSnackbar}

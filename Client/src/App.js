@@ -9,7 +9,7 @@ import SurveyBuilder from "./Pages/SurveyBuilder/SurveyBuilder";
 import RegisterUsers from "./Pages/Credentials/RegisterUsers";
 import Survey from "./Pages/Survey/Survey";
 import WorkPlan from "./Pages/WorkPlan/WorkPlan";
-import ManageUsers from "./Pages/ManageUsers/ManageUsers";
+import UsersManagement from "./Pages/UsersManagement/UsersManagement";
 import InfoViewer from "./Pages/GeneralSupervisorInfoViewer/InfoViewer";
 import SurveyConstraintBuilder from "./Pages/SurveyConstraints/SurveyConstraintBuilder";
 import GuidingBaskets from "./Pages/GuidingBaskets/GuidingBaskets";
@@ -43,6 +43,8 @@ import GoalsManagement from "./Pages/GoalsManagement/GoalsManagement";
 import MenuIcon from '@mui/icons-material/Menu';
 import ProfilePage from "./Pages/Profile/ProfilePage";
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import SchoolsManagement from "./Pages/SchoolsManagement/SchoolsManagement";
+import SchoolIcon from '@mui/icons-material/School';
 
 // TODO: prevent users from going through the site by entering paths in the url
 // TODO: currently saving everything in local storage but IT IS NOT SAFE
@@ -70,14 +72,6 @@ function App(){
     const logout_button_string = "יציאה";
     // TODO: the greetings currently doesn't work well. but perhaps once TAL implements what i asked then it will (return the username with the response for the request)
     const greetings_string = "שלום " + window.sessionStorage.getItem('username') // TODO: instead of the username, use the actual name of the user
-
-    const styles = theme => ({
-        appBar: {
-            zIndex: theme.zIndex.drawer + 1,
-        },
-
-        toolbar: theme.mixins.toolbar,
-    })
 
     /**
      * a callback to call when the result of the logout request got back
@@ -107,46 +101,88 @@ function App(){
             {/*TODO: show buttons based on permissions*/}
             <List>
                 {/*home button*/}
-                <ListItem button onClick={() => navigate(`user/home`, {replace: false})}>
+                <ListItem button onClick={
+                    function () {
+                        navigate(`user/home`, {replace: false});
+                        setOpenSidebar(false);
+                        setOpenBackdrop(false);
+                    }}>
                     <ListItemIcon>
                         <HomeIcon/>
                     </ListItemIcon>
                     <ListItemText primary="בית"/>
                 </ListItem>
                 {/*profile button*/}
-                <ListItem button onClick={() => navigate(`user/profile`, {replace: false})}>
+                <ListItem button onClick={
+                    function () {
+                        navigate(`user/profile`, {replace: false});
+                        setOpenSidebar(false);
+                        setOpenBackdrop(false);
+                }}>
                     <ListItemIcon>
                         <AccountBoxIcon/>
                     </ListItemIcon>
                     <ListItemText primary="פרופיל"/>
                 </ListItem>
                 {/*survey button*/}
-                <ListItem button onClick={() => navigate(`survey/menu`, {replace: false})}>
+                <ListItem button onClick={
+                    function () {
+                        navigate(`survey/menu`, {replace: false});
+                        setOpenSidebar(false);
+                        setOpenBackdrop(false);
+                    }}>
                     <ListItemIcon>
                         <PollIcon/>
                     </ListItemIcon>
                     <ListItemText primary="סקרים"/>
                 </ListItem>
                 {/*guiding baskets button*/}
-                <ListItem button onClick={() => navigate(`user/guidingBasketsSearch`, {replace: false})}>
+                <ListItem button onClick={
+                    function () {
+                        navigate(`user/guidingBasketsSearch`, {replace: false});
+                        setOpenSidebar(false);
+                        setOpenBackdrop(false);
+                    }}>
                     <ListItemIcon>
                         <ShoppingBasketIcon/>
                     </ListItemIcon>
                     <ListItemText primary="סלי הדרכה"/>
                 </ListItem>
                 {/*work report button*/}
-                <ListItem button onClick={() => navigate(`user/workReport`, {replace: false})}>
+                <ListItem button onClick={
+                    function () {
+                        navigate(`user/workReport`, {replace: false});
+                        setOpenSidebar(false);
+                        setOpenBackdrop(false);
+                    }}>
                     <ListItemIcon>
                         <SummarizeIcon/>
                     </ListItemIcon>
                     <ListItemText primary='דו"ח עבודה'/>
                 </ListItem>
                 {/*goals management button*/}
-                <ListItem button onClick={() => navigate(`user/goalsManagement`, {replace: false})}>
+                <ListItem button onClick={
+                    function () {
+                        navigate(`user/goalsManagement`, {replace: false});
+                        setOpenSidebar(false);
+                        setOpenBackdrop(false);
+                    }}>
                     <ListItemIcon>
                         <TaskIcon/>
                     </ListItemIcon>
                     <ListItemText primary='ניהול יעדים'/>
+                </ListItem>
+                {/*schools button*/}
+                <ListItem button onClick={
+                    function () {
+                        navigate(`user/schools`, {replace: false});
+                        setOpenSidebar(false);
+                        setOpenBackdrop(false);
+                    }}>
+                    <ListItemIcon>
+                        <SchoolIcon/>
+                    </ListItemIcon>
+                    <ListItemText primary="בתי ספר"/>
                 </ListItem>
             </List>
         </Space.Fill>
@@ -223,8 +259,13 @@ function App(){
                         {/*TODO: find a more elegant way for the permissions*/}
                         <Route path="user">
                             <Route path="login" element={<Login changeType={setType} setHideBars={setHideBars}/>}/>
+
                             {authAvailability && <Route path="auth" element={<PasswordAuthentication callback={authCallback} callee={authCalleePage} goto={authGoToPage} setHideBars={setHideBars}/>}/>}
+
                             <Route path="profile" element={<ProfilePage/>}/>
+
+                            {/*todo: is this restriction is ok?*/}
+                            {(type !== "GUEST") && <Route path="schools" element={<SchoolsManagement/>}/>}
 
                             {(type === "SUPERVISOR" || type === "INSTRUCTOR") &&
                                 <Route path="guidingBasketsSearch" element={<GuidingBaskets/>}/>}
@@ -239,7 +280,7 @@ function App(){
                                 <Route path="goalsManagement" element={<GoalsManagement/>}/>}}}
 
                             {(type === "SUPERVISOR" || type === "SYSTEM_MANAGER") &&
-                                <Route path="home" element={<ManageUsers userType={type} setAuthAvailability={setAuthAvailability} setAuthCallBack={setAuthCallback} setAuthCalleePage={setAuthCalleePage} setAuthGoToPage={setAuthGoToPage} setHideBars={setHideBars}/>}/>}
+                                <Route path="home" element={<UsersManagement userType={type} setAuthAvailability={setAuthAvailability} setAuthCallBack={setAuthCallback} setAuthCalleePage={setAuthCalleePage} setAuthGoToPage={setAuthGoToPage} setHideBars={setHideBars}/>}/>}
 
                             {type === "INSTRUCTOR" &&
                                 <Route path="home" element={<WorkPlan/>}/>}

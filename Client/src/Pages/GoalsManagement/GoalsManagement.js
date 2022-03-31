@@ -67,13 +67,14 @@ function Row(props) {
                 <TableCell>{row.title}</TableCell>
                 <TableCell>{row.quarter}</TableCell>
                 <TableCell>{row.weight}</TableCell>
+                {/*goal deletion button*/}
                 <TableCell>
                     <IconButton color="error" onClick={() => props.handleOpenDeleteDialog(row.id)}>
                         <DeleteIcon/>
                     </IconButton>
                 </TableCell>
             </TableRow>
-            {/*secondary user's into*/}
+            {/*secondary goal's into*/}
             <TableRow>
                 <TableCell style={{ paddingBottom: 0, paddingTop: 0}} colSpan={6}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
@@ -96,7 +97,6 @@ function Row(props) {
 
         </React.Fragment>
     )
-
 }
 
 function NewGoalForm(props) {
