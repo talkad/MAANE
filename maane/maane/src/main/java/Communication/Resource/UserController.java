@@ -31,7 +31,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user")
-//@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = "*", maxAge = 3600)
 public class UserController {
 
     private final ObjectMapper objectMapper;
@@ -151,6 +151,7 @@ public class UserController {
 
     @GetMapping(value = "/getAppointedUsers")
     public ResponseEntity<Response<List<UserDTO>>> getAppointedUsers(@RequestHeader(value = "Authorization") String token){
+        System.out.println("xxxxxxxxxxxxxxxxxx");
         return ResponseEntity.ok()
                 .body(service.getAppointedUsers(sessionHandler.getUsernameByToken(token).getResult()));
     }

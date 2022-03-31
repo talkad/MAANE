@@ -38,8 +38,8 @@ public class MaaneApplication {
 			String guestName = userController.addGuest().getResult();
 			userController.login(guestName, "admin", "admin");
 
-			service.registerUser("admin", new UserDTO("tech", "tal", "1234", UserStateEnum.GENERAL_SUPERVISOR,
-					"tal", "kad", "", "", "", null));
+			service.registerUserBySystemManager("admin", new UserDTO("tech", "tal", "1234", UserStateEnum.SUPERVISOR,
+					"tal", "kad", "", "", "", null), "");
 		};
 	}
 

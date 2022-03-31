@@ -13,7 +13,7 @@ export default function Login(props){
     const [showPassword, setShowPassword] = useState(false);
     const [showError, setShowError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-    const [loaded, setLoaded] = useState(false);
+    const [loaded, setLoaded] = useState(true);
 
     let navigate = useNavigate();
 
@@ -29,32 +29,32 @@ export default function Login(props){
     useEffect(() => {
         props.setHideBars(true);
 
-        const callback = function(data) {
-
-            //UserInfo.getInstance().setUsername(data.result);
-            window.sessionStorage.setItem('username', data.result);
-            setLoaded(true);
-          }
-
-          Connection.getInstance().setUpUser(callback);
+        // const callback = function(data) {
+        //
+        //     //UserInfo.getInstance().setUsername(data.result);
+        //     window.sessionStorage.setItem('username', data.result);
+        //     setLoaded(true);
+        //   }
+        //
+        //   Connection.getInstance().setUpUser(callback);
       }, []);
 
     /**
      * a callback handler for the log in request which logs in the user on success and raises an error on failure
-     * @param data
+     * @param data the response from the server
      */
     const loginCallback = (data) => {
+
         if(data.failure){
             setShowError(true);
             setErrorMessage('שם משתמש או סיסמה לא נכונים');
         }
         else{
-            //UserInfo.getInstance().setUsername(username)
-            window.sessionStorage.setItem('username', data.result.first);
-            //UserInfo.getInstance().setType(type);
-            props.changeType(data.result.second);
+            console.log(data);
+            window.sessionStorage.setItem('access_token', data.access_token);
+            window.sessionStorage.setItem('refresh_token', data.refresh_token)
+            props.changeType(data.permission);
             props.setHideBars(false);
-            //window.sessionStorage.setItem('type', type);
 
             navigate(`../home`, {replace: true}) // replace meaning: https://reactrouter.com/docs/en/v6/examples/auth
         }

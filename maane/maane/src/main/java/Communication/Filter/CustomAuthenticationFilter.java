@@ -41,7 +41,9 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         String password = request.getParameter("password");
 
         log.info("user {} attempts authentication", username);
-
+        response.setHeader("Access-Control-Allow-Origin", "*"); //todo - do we need it
+        response.setStatus(200); // todo - magic numbers
+        System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaa" + username);
         UsernamePasswordAuthenticationToken authenticationToken= new UsernamePasswordAuthenticationToken(username, password);
 
         return authenticationManager.authenticate(authenticationToken);
@@ -51,6 +53,9 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
         User user = (User)authentication.getPrincipal();
         Algorithm algorithm = Algorithm.HMAC256(KeyLoader.getInstance().getEncryptionKey());
+        System.out.println("bbbbbbbbbbbbbbbbbbbbbbbbbbb");
+        log.info("user {} attempts authentication", user);
+
 
         String accessToken = JWT.create()
                 .withSubject(user.getUsername())
@@ -71,6 +76,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         Map<String, String> tokens = new HashMap<>();
         tokens.put("access_token", accessToken);
         tokens.put("refresh_token", refreshToken);
+        tokens.put("permission", user.getAuthorities().iterator().next().getAuthority());
 
         response.setContentType(APPLICATION_JSON_VALUE);
         new ObjectMapper().writeValue(response.getOutputStream(), tokens);
@@ -80,6 +86,8 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     @Override
     //todo: implement it for preventing brute force attack
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+        response.setStatus(200); // todo - magic numbers - remove this line
+        System.out.println("ccccccccccc");
         super.unsuccessfulAuthentication(request, response, failed);
     }
 

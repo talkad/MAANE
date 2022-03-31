@@ -3,6 +3,7 @@ import axios from "axios";
 // TODO: tal finally implemented the connection like a normal person so i need to adjust to that (normal tokens and encryption)
 // TODO: do we really need to pass the "currentUser" each time? should change that so it "pushes" it implicitly
 // TODO: change to GET requests where it's proper instead of the POST requests
+// TODO: secure store the JWT keys
 
 class Connection{
     static #instance = null;
@@ -43,7 +44,13 @@ class Connection{
      * @param callback a callback function to call once there's a response
      */
     sendGET(url, callback){
-        this.axios_instance.get(url)
+        const config = {
+            headers: {
+                'Authorization': window.sessionStorage.getItem('access_token')
+            }
+        }
+
+        this.axios_instance.get(url, config)
             .then(function (response) {
                 // handle success
                 console.log(response);
@@ -66,7 +73,13 @@ class Connection{
      * @param callback a callback function to call once there's a response
      */
     sendPOST(url, args, callback){
-        this.axios_instance.post(url, args)
+        const config = {
+            headers: {
+                'Authorization': window.sessionStorage.getItem('access_token')
+            }
+        }
+
+        this.axios_instance.post(url, args, config)
             .then(function (response) {
                 // handle success
                 console.log(response);
@@ -97,13 +110,29 @@ class Connection{
      * @param callback a callback function to call once there's a response
      */
     login(currUser, username, password, callback){
-        this.sendPOST('/user/login',
-            {
-                currUser: currUser,
-                userToLogin: username,
-                password: password
-            },
-            callback)
+        // we'll have a different post for login since it needs a different headers
+
+        const params = new URLSearchParams();
+        params.append('username', username);
+        params.append('password', password);
+
+        const config = {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }
+
+        this.axios_instance.post('/user/login', params, config)
+            .then(function (response) {
+            // handle success
+            console.log(response);
+            callback(response.data)
+        })
+            .catch(function (error) {
+                // handle error
+                console.log(`POST FAILED FOR '/user/login' with args: ${params}`)
+                console.log(error);
+            });
     }
 
     /**
@@ -280,11 +309,7 @@ class Connection{
      * @param callback a callback function to call once there's a response
      */
     getAppointedUsers(currentUser, callback){
-        this.sendPOST('/user/getAppointedUsers',
-            {
-                currUser: currentUser,
-            },
-            callback);
+        this.sendGET('/user/getAppointedUsers', callback);
     }
 
     /**
