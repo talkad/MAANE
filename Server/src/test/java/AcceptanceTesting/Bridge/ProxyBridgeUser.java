@@ -229,4 +229,13 @@ public class ProxyBridgeUser implements UserService {
 
         return new Response<>(null, true, "not implemented");
     }
+
+    @Override
+    public Response<Boolean> transferSupervisionToExistingUser(String currUser, String currSupervisor, String newSupervisor) {
+        if (real != null) {
+            return real.transferSupervisionToExistingUser(currUser, currSupervisor, newSupervisor);
+        }
+
+        return new Response<>(null, true, "not implemented");
+    }
 }

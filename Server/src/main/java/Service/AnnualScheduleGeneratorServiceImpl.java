@@ -1,16 +1,12 @@
 package Service;
 
-import Communication.DTOs.SurveyDTO;
 import Domain.CommonClasses.Response;
-import Domain.DataManagement.SurveyController;
 import Domain.WorkPlan.AnnualScheduleGenerator;
-import Domain.WorkPlan.Goal;
 import Service.Interfaces.AnnualScheduleGeneratorService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 
 @Service
 @Transactional

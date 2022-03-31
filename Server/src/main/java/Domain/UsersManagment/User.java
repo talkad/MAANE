@@ -19,7 +19,7 @@ public class User {
     protected String phoneNumber;
     protected String city;
     protected List<String> schools;
-    protected Appointment appointments;
+    protected List<String> appointments;
     protected List<String> surveys;
     protected List<String> baskets;
 //    private MonthlyReport monthlyReport; //todo monthly reports history??
@@ -28,7 +28,7 @@ public class User {
 
     public User() {
         this.state = new Guest();
-        this.appointments = new Appointment();
+        this.appointments = new Vector<>();
         this.schools = new Vector<>();
         this.surveys = new Vector<>();
         this.baskets = new Vector<>();
@@ -37,7 +37,7 @@ public class User {
     public User(String username, UserStateEnum userStateEnum) {
         this.state = inferUserType(userStateEnum);
         this.username = username;
-        this.appointments = new Appointment();
+        this.appointments = new Vector<>();
         this.schools = new Vector<>();
         this.surveys = new Vector<>();
         this.baskets = new Vector<>();
@@ -52,7 +52,7 @@ public class User {
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.city = city;
-        this.appointments = new Appointment();
+        this.appointments = new Vector<>();
         this.schools = new Vector<>();
         this.surveys = new Vector<>();
         this.baskets = new Vector<>();
@@ -133,14 +133,14 @@ public class User {
         this.schools = schools;
     }
 
-    public Appointment getAppointments(){
+    public List<String> getAppointments(){
         return this.appointments;
     }
 
     public Response<Boolean> assignSchoolsToUser(String userToAssign, List<String> schools) {
         if(this.state.allowed(Permissions.ASSIGN_SCHOOLS_TO_USER, this)) {
             if (appointments.contains(userToAssign)) {
-                return appointments.assignSchoolsToUser(userToAssign, schools);
+                return new Response<>(true, false, "successfully assigned the schools to the user " + userToAssign);
             }
             else {
                 return new Response<>(false, true, " the user " + userToAssign + " was not assigned by you");
@@ -160,11 +160,11 @@ public class User {
         }
         else if(this.state.allowed(Permissions.REMOVE_USER, this)) {
             if (appointments.contains(username)) {
-                Response<Boolean> response = appointments.removeAppointment(username);
-                if (!response.isFailure()) {
+                boolean res = appointments.remove(username);
+                if (res) {
                     return new Response<>(true, false, "successfully removed the user " + username);
                 }
-                return response;
+                return new Response<>(false, true, "Tried removing a nonexistent appointment");
             } else {
                 return new Response<>(false, true, " the user " + username + " was not assigned by you");
             }
@@ -177,12 +177,12 @@ public class User {
     public Response<User> registerUser(String username, UserStateEnum registerUserStateEnum, String firstName, String lastName, String email, String phoneNumber, String city) {
         if(this.state.allowed(Permissions.REGISTER_USER, this) && (registerUserStateEnum == UserStateEnum.INSTRUCTOR
             || registerUserStateEnum == UserStateEnum.GENERAL_SUPERVISOR) && !appointments.contains(username)) {
-            Response<Boolean> res = appointments.addAppointment(username);
-            if(res.getResult()){
+            if(!this.appointments.contains(username)) {
+                this.appointments.add(username);
                 return new Response<>(new User(username, registerUserStateEnum, this.workField, firstName, lastName, email, phoneNumber, city), false, "user successfully assigned");
             }
             else{
-                return new Response<>(null, true, res.getErrMsg());
+                return new Response<>(null, true, "appointment already exists");
             }
         }
         else{
@@ -202,7 +202,8 @@ public class User {
 
     public Response<User> registerSupervisor(String username, UserStateEnum registerUserStateEnum, String workField, String firstName, String lastName, String email, String phoneNumber, String city) {
         if(this.state.allowed(Permissions.REGISTER_SUPERVISOR, this) && !appointments.contains(username)){
-            appointments.addAppointment(username);
+            appointments.add(username);
+
             return new Response<>(new User(username, registerUserStateEnum, workField, firstName, lastName, email, phoneNumber, city), false, "supervisor successfully assigned");
         }
         else{
@@ -211,7 +212,7 @@ public class User {
     }
 
     public Response<Boolean> addAppointment(String appointee){
-        return appointments.addAppointment(appointee);
+        return new Response<>(appointments.add(appointee), false, "successfully added appointment");
     }
 
     public Response<String> fillMonthlyReport(String currUser) {
@@ -306,7 +307,7 @@ public class User {
     public Response<Boolean> removeSchoolsFromUser(String userToRemoveSchools, List<String> schools) {
         if(this.state.allowed(Permissions.REMOVE_SCHOOLS_FROM_USER, this)) {
             if (appointments.contains(userToRemoveSchools)) {
-                return appointments.removeSchoolsFromUser(userToRemoveSchools, schools);
+                return new Response<>(true, false, "successfully removed school assignment");
             }
             else {
                 return new Response<>(false, true, " the user " + userToRemoveSchools + " was not assigned by you");
@@ -411,8 +412,8 @@ public class User {
         return state;
     }
 
-    public void setState(UserState state) {
-        this.state = state;
+    public void setState(UserStateEnum state) {
+        this.state = inferUserType(state);
     }
 
     public String getFirstName() {
@@ -455,7 +456,7 @@ public class User {
         this.city = city;
     }
 
-    public void setAppointments(Appointment appointments) {
+    public void setAppointments(List<String> appointments) {
         this.appointments = appointments;
     }
 
@@ -473,7 +474,7 @@ public class User {
 
     public Response<List<String>> getAppointees() {
         if (this.state.allowed(Permissions.VIEW_USERS_INFO, this)) {
-            return this.appointments.getAppointees();
+            return new Response<>(this.appointments, false, "successfully acquired appointments");
         }
         else {
             return new Response<>(null, true, "user not allowed to view appointed users");
@@ -579,18 +580,16 @@ public class User {
     }
 
     public void removeAppointment(String userToRemove) {
-        if(this.appointments.contains(userToRemove)){
-            this.appointments.removeAppointment(userToRemove);
-        }
+        this.appointments.remove(userToRemove);
     }
 
-    public Response<Boolean> transferSupervision(String currSupervisor) {
-        if (this.state.allowed(Permissions.TRANSFER_SUPERVISION, this) && this.appointments.contains(currSupervisor))
+    public Response<Boolean> transferSupervision(String currSupervisor, String newSupervisor) {
+        if (this.state.allowed(Permissions.TRANSFER_SUPERVISION, this) && this.appointments.contains(currSupervisor) && !this.appointments.contains(newSupervisor))
         {
             return new Response<>(true, false, "user allowed to transfer supervision");
         }
         else {
-            return new Response<>(null, true, "user not allowed to transfer supervision");
+            return new Response<>(false, true, "user not allowed to transfer supervision");
         }
     }
 }

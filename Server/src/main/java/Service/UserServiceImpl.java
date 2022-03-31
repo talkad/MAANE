@@ -278,4 +278,14 @@ public class UserServiceImpl implements UserService {
             log.info("successfully transferred supervision from {} to {} by {}", currSupervisor,  newSupervisor, currUser);
         return res;
     }
+
+    @Override
+    public Response<Boolean> transferSupervisionToExistingUser(String currUser, String currSupervisor, String newSupervisor) {
+        Response<Boolean> res = UserController.getInstance().transferSupervisionToExistingUser(currUser, currSupervisor, newSupervisor);
+        if (res.isFailure())
+            log.error("failed to transfer supervision from {} to {} by {}", currSupervisor,  newSupervisor, currUser);
+        else
+            log.info("successfully transferred supervision from {} to {} by {}", currSupervisor,  newSupervisor, currUser);
+        return res;
+    }
 }

@@ -54,4 +54,6 @@ public interface UserService {
     Response<Boolean> transferSupervision(String currUser, String currSupervisor, String newSupervisor, String password, String firstName, String lastName, String email, String phoneNumber, String city);
 
     Response<List<UserDTO>> getSupervisors(String currUser);
+
+    Response<Boolean> transferSupervisionToExistingUser(String currUser, String currSupervisor, String newSupervisor);
 }

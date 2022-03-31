@@ -283,7 +283,7 @@ public class UserControllerTest {
         guestName = userController.logout("sup1").getResult();
         userController.login(guestName, adminName, adminName);
         List<UserDTO> allUsers = userController.getAllUsers(adminName).getResult();
-        Assert.assertTrue(allUsers.size() == 3);//todo probably need to change to fit mock db
+        Assert.assertTrue(allUsers.size() == userController.getRegisteredUsers().size());
     }
 
     @Test
@@ -346,5 +346,28 @@ public class UserControllerTest {
         userController.login(guestName, adminName, adminName);
         Response<Boolean> res = userController.transferSupervision(adminName, "sup1", "sup1", "new_sup", "", "", "", "", "");
         Assert.assertTrue(res.isFailure());
+    }
+
+    @Test
+    public void transferSupervisionToExistingUserSuccess(){
+        UserController userController = UserController.getInstance();
+        String guestName = userController.addGuest().getResult();
+        String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
+        userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        guestName = userController.logout(adminName).getResult();
+        userController.login(guestName, "sup1", "sup1");
+        userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "", "", "");
+        guestName = userController.logout("sup1").getResult();
+        userController.login(guestName, adminName, adminName);
+        Response<Boolean> res = userController.transferSupervisionToExistingUser(adminName, "sup1", "ins1");
+        Assert.assertFalse(res.isFailure());
+        Assert.assertTrue(userController.getRegisteredUsers().containsKey("ins1"));
+        Assert.assertFalse(userController.getRegisteredUsers().containsKey("sup1"));
+        Assert.assertTrue(userController.getRegisteredUsers().get("ins1").getFirst().getAppointees().getResult().isEmpty());
+        guestName = userController.logout(adminName).getResult();
+        userController.login(guestName, "ins1", "ins1");
+        userController.registerUser("ins1", "ins2", "ins2", UserStateEnum.INSTRUCTOR, "", "", "", "", "");
+        Assert.assertTrue(userController.getRegisteredUsers().containsKey("ins2"));
+        Assert.assertTrue(userController.getRegisteredUsers().get("ins1").getFirst().getAppointees().getResult().contains("ins2"));
     }
 }
