@@ -1,6 +1,6 @@
 package Persistence;
 
-import Domain.UsersManagment.UserState;
+import Domain.UsersManagment.User;
 import Domain.UsersManagment.UserStateEnum;
 import Domain.UsersManagment.WorkPlan;
 
@@ -9,20 +9,33 @@ import java.util.Map;
 
 public class UserDBDTO {
     protected String username;
-    protected UserStateEnum stateEnum;
+    protected UserStateEnum userStateEnum;
     protected String workField;
     protected String firstName;
     protected String lastName;
     protected String email;
     protected String phoneNumber;
     protected String city;
-    protected String password;
     protected List<String> schools;
     protected List<String> appointments;
     protected List<String> surveys;
     protected List<String> baskets;
     //    private MonthlyReport monthlyReport; //todo monthly reports history??
     protected Map<String, WorkPlan> workPlan;
+
+
+    public UserDBDTO() {}
+
+    public UserDBDTO(User user) {
+        this.username = user.getUsername();
+        this.userStateEnum = user.getState().getStateEnum();
+        this.workField = user.getWorkField();
+        this.firstName = user.getFirstName();
+        this.lastName = user.getLastName();
+        this.email = user.getEmail();
+        this.phoneNumber = user.getPhoneNumber();
+        this.city = user.getCity();
+    }
 
 
     public String getUsername() {
@@ -34,11 +47,11 @@ public class UserDBDTO {
     }
 
     public UserStateEnum getStateEnum() {
-        return stateEnum;
+        return userStateEnum;
     }
 
     public void setStateEnum(UserStateEnum stateEnum) {
-        this.stateEnum = stateEnum;
+        this.userStateEnum = stateEnum;
     }
 
     public String getWorkField() {

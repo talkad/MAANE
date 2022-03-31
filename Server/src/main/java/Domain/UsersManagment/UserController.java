@@ -11,6 +11,7 @@ import Persistence.UserDBDTO;
 import Persistence.UserQueries;
 
 import javax.mail.MessagingException;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -170,6 +171,10 @@ public class UserController {
             if (!userToRegister.startsWith("Guest") && !registeredUsers.containsKey(userToRegister)){
                 Response<User> result = user.registerUser(userToRegister, userStateEnum, firstName, lastName, email, phoneNumber, city);
                 if (!result.isFailure()) {
+                    try {
+                        userQueries.insertUser(new UserDBDTO(result.getResult()));
+                    }
+                    catch (Exception e){}
                     registeredUsers.put(userToRegister, new Pair<>(result.getResult(), security.sha256(password)));
                     return new Response<>(result.getResult().getUsername(), false, "Registration occurred");
                 }
@@ -193,6 +198,10 @@ public class UserController {
                         Response<User> result = user.registerSupervisor(userToRegister, userStateEnum, workField, firstName, lastName, email, phoneNumber, city);
                         if (!result.isFailure()) {
                             registeredUsers.put(userToRegister, new Pair<>(result.getResult(), security.sha256(password)));
+                            try {
+                                userQueries.insertUser(new UserDBDTO(result.getResult()));
+                            }
+                            catch (Exception e){}
                             goalsManagement.addGoalsField(workField);
                             return new Response<>(result.getResult().getUsername(), false, "Registration occurred");
                         }
@@ -212,6 +221,10 @@ public class UserController {
                                 Response<Boolean> appointmentRes = supervisor.addAppointment(userToRegister);//todo check it
                                 if(appointmentRes.getResult()){
                                     registeredUsers.put(userToRegister, new Pair<>(result.getResult(), security.sha256(password)));
+                                    try {
+                                        userQueries.insertUser(new UserDBDTO(result.getResult()));
+                                    }
+                                    catch (Exception e){}
                                     return new Response<>(result.getResult().getUsername(), false, "Registration occurred");
                                 }
                                 else{
@@ -691,9 +704,12 @@ public class UserController {
          }
      }
 
-    public void adminBoot(String username, String password) {
+    public void adminBoot(String username, String password){
         User user = new User(username, UserStateEnum.SYSTEM_MANAGER);
-        //userQueries.insertUser(new UserDBDTO(user, ));
+        try {
+            userQueries.insertUser(new UserDBDTO(user));
+        }
+        catch (Exception e){}
         registeredUsers.put(username, new Pair<>(user, security.sha256(password)));
 
         //todo temp static data

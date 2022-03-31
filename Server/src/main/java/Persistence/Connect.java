@@ -7,7 +7,7 @@ public class Connect {
 
     public static void createConnection()  {
         try {
-            conn = DriverManager.getConnection("jdbc:postgresql://localhost/MaaneDb", "postgres", "12345");
+            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/maaneDB", "postgres", "123456");
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
