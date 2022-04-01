@@ -56,6 +56,7 @@ function App(){
     const [openSidebar, setOpenSidebar] = useState(false);
     const [hideBars, setHideBars] = useState(false);
     const [openBackdrop, setOpenBackdrop] = useState(false);
+    const [name, setName] = useState('');
 
     // authentication related
     const [authAvailability, setAuthAvailability] = useState(false);
@@ -71,7 +72,7 @@ function App(){
     const page_does_not_exist_string = "דף זה אינו קיים";
     const logout_button_string = "יציאה";
     // TODO: the greetings currently doesn't work well. but perhaps once TAL implements what i asked then it will (return the username with the response for the request)
-    const greetings_string = "שלום " + window.sessionStorage.getItem('username') // TODO: instead of the username, use the actual name of the user
+    const greetings_string = "שלום " + name;
 
     /**
      * a callback to call when the result of the logout request got back
@@ -79,7 +80,6 @@ function App(){
      */
     const logoutCallback = (data) => {
         setType("GUEST")
-        window.sessionStorage.setItem('username', data.result)
         setHideBars(true);
         navigate('/user/login', {replace: true})
     }
@@ -89,9 +89,7 @@ function App(){
      */
     const handleLogout = () => {
         console.log("sending logout")
-        Connection.getInstance().logout(
-           window.sessionStorage.getItem('username'),
-            logoutCallback)
+        Connection.getInstance().logout(logoutCallback);
     }
 
     // sidebar
@@ -258,7 +256,7 @@ function App(){
                     <Routes>
                         {/*TODO: find a more elegant way for the permissions*/}
                         <Route path="user">
-                            <Route path="login" element={<Login changeType={setType} setHideBars={setHideBars}/>}/>
+                            <Route path="login" element={<Login changeType={setType} setName={setName} setHideBars={setHideBars}/>}/>
 
                             {authAvailability && <Route path="auth" element={<PasswordAuthentication callback={authCallback} callee={authCalleePage} goto={authGoToPage} setHideBars={setHideBars}/>}/>}
 

@@ -70,11 +70,11 @@ public class SurveyControllerTests {
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
 
-        String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
+        String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
 
         String newGuestName = userController.logout(adminName).getResult();
-        userController.login(newGuestName, "Dvorit", "Dvorit");
+        userController.login("Dvorit");
 
         Assert.assertFalse(surveyController.createSurvey("Dvorit", surveyDTO).isFailure());
     }
@@ -84,11 +84,11 @@ public class SurveyControllerTests {
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
 
-        String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
+        String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
 
         String newGuestName = userController.logout(adminName).getResult();
-        userController.login(newGuestName, "Dvorit", "Dvorit");
+        userController.login("Dvorit");
 
         Response<String> res = surveyController.createSurvey("Dvorit", surveyDTO);
         answersDTO1.setId(res.getResult());
@@ -109,11 +109,11 @@ public class SurveyControllerTests {
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();
 
-        String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
+        String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
 
         String newGuestName = userController.logout(adminName).getResult();
-        userController.login(newGuestName, "Dvorit", "Dvorit");
+        userController.login("Dvorit");
 
         Response<String> res = surveyController.createSurvey("Dvorit", surveyDTO);
         answersDTO1.setId(res.getResult());

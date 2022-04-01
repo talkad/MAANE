@@ -95,13 +95,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public Response<Pair<String, UserStateEnum>> login(String currUser, String userToLogin, String password) {
-        Response<Pair<String, UserStateEnum>> res = UserController.getInstance().login(currUser, userToLogin, password);
+    public Response<String> login(String username) {
+        Response<String> res = UserController.getInstance().login(username);
 
         if (res.isFailure())
-            log.error("failed to login with user {}", userToLogin);
+            log.error("failed to login with user {}", username);
         else
-            log.info("login successful for {}", userToLogin);
+            log.info("login successful for {}", username);
 
         return res;
     }

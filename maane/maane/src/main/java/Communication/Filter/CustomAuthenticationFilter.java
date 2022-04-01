@@ -2,6 +2,7 @@ package Communication.Filter;
 
 
 import Communication.Security.KeyLoader;
+import Domain.UsersManagment.UserController;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -56,6 +57,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         System.out.println("bbbbbbbbbbbbbbbbbbbbbbbbbbb");
         log.info("user {} attempts authentication", user);
 
+        UserController.getInstance().login(user.getUsername());
 
         String accessToken = JWT.create()
                 .withSubject(user.getUsername())
@@ -77,6 +79,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         tokens.put("access_token", accessToken);
         tokens.put("refresh_token", refreshToken);
         tokens.put("permission", user.getAuthorities().iterator().next().getAuthority());
+        tokens.put("name", UserController.getInstance().getUser(user.getUsername()).getFirstName());
 
         response.setContentType(APPLICATION_JSON_VALUE);
         new ObjectMapper().writeValue(response.getOutputStream(), tokens);

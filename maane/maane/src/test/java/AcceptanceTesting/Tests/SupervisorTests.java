@@ -45,13 +45,13 @@ public class SupervisorTests extends AcceptanceTests{
             ins2Schools.add("4");
             ins2Schools.add("5");
             ins2Schools.add("6");
-            userBridge.login(guestName, adminName, adminName);
+            userBridge.login(adminName);
             userBridge.registerUserBySystemManager(adminName, new UserDTO("science", supervisorName1, supervisorName1, UserStateEnum.SUPERVISOR,"Ronit", "Blisco", "ronit@gmail.com", "0501111111", "Tel Aviv", new Vector<>()), "");
 
             userBridge.registerUserBySystemManager(adminName, new UserDTO("", instructorName1, instructorName1, UserStateEnum.INSTRUCTOR, "dan", "dani", "dan@gmail.com", "0501111111", "Tel Aviv", ins1Schools), supervisorName1);
             userBridge.registerUserBySystemManager(adminName, new UserDTO("", instructorName2, instructorName2, UserStateEnum.INSTRUCTOR, "ben", "beni", "ben@gmail.com", "0501111111", "Tel Aviv", ins2Schools), supervisorName1);
             guestName = userBridge.addGuest().getResult();
-            userBridge.login(guestName, supervisorName1, supervisorName1);
+            userBridge.login(supervisorName1);
 
             surveyDTO = new SurveyDTO();
             //surveyBridge.clearCache();
@@ -155,10 +155,10 @@ public class SupervisorTests extends AcceptanceTests{
         surveyBridge.addRule(supervisorName1, res.getResult(), new MultipleChoiceBaseRule(2, 0), 2);
 
         String guestName = userBridge.addGuest().getResult();
-        userBridge.login(guestName, instructorName1, instructorName1);
+        userBridge.login(instructorName1);
 
         guestName = userBridge.addGuest().getResult();
-        userBridge.login(guestName, instructorName2, instructorName2);
+        userBridge.login(instructorName2);
         userBridge.assignSchoolsToUser(supervisorName1, instructorName1, Arrays.asList("1", "2", "3"));
         userBridge.assignSchoolsToUser(supervisorName1, instructorName2, Arrays.asList("4", "5", "6"));
 

@@ -206,7 +206,6 @@ function NewGoalForm(props) {
         }
         else{
             Connection.getInstance().addGoal(
-                window.sessionStorage.getItem('username'),
                 {
                     goalId: -1,
                     title: title,
@@ -381,8 +380,7 @@ export default function GoalsManagement(props){
         setYears(years_range);
 
         setSelectedYear(gematriya(year + 3760, {punctuate: true, limit: 3}));
-        Connection.getInstance().getGoals(window.sessionStorage.getItem('username'),
-            gematriya(year + 3760, {punctuate: true, limit: 3}),
+        Connection.getInstance().getGoals(gematriya(year + 3760, {punctuate: true, limit: 3}),
             handleReceivedData);
     }, []);
 
@@ -390,9 +388,7 @@ export default function GoalsManagement(props){
      * refreshes the new table
      */
     const refreshData = () => {
-        Connection.getInstance().getGoals(window.sessionStorage.getItem('username'),
-            selectedYear,
-            handleReceivedData);
+        Connection.getInstance().getGoals(selectedYear, handleReceivedData);
 
         //TODO: have a loading animation
     }
@@ -425,9 +421,7 @@ export default function GoalsManagement(props){
     const handleYearChange = (event) => {
         setSelectedYear(event.target.value);
 
-        Connection.getInstance().getGoals(window.sessionStorage.getItem('username'),
-            event.target.value,
-            handleReceivedData);
+        Connection.getInstance().getGoals(event.target.value, handleReceivedData);
     }
 
     const handleSnackbarClose = (event, reason) => {
@@ -473,7 +467,6 @@ export default function GoalsManagement(props){
     const handleDeleteGoal = (goalID) => {
 
         Connection.getInstance().removeGoal(
-            window.sessionStorage.getItem('username'),
             selectedYear,
             goalID,
             deleteGoalCallback

@@ -23,7 +23,7 @@ public class AnnualScheduleGeneratorTest {
         UserController.getInstance().clearUsers();
         userController = UserController.getInstance();
         guestName = userController.addGuest().getResult();
-        String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
+        String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         guestName = userController.logout(adminName).getResult();
         //Response<String> supervisorName = userController.login(guestName, "sup1", "sup1");
@@ -32,7 +32,7 @@ public class AnnualScheduleGeneratorTest {
     @Test
     public void basicAlgorithmFunctionalitySuccess(){
         String year = "תשפ\"ג";
-        String supervisorName = userController.login(guestName, "sup1", "sup1").getResult().getFirst();
+        String supervisorName = userController.login("sup1").getResult();
 
         userController.addGoal(supervisorName, new GoalDTO(0,"1", "desc", 1,5), year);
         userController.addGoal(supervisorName, new GoalDTO(1, "3", "desc", 1, 3), year);

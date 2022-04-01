@@ -35,9 +35,8 @@ public class MaaneApplication {
 	CommandLineRunner run(UserServiceImpl service){
 		return args -> {
 			UserController userController = UserController.getInstance();
-			String guestName = userController.addGuest().getResult();
-			userController.login(guestName, "admin", "admin");
-
+//			String guestName = userController.addGuest().getResult();
+			userController.login("admin");
 			service.registerUserBySystemManager("admin", new UserDTO("tech", "tal", "1234", UserStateEnum.SUPERVISOR,
 					"tal", "kad", "", "", "", null), "");
 		};

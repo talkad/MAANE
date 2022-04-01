@@ -364,7 +364,6 @@ export default function SchoolsManagement(props){
      */
     const handleAddCoordinator = (workField, firstName, lastName, email, phoneNumber, schoolID) => {
         Connection.getInstance().addCoordinator(
-            window.sessionStorage.getItem('username'),
             workField,
             firstName,
             lastName,

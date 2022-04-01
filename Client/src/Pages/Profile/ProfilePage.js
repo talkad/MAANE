@@ -106,7 +106,6 @@ function InfoTabPanel(props){
      */
     const saveInfoHandler = () => {
         Connection.getInstance().updateProfileInfo(
-            window.sessionStorage.getItem('username'),
             values.firstName,
             values.lastName,
             values.email,
@@ -256,7 +255,6 @@ function SecurityTabPanel(props){
      */
     const handleUpdatePassword = () => {
         Connection.getInstance().changePassword(
-            window.sessionStorage.getItem('username'),
             values.currentPassword,
             values.newPassword,
             values.confirmNewPassword,
@@ -365,7 +363,7 @@ export default function ProfilePage(props){
     const security_tab_string = "אבטחה";
 
     useEffect(() => {
-        Connection.getInstance().getProfileInfo(window.sessionStorage.getItem('username'), profileInfoCallback)
+        Connection.getInstance().getProfileInfo(profileInfoCallback);
     }, []);
 
     const profileInfoCallback = (data) => {

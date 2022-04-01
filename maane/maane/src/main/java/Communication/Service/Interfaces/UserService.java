@@ -14,7 +14,7 @@ public interface UserService {
     Response<String> addGuest();
     Response<String> removeGuest(String name);
 
-    Response<Pair<String, UserStateEnum>> login(String currUser, String userToLogin, String password);
+    Response<String> login(String username);
     Response<String> logout(String name);
 
     Response<String> registerUser(String currUser, UserDTO user);

@@ -33,7 +33,7 @@ public class SurveyIntegrationTests {
 
         List<String> questions1 = Arrays.asList("que1", "que2", "que3");
         List<List<String>> answers1 = Arrays.asList(new LinkedList<>(), Arrays.asList("1", "2"), Arrays.asList("1", "2"));
-        List<AnswerType> types1 = Arrays.asList(NUMERIC_ANSWER, MULTIPLE_CHOICE, MULTIPLE_CHOICE);;
+        List<AnswerType> types1 = Arrays.asList(NUMERIC_ANSWER, MULTIPLE_CHOICE, MULTIPLE_CHOICE);
 
         surveyDTO.setId("");
         surveyDTO.setTitle("title");
@@ -57,11 +57,9 @@ public class SurveyIntegrationTests {
     @Test
     public void surveyCreationSuccess(){
         UserController userController = UserController.getInstance();
-        String guestName = userController.addGuest().getResult();
-        String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
+        String adminName = userController.login( "admin").getResult();
         userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
-        String newGuestName = userController.logout(adminName).getResult();
-        userController.login(newGuestName, "Dvorit", "Dvorit");
+        userController.login("Dvorit");
 
         Assert.assertFalse(surveyController.createSurvey("Dvorit", surveyDTO).isFailure());
     }
@@ -69,11 +67,9 @@ public class SurveyIntegrationTests {
     @Test
     public void surveyCreationNoPermissionFailure(){
         UserController userController = UserController.getInstance();
-        String guestName = userController.addGuest().getResult();
-        String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
-        userController.registerUserBySystemManager(adminName, "Shlomit", "Malka", UserStateEnum.INSTRUCTOR, "", "tech", "", "", "", "", "");
-        String newGuestName = userController.logout(adminName).getResult();
-        userController.login(newGuestName, "Shlomit", "Malka");
+        userController.registerUserBySystemManager("admin", "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.registerUserBySystemManager("admin", "Shlomit", "Malka", UserStateEnum.INSTRUCTOR, "sup1", "tech", "", "", "", "", "");
+        userController.login("Shlomit");
 
         Assert.assertTrue(surveyController.createSurvey("Shlomit", surveyDTO).isFailure());
     }
@@ -84,11 +80,9 @@ public class SurveyIntegrationTests {
         String year = "תשפ\"ג";
 
         UserController userController = UserController.getInstance();
-        String guestName = userController.addGuest().getResult();
-        String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
+        String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
-        String newGuestName = userController.logout(adminName).getResult();
-        userController.login(newGuestName, "Dvorit", "Dvorit");
+        userController.login("Dvorit");
 
         Response<String> res = surveyController.createSurvey("Dvorit", surveyDTO);
         answersDTO.setId(res.getResult());
@@ -105,14 +99,12 @@ public class SurveyIntegrationTests {
         String year = "תשפ\"ג";
 
         UserController userController = UserController.getInstance();
-        String guestName = userController.addGuest().getResult();
-        String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
+        String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         userController.registerUserBySystemManager(adminName, "Shosh", "Bar", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
 
-        String newGuestName = userController.logout(adminName).getResult();
-        userController.login(newGuestName, "Dvorit", "Dvorit");
-        userController.login(newGuestName, "Shosh", "Bar");
+        userController.login("Dvorit");
+        userController.login("Shosh");
 
         Response<String> res = surveyController.createSurvey("Dvorit", surveyDTO);
         answersDTO.setId(res.getResult());
@@ -126,11 +118,9 @@ public class SurveyIntegrationTests {
     @Test
     public void addRuleSuccess(){
         UserController userController = UserController.getInstance();
-        String guestName = userController.addGuest().getResult();
-        String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
+        String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
-        String newGuestName = userController.logout(adminName).getResult();
-        userController.login(newGuestName, "Dvorit", "Dvorit");
+        userController.login("Dvorit");
 
         Response<String> res2 = surveyController.createSurvey("Dvorit", surveyDTO);
         Response<Boolean> res = surveyController.addRule("Dvorit", res2.getResult(), new NumericBaseRule(0, Comparison.GREATER_THEN, 28), 0);
@@ -141,14 +131,12 @@ public class SurveyIntegrationTests {
     @Test
     public void addRuleNoPermissionFailure(){
         UserController userController = UserController.getInstance();
-        String guestName = userController.addGuest().getResult();
-        String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
+        String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         userController.registerUserBySystemManager(adminName, "Levana", "Zoharim", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
 
-        String newGuestName = userController.logout(adminName).getResult();
-        userController.login(newGuestName, "Dvorit", "Dvorit");
-        userController.login(newGuestName, "Levana", "Zoharim");
+        userController.login("Dvorit");
+        userController.login("Levana");
 
         Response<String> res2 = surveyController.createSurvey("Dvorit", surveyDTO);
         Response<Boolean> res = surveyController.addRule("Levana", res2.getResult(), new NumericBaseRule(0, Comparison.GREATER_THEN, 28), 0);
@@ -159,11 +147,9 @@ public class SurveyIntegrationTests {
     @Test
     public void removeRuleSuccess(){
         UserController userController = UserController.getInstance();
-        String guestName = userController.addGuest().getResult();
-        String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
+        String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
-        String newGuestName = userController.logout(adminName).getResult();
-        userController.login(newGuestName, "Dvorit", "Dvorit");
+        userController.login("Dvorit");
 
         Response<String> res2 = surveyController.createSurvey("Dvorit", surveyDTO);
         surveyController.addRule("Dvorit", res2.getResult(), new NumericBaseRule(0, Comparison.GREATER_THEN, 28), 0);
@@ -175,11 +161,9 @@ public class SurveyIntegrationTests {
     @Test
     public void removeRuleNotExistsFailure(){
         UserController userController = UserController.getInstance();
-        String guestName = userController.addGuest().getResult();
-        String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
+        String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
-        String newGuestName = userController.logout(adminName).getResult();
-        userController.login(newGuestName, "Dvorit", "Dvorit");
+        userController.login("Dvorit");
 
         Response<String> res2 = surveyController.createSurvey("Dvorit", surveyDTO);
         Response<Boolean> res = surveyController.removeRule("Dvorit", res2.getResult(), 0);
@@ -190,14 +174,12 @@ public class SurveyIntegrationTests {
     @Test
     public void removeRuleNoPermissionFailure(){
         UserController userController = UserController.getInstance();
-        String guestName = userController.addGuest().getResult();
-        String adminName = userController.login(guestName, "admin", "admin").getResult().getFirst();
+        String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         userController.registerUserBySystemManager(adminName, "Levana", "Zoharim", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
 
-        String newGuestName = userController.logout(adminName).getResult();
-        userController.login(newGuestName, "Dvorit", "Dvorit");
-        userController.login(newGuestName, "Levana", "Zoharim");
+        userController.login("Dvorit");
+        userController.login("Levana");
 
         Response<String> res2 = surveyController.createSurvey("Dvorit", surveyDTO);
         surveyController.addRule("Levana", res2.getResult(), new NumericBaseRule(0, Comparison.GREATER_THEN, 28), 0);

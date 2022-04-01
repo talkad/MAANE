@@ -121,12 +121,12 @@ export default function RegisterUsers(props){
         setRoleChoiceEnum(selected_roles[0]['ruleEnum']);
 
         if (props.type === "SYSTEM_MANAGER"){
-            Connection.getInstance().getSupervisors(window.sessionStorage.getItem('username'), arrangeSupervisorsCallback)
+            Connection.getInstance().getSupervisors(arrangeSupervisorsCallback)
         }
     },[]);
 
     const refresh_supervisors = () => {
-        Connection.getInstance().getSupervisors(window.sessionStorage.getItem('username'), arrangeSupervisorsCallback)
+        Connection.getInstance().getSupervisors(arrangeSupervisorsCallback);
     }
 
     const arrangeSupervisorsCallback = (data) => {
@@ -194,7 +194,6 @@ export default function RegisterUsers(props){
 
             if (props.type === 'SUPERVISOR'){
                 Connection.getInstance().registerUser(
-                    window.sessionStorage.getItem('username'),
                     values.username,
                     values.password,
                     roleChoiceEnum,
@@ -208,7 +207,6 @@ export default function RegisterUsers(props){
 
             if (props.type === 'SYSTEM_MANAGER'){
                 Connection.getInstance().registerUserBySystemManager(
-                    window.sessionStorage.getItem('username'),
                     values.username,
                     values.password,
                     roleChoiceEnum,

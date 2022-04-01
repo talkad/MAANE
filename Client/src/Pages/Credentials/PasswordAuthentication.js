@@ -15,6 +15,8 @@ import Visibility from "@mui/icons-material/Visibility";
 import {useNavigate} from "react-router-dom";
 import Connection from "../../Communication/Connection";
 
+// todo: refreshing on this page breaks the client
+
 export default function PasswordAuthentication(props){
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState(false);
@@ -37,7 +39,7 @@ export default function PasswordAuthentication(props){
      * @param data the response from the server
      */
     const submitCallback = (data) => {
-        if (!data.result){
+        if (data.failure){
             setError(true);
             setAlertMessage('סיסמה לא נכונה. נא נסה/י שנית');
         }
@@ -58,7 +60,7 @@ export default function PasswordAuthentication(props){
         }
         else{
             setError(false);
-            Connection.getInstance().authenticatePassword(window.sessionStorage.getItem('username'), data.get('password'), submitCallback)
+            Connection.getInstance().authenticatePassword(data.get('password'), submitCallback)
         }
 
     }

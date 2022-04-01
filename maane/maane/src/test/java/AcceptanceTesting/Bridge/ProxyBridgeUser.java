@@ -43,9 +43,9 @@ public class ProxyBridgeUser implements UserService {
     }
 
     @Override
-    public Response<Pair<String, UserStateEnum>> login(String currUser, String userToLogin, String password) {
+    public Response<String> login(String username) {
         if (real != null){
-            return real.login(currUser, userToLogin, password);
+            return real.login(username);
         }
 
         return new Response<>(null, true, "not implemented");

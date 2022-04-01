@@ -93,32 +93,15 @@ public class UserController {
 
     /**
      * login user into system
-     * @param currUser the holder username previous login
-     * @param userToLogin the original username
-     * @param password the identifier of the user
-     * @return pair contains the username and its role
+     * @param username the original username
+     * @return username
      */
-    public Response<Pair<String, UserStateEnum>> login(String currUser, String userToLogin, String password){
-        User user;
-        if (connectedUsers.containsKey(currUser)) {
-            if (currUser.startsWith("Guest")){
-                if (this.isValidUser(userToLogin, security.sha256(password))) {
-                    connectedUsers.remove(currUser);
-                    user = registeredUsers.get(userToLogin).getFirst();
-                    connectedUsers.put(userToLogin, user);
-                    return new Response<>(new Pair<>(userToLogin, user.getState().getStateEnum()), false, "successfully Logged in");
-                }
-                else {
-                    return new Response<>(null, true, "Failed to login user");
-                }
-            }
-            else {
-                return new Response<>(null, true, "error: user must disconnect before trying to login");
-            }
-        }
-        else {
-            return new Response<>(null, true, "User not connected");
-        }
+    public Response<String> login(String username){
+        User user = registeredUsers.get(username).getFirst();
+        System.out.println(user);
+        connectedUsers.put(username, user);
+        System.out.println(username + " logged in successfully");
+        return new Response<>(username, false, "successfully Logged in");
     }
 
     public boolean isValidUser(String username, String password){
@@ -176,7 +159,7 @@ public class UserController {
     public Response<String> registerUserBySystemManager(String currUser, String userToRegister, String password, UserStateEnum userStateEnum, String optionalSupervisor, String workField, String firstName, String lastName, String email, String phoneNumber, String city){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
-            if (!userToRegister.startsWith("Guest") && !registeredUsers.containsKey(userToRegister)){
+            if (!registeredUsers.containsKey(userToRegister)){
                 if(userStateEnum == UserStateEnum.SUPERVISOR){
                     Response<User> result = user.registerSupervisor(userToRegister, userStateEnum, workField, firstName, lastName, email, phoneNumber, city);
                     if (!result.isFailure()) {
@@ -379,6 +362,7 @@ public class UserController {
     }
 
     public Response<List<UserDTO>> getAppointedUsers(String currUser){
+        System.out.println("xxxxxxxxxxxxxxxxx " + currUser + " xxxxx");
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             Response<List<String>> appointeesRes = user.getAppointees();
@@ -641,12 +625,11 @@ public class UserController {
          }
      }
 
-    public void adminBoot(String username, String password) {
+    public void adminBoot(String username, String password) { // this is not going to work because of incorrect pwd encryption
         User user = new User(username, UserStateEnum.SYSTEM_MANAGER);
         registeredUsers.put(username, new Pair<>(user, security.sha256(password)));
         //todo temp static data
-        String guest_name_temp = addGuest().getResult();
-        login(guest_name_temp,"admin", "admin");
+        login("admin");
         registerUserBySystemManager("admin", "ronit", "ronit", UserStateEnum.SUPERVISOR, "", "science", "ronit", "ronit", "ronit@gmail.com", "", "");
         registerUserBySystemManager("admin", "shoshi", "shoshi", UserStateEnum.INSTRUCTOR, "ronit", "", "shoshi", "shoshi", "shoshi@gmail.com", "", "");
         logout("admin");

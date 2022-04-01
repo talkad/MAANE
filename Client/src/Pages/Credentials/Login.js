@@ -28,15 +28,6 @@ export default function Login(props){
      */
     useEffect(() => {
         props.setHideBars(true);
-
-        // const callback = function(data) {
-        //
-        //     //UserInfo.getInstance().setUsername(data.result);
-        //     window.sessionStorage.setItem('username', data.result);
-        //     setLoaded(true);
-        //   }
-        //
-        //   Connection.getInstance().setUpUser(callback);
       }, []);
 
     /**
@@ -54,6 +45,7 @@ export default function Login(props){
             window.sessionStorage.setItem('access_token', data.access_token);
             window.sessionStorage.setItem('refresh_token', data.refresh_token)
             props.changeType(data.permission);
+            props.setName(data.name);
             props.setHideBars(false);
 
             navigate(`../home`, {replace: true}) // replace meaning: https://reactrouter.com/docs/en/v6/examples/auth
@@ -76,7 +68,6 @@ export default function Login(props){
         else{
             setShowError(false);
             Connection.getInstance().login(
-                window.sessionStorage.getItem('username'),
                 data.get('username'),
                 data.get('password'),
                 loginCallback);
