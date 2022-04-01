@@ -49,6 +49,7 @@ import SchoolIcon from '@mui/icons-material/School';
 // TODO: prevent users from going through the site by entering paths in the url
 // TODO: currently saving everything in local storage but IT IS NOT SAFE
 // TODO: when the user closes the window log the user out before it closes
+// TODO: save the state of the user between refreshes
 
 function App(){
     // general state data
