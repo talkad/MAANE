@@ -1,6 +1,7 @@
 import axios from "axios";
 
 // TODO: secure store the JWT keys
+// TODO: why the classes outside doesn't recognize the methods???
 
 class Connection{
     static #instance = null;
