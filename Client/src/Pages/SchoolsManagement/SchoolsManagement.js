@@ -224,60 +224,85 @@ function AddCoordinatorDialog(props){
 
     const title_string = "שלום שם";
 
+    /**
+     * gathers the input and passing it to the provided callback
+     * @param event the elements' status
+     */
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        const data = new FormData(event.currentTarget);
+
+        // if (data.get("password") === '' || data.get('confirmPassword') === ''){
+        //     // todo: raise error
+        // }
+        // else{
+        //     if (data.get('password') === data.get('confirmPassword')){
+        //         props.callback(props.selectedUser, data.get("password"), data.get("confirmPassword"));
+        //     }
+        //     else{
+        //         // todo: raise error
+        //     }
+        // }
+    }
+
     return (
         <Dialog fullWidth maxWidth="sm" onClose={props.onClose} open={props.open}>
             <DialogTitle><Typography variant="h5" align="center">{title_string} {props.schoolID} {props.schoolName}</Typography></DialogTitle>
             {/*todo: implement the form*/}
-            {/*<Stack component="form" sx={{alignItems: "center"}} onSubmit={handleSubmit}>*/}
-            {/*    /!*the new password field*!/*/}
-            {/*    <TextField name="password"*/}
-            {/*               sx={{paddingBottom: 1, width: "50%"}}*/}
-            {/*               id="outlined-basic"*/}
-            {/*               label={password_string}*/}
-            {/*               variant="outlined"*/}
-            {/*               type={showPassword ? 'text' : 'password'}*/}
-            {/*               InputProps={{*/}
-            {/*                   endAdornment: (*/}
-            {/*                       <InputAdornment position="end">*/}
-            {/*                           <IconButton*/}
-            {/*                               onClick={() => setShowPassword(!showPassword)}*/}
-            {/*                               onMouseDown={(event) => event.preventDefault()}*/}
-            {/*                           >*/}
-            {/*                               {showPassword ? <VisibilityOff /> : <Visibility />}*/}
-            {/*                           </IconButton>*/}
-            {/*                       </InputAdornment>*/}
-            {/*                   ),*/}
-            {/*               }}/>*/}
-            {/*    /!*confirm password*!/*/}
-            {/*    <TextField name="confirmPassword"*/}
-            {/*               sx={{paddingBottom: 1, width: "50%"}}*/}
-            {/*               label={confirm_password_string}*/}
-            {/*               variant="outlined"*/}
-            {/*               type={showConfirmPassword ? 'text' : 'password'}*/}
-            {/*               InputProps={{*/}
-            {/*                   endAdornment: (*/}
-            {/*                       <InputAdornment position="end">*/}
-            {/*                           <IconButton*/}
-            {/*                               onClick={() => setShowConfirmPassword(!showConfirmPassword)}*/}
-            {/*                               onMouseDown={(event) => event.preventDefault()}*/}
-            {/*                           >*/}
-            {/*                               {showConfirmPassword ? <VisibilityOff /> : <Visibility />}*/}
-            {/*                           </IconButton>*/}
-            {/*                       </InputAdornment>*/}
-            {/*                   ),*/}
-            {/*               }}/>*/}
-            {/*    /!*the submit button*!/*/}
-            {/*    <Grid container justifyContent="center" spacing={0}>*/}
-            {/*        <Grid item align="center" xs={4}>*/}
-            {/*            /!*the cancel button*!/*/}
-            {/*            <Button onClick={() => props.onClose()} sx={{marginBottom: 1, width: "50%"}} variant="outlined">{cancel_string}</Button>*/}
-            {/*        </Grid>*/}
-            {/*        <Grid item align="center" xs={4}>*/}
-            {/*            /!*the change button*!/*/}
-            {/*            <Button type="submit" color="success" sx={{marginBottom: 1, width: "50%"}} variant="outlined">{change_string}</Button>*/}
-            {/*        </Grid>*/}
-            {/*    </Grid>*/}
-            {/*</Stack>*/}
+            <Stack component="form" sx={{alignItems: "center"}} onSubmit={handleSubmit}>
+                <Grid container spacing={1}>
+
+                </Grid>
+
+                {/*/!*the new password field*!/*/}
+                {/*<TextField name="password"*/}
+                {/*           sx={{paddingBottom: 1, width: "50%"}}*/}
+                {/*           id="outlined-basic"*/}
+                {/*           label={password_string}*/}
+                {/*           variant="outlined"*/}
+                {/*           type={showPassword ? 'text' : 'password'}*/}
+                {/*           InputProps={{*/}
+                {/*               endAdornment: (*/}
+                {/*                   <InputAdornment position="end">*/}
+                {/*                       <IconButton*/}
+                {/*                           onClick={() => setShowPassword(!showPassword)}*/}
+                {/*                           onMouseDown={(event) => event.preventDefault()}*/}
+                {/*                       >*/}
+                {/*                           {showPassword ? <VisibilityOff /> : <Visibility />}*/}
+                {/*                       </IconButton>*/}
+                {/*                   </InputAdornment>*/}
+                {/*               ),*/}
+                {/*           }}/>*/}
+                {/*/!*confirm password*!/*/}
+                {/*<TextField name="confirmPassword"*/}
+                {/*           sx={{paddingBottom: 1, width: "50%"}}*/}
+                {/*           label={confirm_password_string}*/}
+                {/*           variant="outlined"*/}
+                {/*           type={showConfirmPassword ? 'text' : 'password'}*/}
+                {/*           InputProps={{*/}
+                {/*               endAdornment: (*/}
+                {/*                   <InputAdornment position="end">*/}
+                {/*                       <IconButton*/}
+                {/*                           onClick={() => setShowConfirmPassword(!showConfirmPassword)}*/}
+                {/*                           onMouseDown={(event) => event.preventDefault()}*/}
+                {/*                       >*/}
+                {/*                           {showConfirmPassword ? <VisibilityOff /> : <Visibility />}*/}
+                {/*                       </IconButton>*/}
+                {/*                   </InputAdornment>*/}
+                {/*               ),*/}
+                {/*           }}/>*/}
+                {/*/!*the submit button*!/*/}
+                {/*<Grid container justifyContent="center" spacing={0}>*/}
+                {/*    <Grid item align="center" xs={4}>*/}
+                {/*        /!*the cancel button*!/*/}
+                {/*        <Button onClick={() => props.onClose()} sx={{marginBottom: 1, width: "50%"}} variant="outlined">{cancel_string}</Button>*/}
+                {/*    </Grid>*/}
+                {/*    <Grid item align="center" xs={4}>*/}
+                {/*        /!*the change button*!/*/}
+                {/*        <Button type="submit" color="success" sx={{marginBottom: 1, width: "50%"}} variant="outlined">{change_string}</Button>*/}
+                {/*    </Grid>*/}
+                {/*</Grid>*/}
+            </Stack>
         </Dialog>
     )
 }

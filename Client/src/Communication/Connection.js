@@ -4,6 +4,7 @@ import axios from "axios";
 // TODO: do we really need to pass the "currentUser" each time? should change that so it "pushes" it implicitly
 // TODO: change to GET requests where it's proper instead of the POST requests
 // TODO: secure store the JWT keys
+// TODO: why the classes outside doesn't recognize the methods???
 
 class Connection{
     static #instance = null;
