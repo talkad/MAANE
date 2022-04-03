@@ -5,11 +5,9 @@ import Communication.DTOs.UserDTO;
 import Communication.DTOs.WorkPlanDTO;
 import Communication.Service.Interfaces.UserService;
 import DataManagement.DataController;
-import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.User;
 import Domain.UsersManagment.UserController;
-import Domain.UsersManagment.UserStateEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -20,7 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.mail.MessagingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -304,7 +301,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public Response<Boolean> sendCoordinatorEmails(String currUser, String surveyLink, String surveyToken) throws MessagingException {
+    public Response<Boolean> sendCoordinatorEmails(String currUser, String surveyLink, String surveyToken) { //todo: shaked - exception handler
         Response<Boolean> res = UserController.getInstance().sendCoordinatorEmails(currUser, surveyLink, surveyToken);
         if (res.isFailure())
             log.error("failed send emails by {}", currUser);

@@ -16,7 +16,7 @@ public class DataController {
 
     public String loadPassword(String username){
         //todo - implement this function
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(); // todo tal
         return passwordEncoder.encode("1234");
     }
 

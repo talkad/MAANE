@@ -263,6 +263,7 @@ class Connection{
      * @param callback a callback function to call once there's a response
      */
     removeUser(usernameToRemove, callback){
+
         this.sendPOST('/user/removeUser',
             {
                 userToRemove: usernameToRemove

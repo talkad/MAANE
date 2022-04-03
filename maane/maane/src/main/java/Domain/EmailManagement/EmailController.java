@@ -5,17 +5,14 @@ import Domain.CommonClasses.Response;
 import Domain.DataManagement.DataController;
 
 import javax.mail.*;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.*;
 import java.util.List;
 import java.util.Properties;
 
 
 public class EmailController {
     final private Properties prop = new Properties();
-    private DataController dataController;
+    private final DataController dataController;
 
     private EmailController(){
         prop.put("mail.smtp.username", "invalidinvalid9@gmail.com");//todo create proper email and password
@@ -35,7 +32,7 @@ public class EmailController {
         return CreateSafeThreadSingleton.INSTANCE;
     }
 
-    public Response<Boolean> sendEmail(String workField, String surveyLink, String surveyToken) throws MessagingException {
+    public Response<Boolean> sendEmail(String workField, String surveyLink, String surveyToken)  {
         Response<List<String>> emailsToRes = dataController.getCoordinatorsEmails(workField);
         if (!emailsToRes.isFailure()) {
             String emailsTo = String.join(", ", emailsToRes.getResult());
@@ -48,35 +45,72 @@ public class EmailController {
             });
 
             javax.mail.Message message = new MimeMessage(mailSession);
-            message.setFrom(new InternetAddress("no-reply@gmail.com"));
-            message.setSubject("Sending Mail with pure Java Mail API ");
+            try {
+                message.setFrom(new InternetAddress("no-reply@gmail.com"));
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
+            try {
+                message.setSubject("Sending Mail with pure Java Mail API ");
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
 
             /* Mail body with plain Text */
-            message.setText("Hello User,"
-                    + "\n\n If you read this, means mail sent with Java Mail API is successful");
+            try {
+                message.setText("Hello User,"
+                        + "\n\n If you read this, means mail sent with Java Mail API is successful");
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
 
             InternetAddress[] toEmailAddresses =
-                    InternetAddress.parse(emailsTo);
+                    new InternetAddress[0];
+            try {
+                toEmailAddresses = InternetAddress.parse(emailsTo);
+            } catch (AddressException e) {
+                e.printStackTrace();
+            }
 /*            InternetAddress[] ccEmailAddresses =
                     InternetAddress.parse("user21@gmail.com, user22@gmail.com");
             InternetAddress[] bccEmailAddresses =
                     InternetAddress.parse("user31@gmail.com");*/
 
-            message.setRecipients(Message.RecipientType.TO, toEmailAddresses);
+            try {
+                message.setRecipients(Message.RecipientType.TO, toEmailAddresses);
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
             //message.setRecipients(Message.RecipientType.CC,ccEmailAddresses);
             //message.setRecipients(Message.RecipientType.BCC,bccEmailAddresses);
 
             /* Step 1: Create MimeBodyPart and set content and its Mime Type */
             BodyPart mimeBody = new MimeBodyPart();
-            mimeBody.setContent("<h1> This is HTML content </h1><br> <b> User </b>" + " " + surveyLink + " survey token: " + surveyToken, "text/html");//todo make a better msg
+            try {
+                mimeBody.setContent("<h1> This is HTML content </h1><br> <b> User </b>" + " " + surveyLink + " survey token: " + surveyToken, "text/html");//todo make a better msg
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
 
             /* Step 2: Create MimeMultipart and  wrap the mimebody to it */
             Multipart multiPart = new MimeMultipart();
-            multiPart.addBodyPart(mimeBody);
+            try {
+                multiPart.addBodyPart(mimeBody);
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
 
             /* Step 3: set the multipart content to Message in caller method*/
-            message.setContent(multiPart);
-            Transport.send(message);
+            try {
+                message.setContent(multiPart);
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
+            try {
+                Transport.send(message);
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
             return new Response<>(true, false, "successfully sent emails");
         }
         return new Response<>(false, true, "failed to send emails");

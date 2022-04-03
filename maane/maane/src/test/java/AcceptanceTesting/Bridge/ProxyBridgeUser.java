@@ -4,12 +4,9 @@ import Communication.DTOs.GoalDTO;
 import Communication.DTOs.UserDTO;
 import Communication.DTOs.WorkPlanDTO;
 import Communication.Service.Interfaces.UserService;
-import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.User;
-import Domain.UsersManagment.UserStateEnum;
 
-import javax.mail.MessagingException;
 import java.util.List;
 
 public class ProxyBridgeUser implements UserService {
@@ -202,7 +199,7 @@ public class ProxyBridgeUser implements UserService {
     }
 
     @Override
-    public Response<Boolean> sendCoordinatorEmails(String currUser, String surveyLink, String surveyToken) throws MessagingException {
+    public Response<Boolean> sendCoordinatorEmails(String currUser, String surveyLink, String surveyToken) {
         if (real != null){
             return real.sendCoordinatorEmails(currUser, surveyLink, surveyToken);
         }

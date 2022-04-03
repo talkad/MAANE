@@ -11,6 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @Data
 public class UserDTO {
+    private String username;
     private String workField;
     private String userToRegister;
     private String password;

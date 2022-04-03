@@ -63,7 +63,7 @@ public class User {
 
     private UserDTO getUserDTO(){
         UserDTO userDTO = new UserDTO();
-        //userDTO.setCurrUser(this.username);//todo problem to fix tell to aviad on his side s well
+        userDTO.setUsername(this.username);//todo problem to fix tell to aviad on his side s well
         userDTO.setWorkField(this.workField);
         userDTO.setFirstName(this.firstName);
         userDTO.setLastName(this.lastName);

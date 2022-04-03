@@ -37,7 +37,7 @@ public class MaaneApplication {
 			UserController userController = UserController.getInstance();
 //			String guestName = userController.addGuest().getResult();
 			userController.login("admin");
-			service.registerUserBySystemManager("admin", new UserDTO("tech", "tal", "1234", UserStateEnum.SUPERVISOR,
+			service.registerUserBySystemManager("admin", new UserDTO("admin", "tech", "tal", "1234", UserStateEnum.SUPERVISOR,
 					"tal", "kad", "", "", "", null), "");
 		};
 	}

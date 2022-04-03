@@ -454,17 +454,17 @@ export default function UsersManagement(props){
                 }
 
                 // for live updating of the dialog while adding school to a user
-                if (selectedUser === row.currUser){
+                if (selectedUser === row.username){
                     setSelectedSchools(row.schools);
                 }
 
                 // not including admins in the table
-                if(row.currUser === 'admin'){ //todo: is that considered hardcoded?
+                if(row.username === 'admin'){ //todo: is that considered hardcoded?
                     continue;
                 }
 
                 rows.push(createData(
-                    row.currUser,
+                    row.username,
                     row.firstName + " " + row.lastName,
                     role,
                     row.email,
@@ -531,9 +531,10 @@ export default function UsersManagement(props){
      */
     const handleUserDeletion = (username) => {
         console.log("please don't delete me");
+        console.log("aaaaaaaaaaaaaaaaaaaaaaa " + username)
 
         props.setAuthCallBack(() => () =>
-            Connection.getInstance().removeUser( username, userDeletionCallback)
+            Connection.getInstance().removeUser( username, userDeletionCallback) //todo aviad
         );
         props.setAuthAvailability(true);
         props.setAuthCalleePage('../home');

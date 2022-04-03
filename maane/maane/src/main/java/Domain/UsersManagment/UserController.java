@@ -9,11 +9,7 @@ import Domain.CommonClasses.Response;
 import Domain.DataManagement.SurveyController;
 import Domain.EmailManagement.EmailController;
 import Domain.WorkPlan.GoalsManagement;
-import Persistence.UserDBDTO;
-import Persistence.UserQueries;
 
-import javax.mail.MessagingException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +51,7 @@ public class UserController {
         registeredUsers.get(instructor).getFirst().assignWorkPlan(workPlan, year);//todo validate and prevent errors
     }
 
-    public Response<Boolean> sendCoordinatorEmails(String currUser, String surveyLink, String surveyToken) throws MessagingException {
+    public Response<Boolean> sendCoordinatorEmails(String currUser, String surveyLink, String surveyToken) {
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             if(user.isSupervisor().getResult()){
@@ -179,7 +175,7 @@ public class UserController {
                         //userQueries.insertUser(new UserDBDTO(result.getResult(), security.sha256(password)));
                     }
                     catch (Exception e){}
-                    registeredUsers.put(userToRegister, new Pair<>(result.getResult(), password));
+                    registeredUsers.put(userToRegister, new Pair<>(result.getResult(), security.sha256(password)));
                     return new Response<>(result.getResult().getUsername(), false, "Registration occurred");
                 }
                 return new Response<>(null, result.isFailure(), result.getErrMsg());
@@ -319,6 +315,7 @@ public class UserController {
      * @return successful response upon success. failure otherwise
      */
     public Response<Boolean> removeUser(String currUser, String userToRemove) {
+        System.out.println(userToRemove  + " remove user");
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             Response<Boolean> response = user.removeUser(userToRemove);
@@ -449,6 +446,7 @@ public class UserController {
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             Response<List<String>> appointeesRes = user.getAppointees();
+            System.out.println(appointeesRes.getResult());
             if (!appointeesRes.isFailure()) {
                 List<UserDTO> appointeesDTOs = new Vector<>();
                 for (String appointee : appointeesRes.getResult()) {
@@ -467,6 +465,7 @@ public class UserController {
 
     private UserDTO createUserDTOS(String username){//todo either move this to user or move the one in User here
         UserDTO userDTO = new UserDTO();
+        userDTO.setUsername(username);
         userDTO.setWorkField(registeredUsers.get(username).getFirst().getWorkField());
         userDTO.setFirstName(registeredUsers.get(username).getFirst().getFirstName());
         userDTO.setLastName(registeredUsers.get(username).getFirst().getLastName());

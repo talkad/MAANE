@@ -18,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -116,9 +115,18 @@ public class UserController {
 
     @PostMapping(value = "/registerUserBySystemManager")//todo aviad
     public ResponseEntity<Response<String>> registerUserBySystemManager(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object>  body) {
+        String user = "";
+
+        try {
+            user = objectMapper.writeValueAsString(body.get("user"));
+        }catch(Exception e){
+            System.out.println("This exception shouldn't occur");
+        }
+
         return ResponseEntity.ok()
-                .body(service.registerUserBySystemManager(sessionHandler.getUsernameByToken(token).getResult(), (UserDTO) body.get("user"), (String)body.get("optionalSupervisor")));
+                .body(service.registerUserBySystemManager(sessionHandler.getUsernameByToken(token).getResult(), gson.fromJson(user, UserDTO.class), (String)body.get("optionalSupervisor")));
     }
+
 
 /*    @RequestMapping(value = "/registerUserBySystemManager", method = RequestMethod.POST)
     public ResponseEntity<Response<User>> registerUserBySystemManager(@RequestBody UserDTO user) {
@@ -127,9 +135,9 @@ public class UserController {
     }*/ //todo fix dto so it adds opt sup
 
     @PostMapping(value = "/removeUser")
-    public ResponseEntity<Response<Boolean>> removeUser(@RequestHeader(value = "Authorization") String token, @RequestBody String  userToRemove){
+    public ResponseEntity<Response<Boolean>> removeUser(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object>  body){
         return ResponseEntity.ok()
-                .body(service.removeUser(sessionHandler.getUsernameByToken(token).getResult(), userToRemove));
+                .body(service.removeUser(sessionHandler.getUsernameByToken(token).getResult(), (String)body.get("userToRemove")));
     }
 
     @GetMapping(value = "/viewWorkPlan/year={year}")
@@ -231,27 +239,27 @@ public class UserController {
                 .body(service.getUserInfo(sessionHandler.getUsernameByToken(token).getResult()));
     }
 
-    @RequestMapping(value = "/sendCoordinatorEmails", method = RequestMethod.POST)//todo aviad, tal
-    public ResponseEntity<Response<Boolean>> sendCoordinatorEmails(@RequestBody Map<String, Object>  body) throws MessagingException {
+    @PostMapping(value = "/sendCoordinatorEmails")//todo aviad
+    public ResponseEntity<Response<Boolean>> sendCoordinatorEmails(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object>  body) {
         return ResponseEntity.ok()
-                .body(service.sendCoordinatorEmails((String)body.get("currUser"), (String)body.get("surveyLink"), (String)body.get("surveyToken")));
+                .body(service.sendCoordinatorEmails(sessionHandler.getUsernameByToken(token).getResult(), (String)body.get("surveyLink"), (String)body.get("surveyToken")));
     }
 
-    @RequestMapping(value = "/transferSupervision", method = RequestMethod.POST)//todo aviad, tal
-    public ResponseEntity<Response<Boolean>> transferSupervision(@RequestBody Map<String, Object>  body){
+    @PostMapping(value = "/transferSupervision")//todo aviad
+    public ResponseEntity<Response<Boolean>> transferSupervision(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object>  body){
         return ResponseEntity.ok()
-                .body(service.transferSupervision((String)body.get("currUser"), (String)body.get("currSupervisor"), (String)body.get("newSupervisor"), (String)body.get("password"), (String)body.get("firstName"), (String)body.get("lastName"), (String)body.get("email"), (String)body.get("phoneNumber"), (String)body.get("city")));
+                .body(service.transferSupervision(sessionHandler.getUsernameByToken(token).getResult(), (String)body.get("currSupervisor"), (String)body.get("newSupervisor"), (String)body.get("password"), (String)body.get("firstName"), (String)body.get("lastName"), (String)body.get("email"), (String)body.get("phoneNumber"), (String)body.get("city")));
     }
 
-    @RequestMapping(value = "/getSupervisors", method = RequestMethod.POST)//todo aviad, tal
-    public ResponseEntity<Response<List<UserDTO>>> getSupervisors(@RequestBody Map<String, Object>  body){
+    @GetMapping(value = "/getSupervisors")//todo aviad
+    public ResponseEntity<Response<List<UserDTO>>> getSupervisors(@RequestHeader(value = "Authorization") String token){
         return ResponseEntity.ok()
-                .body(service.getSupervisors((String)body.get("currUser")));
+                .body(service.getSupervisors(sessionHandler.getUsernameByToken(token).getResult()));
     }
 
-    @RequestMapping(value = "/transferSupervisionToExistingUser", method = RequestMethod.POST)//todo aviad, tal
-    public ResponseEntity<Response<Boolean>> transferSupervisionToExistingUser(@RequestBody Map<String, Object>  body){
+    @PostMapping(value = "/transferSupervisionToExistingUser")//todo aviad
+    public ResponseEntity<Response<Boolean>> transferSupervisionToExistingUser(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object>  body){
         return ResponseEntity.ok()
-                .body(service.transferSupervisionToExistingUser((String)body.get("currUser"), (String)body.get("currSupervisor"), (String)body.get("newSupervisor")));
+                .body(service.transferSupervisionToExistingUser(sessionHandler.getUsernameByToken(token).getResult(), (String)body.get("currSupervisor"), (String)body.get("newSupervisor")));
     }
 }
