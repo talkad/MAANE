@@ -32,6 +32,12 @@ public class UserControllerTest {
         Assert.assertTrue(userController.getRegisteredUsers().containsKey(adminName));
     }
 
+
+    @Test
+    public void tester(){
+        UserController userController = UserController.getInstance();
+    }//todo remove later
+
     /*@Test
     public void loginAsAlreadyLoggedInUser(){
         UserController userController = UserController.getInstance();
@@ -263,5 +269,85 @@ public class UserControllerTest {
         adminName = userController.login("admin").getResult();
         List<UserDTO> allUsers = userController.getAllUsers(adminName).getResult();
         Assert.assertTrue(allUsers.size() == userController.getRegisteredUsers().size());
+    }
+
+    @Test
+    public void assigningTwoSupervisorsToTheSameWorkFieldFail(){
+        UserController userController = UserController.getInstance();
+        String adminName = userController.login("admin").getResult();
+        userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        Response<String> res = userController.registerUserBySystemManager(adminName, "sup2", "sup2", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        Assert.assertTrue(res.isFailure());
+        Assert.assertTrue(userController.getRegisteredUsers().containsKey("sup1"));
+        Assert.assertFalse(userController.getRegisteredUsers().containsKey("sup2"));
+    }
+
+    @Test
+    public void RemovingInstructorAssignedBySupervisorBySystemManagerSuccess(){
+        UserController userController = UserController.getInstance();
+        String adminName = userController.login("admin").getResult();
+        userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.logout(adminName);
+        userController.login("sup1");
+        userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "", "", "");
+        userController.logout("sup1");
+        userController.login("admin");
+        Response<Boolean> res = userController.removeUser(adminName, "ins1");
+        Assert.assertFalse(res.isFailure());
+        Assert.assertFalse(userController.getRegisteredUsers().containsKey("ins1"));
+        Assert.assertFalse(userController.getRegisteredUsers().get("sup1").getFirst().getAppointees().getResult().contains("ins1"));
+    }
+
+    @Test
+    public void transferSupervisionSuccess(){
+        UserController userController = UserController.getInstance();
+        String adminName = userController.login("admin").getResult();
+        userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.logout(adminName);
+        userController.login("sup1");
+        userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "", "", "");
+        userController.logout("sup1");
+        userController.login(adminName);
+        Response<Boolean> res = userController.transferSupervision(adminName, "sup1", "new_sup", "new_sup", "", "", "", "", "");
+        Assert.assertFalse(res.isFailure());
+        Assert.assertTrue(userController.getRegisteredUsers().containsKey("new_sup"));
+        Assert.assertFalse(userController.getRegisteredUsers().containsKey("sup1"));
+        Assert.assertTrue(userController.getRegisteredUsers().get("new_sup").getFirst().getAppointees().getResult().contains("ins1"));
+    }
+
+    @Test
+    public void transferSupervisionFail(){
+        UserController userController = UserController.getInstance();
+        String adminName = userController.login("admin").getResult();
+        userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.logout(adminName);
+        userController.login("sup1");
+        userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "", "", "");
+        userController.logout("sup1");
+        userController.login(adminName);
+        Response<Boolean> res = userController.transferSupervision(adminName, "sup1", "sup1", "new_sup", "", "", "", "", "");
+        Assert.assertTrue(res.isFailure());
+    }
+
+    @Test
+    public void transferSupervisionToExistingUserSuccess(){
+        UserController userController = UserController.getInstance();
+        String adminName = userController.login("admin").getResult();
+        userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.logout(adminName);
+        userController.login("sup1");
+        userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "", "", "");
+        userController.logout("sup1");
+        userController.login(adminName);
+        Response<Boolean> res = userController.transferSupervisionToExistingUser(adminName, "sup1", "ins1");
+        Assert.assertFalse(res.isFailure());
+        Assert.assertTrue(userController.getRegisteredUsers().containsKey("ins1"));
+        Assert.assertFalse(userController.getRegisteredUsers().containsKey("sup1"));
+        Assert.assertTrue(userController.getRegisteredUsers().get("ins1").getFirst().getAppointees().getResult().isEmpty());
+        userController.logout(adminName);
+        userController.login("ins1");
+        userController.registerUser("ins1", "ins2", "ins2", UserStateEnum.INSTRUCTOR, "", "", "", "", "");
+        Assert.assertTrue(userController.getRegisteredUsers().containsKey("ins2"));
+        Assert.assertTrue(userController.getRegisteredUsers().get("ins1").getFirst().getAppointees().getResult().contains("ins2"));
     }
 }

@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -228,5 +229,29 @@ public class UserController {
     public ResponseEntity<Response<UserDTO>> getUserInfo(@RequestHeader(value = "Authorization") String token){
         return ResponseEntity.ok()
                 .body(service.getUserInfo(sessionHandler.getUsernameByToken(token).getResult()));
+    }
+
+    @RequestMapping(value = "/sendCoordinatorEmails", method = RequestMethod.POST)//todo aviad, tal
+    public ResponseEntity<Response<Boolean>> sendCoordinatorEmails(@RequestBody Map<String, Object>  body) throws MessagingException {
+        return ResponseEntity.ok()
+                .body(service.sendCoordinatorEmails((String)body.get("currUser"), (String)body.get("surveyLink"), (String)body.get("surveyToken")));
+    }
+
+    @RequestMapping(value = "/transferSupervision", method = RequestMethod.POST)//todo aviad, tal
+    public ResponseEntity<Response<Boolean>> transferSupervision(@RequestBody Map<String, Object>  body){
+        return ResponseEntity.ok()
+                .body(service.transferSupervision((String)body.get("currUser"), (String)body.get("currSupervisor"), (String)body.get("newSupervisor"), (String)body.get("password"), (String)body.get("firstName"), (String)body.get("lastName"), (String)body.get("email"), (String)body.get("phoneNumber"), (String)body.get("city")));
+    }
+
+    @RequestMapping(value = "/getSupervisors", method = RequestMethod.POST)//todo aviad, tal
+    public ResponseEntity<Response<List<UserDTO>>> getSupervisors(@RequestBody Map<String, Object>  body){
+        return ResponseEntity.ok()
+                .body(service.getSupervisors((String)body.get("currUser")));
+    }
+
+    @RequestMapping(value = "/transferSupervisionToExistingUser", method = RequestMethod.POST)//todo aviad, tal
+    public ResponseEntity<Response<Boolean>> transferSupervisionToExistingUser(@RequestBody Map<String, Object>  body){
+        return ResponseEntity.ok()
+                .body(service.transferSupervisionToExistingUser((String)body.get("currUser"), (String)body.get("currSupervisor"), (String)body.get("newSupervisor")));
     }
 }

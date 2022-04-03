@@ -8,6 +8,7 @@ import Domain.CommonClasses.Response;
 import Domain.UsersManagment.User;
 import Domain.UsersManagment.UserStateEnum;
 
+import javax.mail.MessagingException;
 import java.util.List;
 
 public interface UserService {
@@ -48,4 +49,11 @@ public interface UserService {
 
     Response<List<UserDTO>> getAllUsers(String currUser);
 
+    Response<Boolean> sendCoordinatorEmails(String currUser, String surveyLink, String surveyToken) throws MessagingException; //todo tal communication
+
+    Response<Boolean> transferSupervision(String currUser, String currSupervisor, String newSupervisor, String password, String firstName, String lastName, String email, String phoneNumber, String city); //todo tal communication
+
+    Response<List<UserDTO>> getSupervisors(String currUser); //todo tal communication
+
+    Response<Boolean> transferSupervisionToExistingUser(String currUser, String currSupervisor, String newSupervisor); //todo tal communication
 }

@@ -7,8 +7,13 @@ import Communication.DTOs.WorkPlanDTO;
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.SurveyController;
+import Domain.EmailManagement.EmailController;
 import Domain.WorkPlan.GoalsManagement;
+import Persistence.UserDBDTO;
+import Persistence.UserQueries;
 
+import javax.mail.MessagingException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +28,8 @@ public class UserController {
     private Security security;
     private GoalsManagement goalsManagement;
     private SurveyController surveyController;
+    private EmailController emailController;
+    //private UserQueries userQueries;
 
     private UserController() {
         this.availableId = new AtomicInteger(1);
@@ -31,6 +38,8 @@ public class UserController {
         this.registeredUsers = new ConcurrentHashMap<>();
         this.goalsManagement = GoalsManagement.getInstance();
         this.surveyController = SurveyController.getInstance();
+        this.emailController = EmailController.getInstance();
+        //this.userQueries = UserQueries.getInstance();
         adminBoot("admin", "admin");
     }
 
@@ -44,6 +53,21 @@ public class UserController {
 
     public void assignWorkPlan(String instructor, WorkPlan workPlan, String year) {
         registeredUsers.get(instructor).getFirst().assignWorkPlan(workPlan, year);//todo validate and prevent errors
+    }
+
+    public Response<Boolean> sendCoordinatorEmails(String currUser, String surveyLink, String surveyToken) throws MessagingException {
+        if (connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            if(user.isSupervisor().getResult()){
+                return emailController.sendEmail(user.getWorkField(),  surveyLink,  surveyToken);//todo verify existence of the link and survey token
+            }
+            else{
+                return new Response<>(null, true, "user isn't supervisor");
+            }
+        }
+        else {
+            return new Response<>(null, true, "user is not logged in");
+        }
     }
 
     public Response<String> getPassword(String currUser) {
@@ -105,7 +129,16 @@ public class UserController {
     }
 
     public boolean isValidUser(String username, String password){
-        return registeredUsers.containsKey(username) && registeredUsers.get(username).getSecond().equals(password) && !connectedUsers.containsKey(username);
+/*        boolean isValid = false;
+        try {
+            Response<String> pass = userQueries.getPassword(username);
+            if(!pass.isFailure()){
+                isValid = pass.getResult().equals(password);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }*/
+        return /*isValid &&*/ registeredUsers.containsKey(username) && registeredUsers.get(username).getSecond().equals(password) && !connectedUsers.containsKey(username);
     }
 
     public Response<String> logout(String name) {
@@ -142,6 +175,10 @@ public class UserController {
             if (!userToRegister.startsWith("Guest") && !registeredUsers.containsKey(userToRegister)){
                 Response<User> result = user.registerUser(userToRegister, userStateEnum, firstName, lastName, email, phoneNumber, city);
                 if (!result.isFailure()) {
+                    try {
+                        //userQueries.insertUser(new UserDBDTO(result.getResult(), security.sha256(password)));
+                    }
+                    catch (Exception e){}
                     registeredUsers.put(userToRegister, new Pair<>(result.getResult(), password));
                     return new Response<>(result.getResult().getUsername(), false, "Registration occurred");
                 }
@@ -160,14 +197,24 @@ public class UserController {
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             if (!registeredUsers.containsKey(userToRegister)){
-                if(userStateEnum == UserStateEnum.SUPERVISOR){
-                    Response<User> result = user.registerSupervisor(userToRegister, userStateEnum, workField, firstName, lastName, email, phoneNumber, city);
-                    if (!result.isFailure()) {
-                        registeredUsers.put(userToRegister, new Pair<>(result.getResult(), security.sha256(password)));
-                        goalsManagement.addGoalsField(workField);
-                        return new Response<>(result.getResult().getUsername(), false, "Registration occurred");
+                if(userStateEnum == UserStateEnum.SUPERVISOR) {
+                    if (onlyOneSupervisorPerWorkField(user, workField)) {
+
+                        Response<User> result = user.registerSupervisor(userToRegister, userStateEnum, workField, firstName, lastName, email, phoneNumber, city);
+                        if (!result.isFailure()) {
+                            registeredUsers.put(userToRegister, new Pair<>(result.getResult(), security.sha256(password)));
+                            try {
+                                //userQueries.insertUser(new UserDBDTO(result.getResult(), security.sha256(password)));
+                            } catch (Exception e) {
+                            }
+                            goalsManagement.addGoalsField(workField);
+                            return new Response<>(result.getResult().getUsername(), false, "Registration occurred");
+                        }
+                        return new Response<>(null, result.isFailure(), result.getErrMsg());
                     }
-                    return new Response<>(null, result.isFailure(), result.getErrMsg());
+                    else{
+                        return new Response<>(null, true, "a supervisor was already appointed to the work field");
+                    }
                 }
                 else {
                     if(user.appointments.contains(optionalSupervisor)){
@@ -179,6 +226,10 @@ public class UserController {
                                 Response<Boolean> appointmentRes = supervisor.addAppointment(userToRegister);
                                 if(appointmentRes.getResult()){
                                     registeredUsers.put(userToRegister, new Pair<>(result.getResult(), security.sha256(password)));
+                                    try {
+                                        //userQueries.insertUser(new UserDBDTO(result.getResult(), security.sha256(password)));
+                                    }
+                                    catch (Exception e){}
                                     return new Response<>(result.getResult().getUsername(), false, "Registration occurred");
                                 }
                                 else{
@@ -203,6 +254,16 @@ public class UserController {
         else {
             return new Response<>(null, true, "User not connected");
         }
+    }
+
+    private boolean onlyOneSupervisorPerWorkField(User user, String workField) {
+        for (String appointee: user.getAppointments()) {
+            User u = registeredUsers.get(appointee).getFirst();
+            if(u.getWorkField().equals(workField)){
+                return false;
+            }
+        }
+        return true;
     }
 
     public Response<List<UserDTO>> getSupervisors(String currUser){
@@ -263,6 +324,9 @@ public class UserController {
             Response<Boolean> response = user.removeUser(userToRemove);
             if(!response.isFailure()){
                 if(registeredUsers.containsKey(userToRemove)){
+                    if(response.getResult()){
+                        findSupervisorAndRemoveAppointment(user, userToRemove);
+                    }
                     registeredUsers.remove(userToRemove);
                     connectedUsers.remove(userToRemove);
                     return response;
@@ -275,6 +339,25 @@ public class UserController {
         }
         else{
             return new Response<>(null, true, "User not connected");
+        }
+    }
+
+    private void findSupervisorAndRemoveAppointment(User user, String userToRemove) {//todo maybe return bool and check in removeUser
+        Response<List<String>> appointeesRes = user.getAppointees();
+        String userToRemoveWorkField = registeredUsers.get(userToRemove).getFirst().getWorkField();
+        if(!appointeesRes.isFailure()){
+            for (String appointee: appointeesRes.getResult()) {
+                if(registeredUsers.containsKey(appointee)){
+                    User u = registeredUsers.get(appointee).getFirst();
+                    if(u.getWorkField().equals(userToRemoveWorkField)){
+                        u.removeAppointment(userToRemove);
+                        if(connectedUsers.containsKey(u.getUsername())){
+                            connectedUsers.get(u.getUsername()).removeAppointment(userToRemove);
+                        }
+                        break;
+                    }
+                }
+            }
         }
     }
 
@@ -627,6 +710,10 @@ public class UserController {
 
     public void adminBoot(String username, String password) { // this is not going to work because of incorrect pwd encryption
         User user = new User(username, UserStateEnum.SYSTEM_MANAGER);
+        try {
+            //userQueries.insertUser(new UserDBDTO(user, security.sha256(password)));
+        }
+        catch (Exception e){}
         registeredUsers.put(username, new Pair<>(user, security.sha256(password)));
         //todo temp static data
         login("admin");
@@ -708,4 +795,101 @@ public class UserController {
             return new Response<>(null, true, "User not connected");
         }
     }
+
+    public Response<UserDTO> assignCoordinator(String currUser, String workField, String firstName, String lastName, String email, String phoneNumber, String school){
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            Response<UserDTO> result = user.assignCoordinator(workField, school, firstName, lastName, email, phoneNumber);
+            if (!result.isFailure()) {
+                return new Response<>(result.getResult(), false, "assigned coordinator");
+            }
+            return new Response<>(null, result.isFailure(), result.getErrMsg());
+        }
+        else {
+            return new Response<>(null, true, "User not connected");
+        }
+    }
+
+    public Response<String> removeCoordinator(String currUser, String workField, String school){
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);//todo make sure when displaying coordinators only display the ones from the same workField
+            return user.removeCoordinator(school, workField);
+        }
+        else {
+            return new Response<>(null, true, "User not connected");
+        }
+    }
+
+    public Response<Boolean> transferSupervision(String currUser, String currSupervisor, String newSupervisor, String password, String firstName, String lastName, String email, String phoneNumber, String city){
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            Response<Boolean> transferSupervisionRes = user.transferSupervision(currSupervisor, newSupervisor);
+            if(!transferSupervisionRes.isFailure()){
+                if(!newSupervisor.startsWith("Guest") && !registeredUsers.containsKey(newSupervisor)){
+                    User supervisor = registeredUsers.get(currSupervisor).getFirst();
+                    Response<User> result = user.registerSupervisor(newSupervisor, UserStateEnum.SUPERVISOR, supervisor.getWorkField(), firstName, lastName, email, phoneNumber, city);
+                    if(!result.isFailure()){
+                        result.getResult().setAppointments(supervisor.getAppointments());
+                        result.getResult().setSurveys(supervisor.getSurveys().getResult());
+                        registeredUsers.put(newSupervisor, new Pair<>(result.getResult(), security.sha256(password)));
+                        //userQueries.insertUser(new UserDBDTO(user, security.sha256(password)));
+                        registeredUsers.remove(currSupervisor);
+                        connectedUsers.remove(currSupervisor);
+                        return transferSupervisionRes;
+                    }
+                    else{
+                        return new Response<>(false, true, result.getErrMsg());
+                    }
+                }
+                else{
+                    return new Response<>(false, true, "chosen supervisor doesn't exist");
+                }
+            }
+            else{
+                return transferSupervisionRes;
+            }
+        }
+        else {
+            return new Response<>(null, true, "User not connected");
+        }
+    }
+
+    public Response<Boolean> transferSupervisionToExistingUser(String currUser, String currSupervisor, String newSupervisor){
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            Response<Boolean> transferSupervisionRes = user.transferSupervision(currSupervisor, newSupervisor);
+            if(!transferSupervisionRes.isFailure()){
+                if(registeredUsers.containsKey(newSupervisor) && registeredUsers.containsKey(currSupervisor)){
+                    User currSup = registeredUsers.get(currSupervisor).getFirst();
+                    User newSup = registeredUsers.get(newSupervisor).getFirst();
+                    newSup.setState(UserStateEnum.SUPERVISOR);
+                    newSup.setAppointments(currSup.getAppointments());
+                    newSup.removeAppointment(newSupervisor);//remove yourself from your own appointment
+                    newSup.setSurveys(currSup.getSurveys().getResult());
+                    newSup.setSchools(new Vector<>());
+                    registeredUsers.remove(currSupervisor);
+                    connectedUsers.remove(currSupervisor);//todo maybe dont delete old sup just change his role
+                    if(connectedUsers.containsKey(newSupervisor)){
+                        newSup = connectedUsers.get(newSupervisor);
+                        newSup.setState(UserStateEnum.SUPERVISOR);
+                        newSup.setAppointments(currSup.getAppointments());
+                        newSup.removeAppointment(newSupervisor);//remove yourself from your own appointment
+                        newSup.setSurveys(currSup.getSurveys().getResult());
+                        newSup.setSchools(new Vector<>());
+                    }
+                    return transferSupervisionRes;
+                }
+                else{
+                    return new Response<>(false, true, "chosen supervisor doesn't exist");
+                }
+            }
+            else{
+                return transferSupervisionRes;
+            }
+        }
+        else {
+            return new Response<>(null, true, "User not connected");
+        }
+    }
+
 }

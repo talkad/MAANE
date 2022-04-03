@@ -20,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.mail.MessagingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -283,6 +284,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return res;
     }
 
+    @Override
+    public Response<List<UserDTO>> getSupervisors(String currUser) {
+        Response<List<UserDTO>> res = UserController.getInstance().getSupervisors(currUser);
+        if (res.isFailure())
+            log.error("failed to acquire supervisors by the user {}", currUser);
+        else
+            log.info("successfully acquired supervisors by the user {}", currUser);
+        return res;
+    }
+
     public Response<Boolean> removeSchoolsFromUser(String currUser, String userToRemoveSchoolsName, List<String> schools) {
         Response<Boolean> res = UserController.getInstance().removeSchoolsFromUser(currUser, userToRemoveSchoolsName, schools);
         if (res.isFailure())
@@ -292,6 +303,34 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return res;
     }
 
+    @Override
+    public Response<Boolean> sendCoordinatorEmails(String currUser, String surveyLink, String surveyToken) throws MessagingException {
+        Response<Boolean> res = UserController.getInstance().sendCoordinatorEmails(currUser, surveyLink, surveyToken);
+        if (res.isFailure())
+            log.error("failed send emails by {}", currUser);
+        else
+            log.info("{} successfully sent the emails", currUser);
+        return res;
+    }
 
+    @Override
+    public Response<Boolean> transferSupervision(String currUser, String currSupervisor, String newSupervisor, String password, String firstName, String lastName, String email, String phoneNumber, String city) {
+        Response<Boolean> res = UserController.getInstance().transferSupervision(currUser, currSupervisor, newSupervisor, password, firstName, lastName, email, phoneNumber, city);
+        if (res.isFailure())
+            log.error("failed to transfer supervision from {} to {} by {}", currSupervisor,  newSupervisor, currUser);
+        else
+            log.info("successfully transferred supervision from {} to {} by {}", currSupervisor,  newSupervisor, currUser);
+        return res;
+    }
+
+    @Override
+    public Response<Boolean> transferSupervisionToExistingUser(String currUser, String currSupervisor, String newSupervisor) {
+        Response<Boolean> res = UserController.getInstance().transferSupervisionToExistingUser(currUser, currSupervisor, newSupervisor);
+        if (res.isFailure())
+            log.error("failed to transfer supervision from {} to {} by {}", currSupervisor,  newSupervisor, currUser);
+        else
+            log.info("successfully transferred supervision from {} to {} by {}", currSupervisor,  newSupervisor, currUser);
+        return res;
+    }
 
 }

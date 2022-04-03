@@ -203,7 +203,6 @@ public class ProxyBridgeUser implements UserService {
     }
 
     @Override
-
     public Response<Boolean> sendCoordinatorEmails(String currUser, String surveyLink, String surveyToken) throws MessagingException {
         if (real != null){
             return real.sendCoordinatorEmails(currUser, surveyLink, surveyToken);

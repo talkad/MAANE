@@ -9,6 +9,7 @@ import Domain.CommonClasses.Response;
 import Domain.UsersManagment.User;
 import Domain.UsersManagment.UserStateEnum;
 
+import javax.mail.MessagingException;
 import java.util.List;
 
 public class ProxyBridgeUser implements UserService {
@@ -195,6 +196,42 @@ public class ProxyBridgeUser implements UserService {
     public Response<List<UserDTO>> getAllUsers(String currUser) {
         if (real != null){
             return real.getAllUsers(currUser);
+        }
+
+        return new Response<>(null, true, "not implemented");
+    }
+
+    @Override
+    public Response<Boolean> sendCoordinatorEmails(String currUser, String surveyLink, String surveyToken) throws MessagingException {
+        if (real != null){
+            return real.sendCoordinatorEmails(currUser, surveyLink, surveyToken);
+        }
+
+        return new Response<>(null, true, "not implemented");
+    }
+
+    @Override
+    public Response<Boolean> transferSupervision(String currUser, String currSupervisor, String newSupervisor, String password, String firstName, String lastName, String email, String phoneNumber, String city) {
+        if (real != null) {
+            return real.transferSupervision(currUser, currSupervisor, newSupervisor, password, firstName, lastName, email, phoneNumber, city);
+        }
+
+        return new Response<>(null, true, "not implemented");
+    }
+
+    public Response<List<UserDTO>> getSupervisors(String currUser) {
+        if (real != null){
+            return real.getSupervisors(currUser);
+
+        }
+
+        return new Response<>(null, true, "not implemented");
+    }
+
+    @Override
+    public Response<Boolean> transferSupervisionToExistingUser(String currUser, String currSupervisor, String newSupervisor) {
+        if (real != null) {
+            return real.transferSupervisionToExistingUser(currUser, currSupervisor, newSupervisor);
         }
 
         return new Response<>(null, true, "not implemented");

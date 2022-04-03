@@ -21,13 +21,13 @@ public class DataController {
     private Gson gson = new Gson();
     private static final DataServiceImpl service = DataServiceImpl.getInstance();
 
-    @RequestMapping(value = "/assignCoordinator", method = RequestMethod.POST)//todo aviad
+    @RequestMapping(value = "/assignCoordinator", method = RequestMethod.POST)//todo aviad, tal
     public ResponseEntity<Response<Boolean>> assignCoordinator(@RequestBody Map<String, Object> body){
         return ResponseEntity.ok()
                 .body(service.assignCoordinator((String)body.get("currUser"), (String)body.get("workField"), (String)body.get("firstName"), (String)body.get("lastName"), (String)body.get("email"), (String)body.get("phoneNumber"), (String)body.get("school")));
     }
 
-    @RequestMapping(value = "/removeCoordinator", method = RequestMethod.POST)//todo aviad
+    @RequestMapping(value = "/removeCoordinator", method = RequestMethod.POST)//todo aviad, tal
     public ResponseEntity<Response<Boolean>> removeCoordinator(@RequestBody Map<String, Object>  body){
         return ResponseEntity.ok()
                 .body(service.removeCoordinator((String)body.get("currUser"), (String)body.get("workField"), (String)body.get("school")));
