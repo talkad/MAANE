@@ -32,6 +32,11 @@ public class UserControllerTest {
     }
 
     @Test
+    public void tester(){
+        UserController userController = UserController.getInstance();
+    }//todo remove later
+
+    @Test
     public void loginAsAlreadyLoggedInUser(){
         UserController userController = UserController.getInstance();
         String guestName = userController.addGuest().getResult();

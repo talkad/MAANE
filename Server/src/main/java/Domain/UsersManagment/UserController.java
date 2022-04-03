@@ -7,8 +7,11 @@ import Domain.DataManagement.DataController;
 import Domain.DataManagement.SurveyController;
 import Domain.EmailManagement.EmailController;
 import Domain.WorkPlan.GoalsManagement;
+import Persistence.UserDBDTO;
+import Persistence.UserQueries;
 
 import javax.mail.MessagingException;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -22,6 +25,7 @@ public class UserController {
     private SurveyController surveyController;
     private EmailController emailController;
     private DataController dataController;
+    private UserQueries userQueries;
 
     private UserController() {
         this.availableId = new AtomicInteger(1);
@@ -32,6 +36,7 @@ public class UserController {
         this.surveyController = SurveyController.getInstance();
         this.emailController = EmailController.getInstance();
         this.dataController = DataController.getInstance();
+        this.userQueries = UserQueries.getInstance();
         adminBoot("admin", "admin");
     }
 
@@ -129,7 +134,16 @@ public class UserController {
     }
 
     public boolean isValidUser(String username, String password){
-        return registeredUsers.containsKey(username) && registeredUsers.get(username).getSecond().equals(password) && !connectedUsers.containsKey(username);
+        boolean isValid = false;
+        try {
+            Response<String> pass = userQueries.getPassword(username);
+            if(!pass.isFailure()){
+                isValid = pass.getResult().equals(password);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return isValid && registeredUsers.containsKey(username) && registeredUsers.get(username).getSecond().equals(password) && !connectedUsers.containsKey(username);
     }
 
     public Response<String> logout(String name) {
@@ -166,6 +180,11 @@ public class UserController {
             if (!userToRegister.startsWith("Guest") && !registeredUsers.containsKey(userToRegister)){
                 Response<User> result = user.registerUser(userToRegister, userStateEnum, firstName, lastName, email, phoneNumber, city);
                 if (!result.isFailure()) {
+                    try {
+                        userQueries.insertUser(new UserDBDTO(result.getResult(), security.sha256(password)));
+                        //userQueries.insertUserPassword(userToRegister, security.sha256(password));
+                    }
+                    catch (Exception e){}
                     registeredUsers.put(userToRegister, new Pair<>(result.getResult(), security.sha256(password)));
                     return new Response<>(result.getResult().getUsername(), false, "Registration occurred");
                 }
@@ -189,6 +208,11 @@ public class UserController {
                         Response<User> result = user.registerSupervisor(userToRegister, userStateEnum, workField, firstName, lastName, email, phoneNumber, city);
                         if (!result.isFailure()) {
                             registeredUsers.put(userToRegister, new Pair<>(result.getResult(), security.sha256(password)));
+                            try {
+                                userQueries.insertUser(new UserDBDTO(result.getResult(), security.sha256(password)));
+                                //userQueries.insertUserPassword(userToRegister, security.sha256(password));
+                            }
+                            catch (Exception e){}
                             goalsManagement.addGoalsField(workField);
                             return new Response<>(result.getResult().getUsername(), false, "Registration occurred");
                         }
@@ -208,6 +232,11 @@ public class UserController {
                                 Response<Boolean> appointmentRes = supervisor.addAppointment(userToRegister);//todo check it
                                 if(appointmentRes.getResult()){
                                     registeredUsers.put(userToRegister, new Pair<>(result.getResult(), security.sha256(password)));
+                                    try {
+                                        userQueries.insertUser(new UserDBDTO(result.getResult(), security.sha256(password)));
+                                        //userQueries.insertUserPassword(userToRegister, security.sha256(password));
+                                    }
+                                    catch (Exception e){}
                                     return new Response<>(result.getResult().getUsername(), false, "Registration occurred");
                                 }
                                 else{
@@ -687,9 +716,15 @@ public class UserController {
          }
      }
 
-    public void adminBoot(String username, String password) {
+    public void adminBoot(String username, String password){
         User user = new User(username, UserStateEnum.SYSTEM_MANAGER);
+        try {
+            userQueries.insertUser(new UserDBDTO(user, security.sha256(password)));
+            //userQueries.insertUserPassword(username, security.sha256(password));
+        }
+        catch (Exception e){}
         registeredUsers.put(username, new Pair<>(user, security.sha256(password)));
+
         //todo temp static data
         String guest_name_temp = addGuest().getResult();
         login(guest_name_temp,"admin", "admin");
@@ -807,6 +842,8 @@ public class UserController {
                         result.getResult().setAppointments(supervisor.getAppointments());
                         result.getResult().setSurveys(supervisor.getSurveys().getResult());
                         registeredUsers.put(newSupervisor, new Pair<>(result.getResult(), security.sha256(password)));
+                        userQueries.insertUser(new UserDBDTO(user, security.sha256(password)));
+                        //userQueries.insertUserPassword(newSupervisor, security.sha256(password));
                         registeredUsers.remove(currSupervisor);
                         connectedUsers.remove(currSupervisor);
                         return transferSupervisionRes;
