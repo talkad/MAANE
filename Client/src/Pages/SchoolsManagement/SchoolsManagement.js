@@ -1,5 +1,6 @@
 import * as Space from 'react-spaces';
 import {
+    Alert,
     Box, Button,
     Collapse, Dialog, DialogTitle, Divider, Grid,
     IconButton, InputAdornment,
@@ -220,9 +221,33 @@ function Row(props) {
  * @returns {JSX.Element} the element
  */
 function AddCoordinatorDialog(props){
+    const [values, setValues] = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        phoneNumber: '',
+    });
 
+    const [error, setError] = useState(false);
 
-    const title_string = "שלום שם";
+    // strings
+    const title_string = "הוספת מפקח/ת עבור בית ספר";
+    const first_name_label_string = "שם פרטי";
+    const last_name_label_string = "שם משפחה";
+    const email_label_string = 'דוא"ל';
+    const phone_number_label_string = "מספר פלאפון";
+
+    const error_message_string = "נא למלא את כל השדות";
+    const submit_button_string = "הוספ/י";
+
+    /**
+     * onChange handler for the text-fields
+     * @param props the field who's been changed
+     * @returns {(function(*): void)|*} updating the new values in the state hook
+     */
+    const handleTextFieldsChange = (props) => (event) => {
+        setValues({ ...values, [props]: event.target.value})
+    }
 
     /**
      * gathers the input and passing it to the provided callback
@@ -230,78 +255,80 @@ function AddCoordinatorDialog(props){
      */
     const handleSubmit = (event) => {
         event.preventDefault();
-        const data = new FormData(event.currentTarget);
 
-        // if (data.get("password") === '' || data.get('confirmPassword') === ''){
-        //     // todo: raise error
-        // }
-        // else{
-        //     if (data.get('password') === data.get('confirmPassword')){
-        //         props.callback(props.selectedUser, data.get("password"), data.get("confirmPassword"));
-        //     }
-        //     else{
-        //         // todo: raise error
-        //     }
-        // }
+        if (values.firstName === '' || values.lastName === '' || values.email === '' || values.phoneNumber === ''){
+            setError(true);
+        }
+        else{
+            //TODO: how do i get the work field
+            setError(false);
+            props.callback("work field. how do i get this??", values.firstName, values.lastName, values.email, values.phoneNumber, props.schoolID);
+        }
     }
 
     return (
         <Dialog fullWidth maxWidth="sm" onClose={props.onClose} open={props.open}>
-            <DialogTitle><Typography variant="h5" align="center">{title_string} {props.schoolID} {props.schoolName}</Typography></DialogTitle>
-            {/*todo: implement the form*/}
+            <DialogTitle><Typography variant="h5" align="center">{title_string} {props.schoolName} ({props.schoolID})</Typography></DialogTitle>
+
             <Stack component="form" sx={{alignItems: "center"}} onSubmit={handleSubmit}>
+                {/*todo: make this look better*/}
                 <Grid container spacing={1}>
+                    <Grid item xs={12}  sx={{marginRight: "3%", marginLeft: "3%"}}>
+                        <Grid container spacing={1}>
+                            {/*first name*/}
+                            <Grid item xs={6}>
+                                <TextField
+                                    value={values.firstName}
+                                    onChange={handleTextFieldsChange("firstName")}
+                                    label={first_name_label_string}
+                                    error={error}
+                                    required
+                                    fullWidth
+                                />
+                            </Grid>
+                            {/*last name*/}
+                            <Grid item xs={6}>
+                                <TextField
+                                    value={values.lastName}
+                                    onChange={handleTextFieldsChange("lastName")}
+                                    label={last_name_label_string}
+                                    error={error}
+                                    required
+                                    fullWidth
+                                />
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                    {/*email*/}
+                    <Grid item xs={12} sx={{marginRight: "3%", marginLeft: "3%"}}>
+                        <TextField
+                            value={values.email}
+                            onChange={handleTextFieldsChange("email")}
+                            label={email_label_string}
+                            error={error}
+                            required
+                            fullWidth
+                        />
+                    </Grid>
+                    {/*phone number*/}
+                    <Grid item xs={12} sx={{marginRight: "3%", marginLeft: "3%"}}>
+                        <TextField
+                            value={values.phoneNumber}
+                            onChange={handleTextFieldsChange("phoneNumber")}
+                            label={phone_number_label_string}
+                            error={error}
+                            required
+                            fullWidth
+                        />
+                    </Grid>
+                    {error && <Grid item xs={6} sx={{marginRight: "3%", marginLeft: "3%"}}>
+                        <Alert severity="error">{error_message_string}</Alert>
+                    </Grid>}
 
+                    <Grid item xs={6} sx={{marginRight: "3%", marginLeft: "3%"}}>
+                        <Button fullWidth type="submit" color="primary" sx={{marginBottom: 1}} variant="outlined">{submit_button_string}</Button>
+                    </Grid>
                 </Grid>
-
-                {/*/!*the new password field*!/*/}
-                {/*<TextField name="password"*/}
-                {/*           sx={{paddingBottom: 1, width: "50%"}}*/}
-                {/*           id="outlined-basic"*/}
-                {/*           label={password_string}*/}
-                {/*           variant="outlined"*/}
-                {/*           type={showPassword ? 'text' : 'password'}*/}
-                {/*           InputProps={{*/}
-                {/*               endAdornment: (*/}
-                {/*                   <InputAdornment position="end">*/}
-                {/*                       <IconButton*/}
-                {/*                           onClick={() => setShowPassword(!showPassword)}*/}
-                {/*                           onMouseDown={(event) => event.preventDefault()}*/}
-                {/*                       >*/}
-                {/*                           {showPassword ? <VisibilityOff /> : <Visibility />}*/}
-                {/*                       </IconButton>*/}
-                {/*                   </InputAdornment>*/}
-                {/*               ),*/}
-                {/*           }}/>*/}
-                {/*/!*confirm password*!/*/}
-                {/*<TextField name="confirmPassword"*/}
-                {/*           sx={{paddingBottom: 1, width: "50%"}}*/}
-                {/*           label={confirm_password_string}*/}
-                {/*           variant="outlined"*/}
-                {/*           type={showConfirmPassword ? 'text' : 'password'}*/}
-                {/*           InputProps={{*/}
-                {/*               endAdornment: (*/}
-                {/*                   <InputAdornment position="end">*/}
-                {/*                       <IconButton*/}
-                {/*                           onClick={() => setShowConfirmPassword(!showConfirmPassword)}*/}
-                {/*                           onMouseDown={(event) => event.preventDefault()}*/}
-                {/*                       >*/}
-                {/*                           {showConfirmPassword ? <VisibilityOff /> : <Visibility />}*/}
-                {/*                       </IconButton>*/}
-                {/*                   </InputAdornment>*/}
-                {/*               ),*/}
-                {/*           }}/>*/}
-                {/*/!*the submit button*!/*/}
-                {/*<Grid container justifyContent="center" spacing={0}>*/}
-                {/*    <Grid item align="center" xs={4}>*/}
-                {/*        /!*the cancel button*!/*/}
-                {/*        <Button onClick={() => props.onClose()} sx={{marginBottom: 1, width: "50%"}} variant="outlined">{cancel_string}</Button>*/}
-                {/*    </Grid>*/}
-                {/*    <Grid item align="center" xs={4}>*/}
-                {/*        /!*the change button*!/*/}
-                {/*        <Button type="submit" color="success" sx={{marginBottom: 1, width: "50%"}} variant="outlined">{change_string}</Button>*/}
-                {/*    </Grid>*/}
-                {/*</Grid>*/}
             </Stack>
         </Dialog>
     )
