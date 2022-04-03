@@ -66,7 +66,7 @@ public class UserQueries {
     public Response<Boolean> insertUser(UserDBDTO userDBDTO){
         Connect.createConnection();
         int rows = 0;
-        String sql = "INSERT INTO \"Users\"(username, userstateenum, workfield , firstname , lastname , email,  phonenumber, city) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO \"Users\"(username, userstateenum, workfield , firstname , lastname , email,  phonenumber, city, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         PreparedStatement preparedStatement;
         try {
             preparedStatement = Connect.conn.prepareStatement(sql);
@@ -79,6 +79,7 @@ public class UserQueries {
             preparedStatement.setString(6, userDBDTO.getEmail());
             preparedStatement.setString(7, userDBDTO.getPhoneNumber());
             preparedStatement.setString(8, userDBDTO.getCity());
+            preparedStatement.setString(9, userDBDTO.getPassword());
             rows = preparedStatement.executeUpdate();
             Connect.closeConnection();
         }
@@ -89,7 +90,7 @@ public class UserQueries {
                 new Response<>(false, true, "bad Db writing");
     }
 
-    public Response<Boolean> insertUserPassword(String username, String password) throws SQLException {
+/*    public Response<Boolean> insertUserPassword(String username, String password) throws SQLException {
         Connect.createConnection();
         String sql = "INSERT INTO \"Passwords\" (username, city) VALUES (?, ?)";
         PreparedStatement preparedStatement = Connect.conn.prepareStatement(sql);
@@ -100,18 +101,18 @@ public class UserQueries {
         Connect.closeConnection();
         return rows > 0 ? new Response<>(true, false, "") :
                 new Response<>(false, true, "bad Db writing");
-    }
+    }*/
 
-    public Response<Pair<String, String>> getPassword(String username) throws SQLException {
+    public Response<String> getPassword(String username) throws SQLException {
         Connect.createConnection();
-        String sql = "SELECT * FROM \"Passwords\" WHERE username = ?";
+        String sql = "SELECT * FROM \"Users\" WHERE username = ?";
         PreparedStatement statement = Connect.conn.prepareStatement(sql);
         statement.setString(1, username);
-        ResultSet result = statement.executeQuery(sql);
+        ResultSet result = statement.executeQuery();
         if(result.next()) {
-            Pair<String, String> nameAndPassword = new Pair<>(result.getString("username"), result.getString("password"));
+            String password = result.getString("password");
             Connect.closeConnection();
-            return new Response<>(nameAndPassword, false, "success");//todo
+            return new Response<>(password, false, "success");//todo
         }
         Connect.closeConnection();
         return new Response<>(null, true, "fail");//todo

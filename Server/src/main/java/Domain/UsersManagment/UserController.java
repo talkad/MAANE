@@ -134,7 +134,16 @@ public class UserController {
     }
 
     public boolean isValidUser(String username, String password){
-        return registeredUsers.containsKey(username) && registeredUsers.get(username).getSecond().equals(password) && !connectedUsers.containsKey(username);
+        boolean isValid = false;
+        try {
+            Response<String> pass = userQueries.getPassword(username);
+            if(!pass.isFailure()){
+                isValid = pass.getResult().equals(password);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return isValid && registeredUsers.containsKey(username) && registeredUsers.get(username).getSecond().equals(password) && !connectedUsers.containsKey(username);
     }
 
     public Response<String> logout(String name) {
@@ -172,7 +181,8 @@ public class UserController {
                 Response<User> result = user.registerUser(userToRegister, userStateEnum, firstName, lastName, email, phoneNumber, city);
                 if (!result.isFailure()) {
                     try {
-                        userQueries.insertUser(new UserDBDTO(result.getResult()));
+                        userQueries.insertUser(new UserDBDTO(result.getResult(), security.sha256(password)));
+                        //userQueries.insertUserPassword(userToRegister, security.sha256(password));
                     }
                     catch (Exception e){}
                     registeredUsers.put(userToRegister, new Pair<>(result.getResult(), security.sha256(password)));
@@ -199,7 +209,8 @@ public class UserController {
                         if (!result.isFailure()) {
                             registeredUsers.put(userToRegister, new Pair<>(result.getResult(), security.sha256(password)));
                             try {
-                                userQueries.insertUser(new UserDBDTO(result.getResult()));
+                                userQueries.insertUser(new UserDBDTO(result.getResult(), security.sha256(password)));
+                                //userQueries.insertUserPassword(userToRegister, security.sha256(password));
                             }
                             catch (Exception e){}
                             goalsManagement.addGoalsField(workField);
@@ -222,7 +233,8 @@ public class UserController {
                                 if(appointmentRes.getResult()){
                                     registeredUsers.put(userToRegister, new Pair<>(result.getResult(), security.sha256(password)));
                                     try {
-                                        userQueries.insertUser(new UserDBDTO(result.getResult()));
+                                        userQueries.insertUser(new UserDBDTO(result.getResult(), security.sha256(password)));
+                                        //userQueries.insertUserPassword(userToRegister, security.sha256(password));
                                     }
                                     catch (Exception e){}
                                     return new Response<>(result.getResult().getUsername(), false, "Registration occurred");
@@ -707,7 +719,8 @@ public class UserController {
     public void adminBoot(String username, String password){
         User user = new User(username, UserStateEnum.SYSTEM_MANAGER);
         try {
-            userQueries.insertUser(new UserDBDTO(user));
+            userQueries.insertUser(new UserDBDTO(user, security.sha256(password)));
+            //userQueries.insertUserPassword(username, security.sha256(password));
         }
         catch (Exception e){}
         registeredUsers.put(username, new Pair<>(user, security.sha256(password)));
@@ -829,6 +842,8 @@ public class UserController {
                         result.getResult().setAppointments(supervisor.getAppointments());
                         result.getResult().setSurveys(supervisor.getSurveys().getResult());
                         registeredUsers.put(newSupervisor, new Pair<>(result.getResult(), security.sha256(password)));
+                        userQueries.insertUser(new UserDBDTO(user, security.sha256(password)));
+                        //userQueries.insertUserPassword(newSupervisor, security.sha256(password));
                         registeredUsers.remove(currSupervisor);
                         connectedUsers.remove(currSupervisor);
                         return transferSupervisionRes;

@@ -16,6 +16,7 @@ public class UserDBDTO {
     protected String email;
     protected String phoneNumber;
     protected String city;
+    protected String password;
     protected List<String> schools;
     protected List<String> appointments;
     protected List<String> surveys;
@@ -26,7 +27,7 @@ public class UserDBDTO {
 
     public UserDBDTO() {}
 
-    public UserDBDTO(User user) {
+    public UserDBDTO(User user, String password) {
         this.username = user.getUsername();
         this.userStateEnum = user.getState().getStateEnum();
         this.workField = user.getWorkField();
@@ -35,6 +36,7 @@ public class UserDBDTO {
         this.email = user.getEmail();
         this.phoneNumber = user.getPhoneNumber();
         this.city = user.getCity();
+        this.password = password;
     }
 
 
@@ -100,6 +102,14 @@ public class UserDBDTO {
 
     public void setCity(String city) {
         this.city = city;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public List<String> getSchools() {
