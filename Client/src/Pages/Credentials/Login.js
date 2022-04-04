@@ -67,7 +67,7 @@ export default function Login(props){
         }
         else{
             setShowError(false);
-            Connection.getInstance().login(
+            new Connection().login(
                 data.get('username'),
                 data.get('password'),
                 loginCallback);

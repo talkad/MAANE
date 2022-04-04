@@ -476,7 +476,7 @@ export default function SchoolsManagement(props){
      * @param schoolID the school id of the school to which add the coordinator to
      */
     const handleAddCoordinator = (workField, firstName, lastName, email, phoneNumber, schoolID) => {
-        Connection.getInstance().addCoordinator(
+        new Connection().addCoordinator(
             workField,
             firstName,
             lastName,
@@ -519,7 +519,7 @@ export default function SchoolsManagement(props){
      * an handler for removing a coordinator of a given school
      */
     const handleRemoveCoordinator = (workField, schoolID) => {
-        Connection.getInstance().removeCoordinator(
+        new Connection().removeCoordinator(
             workField,
             schoolID,
             removeCoordinatorCallback

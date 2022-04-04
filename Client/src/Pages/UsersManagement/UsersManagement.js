@@ -422,10 +422,10 @@ export default function UsersManagement(props){
     useEffect(() => {
         props.setHideBars(false);
         if(props.userType === "SUPERVISOR"){
-            Connection.getInstance().getAppointedUsers(handleReceivedData);
+            new Connection().getAppointedUsers(handleReceivedData);
         }
         else if(props.userType === "SYSTEM_MANAGER"){
-            Connection.getInstance().getAllUsers(handleReceivedData);
+            new Connection().getAllUsers(handleReceivedData);
         }
         // todo: see about how i get the information about the school and how i arrange it
 
@@ -486,10 +486,10 @@ export default function UsersManagement(props){
      */
     const refreshData = () => {
         if(props.userType === "SUPERVISOR"){
-            Connection.getInstance().getAppointedUsers(handleReceivedData);
+            new Connection().getAppointedUsers(handleReceivedData);
         }
         else if(props.userType === "SYSTEM_MANAGER"){
-            Connection.getInstance().getAllUsers(handleReceivedData); // TODO: check this (logging in with admin)
+            new Connection().getAllUsers(handleReceivedData); // TODO: check this (logging in with admin)
         }
 
         //TODO: have a loading animation
@@ -534,7 +534,7 @@ export default function UsersManagement(props){
         console.log("aaaaaaaaaaaaaaaaaaaaaaa " + username)
 
         props.setAuthCallBack(() => () =>
-            Connection.getInstance().removeUser( username, userDeletionCallback) //todo aviad
+            new Connection().removeUser( username, userDeletionCallback) //todo aviad
         );
         props.setAuthAvailability(true);
         props.setAuthCalleePage('../home');
@@ -590,7 +590,7 @@ export default function UsersManagement(props){
     const handleUserChangePassword = (username, newPassword, newPasswordConfirmation) => {
         setOpenCPDialog(false);
 
-        props.setAuthCallBack(() => () => Connection.getInstance().changePasswordToUser(
+        props.setAuthCallBack(() => () => new Connection().changePasswordToUser(
             username, newPassword, newPasswordConfirmation, userChangePasswordCallback));
         props.setAuthAvailability(true);
         props.setAuthCalleePage('../home');

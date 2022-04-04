@@ -21,6 +21,8 @@ import NotificationSnackbar from "../../CommonComponents/NotificationSnackbar";
 import {useNavigate} from "react-router-dom";
 import * as Space from 'react-spaces';
 
+// todo: supervisor transfer
+
 // for offline testing
 const roles_system_manager = [
     {
@@ -121,12 +123,12 @@ export default function RegisterUsers(props){
         setRoleChoiceEnum(selected_roles[0]['ruleEnum']);
 
         if (props.type === "SYSTEM_MANAGER"){
-            Connection.getInstance().getSupervisors(arrangeSupervisorsCallback)
+            new Connection().getSupervisors(arrangeSupervisorsCallback)
         }
     },[]);
 
     const refresh_supervisors = () => {
-        Connection.getInstance().getSupervisors(arrangeSupervisorsCallback);
+        new Connection().getSupervisors(arrangeSupervisorsCallback);
     }
 
     const arrangeSupervisorsCallback = (data) => {
@@ -193,7 +195,7 @@ export default function RegisterUsers(props){
             setShowError(false);
 
             if (props.type === 'SUPERVISOR'){
-                Connection.getInstance().registerUser(
+                new Connection().registerUser(
                     values.username,
                     values.password,
                     roleChoiceEnum,
@@ -206,7 +208,7 @@ export default function RegisterUsers(props){
             }
 
             if (props.type === 'SYSTEM_MANAGER'){
-                Connection.getInstance().registerUserBySystemManager(
+                new Connection().registerUserBySystemManager(
                     values.username,
                     values.password,
                     roleChoiceEnum,

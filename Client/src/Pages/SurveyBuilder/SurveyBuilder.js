@@ -123,7 +123,7 @@
 //      */
 //     const submit_survey = () => {
 //
-//         Connection.getInstance().createSurvey({
+//         new Connection.createSurvey({
 //             username: "shaked",
 //             surveyDTO: JSON.stringify({
 //                 id: -1,

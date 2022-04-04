@@ -33,4 +33,3 @@ public class DataController {
                 .body(service.removeCoordinator((String)body.get("currUser"), (String)body.get("workField"), (String)body.get("school")));
     }
 }
-

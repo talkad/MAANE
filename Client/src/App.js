@@ -89,8 +89,7 @@ function App(){
      * handler for when the logout button is pressed
      */
     const handleLogout = () => {
-        console.log("sending logout")
-        Connection.getInstance().logout(logoutCallback);
+        new Connection().logout(logoutCallback);
     }
 
     // sidebar

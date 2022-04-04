@@ -1,12 +1,14 @@
 import axios from "axios";
 
 // TODO: secure store the JWT keys
-// TODO: why the classes outside doesn't recognize the methods???
 
 class Connection{
-    static #instance = null;
 
     constructor() {
+        if(Connection._instance){
+            return Connection._instance;
+        }
+
         const http = require('http');
         this.axios_instance = axios.create({
             baseURL: 'http://localhost:8080/',
@@ -22,19 +24,21 @@ class Connection{
             console.log('Starting Request', JSON.stringify(request, null, 2))
             return request
         })
+
+        Connection._instance = this;
     }
 
-    /**
-     * gets the instance of the singleton class of Connection
-     * @returns {.class} instance of the singleton class
-     */
-    static getInstance(){
-        if(this.#instance === null){
-            this.#instance = new Connection();
-        }
-
-        return this.#instance;
-    }
+    // /**
+    //  * gets the instance of the singleton class of Connection
+    //  * @returns {.class} instance of the singleton class
+    //  */
+    // static getInstance(){
+    //     if(!Connection._instance){
+    //         return new Connection();
+    //     }
+    //
+    //     return Connection._instance;
+    // }
 
     /**
      * sends a GET request to the server
@@ -417,5 +421,7 @@ class Connection{
             callback)
     }
 }
+
+Connection._instance = null;
 
 export default Connection;

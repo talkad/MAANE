@@ -11,6 +11,8 @@ import Visibility from "@mui/icons-material/Visibility";
 import EditIcon from '@mui/icons-material/Edit';
 import EditOffIcon from '@mui/icons-material/EditOff';
 
+// todo: supervisor transfer
+
 /**
  * tab viewer
  */
@@ -105,7 +107,7 @@ function InfoTabPanel(props){
      * handler for saving the info data (sending the data to the server)
      */
     const saveInfoHandler = () => {
-        Connection.getInstance().updateProfileInfo(
+        new Connection().updateProfileInfo(
             values.firstName,
             values.lastName,
             values.email,
@@ -254,7 +256,7 @@ function SecurityTabPanel(props){
      * handles the update password action. sends a request to the server to change the password to the current user
      */
     const handleUpdatePassword = () => {
-        Connection.getInstance().changePassword(
+        new Connection().changePassword(
             values.currentPassword,
             values.newPassword,
             values.confirmNewPassword,
@@ -363,7 +365,7 @@ export default function ProfilePage(props){
     const security_tab_string = "אבטחה";
 
     useEffect(() => {
-        Connection.getInstance().getProfileInfo(profileInfoCallback);
+        new Connection().getProfileInfo(profileInfoCallback);
     }, []);
 
     const profileInfoCallback = (data) => {

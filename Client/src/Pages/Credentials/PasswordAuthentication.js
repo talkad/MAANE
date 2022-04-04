@@ -60,7 +60,7 @@ export default function PasswordAuthentication(props){
         }
         else{
             setError(false);
-            Connection.getInstance().authenticatePassword(data.get('password'), submitCallback)
+            new Connection().authenticatePassword(data.get('password'), submitCallback)
         }
 
     }
