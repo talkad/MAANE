@@ -337,6 +337,21 @@ class Connection{
             callback);
     }
 
+    /**
+     * sends a POST request to remove a coordinator from a given school
+     * @param workField the work field of the coordinator
+     * @param schoolID the id of the school from which remove the coordinator
+     * @param callback a callback function to call once there's a response
+     */
+    removeCoordinator(workField, schoolID, callback){
+        this.sendPOST('/data/removeCoordinator',
+            {
+                workField: workField,
+                school: schoolID,
+            },
+            callback)
+    }
+
     // SURVEY REQUESTS
 
     /**

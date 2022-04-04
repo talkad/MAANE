@@ -27,7 +27,7 @@ import NotificationSnackbar from "../../CommonComponents/NotificationSnackbar";
  * @param id the id of the school
  * @param name the name of the school
  * @param address the address of the school
- * @param supervisor the supervisor or instructor of the school //TODO ask shaked if it's OR or AND
+ * @param instructor the supervisor or instructor of the school
  * @param educationLevel the education level of the school
  * @param sector the sector of the school
  * @param numOfPupils the number of pupils in the school
@@ -39,15 +39,16 @@ import NotificationSnackbar from "../../CommonComponents/NotificationSnackbar";
  * @param zipCode the zip code of the shcool
  * @param supervisionType the type of supervision of the school is under
  * @param secretaryMail the email address of the secretary office of the school
+ * @param coordinators list of the info of coordinators of the school
  * @returns {{zipCode, address, educationType, city, supervisionType, phoneNumber, educationLevel, principleName, name, numOfPupils, id, sector, secretaryMail, supervisor, cityForMail}}
  */
-function createData(id, name, address, supervisor, educationLevel, sector, numOfPupils, phoneNumber, educationType,
-                    city, cityForMail, principleName, zipCode, supervisionType, secretaryMail) {
+function createData(id, name, address, instructor, educationLevel, sector, numOfPupils, phoneNumber, educationType,
+                    city, cityForMail, principleName, zipCode, supervisionType, secretaryMail, coordinators) {
     return {
         id,
         name,
         address,
-        supervisor,
+        instructor,
         educationLevel,
         sector,
         numOfPupils,
@@ -59,6 +60,7 @@ function createData(id, name, address, supervisor, educationLevel, sector, numOf
         zipCode,
         supervisionType,
         secretaryMail,
+        coordinators,
     }
 }
 
@@ -87,11 +89,15 @@ function Row(props) {
     const education_level_primary_string = "שלב חינוך";
     const education_type_primary_string = "סוג חינוך";
     const sector_primary_string = "מגזר";
-    const supervisor_primary_string = "מפקח/מדריך";
+    const supervisor_primary_string = "מפקח";
     const supervision_type_primary_string = "סוג פיקוח";
 
     // coordinator's strings
     const coordinator_title_string = "רכזים:";
+    const coordinator_name_primary_string = "שם";
+    const coordinator_email_primary_string = 'דוא"ל';
+    const coordinator_phone_number_primary_string = "מספר טלפון";
+    const remove_coordinator_button_string = "הסרת רכז/ת";
 
     // action strings
     const action_title_string = "פעולות:";
@@ -128,6 +134,7 @@ function Row(props) {
                                             bgcolor: "background.paper",
                                         }}
                                     >
+                                        {/*administrative info*/}
                                         <ListItem>
                                             <ListItemText primary={administrative_info_string} />
                                         </ListItem>
@@ -165,6 +172,7 @@ function Row(props) {
                                             bgcolor: "background.paper",
                                         }}
                                     >
+                                        {/*educational info*/}
                                         <ListItem>
                                             <ListItemText primary={educational_info_string} />
                                         </ListItem>
@@ -185,7 +193,7 @@ function Row(props) {
                                         </ListItem>
                                         <Divider component="li" />
                                         <ListItem>
-                                            <ListItemText primary={supervisor_primary_string} secondary={row.supervisor} />
+                                            <ListItemText primary={supervisor_primary_string} secondary={row.instructor} />
                                         </ListItem>
                                         <Divider component="li" />
                                         <ListItem>
@@ -197,10 +205,21 @@ function Row(props) {
                             <Grid item xs={12}>
                                 <Typography>{coordinator_title_string}</Typography>
                             </Grid>
+
+                            {/*coordinator info*/}
                             <Grid item xs={12}>
-                            {/*    TODO: view the coordinators of the school*/}
+                                <List>
+                                    {row.coordinators.map((coordinator) =>
+                                    <ListItem>
+                                        <ListItemText primary={coordinator_name_primary_string} secondary={coordinator.firstName + " " + coordinator.lastName} />
+                                        <ListItemText primary={coordinator_email_primary_string} secondary={coordinator.email} />
+                                        <ListItemText primary={coordinator_phone_number_primary_string} secondary={coordinator.phoneNumber} />
+                                        <Button onClick={() => props.handleOpenRemoveCoordinatorDialog(coordinator.firstName + " " + coordinator.lastName, row.id)} variant="outlined" color="error">{remove_coordinator_button_string}</Button>
+                                    </ListItem>)}
+                                </List>
                             </Grid>
 
+                            {/*actions*/}
                             <Grid item xs={12}>
                                 <Typography>{action_title_string}</Typography>
                             </Grid>
@@ -334,19 +353,61 @@ function AddCoordinatorDialog(props){
     )
 }
 
+/**
+ * a dialog element for removing a coordinator
+ * @param props the properties the element gets
+ * @returns {JSX.Element} the element
+ */
+function RemoveCoordinatorDialog(props){
+
+    const title_string = "האם את/ה בטוח/ה שהינך רוצה למחוק את הרכז/ת";
+    const delete_string = "מחק/י";
+    const cancel_string = "ביטול";
+
+    const handleSubmitDeletion = () => {
+        props.callback("dunno the work field", props.schoolID); // TODO: know the work field
+    }
+
+    return (
+        <Dialog titleStyle={{textAlign: "center"}} sx={{alignItems: "right"}} fullWidth maxWidth="sm" onClose={props.onClose} open={props.open}>
+            <DialogTitle><Typography variant="h5" align="center">?{title_string} {props.name}</Typography></DialogTitle>
+            <Grid container justifyContent="center" spacing={0}>
+                <Grid item align="center" xs={6}>
+                    {/*the cancel button*/}
+                    <Button onClick={() => props.onClose()} sx={{marginBottom: 1, width: "50%"}} variant="outlined">{cancel_string}</Button>
+                </Grid>
+                <Grid item align="center" xs={6}>
+                    {/*the delete button*/}
+                    <Button onClick={() => handleSubmitDeletion()} sx={{marginBottom: 1, width: "50%"}} color="error" variant="outlined">{delete_string}</Button>
+                </Grid>
+            </Grid>
+        </Dialog>
+    )
+}
+
 const rows = [
     createData(432, "hello there", "grove street", "ronit", "elementary",
         "idk", 420, "050-1234567", "lame", "narnia", "idk",
-        "shula","35423", "super supervision", "hahawhoreadsthis@lmao.lol")
+        "shula","35423", "super supervision", "hahawhoreadsthis@lmao.lol",
+        [{firstName: "a", lastName: "b", email: "idk@post.lol", phoneNumber: "050-lmao"},
+            {firstName: "c", lastName: "d", email: "idk2@post.lol", phoneNumber: "054-lmao"}])
 ]
 
 export default function SchoolsManagement(props){
     const [schools, setSchools] = useState(rows);
 
     // dialog states
+    // add coordinator
     const [openACDialog, setOpenACDialog] = useState(false);
     const [selectedSchoolID, setSelectedSchoolID] = useState(-1);
     const [selectedSchoolName, setSelectedSchoolName] = useState('');
+
+    // remove coordinator
+    const [openDCDialog, setOpenDCDialog] = useState(false);
+    const [selectedCoordinatorName, setSelectedCoordinatorName] = useState('');
+    // TODO: what other info i need?
+
+
 
     // snackbar states
     const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -370,7 +431,7 @@ export default function SchoolsManagement(props){
      */
     const arrangeSchoolCallback = (data) => {
         if (!data.failure){
-            setSchools(data.result);
+            setSchools(data.result); // todo: this once i know how it's passed
         }
         else{
             // todo: needed?
@@ -426,6 +487,46 @@ export default function SchoolsManagement(props){
         )
     }
 
+    // remove coordinator functions
+
+    /**
+     * handles the opening of the dialog to remove a coordinator of a given school
+     * @param coordinatorName the name of the coordinator to remove
+     * @param schoolID the id of the school from which to remove the coordinator
+     */
+    const handleOpenRemoveCoordinatorDialog = (coordinatorName, schoolID) => {
+        setOpenDCDialog(true);
+        setSelectedCoordinatorName(coordinatorName);
+        setSelectedSchoolID(schoolID)
+    }
+
+    /**
+     * an onClose handler for the RemoveCoordinator dialog
+     */
+    const handleCloseDCDialog = () => {
+        setOpenDCDialog(false);
+    }
+
+    /**
+     * a call back which handles the response from the server regarding the request to remove a coordinator from a selected school
+     * @param data the response from the server
+     */
+    const removeCoordinatorCallback = (data) => {
+        // TODO: implement
+    }
+
+    /**
+     * an handler for removing a coordinator of a given school
+     */
+    const handleRemoveCoordinator = (workField, schoolID) => {
+        Connection.getInstance().removeCoordinator(
+            workField,
+            schoolID,
+            removeCoordinatorCallback
+        )
+    }
+
+
     return (
         <Space.Fill scrollable>
             <div id="Schools-management">
@@ -446,7 +547,8 @@ export default function SchoolsManagement(props){
                         {/*the body of the table containing the rows*/}
                         <TableBody>
                             {schools.map((tableRow) => (
-                                <Row key={tableRow.id} row={tableRow} handleOpenAddCoordinatorDialog={handleOpenAddCoordinatorDialog}/>
+                                <Row key={tableRow.id} row={tableRow} handleOpenAddCoordinatorDialog={handleOpenAddCoordinatorDialog}
+                                handleOpenRemoveCoordinatorDialog={handleOpenRemoveCoordinatorDialog}/>
                             ))}
                         </TableBody>
                     </Table>
@@ -459,6 +561,15 @@ export default function SchoolsManagement(props){
                     open={openACDialog}
                     onClose={handleCloseACDialog}
                     callback={handleAddCoordinator}
+                />
+
+                {/*remove coordinator dialog pop up*/}
+                <RemoveCoordinatorDialog
+                    name={selectedCoordinatorName}
+                    schoolID={selectedSchoolID}
+                    open={openDCDialog}
+                    onClose={handleCloseDCDialog}
+                    callback={handleRemoveCoordinator}
                 />
 
                 {/*snackbar for notification on actions*/}
