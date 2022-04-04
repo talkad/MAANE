@@ -5,15 +5,18 @@ import { useNavigate } from "react-router-dom";
 
 // PAGES
 import Login from "./Pages/Credentials/Login";
-import SurveyBuilder from "./Pages/SurveyBuilder/SurveyBuilder";
 import RegisterUsers from "./Pages/Credentials/RegisterUsers";
 import Survey from "./Pages/Survey/Survey";
 import WorkPlan from "./Pages/WorkPlan/WorkPlan";
 import UsersManagement from "./Pages/UsersManagement/UsersManagement";
 import InfoViewer from "./Pages/GeneralSupervisorInfoViewer/InfoViewer";
-import SurveyConstraintBuilder from "./Pages/SurveyConstraints/SurveyConstraintBuilder";
 import GuidingBaskets from "./Pages/GuidingBaskets/GuidingBaskets";
 import WorkReport from "./Pages/WorkReport/WorkReport";
+import PasswordAuthentication from "./Pages/Credentials/PasswordAuthentication";
+import GoalsManagement from "./Pages/GoalsManagement/GoalsManagement";
+import ProfilePage from "./Pages/Profile/ProfilePage";
+import SchoolsManagement from "./Pages/SchoolsManagement/SchoolsManagement";
+import SurveyBuilder from "./Pages/SurveyBuilder/SurveyBuilder";
 
 // COMPONENTS
 import {
@@ -28,6 +31,7 @@ import {
 } from "@mui/material";
 import SurveyMenu from "./Pages/Survey/SurveyMenu";
 import * as Space from 'react-spaces';
+import Connection from "./Communication/Connection";
 
 // ICONS
 import HomeIcon from '@mui/icons-material/Home';
@@ -37,13 +41,8 @@ import SummarizeIcon from '@mui/icons-material/Summarize';
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import Typography from "@mui/material/Typography";
 import TaskIcon from '@mui/icons-material/Task';
-import Connection from "./Communication/Connection";
-import PasswordAuthentication from "./Pages/Credentials/PasswordAuthentication";
-import GoalsManagement from "./Pages/GoalsManagement/GoalsManagement";
 import MenuIcon from '@mui/icons-material/Menu';
-import ProfilePage from "./Pages/Profile/ProfilePage";
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
-import SchoolsManagement from "./Pages/SchoolsManagement/SchoolsManagement";
 import SchoolIcon from '@mui/icons-material/School';
 
 // TODO: prevent users from going through the site by entering paths in the url
@@ -294,7 +293,7 @@ function App(){
                                 <Route path="menu" element={<SurveyMenu />}/>
                                 <Route path="createSurvey" element={<SurveyBuilder/>}/>
                                 <Route path="getSurvey" element={<Survey/>}/>
-                                <Route path="surveyConstraint" element={<SurveyConstraintBuilder/>}/>
+                                {/*<Route path="surveyConstraint" element={<SurveyConstraintBuilder/>}/>*/}
                             </Route>}
 
                         <Route
