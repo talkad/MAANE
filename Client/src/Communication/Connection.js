@@ -258,7 +258,34 @@ class Connection{
                 },
                 optionalSupervisor: optionalSupervisor,
             },
-            callback)
+            callback);
+    }
+
+    /**
+     * sends a POST request to register a new user to the system by a system manager and the user replaces a current supervisor
+     * @param currentSupervisor the supervisor to be replaced
+     * @param newSupervisor the supervisor to replace to (also the username of the new user)
+     * @param password the password of the new user
+     * @param firstName the first name of the new user
+     * @param lastName the last name of the new user
+     * @param email the email of the new user
+     * @param phoneNumber the phone number of the new user
+     * @param city the city of the new user
+     * @param callback a callback function to call once there's a response
+     */
+    transferSuperVisionWithRegistration(currentSupervisor, newSupervisor, password, firstName, lastName, email, phoneNumber, city, callback){
+        this.sendPOST('/user/transferSupervision',
+            {
+                currSupervisor: currentSupervisor,
+                newSupervisor: newSupervisor,
+                password: password,
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                phoneNumber: phoneNumber,
+                city: city,
+            },
+            callback);
     }
 
     /**

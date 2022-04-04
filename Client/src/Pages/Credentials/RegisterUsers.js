@@ -1,14 +1,14 @@
 import React, {useEffect, useState} from "react";
 import './RegisterUsers.css'
 import {
-    Alert,
-    FormHelperText,
+    Alert, FormControlLabel,
+    FormHelperText, FormLabel,
     Grid,
     IconButton,
     InputAdornment,
     InputLabel,
     MenuItem,
-    Paper,
+    Paper, Radio, RadioGroup,
     Select, Typography
 } from "@mui/material";
 import TextField from "@mui/material/TextField";
@@ -75,6 +75,9 @@ export default function RegisterUsers(props){
     // role choice
     const [roleChoiceEnum, setRoleChoiceEnum] = useState('');
 
+    // radio
+    const [radioValue, setRadioValue] = useState("0"); // 0 - add new user. 1 - replace supervisor
+
     // supervisor choice
     const [supervisorChoiceUsername, setSupervisorChoiceUsername] = useState('');
 
@@ -84,7 +87,7 @@ export default function RegisterUsers(props){
 
     // notification snackbar
     const [openSnackbar, setOpenSnackbar] = useState(false);
-    const [snackbarSeverity, setSnackbarSeverity] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState('error');
     const [snackbarMessage, setSnackbarMessage] = useState('');
 
     let navigate = useNavigate();
@@ -113,6 +116,10 @@ export default function RegisterUsers(props){
     const select_supervisor_label_string = 'מפקח/ת';
     const select_role_helper_text_string = 'תפקיד המשתמש הנרשם';
     const select_supervisor_helper_text_string = 'המפקח/ת שתחתיו/ה המשתמש יוגדר';
+
+    const action_radio_title_string = "פעולה:";
+    const add_new_user_radio_string = "הוספת משתמש";
+    const replace_existing_radio_string = "החלפת נוכחי/ת";
 
     /**
      * before the screen loads sets the relevant components according to the type of user who got to the screen
@@ -150,8 +157,16 @@ export default function RegisterUsers(props){
     }
 
     /**
+     * an on change handler for the radio
+     * @param event the radio element in which the change occurred
+     */
+    const handleRadioChange = (event) => {
+        setRadioValue(event.target.value);
+    }
+
+    /**
      * callback function for the response of the server for the register request
-     * @param data
+     * @param data the data from the server
      */
     const registerCallback = (data) => {
         if(data.failure){
@@ -186,7 +201,8 @@ export default function RegisterUsers(props){
 
         if(values.username === '' || values.password === '' || roleChoiceEnum === undefined || roleChoiceEnum === '' ||
             (roleChoiceEnum === 'SUPERVISOR' && values.workField === '') ||
-            (props.type === "SYSTEM_MANAGER" && (roleChoiceEnum === "INSTRUCTOR" || roleChoiceEnum === "GENERAL_SUPERVISOR") && supervisorChoiceUsername === '')){
+            (props.type === "SYSTEM_MANAGER" && (roleChoiceEnum === "INSTRUCTOR" || roleChoiceEnum === "GENERAL_SUPERVISOR" ||
+                radioValue === "1") && supervisorChoiceUsername === '')){
 
             setShowError(true);
             setErrorMessage('נא למלא את כל שדות החובה')
@@ -208,19 +224,35 @@ export default function RegisterUsers(props){
             }
 
             if (props.type === 'SYSTEM_MANAGER'){
-                new Connection().registerUserBySystemManager(
-                    values.username,
-                    values.password,
-                    roleChoiceEnum,
-                    values.firstName,
-                    values.lastName,
-                    values.email,
-                    values.phoneNumber,
-                    values.city,
-                    values.workField,
-                    supervisorChoiceUsername,
-                    registerCallback
-                );
+                if(radioValue === "0"){
+                    new Connection().registerUserBySystemManager(
+                        values.username,
+                        values.password,
+                        roleChoiceEnum,
+                        values.firstName,
+                        values.lastName,
+                        values.email,
+                        values.phoneNumber,
+                        values.city,
+                        values.workField,
+                        supervisorChoiceUsername,
+                        registerCallback
+                    );
+                }
+
+                if(radioValue === "1"){
+                    new Connection().transferSuperVisionWithRegistration(
+                        supervisorChoiceUsername,
+                        values.username,
+                        values.password,
+                        values.firstName,
+                        values.lastName,
+                        values.email,
+                        values.phoneNumber,
+                        values.city,
+                        registerCallback
+                    );
+                }
 
                 if (roleChoiceEnum === "SUPERVISOR") {
                     refresh_supervisors();
@@ -389,9 +421,23 @@ export default function RegisterUsers(props){
                             <Typography variant="h7">{user_assign_info}</Typography>
                         </Grid>
 
+                        <Grid item xs={12} sx={{marginRight: "3%", marginLeft: "3%", marginTop: "3%"}}>
+                            {/* registration action radio */}
+                            {props.type === "SYSTEM_MANAGER" && <FormControl>
+                                <FormLabel>{action_radio_title_string}</FormLabel>
+                                <RadioGroup
+                                    value={radioValue}
+                                    onChange={handleRadioChange}
+                                >
+                                    <FormControlLabel value="0" control={<Radio />} label={add_new_user_radio_string} />
+                                    <FormControlLabel value="1" control={<Radio />} label={replace_existing_radio_string} />
+                                </RadioGroup>
+                            </FormControl>}
+                        </Grid>
+
                         <Grid item xs={12} sx={{marginRight: "3%", marginLeft: "3%"}}>
                             {/* role choice form */}
-                            <FormControl color="secondary" sx={{ m: 1, minWidth: 120 }}>
+                            {radioValue === "0" && <FormControl color="secondary" sx={{ m: 1, minWidth: 120 }}>
                                 <InputLabel id="role-select-helper-label">{select_role_label_string}</InputLabel>
                                 <Select
                                     labelId="role-select-helper-label"
@@ -402,12 +448,12 @@ export default function RegisterUsers(props){
                                     {roles.map(x => <MenuItem value={x['roleEnum']}>{x['role']}</MenuItem>)}
                                 </Select>
                                 <FormHelperText>{select_role_helper_text_string}</FormHelperText>
-                            </FormControl>
+                            </FormControl>}
                         </Grid>
 
                         <Grid item xs={12} sx={{marginRight: "3%", marginLeft: "3%"}}>
                             {/*optional select if the user is admin and want to register a non-supervisor user under an existing supervisor*/}
-                            {props.type === 'SYSTEM_MANAGER' && (roleChoiceEnum === "INSTRUCTOR" || roleChoiceEnum === "GENERAL_SUPERVISOR") &&
+                            {props.type === 'SYSTEM_MANAGER' && radioValue === "0" && (roleChoiceEnum === "INSTRUCTOR" || roleChoiceEnum === "GENERAL_SUPERVISOR") &&
                                 <FormControl color="secondary" sx={{ m: 1, minWidth: 120 }}>
                                     <InputLabel id="supervisor-select-helper-label">{select_supervisor_label_string}</InputLabel>
                                     <Select
@@ -424,7 +470,7 @@ export default function RegisterUsers(props){
 
                         <Grid item xs={12} sx={{marginRight: "3%", marginLeft: "3%"}}>
                             {/*optional text-field if the user chose to register a supervisor*/}
-                            {roleChoiceEnum === "SUPERVISOR" &&
+                            {roleChoiceEnum === "SUPERVISOR" && radioValue === "0" &&
                                 <TextField
                                     color="secondary"
                                     value={values.workField}
@@ -436,6 +482,22 @@ export default function RegisterUsers(props){
                                     fullWidth
                                     label={ work_field_button_string }
                                 />}
+                        </Grid>
+
+                        <Grid item xs={12} sx={{marginRight: "3%", marginLeft: "3%"}}>
+                            {/*optional select if the user is admin and want to register a user and make it a supervisor in the place of an existing one*/}
+                            {(props.type === 'SYSTEM_MANAGER' && radioValue === "1") &&
+                                <FormControl color="secondary" sx={{ m: 1, minWidth: 120 }}>
+                                    <InputLabel>{select_supervisor_label_string}</InputLabel>
+                                    <Select
+                                        value={supervisorChoiceUsername}
+                                        label={select_supervisor_label_string}
+                                        onChange={handleSupervisorChoiceChange}
+                                    >
+                                        {supervisors.map(x => <MenuItem value={x['currUser']}>{x['firstName'] + " " + x['lastName'] + "בתחום " + x['workField']}</MenuItem>)}
+                                    </Select>
+                                    <FormHelperText>{select_supervisor_helper_text_string}</FormHelperText>
+                                </FormControl>}
                         </Grid>
 
                         <Grid item xs={12} sx={{marginRight: "3%", marginLeft: "3%"}}>
