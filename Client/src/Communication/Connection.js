@@ -262,6 +262,21 @@ class Connection{
     }
 
     /**
+     * sends a POST request to transfer supervision to a given existing user from another existing user
+     * @param currentSupervisor the supervisor from which we are revoking the supervision
+     * @param newSupervisor the user to which we give supervision
+     * @param callback a callback function to call once there's a response
+     */
+    transferSupervisionToExistingUser(currentSupervisor, newSupervisor, callback){
+        this.sendPOST('/user/transferSupervisionToExistingUser',
+            {
+                currSupervisor: currentSupervisor,
+                newSupervisor: newSupervisor,
+            },
+            callback)
+    }
+
+    /**
      * sends a POST request to register a new user to the system by a system manager and the user replaces a current supervisor
      * @param currentSupervisor the supervisor to be replaced
      * @param newSupervisor the supervisor to replace to (also the username of the new user)

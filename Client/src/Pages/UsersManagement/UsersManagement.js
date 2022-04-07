@@ -73,6 +73,7 @@ function Row(props) {
     const delete_user_button_string = 'מחיקת משתמש';
     const change_password_button_string = 'שינוי סיסמה';
     const edit_schools_button_string = 'עריכת בתי ספר';
+    const make_supervisor_button_string = "הפיכה למפקח/ת";
 
     // data
     const user_email_string = 'דוא"ל';
@@ -141,6 +142,9 @@ function Row(props) {
                                 {/*editing actions*/}
                                 <Grid item xs={1.5}><Button fullWidth onClick={() => props.handleOpenCPDialog(row.username, row.name)} color="secondary" variant="outlined">{change_password_button_string}</Button></Grid>
                                 <Grid item xs={1.5}><Button fullWidth onClick={() => props.handleOpenEditSchoolsDialog(row.username, row.name, row.schools)} color="secondary" variant="outlined">{edit_schools_button_string}</Button></Grid>
+                                {props.supervisor !== undefined && <Grid item xs={1.5}>
+                                    <Button fullWidth onClick={() => props.handleOpenTransferSuperDialog(row.name, row.username, props.supervisorName, props.supervisor)} color="secondary" variant="outlined">{make_supervisor_button_string}</Button>
+                                </Grid>}
                             </Grid>
                             <Grid container spacing={1}>
                                 {/*removing user*/}
@@ -249,9 +253,13 @@ function SystemManagerRow(props) {
                                             <TableBody>
                                                 {row.instructors.map((tableRows) => (
                                                     <Row key={tableRows.username} row={tableRows} userType={props.userType}
-                                                         handleOpenEditSchoolsDialog={row.handleOpenEditSchoolsDialog}
-                                                         handleOpenCPDialog={row.handleOpenCPDialog}
-                                                         handleOpenDeleteDialog={row.handleOpenDeleteDialog}/>
+                                                         handleOpenEditSchoolsDialog={props.handleOpenEditSchoolsDialog}
+                                                         handleOpenCPDialog={props.handleOpenCPDialog}
+                                                         handleOpenDeleteDialog={props.handleOpenDeleteDialog}
+                                                         handleOpenTransferSuperDialog={props.handleOpenTransferSuperDialog}
+                                                         supervisor={row.username}
+                                                         supervisorName={row.name}
+                                                    />
                                                 ))}
                                             </TableBody>
                                         </Table>
@@ -298,6 +306,39 @@ function DeleteUserDialog(props){
     return (
         <Dialog titleStyle={{textAlign: "center"}} sx={{alignItems: "right"}} fullWidth maxWidth="sm" onClose={props.onClose} open={props.open}>
             <DialogTitle><Typography variant="h5" align="center">?{title_string} {props.selectedName}</Typography></DialogTitle>
+            <Grid container justifyContent="center" spacing={0}>
+                <Grid item align="center" xs={6}>
+                    {/*the cancel button*/}
+                    <Button onClick={() => props.onClose()} sx={{marginBottom: 1, width: "50%"}} variant="outlined">{cancel_string}</Button>
+                </Grid>
+                <Grid item align="center" xs={6}>
+                    {/*the delete button*/}
+                    <Button onClick={() => handleSubmitDeletion()} sx={{marginBottom: 1, width: "50%"}} color="error" variant="outlined">{delete_string}</Button>
+                </Grid>
+            </Grid>
+        </Dialog>
+    )
+}
+
+/**
+ * a dialog element for transferring supervision between users
+ * @param props the properties the element gets
+ * @returns {JSX.Element} the element
+ */
+function TransferSupervisionDialog(props){
+
+    const title_string = `האם את/ה בטוח/ה שהינך רוצה להפוך את `;
+    const title_cont_string = "למפקח/ת במקום "
+    const delete_string = "אישור";
+    const cancel_string = "ביטול";
+
+    const handleSubmitDeletion = () => {
+        props.callback(props.selectedSupervisorUsername, props.selectUser);
+    }
+
+    return (
+        <Dialog titleStyle={{textAlign: "center"}} sx={{alignItems: "right"}} fullWidth maxWidth="sm" onClose={props.onClose} open={props.open}>
+            <DialogTitle><Typography variant="h5" align="center">{title_string} {props.selectedName} {title_cont_string} {props.selectedSupervisorName}</Typography></DialogTitle>
             <Grid container justifyContent="center" spacing={0}>
                 <Grid item align="center" xs={6}>
                     {/*the cancel button*/}
@@ -539,9 +580,15 @@ export default function UsersManagement(props){
     const [openCPDialog, setOpenCPDialog] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [openEditSchoolsDialog, setOpenEditSchoolsDialog] = useState(false);
+
     const [selectedUser, setSelectedUser] = useState('');
     const [selectedName, setSelectedName] = useState('');
     const [selectedSchools, setSelectedSchools] = useState([]);
+
+    // supervision dialog
+    const [openSupervisionTransferDialog, setOpenSupervisionTransferDialog] = useState(false);
+    const [selectedSupervisor, setSelectedSupervisor] = useState('');
+    const [selectedSupervisorName, setSelectedSupervisorName] = useState('');
 
     // snackbar states
     const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -783,6 +830,64 @@ export default function UsersManagement(props){
         navigate(`../auth`, {replace: true})
     }
 
+    // MAKE USER SUPERVISOR DIALOG
+
+    /**
+     * handles the opening of the dialog to change password to a selected user
+     * @param username the selected user
+     * @param name the name of the selected user
+     * @param supervisorName the name of the selected supervisor
+     * @param supervisorUsername the username of the selected supervisor
+     */
+    const handleOpenSupervisionTransferDialog = (name, username, supervisorName, supervisorUsername) => {
+        setOpenSupervisionTransferDialog(true);
+        setSelectedUser(username);
+        setSelectedName(name);
+        setSelectedSupervisor(supervisorUsername);
+        setSelectedSupervisorName(supervisorName)
+    }
+
+    /**
+     * handles the closing of the dialog for changing the password for a selected user
+     */
+    const handleCloseSupervisionTransferDialog = () => {
+        setOpenSupervisionTransferDialog(false);
+    }
+
+    /**
+     * callback for the response of the server for transferring supervision
+     * @param data the response from the server
+     */
+    const makeUserSupervisorCallback = (data) => {
+        props.setAuthAvailability(false);
+        //TODO: doesn't work cause the page is not loaded when this part runs
+        if (!data.failure){
+            setSnackbarSeverity('success');
+            setSnackbarMessage('הפעולה הסתיימה בהצלחה');
+            setOpenSnackbar(true);
+        }
+        else{
+            setSnackbarSeverity('error');
+            setSnackbarMessage('הפעולה נכשלה. אנא נסה/י שוב');
+            setOpenSnackbar(true);
+        }
+    }
+
+    /**
+     * handler for transferring supervision between two users
+     * @param currentSupervisor the supervisor from which we are revoking the supervision
+     * @param newSupervisor the user to which we give supervision
+     */
+    const handleMakeUserSupervisor = (currentSupervisor, newSupervisor) => {
+        setOpenSupervisionTransferDialog(false);
+        // TODO: check it's working properly
+        props.setAuthCallBack(() => () => new Connection().transferSupervisionToExistingUser(
+            currentSupervisor, newSupervisor, userChangePasswordCallback));
+        props.setAuthAvailability(true);
+        props.setAuthCalleePage('../home');
+        props.setAuthGoToPage('../home');
+        navigate(`../auth`, {replace: true})
+    }
     // EDIT SCHOOLS DIALOG
 
     /**
@@ -884,7 +989,10 @@ export default function UsersManagement(props){
                         </TableHead>
                         <TableBody>
                             {tableRows.map((tableRows) => (
-                                <Row key={tableRows.username} row={tableRows} userType={props.userType} handleOpenEditSchoolsDialog={handleOpenEditSchoolsDialog} handleOpenCPDialog={handleOpenCPDialog} handleOpenDeleteDialog={handleOpenDeleteDialog}/>
+                                <Row key={tableRows.username} row={tableRows} userType={props.userType}
+                                     handleOpenEditSchoolsDialog={handleOpenEditSchoolsDialog}
+                                     handleOpenCPDialog={handleOpenCPDialog}
+                                     handleOpenDeleteDialog={handleOpenDeleteDialog}/>
                             ))}
                         </TableBody>
                     </Table>
@@ -904,7 +1012,11 @@ export default function UsersManagement(props){
                         </TableHead>
                         <TableBody>
                             {tableRows.map((tableRows) => (
-                                <SystemManagerRow key={tableRows.username} row={tableRows} userType={props.userType} handleOpenEditSchoolsDialog={handleOpenEditSchoolsDialog} handleOpenCPDialog={handleOpenCPDialog} handleOpenDeleteDialog={handleOpenDeleteDialog}/>
+                                <SystemManagerRow key={tableRows.username} row={tableRows} userType={props.userType}
+                                                  handleOpenTransferSuperDialog={handleOpenSupervisionTransferDialog}
+                                                  handleOpenEditSchoolsDialog={handleOpenEditSchoolsDialog}
+                                                  handleOpenCPDialog={handleOpenCPDialog}
+                                                  handleOpenDeleteDialog={handleOpenDeleteDialog}/>
                             ))}
                         </TableBody>
                     </Table>
@@ -937,6 +1049,17 @@ export default function UsersManagement(props){
                     onClose={handleCloseEditSchoolsDialog}
                     addSchoolCallback={handleUserAddSchool}
                     removeSchoolCallback={handleUserRemoveSchool}/>
+
+                {/*transfer supervision dialog pop up*/}
+                <TransferSupervisionDialog
+                    selectedUser={selectedUser}
+                    selectedName={selectedName}
+                    selectedSupervisorUsername={selectedSupervisor}
+                    selectedSupervisorName={selectedSupervisorName}
+                    open={openSupervisionTransferDialog}
+                    onClose={handleCloseSupervisionTransferDialog}
+                    callback={handleMakeUserSupervisor}
+                />
 
                 {/*snackbar for notification on actions*/}
                 <NotificationSnackbar
