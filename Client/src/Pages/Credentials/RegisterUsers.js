@@ -21,8 +21,6 @@ import NotificationSnackbar from "../../CommonComponents/NotificationSnackbar";
 import {useNavigate} from "react-router-dom";
 import * as Space from 'react-spaces';
 
-// todo: supervisor transfer
-
 // for offline testing
 const roles_system_manager = [
     {

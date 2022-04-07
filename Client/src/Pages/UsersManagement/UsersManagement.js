@@ -33,8 +33,6 @@ import Visibility from "@mui/icons-material/Visibility";
 import NotificationSnackbar from "../../CommonComponents/NotificationSnackbar";
 import DeleteIcon from '@mui/icons-material/Delete';
 
-// todo: have a different table for admin (think about having the main table be about the supervisors and then inside them there'll be a table of their instructors)
-
 /**
  * a function to return an object of the data the tables accepts
  * @param username username of the user

@@ -226,10 +226,11 @@ function NewGoalForm(props) {
                     onSubmit={handleSubmit}
                     spacing={2}
                     sx={{
-                        '& .MuiTextField-root': { width: '50%' },
+                        '& .MuiTextField-root': { width: '100%' },
                         paddingBottom: "1%",
                         paddingTop: "1%",
-                        paddingLeft: "1%"
+                        paddingLeft: "1%",
+                        paddingRight: "1%"
                     }}
                     noValidate
                     autoComplete="off">
@@ -255,7 +256,7 @@ function NewGoalForm(props) {
                     />
 
                     {/*form weight select*/}
-                    <FormControl sx={{width: "20%"}}>
+                    <FormControl sx={{width: "40%"}}>
                         <InputLabel id="weight-label">{form_weight_string}</InputLabel>
                         <Select
                             labelId="weight-label"
@@ -277,7 +278,7 @@ function NewGoalForm(props) {
                     </FormControl>
 
                     {/*form quarter select*/}
-                    <FormControl sx={{width: "20%"}}>
+                    <FormControl sx={{width: "40%"}}>
                         <InputLabel id="quarter-label">{form_quarter_string}</InputLabel>
                         <Select
                             labelId="quarter-label"
@@ -293,7 +294,7 @@ function NewGoalForm(props) {
                     </FormControl>
 
                     {/*hebrew year picker*/}
-                    <FormControl sx={{width: "20%"}}>
+                    <FormControl sx={{width: "40%"}}>
                         <InputLabel id="year-label">{form_year_string}</InputLabel>
                         <Select
                             labelId="year-label"
@@ -479,14 +480,15 @@ export default function GoalsManagement(props){
         <Space.Fill scrollable>
             <div id="Manage-goals">
                 <h1>{page_title_string}</h1>
-                {/*todo: make the add button stick to the right*/}
-                <Button onClick={() => setShowNewGoalForm(!showNewGoalForm)} variant="outlined">{add_goal_button_string}</Button>
+                <div id="Add-goal-button-div">
+                    <Button onClick={() => setShowNewGoalForm(!showNewGoalForm)} variant="outlined">{add_goal_button_string}</Button>
+                    {/*collapsed new goal form*/}
+                    <Collapse sx={{width: "40%"}} in={showNewGoalForm}><NewGoalForm setOpenSnackbar={setOpenSnackbar}
+                                                                                    setSnackbarSeverity={setSnackbarSeverity}
+                                                                                    setSnackbarMessage={setSnackbarMessage}
+                                                                                    refreshData={refreshData}/></Collapse>
+                </div>
 
-                {/*collapsed new goal form*/}
-                <Collapse sx={{width: "40%"}} in={showNewGoalForm}><NewGoalForm setOpenSnackbar={setOpenSnackbar}
-                                                                                setSnackbarSeverity={setSnackbarSeverity}
-                                                                                setSnackbarMessage={setSnackbarMessage}
-                                                                                refreshData={refreshData}/></Collapse>
 
                 {/*the table presenting the goals*/}
                 <TableContainer sx={{width: "80%", marginTop: "1%"}} component={Paper}>

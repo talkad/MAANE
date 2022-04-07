@@ -1,5 +1,5 @@
 import './App.css';
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import { Routes, Route } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
@@ -47,7 +47,6 @@ import SchoolIcon from '@mui/icons-material/School';
 
 // TODO: prevent users from going through the site by entering paths in the url
 // TODO: currently saving everything in local storage but IT IS NOT SAFE
-// TODO: when the user closes the window log the user out before it closes
 // TODO: save the state of the user between refreshes
 
 function App(){
@@ -73,6 +72,12 @@ function App(){
     const logout_button_string = "יציאה";
     // TODO: the greetings currently doesn't work well. but perhaps once TAL implements what i asked then it will (return the username with the response for the request)
     const greetings_string = "שלום " + name;
+
+    useEffect(() => {
+        window.addEventListener('beforeunload', () => {
+            handleLogout(); // TODO: test that it works
+        })
+    }, [])
 
     /**
      * a callback to call when the result of the logout request got back
