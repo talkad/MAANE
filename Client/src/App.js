@@ -45,9 +45,12 @@ import MenuIcon from '@mui/icons-material/Menu';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import SchoolIcon from '@mui/icons-material/School';
 
+// TODO: what to do if the request for info from the server to show fails?
 // TODO: prevent users from going through the site by entering paths in the url
 // TODO: currently saving everything in local storage but IT IS NOT SAFE
 // TODO: save the state of the user between refreshes
+
+// TODO: if there'll be time then add a loading animation to the different pages
 
 function App(){
     // general state data

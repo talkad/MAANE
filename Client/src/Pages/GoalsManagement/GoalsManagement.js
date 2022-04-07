@@ -16,9 +16,12 @@ import { Alert,
 import DeleteIcon from '@mui/icons-material/Delete';
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import Connection from "../../Communication/Connection";
 import gematriya from "gematriya";
+import {add} from "react-big-calendar/lib/utils/dates";
 
 /**
  * a function that returns an object containing the data for a row in the table
@@ -106,6 +109,10 @@ function NewGoalForm(props) {
     const [quarter, setQuarter] = useState(1);
     const [years, setYears] = useState([]);
     const [hebrewYear, setHebrewYear] = useState('');
+
+    // errors
+    const [error, setError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
     const form_title_string = "הוספת יעד חדש";
     const form_title_field_label_string = "כותרת היעד";
@@ -199,12 +206,13 @@ function NewGoalForm(props) {
      */
     const handleSubmit = (event) => {
         event.preventDefault();
-        const data = new FormData(event.currentTarget);
 
         if(title === '' || description === ''){
-            // todo: raise an error
+            setError(true);
+            setErrorMessage("נא למלא את כל השדות");
         }
         else{
+            setError(false);
             new Connection().addGoal(
                 {
                     goalId: -1,
@@ -237,12 +245,16 @@ function NewGoalForm(props) {
 
                     <Typography sx={{paddingLeft: "1%"}} variant="h5">{form_title_string}</Typography>
 
+                    {/*alert*/}
+                    {error && <Alert severity="error">{errorMessage}</Alert>}
+
                     {/*form title*/}
                     <TextField
                         name="title"
                         value={title}
                         onChange={handleTitleChange}
                         label={form_title_field_label_string}
+                        error={error}
                     />
 
                     {/*form description*/}
@@ -253,6 +265,7 @@ function NewGoalForm(props) {
                         label={form_description_field_label_string}
                         multiline
                         rows={4}
+                        error={error}
                     />
 
                     {/*form weight select*/}
@@ -309,7 +322,7 @@ function NewGoalForm(props) {
                     </FormControl>
 
                     {/*form submit button*/}
-                    <Button type="submit" variant={"outlined"} sx={{width: "20%", marginBottom: "1%"}}>{form_add_button_string}</Button>
+                    <Button type="submit" variant={"contained"} sx={{width: "20%", marginBottom: "1%"}}>{form_add_button_string}</Button>
                 </Stack>
             </Paper>
     );
@@ -356,6 +369,7 @@ export default function GoalsManagement(props){
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [years, setYears] = useState([]);
     const [selectedYear, setSelectedYear] = useState('');
+    const [addButtonPressed, setAddButtonPressed] = useState(false);
 
     const year_to_view_string = "שנה להצגה";
     const page_title_string = "ניהול יעדים";
@@ -363,7 +377,7 @@ export default function GoalsManagement(props){
     const goal_quarter_cell_head_string = "רבעון";
     const goal_weight_cell_head_string = "משקל";
     const goal_actions_cell_head_string = "פעולות";
-    const add_goal_button_string = "הוספ/י יעד";
+    const add_goal_button_string = "הוספת יעד";
 
     useEffect(() => {
         let year = new Date().getFullYear();
@@ -390,8 +404,6 @@ export default function GoalsManagement(props){
      */
     const refreshData = () => {
         new Connection().getGoals(selectedYear, handleReceivedData);
-
-        //TODO: have a loading animation
     }
 
     /**
@@ -413,9 +425,6 @@ export default function GoalsManagement(props){
             }
 
             setTableRows(rows);
-        }
-        else{
-            //TODO: raise error
         }
     }
 
@@ -457,7 +466,10 @@ export default function GoalsManagement(props){
             refreshData();
         }
         else{
-            // todo: raise an error
+            // todo: check that it works
+            setOpenSnackbar(true);
+            setSnackbarSeverity("error");
+            setSnackbarMessage("הפעולה נכשלה. אנא נסה/י שנית");
         }
     }
 
@@ -481,7 +493,9 @@ export default function GoalsManagement(props){
             <div id="Manage-goals">
                 <h1>{page_title_string}</h1>
                 <div id="Add-goal-button-div">
-                    <Button onClick={() => setShowNewGoalForm(!showNewGoalForm)} variant="outlined">{add_goal_button_string}</Button>
+                    <Button onClick={function () {setShowNewGoalForm(!showNewGoalForm); setAddButtonPressed(!addButtonPressed)}}
+                        variant={addButtonPressed ? "outlined" : "contained"} startIcon={addButtonPressed ? <ExpandLessIcon/> : <ExpandMoreIcon/>}>
+                        {add_goal_button_string}</Button>
                     {/*collapsed new goal form*/}
                     <Collapse sx={{width: "40%"}} in={showNewGoalForm}><NewGoalForm setOpenSnackbar={setOpenSnackbar}
                                                                                     setSnackbarSeverity={setSnackbarSeverity}
