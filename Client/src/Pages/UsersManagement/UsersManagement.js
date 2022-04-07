@@ -33,6 +33,8 @@ import Visibility from "@mui/icons-material/Visibility";
 import NotificationSnackbar from "../../CommonComponents/NotificationSnackbar";
 import DeleteIcon from '@mui/icons-material/Delete';
 
+// todo: supervisor transfer
+
 /**
  * a function to return an object of the data the tables accepts
  * @param username username of the user
@@ -676,8 +678,6 @@ export default function UsersManagement(props){
         else if(props.userType === "SYSTEM_MANAGER"){
             new Connection().getAllUsers(handleReceivedData); // TODO: check this (logging in with admin)
         }
-
-        //TODO: have a loading animation
     }
 
     // USER DELETION DIALOG

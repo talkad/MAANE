@@ -20,7 +20,7 @@ import SurveyBuilder from "./Pages/SurveyBuilder/SurveyBuilder";
 
 // COMPONENTS
 import {
-    AppBar, Backdrop,
+    AppBar, Backdrop, Box,
     Button,
     Drawer, IconButton,
     List,
@@ -219,9 +219,19 @@ function App(){
                                 variant="h6"
                                 noWrap
                                 component="div"
+                                onClick={() => navigate(`user/home`, {replace: false})}
                             >
                                 מענ"ה
                             </Typography>
+                            {/*todo: see about the logo*/}
+                            <Box
+                                component="img"
+                                sx={{
+                                    height: 64,
+                                }}
+                                alt="Your logo."
+                                src={"logo.svg"}
+                            />
                             {/*profile button*/}
                             <IconButton
                                 size="large"

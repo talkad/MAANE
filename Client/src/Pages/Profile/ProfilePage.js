@@ -11,8 +11,6 @@ import Visibility from "@mui/icons-material/Visibility";
 import EditIcon from '@mui/icons-material/Edit';
 import EditOffIcon from '@mui/icons-material/EditOff';
 
-// todo: supervisor transfer
-
 /**
  * tab viewer
  */
