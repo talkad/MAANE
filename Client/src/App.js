@@ -52,9 +52,10 @@ import SchoolIcon from '@mui/icons-material/School';
 
 // TODO: if there'll be time then add a loading animation to the different pages
 
+
 function App(){
     // general state data
-    const [type, setType] = useState('SYSTEM_MANAGER'); //TODO: change back to 'GUEST' when not developing
+    const [type, setType] = useState('SUPERVISOR'); //TODO: change back to 'GUEST' when not developing
     const [openSidebar, setOpenSidebar] = useState(false);
     const [hideBars, setHideBars] = useState(false);
     const [openBackdrop, setOpenBackdrop] = useState(false);

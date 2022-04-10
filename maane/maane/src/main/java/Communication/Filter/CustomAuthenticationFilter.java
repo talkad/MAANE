@@ -7,6 +7,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -42,9 +43,8 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         String password = request.getParameter("password");
 
         log.info("user {} attempts authentication", username);
-        response.setHeader("Access-Control-Allow-Origin", "*"); //todo - do we need it
-        response.setStatus(200); // todo - magic numbers
-        System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaa" + username);
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setStatus(HttpStatus.OK.value());
         UsernamePasswordAuthenticationToken authenticationToken= new UsernamePasswordAuthenticationToken(username, password);
 
         return authenticationManager.authenticate(authenticationToken);
@@ -54,7 +54,6 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
         User user = (User)authentication.getPrincipal();
         Algorithm algorithm = Algorithm.HMAC256(KeyLoader.getInstance().getEncryptionKey());
-        System.out.println("bbbbbbbbbbbbbbbbbbbbbbbbbbb");
         log.info("user {} attempts authentication", user);
 
         UserController.getInstance().login(user.getUsername());

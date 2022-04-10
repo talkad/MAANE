@@ -412,7 +412,7 @@ class Connection{
     createSurvey(title, description, questions, answers, types, callback){
         this.sendPOST('/survey/createSurvey',
             {
-                id: -1,
+                id: "-1",
                 title: title,
                 description: description,
                 questions: questions,

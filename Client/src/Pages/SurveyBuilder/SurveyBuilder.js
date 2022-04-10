@@ -118,22 +118,18 @@ export default function SurveyBuilder(){
         setDescription(event.target.value);
     }
 
+    const submitSurveyCallback = (data) => {
+        // todo: implement
+    }
+
     /**
      * sends the structure of the built survey to the sever
      */
     const submit_survey = () => {
+        console.log(questions.map(x => x["answers"]));
 
-        new Connection.createSurvey({
-            username: "shaked",
-            surveyDTO: JSON.stringify({
-                id: -1,
-                title: title,
-                description: description,
-                questions: questions.map(x => x["question"]),
-                answers: questions.map(x => x["answers"]),
-                types: questions.map(x => x["type"]),
-            })
-        })
+        new Connection().createSurvey(title, description, questions.map(x => x["question"]),
+            questions.map(x => x["answers"]), questions.map(x => x["type"]), submitSurveyCallback);
     }
 
     return (

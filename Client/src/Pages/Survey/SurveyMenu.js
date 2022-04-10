@@ -93,6 +93,8 @@ const data =
 export default function SurveyMenu(){
     let navigate = useNavigate();
 
+    const create_survey_button_string = "יצירת סקר";
+
     // getting a list and an amount
     // returning a list of lists where in each sub-list there is at most amountInList elements
     /**
@@ -117,14 +119,15 @@ export default function SurveyMenu(){
 
     return (
         <Space.Fill>
-            <Space.Top size="10%">
+            <Space.Top size="20%">
                 <Space.Right size="5%"/>
                 {/*title of the menu*/}
                 <Space.Fill size>
                     <h1>הסקרים שלי</h1>
+                    <Button variant={"contained"} onClick={() => navigate(`../createSurvey`, {replace: false})} >{create_survey_button_string}</Button>
                 </Space.Fill>
             </Space.Top>
-            {/*container for all the elments of the menu*/}
+            {/*container for all the elements of the menu*/}
             <Space.Fill scrollable={true}>
                 {listOfLists(data, 3).map(x =>
                     <Space.Top size="30%">
