@@ -1,5 +1,6 @@
 package Domain.DataManagement.FaultDetector.Rules;
 
+import Communication.DTOs.RuleDTO;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.AnswerState.AnswerType;
 import Domain.DataManagement.SurveyAnswers;
@@ -24,5 +25,17 @@ public class MultipleChoiceBaseRule implements Rule{
             return false;
 
         return Integer.parseInt(answers.getAnswer(questionID).getResult()) == answerID;
+    }
+
+    @Override
+    public RuleDTO getDTO() {
+        RuleDTO dto = new RuleDTO();
+        dto.setQuestionID(questionID);
+        dto.setComparison(null);
+        dto.setAnswer(answerID);
+        dto.setType(Domain.DataManagement.FaultDetector.Rules.RuleType.MULTIPLE_CHOICE);
+        dto.setSubRules(null);
+
+        return dto;
     }
 }

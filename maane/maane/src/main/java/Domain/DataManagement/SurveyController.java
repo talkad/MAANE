@@ -9,8 +9,11 @@ import Domain.DataManagement.AnswerState.AnswerType;
 import Domain.DataManagement.FaultDetector.FaultDetector;
 import Domain.DataManagement.FaultDetector.Rules.Rule;
 import Domain.UsersManagment.UserController;
+import Persistence.SurveyQueries;
 
 import java.security.SecureRandom;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,10 +21,21 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SurveyController {
-    private final Map<String, Pair<Survey, FaultDetector>> surveys;
-    private Map<String, List<SurveyAnswers>> answers;
+
+    /**
+     * The cache will be implemented as LRU
+     */
+//    private final Map<String, Pair<LocalDateTime, Pair<Survey, FaultDetector>>> surveys; //todo - the cache need to be implemented in persistence
+    private final Map<String, Pair<LocalDateTime, Survey>> surveys; //todo - the cache need to be implemented in persistence
+
+    //private Map<String, List<SurveyAnswers>> answers;
     private final SecureRandom secureRandom;
     private final Base64.Encoder base64Encoder;
+
+    /**
+     * maximal size of surveys cache
+     */
+    private final int cacheSize = 50;
 
     private static class CreateSafeThreadSingleton {
         private static final SurveyController INSTANCE = new SurveyController();
@@ -32,7 +46,6 @@ public class SurveyController {
     }
 
     public SurveyController(){
-        answers = new ConcurrentHashMap<>();
         surveys = new ConcurrentHashMap<>();
         secureRandom = new SecureRandom();
         base64Encoder = Base64.getUrlEncoder();
@@ -66,7 +79,7 @@ public class SurveyController {
             return new Response<>("", true, surveyRes.getErrMsg());
         }
 
-        surveys.put(indexer, new Pair<>(surveyRes.getResult(), new FaultDetector()));
+        addSurveyToCache(indexer, surveyRes.getResult());
 
         UserController.getInstance().notifySurveyCreation(username, indexer);
 
@@ -89,7 +102,7 @@ public class SurveyController {
         if(!surveys.containsKey(answersDTO.getId()))
             return new Response<>(false, true, "cannot answer to a not exists survey");
 
-        if(surveys.get(answersDTO.getId()).getFirst().getQuestions().size() != answersDTO.getTypes().size())
+        if(surveys.get(answersDTO.getId()).getSecond().getQuestions().size() != answersDTO.getTypes().size())
             return new Response<>(false, true, "number of answers cannot be different from number of questions");
 
         if(answersDTO.getSymbol().length() == 0)
@@ -97,12 +110,19 @@ public class SurveyController {
 
         answer.setSymbol(answersDTO.getSymbol());
 
-        if(!answers.containsKey(answersDTO.getId()))
-            answers.put(answersDTO.getId(), new LinkedList<>());
+//        if(!answers.containsKey(answersDTO.getId()))
+//            answers.put(answersDTO.getId(), new LinkedList<>());
+//
+//        List<SurveyAnswers> ans = answers.get(answersDTO.getId());
+//        ans.add(answer);
+//        answers.put(answersDTO.getId(), ans);
 
-        List<SurveyAnswers> ans = answers.get(answersDTO.getId());
-        ans.add(answer);
-        answers.put(answersDTO.getId(), ans);
+        try {
+            SurveyQueries.insertAnswers(answersDTO.getId(), answersDTO.getAnswers(), answersDTO.getTypes());
+        }
+        catch(SQLException e){
+            return new Response<>(false, true, e.getMessage());
+        }
 
         return new Response<>(true, false, "the answer added successfully");
     }
@@ -119,10 +139,16 @@ public class SurveyController {
         List<List<String>> ans = new LinkedList<>();
         List<AnswerType> types = new LinkedList<>();
 
-        if(!surveys.containsKey(id))
-            return new Response<>(surveyDTO, true, "id is out of bound");
+        if(!surveys.containsKey(id)) {
+            try {
+                return SurveyQueries.getSurvey(id);
+            }
+            catch(SQLException e){
+                return new Response<>(null, true, e.getMessage());
+            }
+        }
 
-        survey = surveys.get(id).getFirst();
+        survey = surveys.get(id).getSecond();
 
         surveyDTO.setId(id);
         surveyDTO.setTitle(survey.getTitle());
@@ -150,21 +176,22 @@ public class SurveyController {
      * @return success response if the arguments are legal. failure otherwise
      */
     public Response<Boolean> addRule(String username, String id, Rule rule, int goalID){
-        Pair<Survey, FaultDetector> surveyPair;
-        FaultDetector faultDetector;
+//        Pair<Survey, FaultDetector> surveyPair;
+//        FaultDetector faultDetector;
         Response<Boolean> legalAdd = UserController.getInstance().hasCreatedSurvey(username, id);
 
         if(!legalAdd.getResult())
             return new Response<>(false, true, username + " does not created survey " + id);
 
-        if(!surveys.containsKey(id))
-            return new Response<>(false, true, "id is out of bound");
+//        if(!surveys.containsKey(id))
+//            return new Response<>(false, true, "id is out of bound");
+//        surveyPair =surveys.get(id).getSecond();
+//        faultDetector = surveyPair.getSecond();
+//        faultDetector.addRule(rule, goalID);
 
-        surveyPair =surveys.get(id);
-        faultDetector = surveyPair.getSecond();
-        faultDetector.addRule(rule, goalID);
+        SurveyQueries.insertRule(id, goalID, rule.getDTO());
 
-        surveys.put(id, new Pair<>(surveyPair.getFirst(), faultDetector));
+//        surveys.put(id, new Pair<>(surveyPair.getFirst(), faultDetector));
 
         return new Response<>(true, false, "OK");
     }
@@ -184,16 +211,16 @@ public class SurveyController {
         if(!legalAdd.getResult())
             return new Response<>(false, true, username + " does not created survey " + id);
 
-        if(!surveys.containsKey(id))
-            return new Response<>(false, true, "id is out of bound");
+//        if(!surveys.containsKey(id))
+//            return new Response<>(false, true, "id is out of bound");
+//
+//        surveyPair =surveys.get(id);
+//        faultDetector = surveyPair.getSecond();
+//        Response<Boolean> res = faultDetector.removeRule(ruleID);
+//
+//        surveys.put(id, new Pair<>(surveyPair.getFirst(), faultDetector));
 
-        surveyPair =surveys.get(id);
-        faultDetector = surveyPair.getSecond();
-        Response<Boolean> res = faultDetector.removeRule(ruleID);
-
-        surveys.put(id, new Pair<>(surveyPair.getFirst(), faultDetector));
-
-        return res;
+        return SurveyQueries.removeRule(ruleID);
     }
 
     /**
@@ -213,12 +240,16 @@ public class SurveyController {
         if(!legalAdd.getResult())
             return new Response<>(null, true, username + " does not created survey " + id);
 
-        if(!surveys.containsKey(id))
-            return new Response<>(null, true, "The survey doesn't exists");
+//        if(!surveys.containsKey(id))
+//            return new Response<>(null, true, "The survey doesn't exists");
 
-        faultDetector = surveys.get(id).getSecond();
+        faultDetector = new FaultDetector(SurveyQueries.getRules(id));
+        List<SurveyAnswers> answers = SurveyQueries.getAnswers(id);
 
-        for(SurveyAnswers ans: answers.get(id)){
+        if(answers == null)
+            return new Response<>(new LinkedList<>(), false, "no answers");
+
+        for(SurveyAnswers ans: answers){
             currentFaults = new LinkedList<>();
 
             for(Integer fault: faultDetector.detectFault(ans).getResult())
@@ -230,17 +261,14 @@ public class SurveyController {
         return new Response<>(faults, false, "faults detected");
     }
 
-    public Map<String, Pair<Survey, FaultDetector>> getSurveys() {
-        return surveys;
-    }
-
     public Map<String, List<SurveyAnswers>> getAnswers() {
-        return answers;
+        return SurveyQueries.getAllAnswers();
     }
 
     public Response<List<SurveyAnswers>> getAnswersForSurvey(String surveyId) {
-        if(answers.containsKey(surveyId)) {
-            return new Response<>(answers.get(surveyId), false, "");
+        List<SurveyAnswers> answers= SurveyQueries.getAnswerForSurvey(surveyId);
+        if(surveys.containsKey(surveyId)) {
+            return new Response<>(answers, false, "");
         }
         else{
             return new Response<>(null, true, "survey doesn't exist");
@@ -254,7 +282,7 @@ public class SurveyController {
         if(!surveys.containsKey(surveyID))
             return new Response<>(null, true, "Survey " + surveyID + " does not exists");
 
-        fd = surveys.get(surveyID).getSecond();
+        fd = new FaultDetector(SurveyQueries.getRules(surveyID));
         for(Pair<Rule, Integer> p: fd.getRules()){
             rules.add(p.getFirst());
         }
@@ -264,20 +292,21 @@ public class SurveyController {
 
     public Response<List<String>> getSurveys(String username){
         Response<List<String>> res = UserController.getInstance().getSurveys(username);
-        List<String> titles = new LinkedList<>();
+        List<String> titles;
+//        List<String> titles = new LinkedList<>();
 
         if(res.isFailure())
             return res;
 
-        for(String surveyID: res.getResult())
-            titles.add(surveys.get(surveyID).getFirst().getTitle());
-
+//        for(String surveyID: res.getResult())
+//            titles.add(surveys.get(surveyID).getSecond().getTitle());
+        titles = SurveyQueries.getSurveyTitles(res.getResult());
         return new Response<>(titles, false, "success");
     }
 
-    public void setAnswers(Map<String, List<SurveyAnswers>> answers) {
-        this.answers = answers;
-    }
+//    public void setAnswers(Map<String, List<SurveyAnswers>> answers) {
+//        this.answers = answers;
+//    }
 
     /**
      * detect all irregularities in certain school
@@ -296,12 +325,16 @@ public class SurveyController {
         if(!legalAdd.getResult())
             return new Response<>(null, true, username + " did not create survey " + id);
 
-        if(!surveys.containsKey(id))
-            return new Response<>(null, true, "The survey doesn't exists");
+//        if(!surveys.containsKey(id))
+//            return new Response<>(null, true, "The survey doesn't exists");
 
-        faultDetector = surveys.get(id).getSecond();
+        faultDetector = new FaultDetector(SurveyQueries.getRules(id));
+        List<SurveyAnswers> answers = SurveyQueries.getAnswerForSurvey(id);
 
-        for(SurveyAnswers ans: answers.get(id)){
+        if(answers == null)
+            return new Response<>(new LinkedList<>(), false, "no faults");
+
+        for(SurveyAnswers ans: answers){
 
             if(ans.getSymbol().equals(symbol)){
                 for(Integer fault: faultDetector.detectFault(ans).getResult())
@@ -329,9 +362,38 @@ public class SurveyController {
         return base64Encoder.encodeToString(randomBytes);
     }
 
+    private void addSurveyToCache(String indexer, Survey survey){
+        if(surveys.size() > cacheSize)
+            removeLRU();
+
+        surveys.put(indexer, new Pair<>(LocalDateTime.now() ,survey));
+    }
+
+    private void removeLRU(){
+        LocalDateTime lastDate = LocalDateTime.now();
+        String lastIndex = "";
+
+        for(String index: surveys.keySet()){
+            if(surveys.get(index).getFirst().isBefore(lastDate)){
+                lastDate = surveys.get(index).getFirst();
+                lastIndex = index;
+            }
+        }
+
+        removeSurveyFromCache(lastIndex);
+    }
+
+    private Response<Boolean> removeSurveyFromCache(String index){
+        if(!surveys.containsKey(index))
+            return new Response<>(false, true, "survey with id " + index + " is not in cache");
+
+        surveys.remove(index);
+        return new Response<>(true, false, "survey with id " + index + " removed successfully");
+    }
+
     // for testing purpose only
     public void clearCache(){
         surveys.clear();
-        answers.clear();
+//        answers.clear();
     }
 }

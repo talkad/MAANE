@@ -17,6 +17,10 @@ public class FaultDetector {
         this.rules = new LinkedList<>();
     }
 
+    public FaultDetector(List<Pair<Rule, Integer>> rules) {
+        this.rules = rules;
+    }
+
     /**
      * add rule to current detector
      * @param rule to be added

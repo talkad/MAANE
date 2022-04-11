@@ -1,7 +1,13 @@
 package Domain.DataManagement.FaultDetector.Rules;
 
 
+import Communication.DTOs.RuleDTO;
 import Domain.DataManagement.SurveyAnswers;
+
+import java.util.LinkedList;
+import java.util.List;
+
+import static Domain.DataManagement.FaultDetector.Rules.RuleType.IFF;
 
 public class IffRule implements Rule{
     private Rule firstSide, secondSide;
@@ -14,5 +20,23 @@ public class IffRule implements Rule{
     @Override
     public boolean apply(SurveyAnswers answers) {
         return firstSide.apply(answers) == secondSide.apply(answers);
+    }
+
+    @Override
+    public RuleDTO getDTO() {
+        List<RuleDTO> ruleDTOs = new LinkedList<>();
+
+        RuleDTO dto = new RuleDTO();
+        dto.setQuestionID(-1);
+        dto.setComparison(null);
+        dto.setAnswer(-1);
+        dto.setType(IFF);
+
+        ruleDTOs.add(firstSide.getDTO());
+        ruleDTOs.add(secondSide.getDTO());
+
+        dto.setSubRules(ruleDTOs);
+
+        return dto;
     }
 }

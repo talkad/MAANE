@@ -1,10 +1,12 @@
 package Domain.DataManagement.FaultDetector.Rules;
 
+import Communication.DTOs.RuleDTO;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.AnswerState.AnswerType;
 import Domain.DataManagement.SurveyAnswers;
 
 import static Domain.DataManagement.AnswerState.AnswerType.NUMERIC_ANSWER;
+import static Domain.DataManagement.FaultDetector.Rules.RuleType.NUMERIC;
 
 public class NumericBaseRule implements Rule{
 
@@ -43,5 +45,17 @@ public class NumericBaseRule implements Rule{
         }
 
         return false;
+    }
+
+    @Override
+    public RuleDTO getDTO() {
+        RuleDTO dto = new RuleDTO();
+        dto.setQuestionID(questionID);
+        dto.setComparison(comparison);
+        dto.setAnswer(num);
+        dto.setType(NUMERIC);
+        dto.setSubRules(null);
+
+        return dto;
     }
 }
