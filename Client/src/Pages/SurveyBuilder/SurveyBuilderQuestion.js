@@ -8,10 +8,11 @@ import Button from "@mui/material/Button";
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 
 export default function SurveyQuestionBuilder(props) {
-    const [selection, setSelection] = useState('MULTIPLE_CHOICE');
+    const [selection, setSelection] = useState(props.type);
+    const [question, setQuestion] = useState(props.question);
     const [multipleAnswersID, setMultipleAnswersID] = useState(0);
     const [multipleAnswers, setMultipleAnswers] = useState([]);
-    const [answersValues, setAnswerValues] = useState({});
+    const [answersValues, setAnswerValues] = useState(props.answers);
 
     // STRINGS
     const question_label_string = 'שאלה';
@@ -28,6 +29,7 @@ export default function SurveyQuestionBuilder(props) {
      * @param event wrapper for the question element with the change
      */
     const handleQuestionChange = (event) => {
+        setQuestion(event.target.value)
         props.modify(props.id, 'question', event.target.value);
     }
 
@@ -39,7 +41,7 @@ export default function SurveyQuestionBuilder(props) {
         setSelection(event.target.value);
         props.modify(props.id, 'type', event.target.value);
 
-        //if (event.target.value == "")
+        //if (event.target.value == "") // todo: set it so when going back to multiple the answers are saved
     }
 
     /**
@@ -65,10 +67,10 @@ export default function SurveyQuestionBuilder(props) {
     const add_answer = () => {
         setAnswerValues({...answersValues,  [`question-${props.id}-answer-${multipleAnswersID}`]: ''});
 
-        const to_add = {
-            id: `question-${props.id}-answer-${multipleAnswersID}`,}
-        multipleAnswers.push(to_add);
-        setMultipleAnswers(multipleAnswers);
+        // const to_add = {
+        //     id: `question-${props.id}-answer-${multipleAnswersID}`,}
+        // multipleAnswers.push(to_add);
+        // setMultipleAnswers(multipleAnswers);
         props.modify(props.id, 'answers', '', `question-${props.id}-answer-${multipleAnswersID}`);
 
         setMultipleAnswersID(multipleAnswersID+1);
@@ -79,12 +81,18 @@ export default function SurveyQuestionBuilder(props) {
      * @param answer_id id of the answer to delete
      */
     const delete_answer = (answer_id) => {
-        // removing its instance
-        setMultipleAnswers([...multipleAnswers.filter(function(element) {return element['id'] !== answer_id})]); // updating the renderer
-
-        // removing its value
-        delete answersValues[answer_id];
-        setAnswerValues(answersValues);
+        // console.log("starts here");
+        // console.log(Object.entries(answersValues));
+        //
+        //
+        // Object.entries(answersValues).forEach(element => console.log(element));
+        //
+        // // removing its instance
+        // //setMultipleAnswers([...multipleAnswers.filter(function(element) {return element['id'] !== answer_id})]); // updating the renderer
+        // console.log(answer_id);
+        // // removing its value
+        // delete answersValues[answer_id];
+        // setAnswerValues ({...answersValues});
 
         // updating the value to send
         props.delete_answer(props.id, answer_id);
@@ -102,6 +110,7 @@ export default function SurveyQuestionBuilder(props) {
                             margin="normal"
                             variant="filled"
                             required
+                            value={question}
                             label={question_label_string}
                             name="question"
                             autoFocus
@@ -135,15 +144,15 @@ export default function SurveyQuestionBuilder(props) {
                         <Grid item xs={12}>
                                 <RadioGroup column>
                                         {/*viewing the options the user added*/}
-                                        {multipleAnswers.map(x =>
+                                        {Object.entries(answersValues).map(([id, value]) =>
                                             <Grid container spacing={2}>
                                                 <Grid item xs={2}>
-                                                    <FormControlLabel disabled value={x['id']} control={<Radio />} label={<TextField
+                                                    <FormControlLabel disabled value={id} control={<Radio />} label={<TextField
                                                         color="secondary"
                                                         margin="normal"
                                                         variant="standard"
-                                                        id={x['id']}
-                                                        value={answersValues[x['id']]}
+                                                        id={id}
+                                                        value={answersValues[id]}
                                                         required
                                                         sx={{width: "90%"}}
                                                         label={answer_label_string}
@@ -152,7 +161,7 @@ export default function SurveyQuestionBuilder(props) {
                                                 </Grid>
                                                 <Grid item xs={1}>
                                                     <Tooltip title={answer_delete_title_tooltip_string}>
-                                                        <IconButton onClick={() => delete_answer(x['id'])} aria-label="delete">
+                                                        <IconButton onClick={() => delete_answer(id)} aria-label="delete">
                                                             <RemoveCircleOutlineIcon color="warning" />
                                                         </IconButton>
                                                     </Tooltip>
@@ -169,7 +178,7 @@ export default function SurveyQuestionBuilder(props) {
                     <Grid sx={{alignItems: 'center'}} item xs={12}>
                         <TextField
                             color="secondary"
-                            className="SurveyQuestion-text-field"
+                            sx={{width: "90%"}}
                             margin="normal"
                             variant="standard"
                             disabled

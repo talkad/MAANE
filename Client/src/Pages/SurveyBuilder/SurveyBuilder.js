@@ -21,7 +21,7 @@ export default function SurveyBuilder(){
     const header_string = 'בניית סקר'
     const survey_title_label_string = 'כותרת הסקר'
     const survey_description_label_string = 'תיאור הסקר'
-    const add_question_string = 'הוסף/י שאלה'
+    const add_question_string = 'הוספ/י שאלה'
     const submit_survey_string = 'סיום'
 
     /**
@@ -33,7 +33,6 @@ export default function SurveyBuilder(){
         questions.push(
             {
                 id: question_id,
-                element: <SurveyQuestionBuilder id={question_id} modify={modify_question} delete={delete_question} delete_answer={delete_question_answer}/>,
                 question: '',
                 type: 'MULTIPLE_CHOICE',
                 answers: {},
@@ -78,13 +77,23 @@ export default function SurveyBuilder(){
      * @param answer_id the id of the answer to delete
      */
     const delete_question_answer = (id, answer_id) => {
+        // todo: make the deletion trigger the rerender
+        // console.log(answer_id);
+
         const index = questions.findIndex(element => element['id'] === id);
 
-        //const answer_index = questions[index]['answers'].findIndex(element => element['id'] === answer_id);
-        delete questions[index]['answers'][answer_id];
+        // removing the answer
+        const question_temp = questions[index];
+        delete question_temp['answers'][answer_id];
 
-        setQuestions(questions);
-        //questions[index]['answers'].splice(answer_index, 1);
+        console.log(questions);
+        const arr = questions.filter(function(element) {return element["id"] !== id});
+        console.log(arr);
+
+        setQuestions((questions) => [...questions.filter(function(element) {return element["id"] !== id}),
+            {id: question_temp['id'],
+            question: question_temp['question'], type: question_temp['type'],
+            answers: question_temp['answers']}]);
     }
 
     // TODO: NOT FUCKING WORKING CORRECTLY. NOT HERE AND NOT IN THE MULTIPLE ANSWERS OF A QUESTION
@@ -93,9 +102,9 @@ export default function SurveyBuilder(){
      * @param id the id of the question to delete
      */
     const delete_question = (id) => {
-        const index = questions.findIndex(element => element['id'] === id);
-        questions.splice(index, 1);
-        setQuestions(questions => [...questions]);
+        // const index = questions.findIndex(element => element['id'] === id);
+        // questions.splice(index, 1);
+        setQuestions([...questions.filter(function(x) { return x['id'] !== id })]);
     }
 
     const handleTitleChange = (event) => {
@@ -114,6 +123,8 @@ export default function SurveyBuilder(){
      * sends the structure of the built survey to the sever
      */
     const submit_survey = () => {
+        // todo: check nothing is empty
+        console.log(questions);
         new Connection().createSurvey(title, description, questions.map(x => x["question"]),
             questions.map(x => Object.entries(x["answers"]).map(x => x[1])), questions.map(x => x["type"]), submitSurveyCallback);
     }
@@ -154,7 +165,13 @@ export default function SurveyBuilder(){
                 </Paper>
 
                 {/*the questions*/}
-                {questions.map(x => x['element'])}
+                {questions.map(x => <SurveyQuestionBuilder id={x['id']}
+                                                           question={x['question']}
+                                                           type={x['type']}
+                                                           answers={x['answers']}
+                                                           modify={modify_question}
+                                                           delete={delete_question}
+                                                           delete_answer={delete_question_answer}/>)}
 
                 {/*add question button*/}
                 <Button onClick={add_question} color="secondary" variant="contained">{add_question_string}</Button>
