@@ -3,6 +3,7 @@ package Communication.Security;
 import Communication.Filter.CustomAuthenticationFilter;
 import Communication.Filter.CustomAuthorizationFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,6 +22,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final UserDetailsService userDetailsService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -43,6 +45,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 //        // http.authorizeRequests().antMatchers(GET, "/user/**").hasAuthority("GENERAL_SUPERVISOR");
 //        http.authorizeRequests().anyRequest().authenticated();
         http.authorizeHttpRequests().anyRequest().permitAll();
+
+        http.exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint);
+
         http.addFilter(authenticationFilter);
         http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
