@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import '../SurveyBuilder/SurveryBuilderQuestion.css'
 import {FormControlLabel, Grid, Paper, Radio, RadioGroup} from "@mui/material";
 import TextField from "@mui/material/TextField";
 

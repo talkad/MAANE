@@ -67,15 +67,6 @@ export default function SurveyBuilder(){
         }
         else{
             questions[index]['answers'][answer_id] = value;
-
-            // const answer = questions[index]['answers'].find(element => element['id'] === answer_id);
-            // console.log(questions[index]['answers']);
-            // if(answer === undefined) {
-            //     questions[index]['answers'].push({id: answer_id, value: value});
-            // }
-            // else{
-            //     questions[index]['answers'][answer_id] = value;
-            // }
         }
 
         setQuestions(questions);
