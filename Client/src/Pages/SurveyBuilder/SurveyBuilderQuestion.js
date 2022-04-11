@@ -20,8 +20,8 @@ export default function SurveyQuestionBuilder(props) {
     const multiple_add_string = 'הוסף/י תשובה'
     const open_item_string = 'פתוחה';
     const open_number_item_string = 'מספרית';
-    const question_title_tooltip_string = 'מחיקת שאלה';
-    const answer_title_tooltip_string = 'מחיקת תשובה';
+    const question_delete_title_tooltip_string = 'מחיקת שאלה';
+    const answer_delete_title_tooltip_string = 'מחיקת תשובה';
 
     /**
      * onChange handler when the text-field of the question changes. updated the value
@@ -37,7 +37,7 @@ export default function SurveyQuestionBuilder(props) {
      */
     const handleChange = (event) => {
         setSelection(event.target.value);
-        props.modify(props.id, 'type', selection);
+        props.modify(props.id, 'type', event.target.value);
     }
 
     /**
@@ -59,23 +59,21 @@ export default function SurveyQuestionBuilder(props) {
      * adds a new answer to a multiple-choice question
      */
     const add_answer = () => {
-        const to_add = [multipleAnswersID.toString(),
+        const to_add = [`question-${props.id}-answer-${multipleAnswersID}`,
             <TextField
-            id={multipleAnswersID.toString()}
             color="secondary"
             className="SurveyQuestion-text-field"
             margin="normal"
             variant="standard"
+            id={`question-${props.id}-answer-${multipleAnswersID}`}
             required
             label={answer_label_string}
             onChange={handleAnswerChange}
         />]
         setMultipleAnswers(multipleAnswers => [...multipleAnswers, to_add]);
-        props.modify(props.id, 'answers', '', multipleAnswersID.toString());
+        props.modify(props.id, 'answers', '', `question-${props.id}-answer-${multipleAnswersID}`);
 
         setMultipleAnswersID(multipleAnswersID+1);
-
-
     }
 
     /**
@@ -102,7 +100,6 @@ export default function SurveyQuestionBuilder(props) {
                             margin="normal"
                             variant="filled"
                             required
-                            id={props.id}
                             label={question_label_string}
                             name="question"
                             autoFocus
@@ -117,7 +114,6 @@ export default function SurveyQuestionBuilder(props) {
                                 onChange={handleChange}
                             >
                                 {/*todo: add an icon for each option*/}
-                                {/*TODO: change this to enums from strings*/}
                                 <MenuItem value={'MULTIPLE_CHOICE'}>{multiple_item_string}</MenuItem>
                                 <MenuItem value={'OPEN_ANSWER'}>{open_item_string}</MenuItem>
                                 <MenuItem value={'NUMERIC_ANSWER'}>{open_number_item_string}</MenuItem>
@@ -126,8 +122,8 @@ export default function SurveyQuestionBuilder(props) {
                     </Grid>
                     <Grid item xs={1}>
                         {/*button to the delete the current question*/}
-                        <Tooltip title={question_title_tooltip_string}>
-                            <IconButton onClick={delete_question} aria-label="delete">
+                        <Tooltip title={question_delete_title_tooltip_string}>
+                            <IconButton onClick={delete_question}>
                                 <DeleteIcon />
                             </IconButton>
                         </Tooltip>
@@ -143,7 +139,7 @@ export default function SurveyQuestionBuilder(props) {
                                                     <FormControlLabel disabled value={'idk'} control={<Radio />} label={x[1]}/>
                                                 </Grid>
                                                 <Grid item xs={1}>
-                                                    <Tooltip title={answer_title_tooltip_string}>
+                                                    <Tooltip title={answer_delete_title_tooltip_string}>
                                                         <IconButton onClick={() => delete_answer(x[0])} aria-label="delete">
                                                             <RemoveCircleOutlineIcon color="warning" />
                                                         </IconButton>
@@ -172,5 +168,4 @@ export default function SurveyQuestionBuilder(props) {
             </Paper>
         </div>
     )
-
 }

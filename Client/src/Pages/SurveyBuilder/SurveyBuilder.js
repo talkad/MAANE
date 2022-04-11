@@ -7,6 +7,8 @@ import SurveyQuestionBuilder from "./SurveyBuilderQuestion";
 import Connection from "../../Communication/Connection";
 import * as Space from 'react-spaces';
 
+let question_id = 0;
+
 export default function SurveyBuilder(){
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
@@ -28,33 +30,21 @@ export default function SurveyBuilder(){
     const add_question = () => {
         // setting new question element
 
-
-        // TODO: see about this thingy
-        // const added_question =
-        // {
-        //     id: questionID,
-        //     element: <SurveyQuestion id={questionID} modify={modify_question} delete={delete_question} delete_answer={delete_question_answer}/>,
-        //     question: '',
-        //     type: 'multiple',
-        //     answers: [],
-        // }
-        //
-        // setQuestions((questions) => [...questions, added_question]);
-
         questions.push(
             {
-                id: questionID,
-                element: <SurveyQuestionBuilder id={questionID} modify={modify_question} delete={delete_question} delete_answer={delete_question_answer}/>,
+                id: question_id,
+                element: <SurveyQuestionBuilder id={question_id} modify={modify_question} delete={delete_question} delete_answer={delete_question_answer}/>,
                 question: '',
                 type: 'MULTIPLE_CHOICE',
-                answers: [],
+                answers: {},
             }
-        )
+        );
 
-        setQuestions(questions)
+        setQuestions(questions);
 
         // setting id
         setQuestionID(questionID+1);
+        question_id++;
     }
 
     /**
@@ -72,18 +62,23 @@ export default function SurveyBuilder(){
             questions[index][attribute] = value;
 
             if(attribute === 'type'){ // if the type has changed then resetting the answers
-                questions[index]['answers'] = []
+                questions[index]['answers'] = [];
             }
         }
         else{
-            const answer = questions[index]['answers'].find(element => element['id'] === answer_id);
-            if(answer === undefined) {
-                questions[index]['answers'].push({id: answer_id, value: value});
-            }
-            else{
-                questions[index]['answers'][answer_id] = value;
-            }
+            questions[index]['answers'][answer_id] = value;
+
+            // const answer = questions[index]['answers'].find(element => element['id'] === answer_id);
+            // console.log(questions[index]['answers']);
+            // if(answer === undefined) {
+            //     questions[index]['answers'].push({id: answer_id, value: value});
+            // }
+            // else{
+            //     questions[index]['answers'][answer_id] = value;
+            // }
         }
+
+        setQuestions(questions);
     }
 
     /**
@@ -94,9 +89,11 @@ export default function SurveyBuilder(){
     const delete_question_answer = (id, answer_id) => {
         const index = questions.findIndex(element => element['id'] === id);
 
-        const answer_index = questions[index]['answers'].findIndex(element => element['id'] === answer_id)
+        //const answer_index = questions[index]['answers'].findIndex(element => element['id'] === answer_id);
+        delete questions[index]['answers'][answer_id];
 
-        questions[index]['answers'].splice(answer_index, 1)
+        setQuestions(questions);
+        //questions[index]['answers'].splice(answer_index, 1);
     }
 
     // TODO: NOT FUCKING WORKING CORRECTLY. NOT HERE AND NOT IN THE MULTIPLE ANSWERS OF A QUESTION
@@ -106,8 +103,8 @@ export default function SurveyBuilder(){
      */
     const delete_question = (id) => {
         const index = questions.findIndex(element => element['id'] === id);
-        questions.splice(index, 1)
-        setQuestions(questions => [...questions])
+        questions.splice(index, 1);
+        setQuestions(questions => [...questions]);
     }
 
     const handleTitleChange = (event) => {
@@ -126,57 +123,54 @@ export default function SurveyBuilder(){
      * sends the structure of the built survey to the sever
      */
     const submit_survey = () => {
-        console.log(questions.map(x => x["answers"]));
-
         new Connection().createSurvey(title, description, questions.map(x => x["question"]),
-            questions.map(x => x["answers"]), questions.map(x => x["type"]), submitSurveyCallback);
+            questions.map(x => Object.entries(x["answers"]).map(x => x[1])), questions.map(x => x["type"]), submitSurveyCallback);
     }
 
     return (
-        <Space.Fill scrollable className="Survey">
-            <h1>{header_string}</h1>
-            <Paper className="Survey-paper" elevation={3}>
-                {/*TODO: make the margin work */}
-                {/*the title of the survey*/}
-                <TextField
-                    value={title}
-                    onChange={handleTitleChange}
-                    color="secondary"
-                    className="Survey-text-field"
-                    error={showError}
-                    margin="normal"
-                    variant="standard"
-                    required
-                    id="title"
-                    label={survey_title_label_string}
-                    name="title"
-                    autoFocus
-                />
-                {/*the description of the survey*/}
-                <TextField
-                    value={description}
-                    onChange={handleDescriptionChange}
-                    color="secondary"
-                    className="Survey-text-field"
-                    error={showError}
-                    margin="normal"
-                    variant="standard"
-                    required
-                    id="description"
-                    label={survey_description_label_string}
-                    name="description"
-                />
-            </Paper>
+        <Space.Fill scrollable >
+            <div className="Survey">
+                <h1>{header_string}</h1>
+                <Paper className="Survey-paper" elevation={3}>
+                    {/*TODO: make the margin work */}
+                    {/*the title of the survey*/}
+                    <TextField
+                        value={title}
+                        onChange={handleTitleChange}
+                        color="secondary"
+                        className="Survey-text-field"
+                        error={showError}
+                        margin="normal"
+                        variant="standard"
+                        required
+                        label={survey_title_label_string}
+                        name="title"
+                        autoFocus
+                    />
+                    {/*the description of the survey*/}
+                    <TextField
+                        value={description}
+                        onChange={handleDescriptionChange}
+                        color="secondary"
+                        className="Survey-text-field"
+                        error={showError}
+                        margin="normal"
+                        variant="standard"
+                        required
+                        label={survey_description_label_string}
+                        name="description"
+                    />
+                </Paper>
 
-            {/*TODO: animation transition when adding a question*/}
-            {/*the questions*/}
-            {questions.map(x => x['element'])}
+                {/*the questions*/}
+                {questions.map(x => x['element'])}
 
-            {/*add question button*/}
-            <Button onClick={add_question} color="secondary" variant="contained">{add_question_string}</Button>
-            <br/>
-            {/*submit question button*/}
-            <Button onClick={submit_survey} color="secondary" variant="contained">{submit_survey_string}</Button>
+                {/*add question button*/}
+                <Button onClick={add_question} color="secondary" variant="contained">{add_question_string}</Button>
+                <br/>
+                {/*submit question button*/}
+                <Button onClick={submit_survey} color="secondary" variant="contained">{submit_survey_string}</Button>
+            </div>
         </Space.Fill>
     )
 }
