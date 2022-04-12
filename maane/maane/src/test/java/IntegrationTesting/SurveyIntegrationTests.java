@@ -9,9 +9,13 @@ import Domain.DataManagement.FaultDetector.Rules.NumericBaseRule;
 import Domain.DataManagement.SurveyController;
 import Domain.UsersManagment.UserController;
 import Domain.UsersManagment.UserStateEnum;
+import Persistence.SurveyQueries;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -19,17 +23,23 @@ import java.util.List;
 
 import static Domain.DataManagement.AnswerState.AnswerType.MULTIPLE_CHOICE;
 import static Domain.DataManagement.AnswerState.AnswerType.NUMERIC_ANSWER;
+import static org.mockito.Mockito.when;
 
 public class SurveyIntegrationTests {
 
     private SurveyDTO surveyDTO;
     private SurveyAnswersDTO answersDTO;
-    private SurveyAnswersDTO answersDTO1;
 
-    private final SurveyController surveyController = SurveyController.getInstance();
+    @InjectMocks
+    private SurveyController surveyController;
+
+    @Mock
+    private SurveyQueries surveyDAO;
 
     @Before
     public void setUp(){
+        MockitoAnnotations.openMocks(this);
+
         surveyDTO = new SurveyDTO();
         surveyController.clearCache();
 
@@ -54,16 +64,6 @@ public class SurveyIntegrationTests {
         answersDTO.setAnswers(answers2);
         answersDTO.setTypes(types2);
 
-        // legal answer
-        answersDTO1 = new SurveyAnswersDTO();
-
-        List<String> answers3 = Arrays.asList("30", "1", "2");
-        List<AnswerType> types3 = Arrays.asList(NUMERIC_ANSWER, MULTIPLE_CHOICE, MULTIPLE_CHOICE);
-        answersDTO1.setId("0");
-        answersDTO1.setSymbol("A123");
-        answersDTO1.setAnswers(answers3);
-        answersDTO1.setTypes(types3);
-
     }
 
     @Test
@@ -77,13 +77,14 @@ public class SurveyIntegrationTests {
     }
 
     @Test
-    public void surveyCreationNoPermissionFailure(){
+    public void surveyCreationPermissionFailure(){
         UserController userController = UserController.getInstance();
-        userController.registerUserBySystemManager("admin", "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
-        userController.registerUserBySystemManager("admin", "Shlomit", "Malka", UserStateEnum.INSTRUCTOR, "sup1", "tech", "", "", "", "", "");
-        userController.login("Shlomit");
+        userController.login("admin");
 
-        Assert.assertTrue(surveyController.createSurvey("Shlomit", surveyDTO).isFailure());
+        userController.registerUserBySystemManager("admin", "Andrey", "Tenenbaum", UserStateEnum.SUPERVISOR, "sup1", "cs", "", "", "", "", "");
+        userController.login("Andrey");
+
+        Assert.assertFalse(surveyController.createSurvey("Andrey", surveyDTO).isFailure());
     }
 
     @Test
@@ -113,10 +114,9 @@ public class SurveyIntegrationTests {
         UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
-        userController.registerUserBySystemManager(adminName, "Shosh", "Bar", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.registerUserBySystemManager(adminName, "Shosh", "Bar", UserStateEnum.COORDINATOR, "", "hebrew", "", "", "", "", "");
 
         userController.login("Dvorit");
-        userController.login("Shosh");
 
         Response<String> res = surveyController.createSurvey("Dvorit", surveyDTO);
         answersDTO.setId(res.getResult());
@@ -148,7 +148,6 @@ public class SurveyIntegrationTests {
         userController.registerUserBySystemManager(adminName, "Levana", "Zoharim", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
 
         userController.login("Dvorit");
-        userController.login("Levana");
 
         Response<String> res2 = surveyController.createSurvey("Dvorit", surveyDTO);
         Response<Boolean> res = surveyController.addRule("Levana", res2.getResult(), new NumericBaseRule(0, Comparison.GREATER_THEN, 28), 0);
@@ -165,6 +164,9 @@ public class SurveyIntegrationTests {
 
         Response<String> res2 = surveyController.createSurvey("Dvorit", surveyDTO);
         surveyController.addRule("Dvorit", res2.getResult(), new NumericBaseRule(0, Comparison.GREATER_THEN, 28), 0);
+
+        when(surveyDAO.removeRule(0)).thenReturn(new Response<>(true, false, "OK"));
+
         Response<Boolean> res = surveyController.removeRule("Dvorit", res2.getResult(), 0);
 
         Assert.assertFalse(res.isFailure());
@@ -178,6 +180,8 @@ public class SurveyIntegrationTests {
         userController.login("Dvorit");
 
         Response<String> res2 = surveyController.createSurvey("Dvorit", surveyDTO);
+        when(surveyDAO.removeRule(0)).thenReturn(new Response<>(false, true, "rule not in db"));
+
         Response<Boolean> res = surveyController.removeRule("Dvorit", res2.getResult(), 0);
 
         Assert.assertTrue(res.isFailure());
@@ -188,14 +192,15 @@ public class SurveyIntegrationTests {
         UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
-        userController.registerUserBySystemManager(adminName, "Levana", "Zoharim", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
 
         userController.login("Dvorit");
-        userController.login("Levana");
 
         Response<String> res2 = surveyController.createSurvey("Dvorit", surveyDTO);
-        surveyController.addRule("Levana", res2.getResult(), new NumericBaseRule(0, Comparison.GREATER_THEN, 28), 0);
-        Response<Boolean> res = surveyController.removeRule("Levana", res2.getResult(), 0);
+        surveyController.addRule("Dvorit", res2.getResult(), new NumericBaseRule(0, Comparison.GREATER_THEN, 28), 0);
+
+        when(surveyDAO.removeRule(0)).thenReturn(new Response<>(false, true, "fail"));
+
+        Response<Boolean> res = surveyController.removeRule("Dvorit", res2.getResult(), 0);
 
         Assert.assertTrue(res.isFailure());
     }
