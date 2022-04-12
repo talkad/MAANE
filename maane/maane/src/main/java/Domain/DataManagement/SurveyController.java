@@ -213,21 +213,10 @@ public class SurveyController {
      * @return successful response if the {@username} created the survey in first place
      */
     public Response<Boolean> removeRule(String username, String id, int ruleID){
-        Pair<Survey, FaultDetector> surveyPair;
-        FaultDetector faultDetector;
         Response<Boolean> legalAdd = UserController.getInstance().hasCreatedSurvey(username, id);
 
         if(!legalAdd.getResult())
             return new Response<>(false, true, username + " does not created survey " + id);
-
-//        if(!surveys.containsKey(id))
-//            return new Response<>(false, true, "id is out of bound");
-//
-//        surveyPair =surveys.get(id);
-//        faultDetector = surveyPair.getSecond();
-//        Response<Boolean> res = faultDetector.removeRule(ruleID);
-//
-//        surveys.put(id, new Pair<>(surveyPair.getFirst(), faultDetector));
 
         return surveyDAO.removeRule(ruleID);
     }
