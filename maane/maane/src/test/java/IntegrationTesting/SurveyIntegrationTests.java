@@ -24,6 +24,8 @@ public class SurveyIntegrationTests {
 
     private SurveyDTO surveyDTO;
     private SurveyAnswersDTO answersDTO;
+    private SurveyAnswersDTO answersDTO1;
+
     private final SurveyController surveyController = SurveyController.getInstance();
 
     @Before
@@ -51,6 +53,16 @@ public class SurveyIntegrationTests {
         answersDTO.setSymbol("A123");
         answersDTO.setAnswers(answers2);
         answersDTO.setTypes(types2);
+
+        // legal answer
+        answersDTO1 = new SurveyAnswersDTO();
+
+        List<String> answers3 = Arrays.asList("30", "1", "2");
+        List<AnswerType> types3 = Arrays.asList(NUMERIC_ANSWER, MULTIPLE_CHOICE, MULTIPLE_CHOICE);
+        answersDTO1.setId("0");
+        answersDTO1.setSymbol("A123");
+        answersDTO1.setAnswers(answers3);
+        answersDTO1.setTypes(types3);
 
     }
 
@@ -187,4 +199,5 @@ public class SurveyIntegrationTests {
 
         Assert.assertTrue(res.isFailure());
     }
+
 }

@@ -1,12 +1,11 @@
 package Persistence;
 
 import Communication.DTOs.RuleDTO;
+import Communication.DTOs.SurveyAnswersDTO;
 import Communication.DTOs.SurveyDTO;
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.AnswerState.AnswerType;
-import Domain.DataManagement.FaultDetector.Rules.Rule;
-import Domain.DataManagement.SurveyAnswers;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
@@ -127,22 +126,22 @@ public class SurveyQueries {
         return null;
     }
 
-    public List<Pair<Rule, Integer>> getRules(String surveyIID) {
+    public List<Pair<RuleDTO, Integer>> getRules(String surveyIID) {
         //todo - almog
         return null;
     }
 
-    public List<SurveyAnswers> getAnswers(String surveyIID) {
+    public List<SurveyAnswersDTO> getAnswers(String surveyID) {
         //todo - almog
         return null;
     }
 
-    public Map<String, List<SurveyAnswers>> getAllAnswers() {
+    public Map<String, List<SurveyAnswersDTO>> getAllAnswers() {
         //todo - almog
         return null;
     }
 
-    public List<SurveyAnswers> getAnswerForSurvey(String surveyId) {
+    public List<SurveyAnswersDTO> getAnswerForSurvey(String surveyId) {
         //todo - almog
         return null;
     }

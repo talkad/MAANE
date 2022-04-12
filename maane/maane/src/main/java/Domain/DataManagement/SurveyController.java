@@ -1,6 +1,7 @@
 package Domain.DataManagement;
 
 import Communication.DTOs.GoalDTO;
+import Communication.DTOs.RuleDTO;
 import Communication.DTOs.SurveyAnswersDTO;
 import Communication.DTOs.SurveyDTO;
 import Domain.CommonClasses.Pair;
@@ -8,10 +9,9 @@ import Domain.CommonClasses.Response;
 import Domain.DataManagement.AnswerState.AnswerType;
 import Domain.DataManagement.FaultDetector.FaultDetector;
 import Domain.DataManagement.FaultDetector.Rules.Rule;
+import Domain.DataManagement.FaultDetector.Rules.RuleConverter;
 import Domain.UsersManagment.UserController;
 import Persistence.SurveyQueries;
-import org.apache.tomcat.jni.Local;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.security.SecureRandom;
 import java.sql.SQLException;
@@ -114,46 +114,17 @@ public class SurveyController {
         if(answerRes.isFailure())
             return new Response<>(false, true, answerRes.getErrMsg());
 
-        //load survey
-        Survey survey = null;
-        Response<SurveyDTO> surveyRes;
-        Pair<LocalDateTime, Survey> surveyPair = surveys.get(answersDTO.getId());
+        Response<Survey> surveyResponse = loadSurvey(answersDTO.getId());
+        if(surveyResponse.isFailure())
+            return new Response<>(false, true, surveyResponse.getErrMsg());
 
-        if(surveyPair == null){
-            try {
-                surveyRes = surveyDAO.getSurvey(answersDTO.getId());
-            }catch(SQLException e){
-                return new Response<>(false, true, e.getMessage());
-            }
-
-            if(surveyRes.isFailure())
-                return new Response<>(false, true, "cannot answer to a not exists survey");
-
-            Response<Survey> surveyCreation = Survey.createSurvey(surveyRes.getResult().getId(), surveyRes.getResult());
-
-            if(surveyCreation.isFailure())
-                return new Response<>(false, true, "survey creation failed");
-
-            survey = surveyCreation.getResult();
-        }
-
-        if(survey == null)
-            return new Response<>(false, true, "survey id is invalid");
-
-        if(survey.getQuestions().size() != answersDTO.getTypes().size())
+        if(surveyResponse.getResult().getQuestions().size() != answersDTO.getTypes().size())
             return new Response<>(false, true, "number of answers cannot be different from number of questions");
 
         if(answersDTO.getSymbol().length() == 0)
             return new Response<>(false, true, "School symbol cannot be empty string");
 
         answer.setSymbol(answersDTO.getSymbol());
-
-//        if(!answers.containsKey(answersDTO.getId()))
-//            answers.put(answersDTO.getId(), new LinkedList<>());
-//
-//        List<SurveyAnswers> ans = answers.get(answersDTO.getId());
-//        ans.add(answer);
-//        answers.put(answersDTO.getId(), ans);
 
         try {
             surveyDAO.insertAnswers(answersDTO.getId(), answersDTO.getAnswers(), answersDTO.getTypes());
@@ -278,11 +249,12 @@ public class SurveyController {
         if(!legalAdd.getResult())
             return new Response<>(null, true, username + " does not created survey " + id);
 
-//        if(!surveys.containsKey(id))
-//            return new Response<>(null, true, "The survey doesn't exists");
+        Response<Survey> surveyResponse = loadSurvey(id);
+        if(surveyResponse.isFailure())
+            return new Response<>(null, true, surveyResponse.getErrMsg());
 
-        faultDetector = new FaultDetector(surveyDAO.getRules(id));
-        List<SurveyAnswers> answers = surveyDAO.getAnswers(id);
+        faultDetector = new FaultDetector(rulesConverter(surveyDAO.getRules(id)));
+        List<SurveyAnswers> answers = answerConverter(surveyDAO.getAnswers(id));
 
         if(answers == null)
             return new Response<>(new LinkedList<>(), false, "no answers");
@@ -300,11 +272,16 @@ public class SurveyController {
     }
 
     public Map<String, List<SurveyAnswers>> getAnswers() {
-        return surveyDAO.getAllAnswers();
+        Map<String, List<SurveyAnswers>> answers = new ConcurrentHashMap<>();
+
+        for(String key: surveyDAO.getAllAnswers().keySet())
+            answers.put(key, answerConverter(surveyDAO.getAllAnswers().get(key)));
+
+        return answers;
     }
 
     public Response<List<SurveyAnswers>> getAnswersForSurvey(String surveyId) {
-        List<SurveyAnswers> answers= surveyDAO.getAnswerForSurvey(surveyId);
+        List<SurveyAnswers> answers= answerConverter(surveyDAO.getAnswerForSurvey(surveyId));
         if(surveys.containsKey(surveyId)) {
             return new Response<>(answers, false, "");
         }
@@ -320,7 +297,7 @@ public class SurveyController {
         if(!surveys.containsKey(surveyID))
             return new Response<>(null, true, "Survey " + surveyID + " does not exists");
 
-        fd = new FaultDetector(surveyDAO.getRules(surveyID));
+        fd = new FaultDetector(rulesConverter(surveyDAO.getRules(surveyID)));
         for(Pair<Rule, Integer> p: fd.getRules()){
             rules.add(p.getFirst());
         }
@@ -366,8 +343,8 @@ public class SurveyController {
 //        if(!surveys.containsKey(id))
 //            return new Response<>(null, true, "The survey doesn't exists");
 
-        faultDetector = new FaultDetector(surveyDAO.getRules(id));
-        List<SurveyAnswers> answers = surveyDAO.getAnswerForSurvey(id);
+        faultDetector = new FaultDetector(rulesConverter(surveyDAO.getRules(id)));
+        List<SurveyAnswers> answers = answerConverter(surveyDAO.getAnswerForSurvey(id));
 
         if(answers == null)
             return new Response<>(new LinkedList<>(), false, "no faults");
@@ -427,6 +404,56 @@ public class SurveyController {
 
         surveys.remove(index);
         return new Response<>(true, false, "survey with id " + index + " removed successfully");
+    }
+
+    private List<Pair<Rule, Integer>> rulesConverter(List<Pair<RuleDTO, Integer>> ruleDTOs){
+        List<Pair<Rule, Integer>> rules = new LinkedList<>();
+
+        for(Pair<RuleDTO, Integer> rule: ruleDTOs){
+            rules.add(new Pair<>(RuleConverter.getInstance().convertRule(rule.getFirst()), rule.getSecond()));
+        }
+
+        return rules;
+    }
+
+    private List<SurveyAnswers> answerConverter(List<SurveyAnswersDTO> answerDTOs){
+        List<SurveyAnswers> answers = new LinkedList<>();
+
+        for(SurveyAnswersDTO ans: answerDTOs){
+            answers.add(new SurveyAnswers(ans));
+        }
+
+        return answers;
+    }
+
+    private Response<Survey> loadSurvey(String id){
+
+        Survey survey = null;
+        Response<SurveyDTO> surveyRes;
+        Pair<LocalDateTime, Survey> surveyPair = surveys.get(id);
+
+        if(surveyPair == null){
+            try {
+                surveyRes = surveyDAO.getSurvey(id);
+            }catch(SQLException e){
+                return new Response<>(null, true, e.getMessage());
+            }
+
+            if(surveyRes.isFailure())
+                return new Response<>(null, true, surveyRes.getErrMsg());
+
+            Response<Survey> surveyCreation = Survey.createSurvey(surveyRes.getResult().getId(), surveyRes.getResult());
+
+            if(surveyCreation.isFailure())
+                return new Response<>(null, true, surveyCreation.getErrMsg());
+
+            survey = surveyCreation.getResult();
+        }
+        else{
+            survey = surveyPair.getSecond();
+        }
+
+        return new Response<>(survey, false, "OK");
     }
 
     // for testing purpose only

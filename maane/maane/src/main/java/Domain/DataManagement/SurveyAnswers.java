@@ -19,6 +19,18 @@ public class SurveyAnswers {
         answers = new HashMap<>();
     }
 
+    public SurveyAnswers(SurveyAnswersDTO dto){
+        this.symbol = dto.getSymbol();
+        this.indexer = 0;
+        answers = new HashMap<>();
+
+        for(int i = 0; i < dto.getTypes().size(); i++){
+            answers.put(indexer, new Pair<>(dto.getTypes().get(i), dto.getAnswers().get(i)));
+            indexer++;
+        }
+
+    }
+
     public Response<String> getAnswer(int index){
         if(index >= answers.size())
             return new Response<>("", true, "index out of bound");
