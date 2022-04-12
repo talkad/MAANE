@@ -11,9 +11,15 @@ import Domain.DataManagement.FaultDetector.Rules.NumericBaseRule;
 import Domain.DataManagement.SurveyController;
 import Domain.UsersManagment.UserController;
 import Domain.UsersManagment.UserStateEnum;
+import Persistence.SurveyQueries;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -21,15 +27,23 @@ import java.util.List;
 
 import static Domain.DataManagement.AnswerState.AnswerType.MULTIPLE_CHOICE;
 import static Domain.DataManagement.AnswerState.AnswerType.NUMERIC_ANSWER;
+import static org.mockito.Mockito.when;
 
 public class SurveyControllerTests {
 
     private SurveyDTO surveyDTO;
     private SurveyAnswersDTO answersDTO1, answersDTO2;
-    private final SurveyController surveyController = SurveyController.getInstance();
+
+    @InjectMocks
+    private SurveyController surveyController;
+
+    @Mock
+    private SurveyQueries surveyDAO;
 
     @Before
     public void setUp(){
+        MockitoAnnotations.openMocks(this);
+
         surveyDTO = new SurveyDTO();
         surveyController.clearCache();
 
@@ -66,71 +80,73 @@ public class SurveyControllerTests {
     }
 
     @Test
-    public void surveyCreationSuccess(){
-        UserController userController = UserController.getInstance();
-        String guestName = userController.addGuest().getResult();
-
-        String adminName = userController.login("admin").getResult();
-        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
-
-        String newGuestName = userController.logout(adminName).getResult();
-        userController.login("Dvorit");
-
-        Assert.assertFalse(surveyController.createSurvey("Dvorit", surveyDTO).isFailure());
+    public void testCheck(){
+        when(surveyDAO.check()).thenReturn("hey");
+        System.out.println(surveyController.check());
     }
 
-    @Test
-    public void addAnswerSuccess(){
-        UserController userController = UserController.getInstance();
-        String guestName = userController.addGuest().getResult();
+//    @Test
+//    public void surveyCreationSuccess(){
+//        UserController userController = UserController.getInstance();
+//
+//        String adminName = userController.login("admin").getResult();
+//        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+//
+//        userController.login("Dvorit");
+//
+//        Assert.assertFalse(surveyController.createSurvey("Dvorit", surveyDTO).isFailure());
+//    }
+//
+//    @Test
+//    public void addAnswerSuccess(){
+//        UserController userController = UserController.getInstance();
+//
+//        String adminName = userController.login("admin").getResult();
+//        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+//
+//        userController.login("Dvorit");
+//
+//        Response<String> res = surveyController.createSurvey("Dvorit", surveyDTO);
+//        answersDTO1.setId(res.getResult());
+//        Assert.assertFalse(surveyController.addAnswers(answersDTO1).isFailure());
+//    }
 
-        String adminName = userController.login("admin").getResult();
-        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
-
-        String newGuestName = userController.logout(adminName).getResult();
-        userController.login("Dvorit");
-
-        Response<String> res = surveyController.createSurvey("Dvorit", surveyDTO);
-        answersDTO1.setId(res.getResult());
-        Assert.assertFalse(surveyController.addAnswers(answersDTO1).isFailure());
-    }
-
-    @Test
-    public void addAnswerFailure(){
-        surveyController.createSurvey("Dvorit", surveyDTO);
-        Assert.assertTrue(surveyController.addAnswers(answersDTO2).isFailure());
-    }
-
-    @Test
-    public void faultDetectionSuccess(){
-        String year = "תשפ\"ג";
-        Response<List<List<String>>> faults;
-
-        UserController userController = UserController.getInstance();
-        String guestName = userController.addGuest().getResult();
-
-        String adminName = userController.login("admin").getResult();
-        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
-
-        String newGuestName = userController.logout(adminName).getResult();
-        userController.login("Dvorit");
-
-        Response<String> res = surveyController.createSurvey("Dvorit", surveyDTO);
-        answersDTO1.setId(res.getResult());
-        surveyController.addAnswers(answersDTO1);
-        surveyController.addAnswers(answersDTO1);
-
-        surveyController.addRule("Dvorit", res.getResult(), new NumericBaseRule(0, Comparison.GREATER_THEN, 28), 0);
-        surveyController.addRule("Dvorit", res.getResult(), new MultipleChoiceBaseRule(1, 1), 1);
-        surveyController.addRule("Dvorit", res.getResult(), new MultipleChoiceBaseRule(2, 2), 2);
-
-        UserController.getInstance().addGoal("Dvorit", new GoalDTO(0, "goal0", "goal0", 1,1), year);
-        UserController.getInstance().addGoal("Dvorit", new GoalDTO(1, "goal1", "goal1", 1, 1), year);
-        UserController.getInstance().addGoal("Dvorit", new GoalDTO(2, "goal2", "goal2", 1,1), year);
-
-        faults = surveyController.detectFault("Dvorit", res.getResult(), year);
-
-        Assert.assertTrue(faults.getResult().size() == 2 && faults.getResult().get(0).size() == 3);
-
-    }
+//    @Test
+//    public void addAnswerFailure(){
+//        surveyController.createSurvey("Dvorit", surveyDTO);
+//        Assert.assertTrue(surveyController.addAnswers(answersDTO2).isFailure());
+//    }
+//
+//    @Test
+//    public void faultDetectionSuccess(){
+//        String year = "תשפ\"ג";
+//        Response<List<List<String>>> faults;
+//
+//        UserController userController = UserController.getInstance();
+//        String guestName = userController.addGuest().getResult();
+//
+//        String adminName = userController.login("admin").getResult();
+//        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+//
+//        String newGuestName = userController.logout(adminName).getResult();
+//        userController.login("Dvorit");
+//
+//        Response<String> res = surveyController.createSurvey("Dvorit", surveyDTO);
+//        answersDTO1.setId(res.getResult());
+//        surveyController.addAnswers(answersDTO1);
+//        surveyController.addAnswers(answersDTO1);
+//
+//        surveyController.addRule("Dvorit", res.getResult(), new NumericBaseRule(0, Comparison.GREATER_THEN, 28), 0);
+//        surveyController.addRule("Dvorit", res.getResult(), new MultipleChoiceBaseRule(1, 1), 1);
+//        surveyController.addRule("Dvorit", res.getResult(), new MultipleChoiceBaseRule(2, 2), 2);
+//
+//        UserController.getInstance().addGoal("Dvorit", new GoalDTO(0, "goal0", "goal0", 1,1), year);
+//        UserController.getInstance().addGoal("Dvorit", new GoalDTO(1, "goal1", "goal1", 1, 1), year);
+//        UserController.getInstance().addGoal("Dvorit", new GoalDTO(2, "goal2", "goal2", 1,1), year);
+//
+//        faults = surveyController.detectFault("Dvorit", res.getResult(), year);
+//
+//        Assert.assertTrue(faults.getResult().size() == 2 && faults.getResult().get(0).size() == 3);
+//
+//    }
 }

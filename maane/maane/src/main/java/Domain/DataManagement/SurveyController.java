@@ -10,6 +10,8 @@ import Domain.DataManagement.FaultDetector.FaultDetector;
 import Domain.DataManagement.FaultDetector.Rules.Rule;
 import Domain.UsersManagment.UserController;
 import Persistence.SurveyQueries;
+import org.apache.tomcat.jni.Local;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.security.SecureRandom;
 import java.sql.SQLException;
@@ -32,6 +34,8 @@ public class SurveyController {
     private final SecureRandom secureRandom;
     private final Base64.Encoder base64Encoder;
 
+    private SurveyQueries surveyDAO;
+
     /**
      * maximal size of surveys cache
      */
@@ -49,6 +53,11 @@ public class SurveyController {
         surveys = new ConcurrentHashMap<>();
         secureRandom = new SecureRandom();
         base64Encoder = Base64.getUrlEncoder();
+        surveyDAO = SurveyQueries.getInstance();
+    }
+
+    public String check(){
+        return surveyDAO.check();
     }
 
     /**
@@ -81,6 +90,12 @@ public class SurveyController {
 
         addSurveyToCache(indexer, surveyRes.getResult());
 
+        try {
+            surveyDAO.insertSurvey(surveyDTO);
+        }catch(SQLException e){
+            return new Response<>("", true, e.getMessage());
+        }
+
         UserController.getInstance().notifySurveyCreation(username, indexer);
 
         return new Response<>(indexer, false, "new survey created successfully");
@@ -99,10 +114,33 @@ public class SurveyController {
         if(answerRes.isFailure())
             return new Response<>(false, true, answerRes.getErrMsg());
 
-        if(!surveys.containsKey(answersDTO.getId()))
-            return new Response<>(false, true, "cannot answer to a not exists survey");
+        //load survey
+        Survey survey = null;
+        Response<SurveyDTO> surveyRes;
+        Pair<LocalDateTime, Survey> surveyPair = surveys.get(answersDTO.getId());
 
-        if(surveys.get(answersDTO.getId()).getSecond().getQuestions().size() != answersDTO.getTypes().size())
+        if(surveyPair == null){
+            try {
+                surveyRes = surveyDAO.getSurvey(answersDTO.getId());
+            }catch(SQLException e){
+                return new Response<>(false, true, e.getMessage());
+            }
+
+            if(surveyRes.isFailure())
+                return new Response<>(false, true, "cannot answer to a not exists survey");
+
+            Response<Survey> surveyCreation = Survey.createSurvey(surveyRes.getResult().getId(), surveyRes.getResult());
+
+            if(surveyCreation.isFailure())
+                return new Response<>(false, true, "survey creation failed");
+
+            survey = surveyCreation.getResult();
+        }
+
+        if(survey == null)
+            return new Response<>(false, true, "survey id is invalid");
+
+        if(survey.getQuestions().size() != answersDTO.getTypes().size())
             return new Response<>(false, true, "number of answers cannot be different from number of questions");
 
         if(answersDTO.getSymbol().length() == 0)
@@ -118,7 +156,7 @@ public class SurveyController {
 //        answers.put(answersDTO.getId(), ans);
 
         try {
-            SurveyQueries.insertAnswers(answersDTO.getId(), answersDTO.getAnswers(), answersDTO.getTypes());
+            surveyDAO.insertAnswers(answersDTO.getId(), answersDTO.getAnswers(), answersDTO.getTypes());
         }
         catch(SQLException e){
             return new Response<>(false, true, e.getMessage());
@@ -141,7 +179,7 @@ public class SurveyController {
 
         if(!surveys.containsKey(id)) {
             try {
-                return SurveyQueries.getSurvey(id);
+                return surveyDAO.getSurvey(id);
             }
             catch(SQLException e){
                 return new Response<>(null, true, e.getMessage());
@@ -189,7 +227,7 @@ public class SurveyController {
 //        faultDetector = surveyPair.getSecond();
 //        faultDetector.addRule(rule, goalID);
 
-        SurveyQueries.insertRule(id, goalID, rule.getDTO());
+        surveyDAO.insertRule(id, goalID, rule.getDTO());
 
 //        surveys.put(id, new Pair<>(surveyPair.getFirst(), faultDetector));
 
@@ -220,7 +258,7 @@ public class SurveyController {
 //
 //        surveys.put(id, new Pair<>(surveyPair.getFirst(), faultDetector));
 
-        return SurveyQueries.removeRule(ruleID);
+        return surveyDAO.removeRule(ruleID);
     }
 
     /**
@@ -243,8 +281,8 @@ public class SurveyController {
 //        if(!surveys.containsKey(id))
 //            return new Response<>(null, true, "The survey doesn't exists");
 
-        faultDetector = new FaultDetector(SurveyQueries.getRules(id));
-        List<SurveyAnswers> answers = SurveyQueries.getAnswers(id);
+        faultDetector = new FaultDetector(surveyDAO.getRules(id));
+        List<SurveyAnswers> answers = surveyDAO.getAnswers(id);
 
         if(answers == null)
             return new Response<>(new LinkedList<>(), false, "no answers");
@@ -262,11 +300,11 @@ public class SurveyController {
     }
 
     public Map<String, List<SurveyAnswers>> getAnswers() {
-        return SurveyQueries.getAllAnswers();
+        return surveyDAO.getAllAnswers();
     }
 
     public Response<List<SurveyAnswers>> getAnswersForSurvey(String surveyId) {
-        List<SurveyAnswers> answers= SurveyQueries.getAnswerForSurvey(surveyId);
+        List<SurveyAnswers> answers= surveyDAO.getAnswerForSurvey(surveyId);
         if(surveys.containsKey(surveyId)) {
             return new Response<>(answers, false, "");
         }
@@ -282,7 +320,7 @@ public class SurveyController {
         if(!surveys.containsKey(surveyID))
             return new Response<>(null, true, "Survey " + surveyID + " does not exists");
 
-        fd = new FaultDetector(SurveyQueries.getRules(surveyID));
+        fd = new FaultDetector(surveyDAO.getRules(surveyID));
         for(Pair<Rule, Integer> p: fd.getRules()){
             rules.add(p.getFirst());
         }
@@ -300,7 +338,7 @@ public class SurveyController {
 
 //        for(String surveyID: res.getResult())
 //            titles.add(surveys.get(surveyID).getSecond().getTitle());
-        titles = SurveyQueries.getSurveyTitles(res.getResult());
+        titles = surveyDAO.getSurveyTitles(res.getResult());
         return new Response<>(titles, false, "success");
     }
 
@@ -328,8 +366,8 @@ public class SurveyController {
 //        if(!surveys.containsKey(id))
 //            return new Response<>(null, true, "The survey doesn't exists");
 
-        faultDetector = new FaultDetector(SurveyQueries.getRules(id));
-        List<SurveyAnswers> answers = SurveyQueries.getAnswerForSurvey(id);
+        faultDetector = new FaultDetector(surveyDAO.getRules(id));
+        List<SurveyAnswers> answers = surveyDAO.getAnswerForSurvey(id);
 
         if(answers == null)
             return new Response<>(new LinkedList<>(), false, "no faults");
