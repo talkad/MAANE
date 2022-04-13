@@ -8,11 +8,11 @@ import Button from "@mui/material/Button";
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 
 export default function SurveyQuestionBuilder(props) {
-    const [selection, setSelection] = useState(props.type);
-    const [question, setQuestion] = useState(props.question);
+    //const [selection, setSelection] = useState(props.type);
+    //const [question, setQuestion] = useState(props.question);
     const [multipleAnswersID, setMultipleAnswersID] = useState(0);
     const [multipleAnswers, setMultipleAnswers] = useState([]);
-    const [answersValues, setAnswerValues] = useState(props.answers);
+    //const [answersValues, setAnswerValues] = useState(props.answers);
 
     // STRINGS
     const question_label_string = 'שאלה';
@@ -29,7 +29,7 @@ export default function SurveyQuestionBuilder(props) {
      * @param event wrapper for the question element with the change
      */
     const handleQuestionChange = (event) => {
-        setQuestion(event.target.value)
+        //setQuestion(event.target.value)
         props.modify(props.id, 'question', event.target.value);
     }
 
@@ -38,7 +38,7 @@ export default function SurveyQuestionBuilder(props) {
      * @param event wrapper for selection element with the new value
      */
     const handleChange = (event) => {
-        setSelection(event.target.value);
+        //setSelection(event.target.value);
         props.modify(props.id, 'type', event.target.value);
 
         //if (event.target.value == "") // todo: set it so when going back to multiple the answers are saved
@@ -57,7 +57,7 @@ export default function SurveyQuestionBuilder(props) {
      */
     const handleAnswerChange = (event) => {
         //answersValues[event.target.id] = event.target.value;
-        setAnswerValues({...answersValues, [event.target.id]: event.target.value});
+        //setAnswerValues({...answersValues, [event.target.id]: event.target.value});
         props.modify(props.id, 'answers', event.target.value, event.target.id);
     }
 
@@ -65,7 +65,7 @@ export default function SurveyQuestionBuilder(props) {
      * adds a new answer to a multiple-choice question
      */
     const add_answer = () => {
-        setAnswerValues({...answersValues,  [`question-${props.id}-answer-${multipleAnswersID}`]: ''});
+        //setAnswerValues([...answersValues, {id: [`question-${props.id}-answer-${multipleAnswersID}`], value: ''}]);
 
         // const to_add = {
         //     id: `question-${props.id}-answer-${multipleAnswersID}`,}
@@ -110,7 +110,7 @@ export default function SurveyQuestionBuilder(props) {
                             margin="normal"
                             variant="filled"
                             required
-                            value={question}
+                            value={props.question}
                             label={question_label_string}
                             name="question"
                             autoFocus
@@ -121,7 +121,7 @@ export default function SurveyQuestionBuilder(props) {
                         {/*selection of which type of question the question is*/}
                         <FormControl  sx={{ m: 1, minWidth: 80 }}>
                             <Select
-                                value={selection}
+                                value={props.type}
                                 onChange={handleChange}
                             >
                                 {/*todo: add an icon for each option*/}
@@ -140,19 +140,19 @@ export default function SurveyQuestionBuilder(props) {
                         </Tooltip>
                     </Grid>
                     {/*element for the case where the question is multiple-choice*/}
-                    {selection === 'MULTIPLE_CHOICE' &&
+                    {props.type === 'MULTIPLE_CHOICE' &&
                         <Grid item xs={12}>
                                 <RadioGroup column>
                                         {/*viewing the options the user added*/}
-                                        {Object.entries(answersValues).map(([id, value]) =>
+                                        {props.answers.map((element) =>
                                             <Grid container spacing={2}>
                                                 <Grid item xs={2}>
-                                                    <FormControlLabel disabled value={id} control={<Radio />} label={<TextField
+                                                    <FormControlLabel disabled value={element.id} control={<Radio />} label={<TextField
                                                         color="secondary"
                                                         margin="normal"
                                                         variant="standard"
-                                                        id={id}
-                                                        value={answersValues[id]}
+                                                        id={element.id}
+                                                        value={element.value}
                                                         required
                                                         sx={{width: "90%"}}
                                                         label={answer_label_string}
@@ -161,7 +161,7 @@ export default function SurveyQuestionBuilder(props) {
                                                 </Grid>
                                                 <Grid item xs={1}>
                                                     <Tooltip title={answer_delete_title_tooltip_string}>
-                                                        <IconButton onClick={() => delete_answer(id)} aria-label="delete">
+                                                        <IconButton onClick={() => delete_answer(element.id)} aria-label="delete">
                                                             <RemoveCircleOutlineIcon color="warning" />
                                                         </IconButton>
                                                     </Tooltip>
@@ -174,7 +174,7 @@ export default function SurveyQuestionBuilder(props) {
                         </Grid>
                     }
                     {/*element for the case where the question is open or open-numeric*/}
-                    {(selection === 'OPEN_ANSWER' || selection === 'NUMERIC_ANSWER')  &&
+                    {(props.type === 'OPEN_ANSWER' || props.type === 'NUMERIC_ANSWER')  &&
                     <Grid sx={{alignItems: 'center'}} item xs={12}>
                         <TextField
                             color="secondary"
