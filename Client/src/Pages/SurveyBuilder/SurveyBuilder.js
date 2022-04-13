@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import './SurveyBuilder.css'
-import {Alert, Box, Paper} from "@mui/material";
+import {Alert, AlertTitle, Box, Grid, Paper} from "@mui/material";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import SurveyQuestionBuilder from "./SurveyBuilderQuestion";
 import Connection from "../../Communication/Connection";
 import * as Space from 'react-spaces';
 import NotificationSnackbar from "../../CommonComponents/NotificationSnackbar";
+import {useNavigate} from "react-router-dom";
 
 export default function SurveyBuilder(){
     const [title, setTitle] = useState('');
@@ -20,6 +21,8 @@ export default function SurveyBuilder(){
     const [errorSeverity, setErrorSeverity] = useState('error');
     const [openSnackbar, setOpenSnackbar] = useState(false);
 
+    const [surveyComplete, setSurveyComplete] = useState(false);
+
 
 
     // STRINGS
@@ -28,6 +31,12 @@ export default function SurveyBuilder(){
     const survey_description_label_string = 'תיאור הסקר'
     const add_question_string = 'הוספ/י שאלה'
     const submit_survey_string = 'סיום'
+
+    const survey_success_title_string = "הסקר נוצר בהצלחה"
+    const survey_success_message_string = "לחזרה לתפריט הסקרים נא ללחוץ על הכפתור למטה";
+    const survey_success_button_string = "חזרה לתפריט הסקרים";
+
+    let navigate = useNavigate();
 
     /**
      * adds a new question to the survey
@@ -104,7 +113,14 @@ export default function SurveyBuilder(){
     }
 
     const submitSurveyCallback = (data) => {
-        // todo: implement
+        if(data.failure){
+            setOpenSnackbar(true);
+            setErrorMessage("הפעולה נכשלה. אנא נסה/י שנית");
+            setSurveyComplete(false);
+        }
+        else{
+            setSurveyComplete(true);
+        }
     }
 
     /**
@@ -134,8 +150,7 @@ export default function SurveyBuilder(){
 
     return (
         <Space.Fill scrollable >
-            {/*TODO: set up a different page when submitting the survey succeeded*/}
-            <div className="Survey">
+            {!surveyComplete && <div className="Survey">
                 <h1>{header_string}</h1>
                 <Box sx={{width: "70%", marginBottom: "1%"}}>
                     {showError && <Alert severity={errorSeverity}> {errorMessage} </Alert>}
@@ -190,7 +205,23 @@ export default function SurveyBuilder(){
                     setOpen={setOpenSnackbar}
                     severity={errorSeverity}
                     message={errorMessage}/>
-            </div>
+            </div>}
+            {surveyComplete &&
+                <Grid container
+                     direction="column"
+                     alignItems="center"
+                     justifyContent="center"
+                spacing={1}>
+                    <Grid item xs={12}>
+                        <Alert severity="success">
+                            <AlertTitle>{survey_success_title_string}</AlertTitle>
+                            {survey_success_message_string}
+                        </Alert>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Button onClick={() => navigate('../menu', true)} variant="outlined">{survey_success_button_string}</Button>
+                    </Grid>
+                </Grid>}
         </Space.Fill>
     )
 }
