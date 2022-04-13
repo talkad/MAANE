@@ -8,11 +8,7 @@ import Button from "@mui/material/Button";
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 
 export default function SurveyQuestionBuilder(props) {
-    //const [selection, setSelection] = useState(props.type);
-    //const [question, setQuestion] = useState(props.question);
     const [multipleAnswersID, setMultipleAnswersID] = useState(0);
-    const [multipleAnswers, setMultipleAnswers] = useState([]);
-    //const [answersValues, setAnswerValues] = useState(props.answers);
 
     // STRINGS
     const question_label_string = 'שאלה';
@@ -29,7 +25,6 @@ export default function SurveyQuestionBuilder(props) {
      * @param event wrapper for the question element with the change
      */
     const handleQuestionChange = (event) => {
-        //setQuestion(event.target.value)
         props.modify(props.id, 'question', event.target.value);
     }
 
@@ -38,10 +33,7 @@ export default function SurveyQuestionBuilder(props) {
      * @param event wrapper for selection element with the new value
      */
     const handleChange = (event) => {
-        //setSelection(event.target.value);
         props.modify(props.id, 'type', event.target.value);
-
-        //if (event.target.value == "") // todo: set it so when going back to multiple the answers are saved
     }
 
     /**
@@ -56,8 +48,6 @@ export default function SurveyQuestionBuilder(props) {
      * @param event
      */
     const handleAnswerChange = (event) => {
-        //answersValues[event.target.id] = event.target.value;
-        //setAnswerValues({...answersValues, [event.target.id]: event.target.value});
         props.modify(props.id, 'answers', event.target.value, event.target.id);
     }
 
@@ -65,12 +55,6 @@ export default function SurveyQuestionBuilder(props) {
      * adds a new answer to a multiple-choice question
      */
     const add_answer = () => {
-        //setAnswerValues([...answersValues, {id: [`question-${props.id}-answer-${multipleAnswersID}`], value: ''}]);
-
-        // const to_add = {
-        //     id: `question-${props.id}-answer-${multipleAnswersID}`,}
-        // multipleAnswers.push(to_add);
-        // setMultipleAnswers(multipleAnswers);
         props.modify(props.id, 'answers', '', `question-${props.id}-answer-${multipleAnswersID}`);
 
         setMultipleAnswersID(multipleAnswersID+1);
@@ -81,20 +65,6 @@ export default function SurveyQuestionBuilder(props) {
      * @param answer_id id of the answer to delete
      */
     const delete_answer = (answer_id) => {
-        // console.log("starts here");
-        // console.log(Object.entries(answersValues));
-        //
-        //
-        // Object.entries(answersValues).forEach(element => console.log(element));
-        //
-        // // removing its instance
-        // //setMultipleAnswers([...multipleAnswers.filter(function(element) {return element['id'] !== answer_id})]); // updating the renderer
-        // console.log(answer_id);
-        // // removing its value
-        // delete answersValues[answer_id];
-        // setAnswerValues ({...answersValues});
-
-        // updating the value to send
         props.delete_answer(props.id, answer_id);
     }
 
@@ -112,6 +82,7 @@ export default function SurveyQuestionBuilder(props) {
                             required
                             value={props.question}
                             label={question_label_string}
+                            error={props.showError && props.question.trim() === ''}
                             name="question"
                             autoFocus
                             onChange={handleQuestionChange}
@@ -153,6 +124,7 @@ export default function SurveyQuestionBuilder(props) {
                                                         variant="standard"
                                                         id={element.id}
                                                         value={element.value}
+                                                        error={props.showError && element.value.trim() === ''}
                                                         required
                                                         sx={{width: "90%"}}
                                                         label={answer_label_string}

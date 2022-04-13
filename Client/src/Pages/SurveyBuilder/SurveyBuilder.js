@@ -1,19 +1,26 @@
 import React, { useState } from "react";
 import './SurveyBuilder.css'
-import {Paper} from "@mui/material";
+import {Alert, Box, Paper} from "@mui/material";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import SurveyQuestionBuilder from "./SurveyBuilderQuestion";
 import Connection from "../../Communication/Connection";
 import * as Space from 'react-spaces';
+import NotificationSnackbar from "../../CommonComponents/NotificationSnackbar";
 
 export default function SurveyBuilder(){
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [questions, setQuestions] = useState([]);
+    const [questionID, setQuestionID] = useState(0);
+
+    // error states
     const [showError, setShowError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-    const [questionID, setQuestionID] = useState(0);
+    const [errorSeverity, setErrorSeverity] = useState('error');
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+
+
 
     // STRINGS
     const header_string = 'בניית סקר'
@@ -26,15 +33,7 @@ export default function SurveyBuilder(){
      * adds a new question to the survey
      */
     const add_question = () => {
-        // setting new question element
-
-        // questions[question_id] =
-        //     {
-        //         question: '',
-        //         type: 'MULTIPLE_CHOICE',
-        //         answers: {},
-        //     };
-
+        // adding a new question
         setQuestions( [...questions, {id: questionID, question: '', type: 'MULTIPLE_CHOICE', answers: []}]);
 
         // setting id
@@ -49,8 +48,6 @@ export default function SurveyBuilder(){
      * @param answer_id for the case of updating an answer in multiple-choice, the id of the answer
      */
     const modify_question = (id, attribute, value, answer_id = -1) => {
-
-        //const index = questions.findIndex(element => element['id'] === id);
 
         setQuestions(questions.map(function (element) {
             if (element.id !== id) {
@@ -90,7 +87,6 @@ export default function SurveyBuilder(){
             answers: item.answers.filter(answer => answer.id !== answer_id)} : item));
     }
 
-    // TODO: NOT FUCKING WORKING CORRECTLY. NOT HERE AND NOT IN THE MULTIPLE ANSWERS OF A QUESTION
     /**
      * deletes a question from the survey
      * @param id the id of the question to delete
@@ -115,16 +111,36 @@ export default function SurveyBuilder(){
      * sends the structure of the built survey to the sever
      */
     const submit_survey = () => {
-        // todo: check nothing is empty
-        console.log(questions);
-        new Connection().createSurvey(title, description, questions.map((x) => x["question"]),
-            questions.map((x) => x["answers"].map((y) => y.value)), questions.map((x) => x["type"]), submitSurveyCallback);
+
+        // checking for an empty required field
+        if(title.trim() === '' || description.trim() === '' ||
+            questions.reduce((prev, curr) => prev &&
+                curr.question.trim() === '' &&
+                curr.answers.reduce((prev, curr) => prev && curr.value.trim() === '', true), true)){
+            setShowError(true);
+            setOpenSnackbar(true);
+            setErrorMessage("נא למלא את כל השדות");
+            setErrorSeverity("error");
+        }
+        else{
+            setShowError(false);
+
+            new Connection().createSurvey(title, description, questions.map((x) => x["question"]),
+                questions.map((x) => x["answers"].map((y) => y.value)), questions.map((x) => x["type"]), submitSurveyCallback);
+        }
+
+
     }
 
     return (
         <Space.Fill scrollable >
+            {/*TODO: set up a different page when submitting the survey succeeded*/}
             <div className="Survey">
                 <h1>{header_string}</h1>
+                <Box sx={{width: "70%", marginBottom: "1%"}}>
+                    {showError && <Alert severity={errorSeverity}> {errorMessage} </Alert>}
+                </Box>
+
                 <Paper className="Survey-paper" elevation={3}>
                     {/*TODO: make the margin work */}
                     {/*the title of the survey*/}
@@ -133,12 +149,11 @@ export default function SurveyBuilder(){
                         onChange={handleTitleChange}
                         color="secondary"
                         className="Survey-text-field"
-                        error={showError}
+                        error={showError && title.trim() === ''}
                         margin="normal"
                         variant="standard"
                         required
                         label={survey_title_label_string}
-                        name="title"
                         autoFocus
                     />
                     {/*the description of the survey*/}
@@ -147,12 +162,11 @@ export default function SurveyBuilder(){
                         onChange={handleDescriptionChange}
                         color="secondary"
                         className="Survey-text-field"
-                        error={showError}
+                        error={showError && description.trim() === ''}
                         margin="normal"
                         variant="standard"
                         required
                         label={survey_description_label_string}
-                        name="description"
                     />
                 </Paper>
 
@@ -163,13 +177,19 @@ export default function SurveyBuilder(){
                                                            answers={x.answers}
                                                            modify={modify_question}
                                                            delete={delete_question}
-                                                           delete_answer={delete_question_answer}/>)}
+                                                           delete_answer={delete_question_answer}
+                                                            showError={showError}/>)}
 
                 {/*add question button*/}
                 <Button onClick={add_question} color="secondary" variant="contained">{add_question_string}</Button>
                 <br/>
                 {/*submit question button*/}
                 <Button onClick={submit_survey} color="secondary" variant="contained">{submit_survey_string}</Button>
+                <NotificationSnackbar
+                    open={openSnackbar}
+                    setOpen={setOpenSnackbar}
+                    severity={errorSeverity}
+                    message={errorMessage}/>
             </div>
         </Space.Fill>
     )

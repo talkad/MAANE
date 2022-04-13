@@ -12,7 +12,11 @@ export default function NotificationSnackbar(props){
     };
 
     return (
-        <Snackbar open={props.open} autoHideDuration={6000} onClose={handleClose}>
+        <Snackbar
+            open={props.open}
+            autoHideDuration={6000}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            onClose={handleClose}>
             <Alert onClose={handleClose} severity={props.severity} sx={{ width: '100%' }}>
                 {props.message}
             </Alert>
