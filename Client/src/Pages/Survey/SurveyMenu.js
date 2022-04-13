@@ -4,6 +4,9 @@ import {Button, Card, CardActionArea, CardActions, CardContent} from "@mui/mater
 import Typography from "@mui/material/Typography";
 import { useNavigate } from "react-router-dom";
 
+// todo: option to delete a survey
+// todo: option to send the survey to the coordinators
+
 // data for testing offline
 const data =
     [

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import './SurveyBuilder.css'
 import {Alert, AlertTitle, Box, Grid, Paper} from "@mui/material";
 import TextField from "@mui/material/TextField";
@@ -23,8 +23,6 @@ export default function SurveyBuilder(){
 
     const [surveyComplete, setSurveyComplete] = useState(false);
 
-
-
     // STRINGS
     const header_string = 'בניית סקר'
     const survey_title_label_string = 'כותרת הסקר'
@@ -37,6 +35,25 @@ export default function SurveyBuilder(){
     const survey_success_button_string = "חזרה לתפריט הסקרים";
 
     let navigate = useNavigate();
+
+    useEffect(() => {
+        function onCloseMessage(e) {
+
+            if(!surveyComplete){
+                var dialogText = 'temp';
+                e.preventDefault();
+                e.returnValue = dialogText;
+                return dialogText;
+            }
+        }
+
+
+        window.addEventListener('beforeunload', onCloseMessage); // todo: make this work
+
+        return () => {
+            window.removeEventListener('beforeunload', onCloseMessage);
+        }
+    }, []);
 
     /**
      * adds a new question to the survey
@@ -130,9 +147,10 @@ export default function SurveyBuilder(){
 
         // checking for an empty required field
         if(title.trim() === '' || description.trim() === '' ||
-            questions.reduce((prev, curr) => prev &&
-                curr.question.trim() === '' &&
-                curr.answers.reduce((prev, curr) => prev && curr.value.trim() === '', true), true)){
+            questions.reduce((prev, curr) => prev ||
+                curr.question.trim() === '' ||
+                curr.answers.reduce((prev, curr) => prev || curr.value.trim() === '', false), false)){
+
             setShowError(true);
             setOpenSnackbar(true);
             setErrorMessage("נא למלא את כל השדות");
@@ -144,14 +162,13 @@ export default function SurveyBuilder(){
             new Connection().createSurvey(title, description, questions.map((x) => x["question"]),
                 questions.map((x) => x["answers"].map((y) => y.value)), questions.map((x) => x["type"]), submitSurveyCallback);
         }
-
-
     }
 
     return (
         <Space.Fill scrollable >
             {!surveyComplete && <div className="Survey">
                 <h1>{header_string}</h1>
+                {/*alert*/}
                 <Box sx={{width: "70%", marginBottom: "1%"}}>
                     {showError && <Alert severity={errorSeverity}> {errorMessage} </Alert>}
                 </Box>
@@ -200,6 +217,7 @@ export default function SurveyBuilder(){
                 <br/>
                 {/*submit question button*/}
                 <Button onClick={submit_survey} color="secondary" variant="contained">{submit_survey_string}</Button>
+                {/*pop up notification*/}
                 <NotificationSnackbar
                     open={openSnackbar}
                     setOpen={setOpenSnackbar}

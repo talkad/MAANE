@@ -80,7 +80,7 @@ function App(){
     useEffect(() => {
         window.addEventListener('beforeunload', () => {
             handleLogout(); // TODO: test that it works
-        })
+        });
     }, [])
 
     /**
