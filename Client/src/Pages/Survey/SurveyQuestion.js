@@ -59,7 +59,7 @@ export default function SurveyQuestion(props){
                                     onChange={handleMultipleChoiceAnswerChange}
                                 >
                                     {props.choices.map((element, index) =>
-                                        <FormControlLabel value={index} control={<Radio color="secondary"/>} label={element}/>)}
+                                        <FormControlLabel value={index.toString()} control={<Radio color="secondary"/>} label={element}/>)}
                                 </RadioGroup>
                                 {props.showError && props.answer.trim() === '' && <FormHelperText>{multiple_choice_helper_text_string}</FormHelperText>}
                             </FormControl>

@@ -83,6 +83,7 @@ public class SurveyController {
 
         SurveyAnswers answer = new SurveyAnswers();
         Response<Boolean> answerRes = answer.addAnswers(answersDTO);
+        String symbol;
 
         if(answerRes.isFailure())
             return new Response<>(false, true, answerRes.getErrMsg());
@@ -93,10 +94,16 @@ public class SurveyController {
         if(surveys.get(answersDTO.getId()).getFirst().getQuestions().size() != answersDTO.getTypes().size())
             return new Response<>(false, true, "number of answers cannot be different from number of questions");
 
-        if(answersDTO.getSymbol().length() == 0)
+        if(answersDTO.getAnswers().size() == 0)
+            return new Response<>(true, false, "empty survey");
+
+        symbol = answersDTO.getAnswers().get(0);
+
+        if(symbol.length() == 0)
             return new Response<>(false, true, "School symbol cannot be empty string");
 
-        answer.setSymbol(answersDTO.getSymbol());
+        answer.setSymbol(symbol);
+        answersDTO.getAnswers().remove(0);
 
         if(!answers.containsKey(answersDTO.getId()))
             answers.put(answersDTO.getId(), new LinkedList<>());

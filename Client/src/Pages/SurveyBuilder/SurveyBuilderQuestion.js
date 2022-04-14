@@ -88,7 +88,7 @@ export default function SurveyQuestionBuilder(props) {
                             onChange={handleQuestionChange}
                         />
                     </Grid>
-                    <Grid item xs={2}>
+                    {props.id !== -1 && <Grid item xs={2}>
                         {/*selection of which type of question the question is*/}
                         <FormControl  sx={{ m: 1, minWidth: 80 }}>
                             <Select
@@ -101,15 +101,15 @@ export default function SurveyQuestionBuilder(props) {
                                 <MenuItem value={'NUMERIC_ANSWER'}>{open_number_item_string}</MenuItem>
                             </Select>
                         </FormControl>
-                    </Grid>
-                    <Grid item xs={1}>
+                    </Grid>}
+                    {props.id !== -1 && <Grid item xs={1}>
                         {/*button to the delete the current question*/}
                         <Tooltip title={question_delete_title_tooltip_string}>
                             <IconButton onClick={delete_question}>
                                 <DeleteIcon />
                             </IconButton>
                         </Tooltip>
-                    </Grid>
+                    </Grid>}
                     {/*element for the case where the question is multiple-choice*/}
                     {props.type === 'MULTIPLE_CHOICE' &&
                         <Grid item xs={12}>

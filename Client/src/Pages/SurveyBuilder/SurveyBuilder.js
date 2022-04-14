@@ -12,7 +12,7 @@ import {useNavigate} from "react-router-dom";
 export default function SurveyBuilder(){
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
-    const [questions, setQuestions] = useState([]);
+    const [questions, setQuestions] = useState([{id: -1, question: 'סמל בית ספר', type: 'NUMERIC_ANSWER', answers: []}]);
     const [questionID, setQuestionID] = useState(0);
 
     // error states

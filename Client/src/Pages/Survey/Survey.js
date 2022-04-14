@@ -7,64 +7,69 @@ import * as Space from 'react-spaces';
 import NotificationSnackbar from "../../CommonComponents/NotificationSnackbar";
 import Connection from "../../Communication/Connection";
 
-const questionsPerPage = 5
+const mock = [
+    {
+        id: 0,
+        question: 'a',
+        type: 'OPEN_ANSWER',
+        answer: '',
+    },
+    {
+        id: 1,
+        question: 'b',
+        type: 'NUMERIC_ANSWER',
+        answer: '',
+    },
+    {
+        id: 2,
+        choices: ['אנקין', 'פדמה',],
+        question: 'c',
+        type: 'MULTIPLE_CHOICE',
+        answer: '',
+    },
+    {
+        id: 3,
+        question: 'e',
+        type: 'NUMERIC_ANSWER',
+        answer: '',
+    },
+    {
+        id: 4,
+        question: 't',
+        type: 'NUMERIC_ANSWER',
+        answer: '',
+    },
+    {
+        id: 5,
+        question: 'u',
+        type: 'NUMERIC_ANSWER',
+        answer: '',
+    },
+    {
+        id: 6,
+        question: 'q',
+        type: 'NUMERIC_ANSWER',
+        answer: '',
+    },
+    {
+        id: 7,
+        question: 'z',
+        type: 'NUMERIC_ANSWER',
+        answer: '',
+    },
+];
+
+const questionsPerPage = 5;
+
+// TODO: make is so the supervisor who created it can't submit
+// TODO: if the supervisor who craeted the survey is viewing it then show her its current stats
 
 export default function Survey(){
 
-    const [surveyTitle, setSurveyTitle] = useState('Hello there');
-    const [surveyDescription, setSurveyDescription] = useState('General Kenobi');
+    const [surveyTitle, setSurveyTitle] = useState('');
+    const [surveyDescription, setSurveyDescription] = useState('');
     // initializing with dummy data for offline testing
-    const [questions, setQuestions] = useState([
-        {
-            id: 0,
-            question: 'a',
-            type: 'OPEN_ANSWER',
-            answer: '',
-        },
-        {
-            id: 1,
-            question: 'b',
-            type: 'NUMERIC_ANSWER',
-            answer: '',
-        },
-        {
-            id: 2,
-            choices: ['אנקין', 'פדמה',],
-            question: 'c',
-            type: 'MULTIPLE_CHOICE',
-            answer: '',
-        },
-        {
-            id: 3,
-            question: 'e',
-            type: 'NUMERIC_ANSWER',
-            answer: '',
-        },
-        {
-            id: 4,
-            question: 't',
-            type: 'NUMERIC_ANSWER',
-            answer: '',
-        },
-        {
-            id: 5,
-            question: 'u',
-            type: 'NUMERIC_ANSWER',
-            answer: '',
-        },
-        {
-            id: 6,
-            question: 'q',
-            type: 'NUMERIC_ANSWER',
-            answer: '',
-        },
-        {
-            id: 7,
-            question: 'z',
-            type: 'NUMERIC_ANSWER',
-            answer: '',
-        },
-    ]);
+    const [questions, setQuestions] = useState([]);
     const [page, setPage] = React.useState(1);
 
     // error states
@@ -82,7 +87,9 @@ export default function Survey(){
     const survey_success_message_string = "ניתן לסגור את החלון";
 
     useEffect(() => {
-        // TODO: send request to the server
+        var url = new URL(window.location.href);
+        var surveyID = url.searchParams.get("surveyID");
+        new Connection().getSurvey(surveyID, arrangeSurvey);
 
         function onCloseMessage(e) {
 
@@ -101,7 +108,33 @@ export default function Survey(){
         }
     }, []);
 
+    /**
+     * arranges the data received from the server regarding the request to view and fill a survey
+     * @param data the data recieved from the server
+     */
+    const arrangeSurvey = (data) => {
+        if(!data.failure){
+            function zip(arrays) {
+                return arrays[0].map(function(_,i){
+                    return arrays.map(function(array){return array[i]})
+                });
+            }
 
+            const survey = data.result;
+
+            setSurveyTitle(survey.title);
+            setSurveyDescription(survey.description);
+
+            const zippedQuestionsList = zip([survey.questions, survey.types, survey.answers]);
+
+            let questionIndexer = 0;
+            zippedQuestionsList.forEach(([question, type, answers]) => setQuestions(questions =>
+                [...questions, {id: questionIndexer++, question: question, type: type, choices: answers, answer: '',}]));
+        }
+        else {
+            // TODO: have a page for when showing the survey fails
+        }
+    }
 
     /**
      * handler for changing the answer of a question
@@ -160,11 +193,12 @@ export default function Survey(){
         else{
             setShowError(false);
 
-            // todo: send the survey
+            var url = new URL(window.location.href);
+            var surveyID = url.searchParams.get("surveyID");
+            new Connection().submitSurvey(surveyID, questions.map(element => element.answer), questions.map(element => element.type), submitCallback);
         }
     }
 
-    // todo: change the page to output a success message if the submission succeeds
     return (
         <Space.Fill scrollable>
             {!surveyComplete && <div style={{margin: '5vh'}} className="Survey">
@@ -180,7 +214,7 @@ export default function Survey(){
                         color="secondary"
                         margin="normal"
                         className="Survey-text-field"
-                        defaultValue={surveyTitle}
+                        value={surveyTitle}
                         InputProps={{
                             readOnly: true,
                         }}
@@ -192,7 +226,7 @@ export default function Survey(){
                         color="secondary"
                         margin="normal"
                         className="Survey-text-field"
-                        defaultValue={surveyDescription}
+                        value={surveyDescription}
                         InputProps={{
                             readOnly: true,
                         }}

@@ -1,6 +1,7 @@
 import axios from "axios";
 
 // TODO: secure store the JWT keys
+// TODO: deal with expired tokens
 
 class Connection{
 
@@ -400,8 +401,30 @@ class Connection{
 
     // SURVEY REQUESTS
 
-    getSurvey() {
+    /**
+     * sends a GET request to get the survey with id surveyID
+     * @param surveyID the id of the survey to get
+     * @param callback a callback function to call once there's a response
+     */
+    getSurvey(surveyID, callback) {
+        this.sendGET(`/survey/getSurvey/surveyID=${surveyID}`, callback);
+    }
 
+    /**
+     * sends a POST request to the server for submitting a filled survey
+     * @param id the id of the survey
+     * @param answers answers to the survey
+     * @param types the type of questions submitted
+     * @param callback a callback function to call once there's a response
+     */
+    submitSurvey(id, answers, types, callback){
+        this.sendPOST('/survey/submitAnswers',
+            {
+                id: id,
+                answers: answers,
+                types: types,
+            },
+            callback)
     }
 
     /**

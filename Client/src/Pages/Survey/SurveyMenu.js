@@ -169,7 +169,7 @@ export default function SurveyMenu(){
                                         </CardContent>
                                         <CardActions>
                                             {/*button to go to the survey represented by the card this button is in*/}
-                                            <Button color="secondary" size="medium" onClick={() => navigate(`../getSurvey?id=${y.id}`, {replace: true})}>מעבר לסקר</Button>
+                                            <Button color="secondary" size="medium" onClick={() => navigate(`../getSurvey?surveyID=${y.id}`, {replace: true})}>מעבר לסקר</Button>
                                         </CardActions>
                                     </CardActionArea>
                                 </Card>
