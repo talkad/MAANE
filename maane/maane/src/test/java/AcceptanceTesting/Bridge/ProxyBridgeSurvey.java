@@ -2,6 +2,7 @@ package AcceptanceTesting.Bridge;
 
 import Communication.DTOs.SurveyAnswersDTO;
 import Communication.DTOs.SurveyDTO;
+import Communication.DTOs.SurveyDetailsDTO;
 import Communication.Service.Interfaces.SurveyService;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.FaultDetector.Rules.Rule;
@@ -68,7 +69,7 @@ public class ProxyBridgeSurvey implements SurveyService {
     }
 
     @Override
-    public Response<List<String>> getSurveys(String username) {
+    public Response<List<SurveyDetailsDTO>> getSurveys(String username) {
         if (real != null){
             return real.getSurveys(username);
         }

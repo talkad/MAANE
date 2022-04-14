@@ -1,102 +1,120 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import * as Space from 'react-spaces';
 import {Button, Card, CardActionArea, CardActions, CardContent} from "@mui/material";
 import Typography from "@mui/material/Typography";
 import { useNavigate } from "react-router-dom";
+import Connection from "../../Communication/Connection";
 
 // todo: option to delete a survey
 // todo: option to send the survey to the coordinators
 
 // data for testing offline
-const data =
-    [
-        {
-            id: 1,
-            title: "סקר 2018",
-            description: "רוית",
-        },
-        {
-            id: 2,
-            title: "סקר 2019",
-            description: "רוית",
-        },
-        {
-            id: 3,
-            title: "סקר 2020",
-            description: "רוית",
-        },
-        {
-            id: 4,
-            title: "סקר 2021",
-            description: "רוית",
-        }
-        // {
-        //     id: 6,
-        //     title: "hello there",
-        //     description: "general kenobi",
-        // },
-        // {
-        //     id: 7,
-        //     title: "hello there",
-        //     description: "general kenobi",
-        // },
-        // {
-        //     id: 7,
-        //     title: "hello there",
-        //     description: "general kenobi",
-        // },
-        // {
-        //     id: 7,
-        //     title: "hello there",
-        //     description: "general kenobi",
-        // },
-        // {
-        //     id: 7,
-        //     title: "hello there",
-        //     description: "general kenobi",
-        // },
-        // {
-        //     id: 7,
-        //     title: "hello there",
-        //     description: "general kenobi",
-        // },
-        // {
-        //     id: 7,
-        //     title: "hello there",
-        //     description: "general kenobi",
-        // },
-        // {
-        //     id: 7,
-        //     title: "hello there",
-        //     description: "general kenobi",
-        // },
-        // {
-        //     id: 7,
-        //     title: "hello there",
-        //     description: "general kenobi",
-        // },
-        // {
-        //     id: 7,
-        //     title: "hello there",
-        //     description: "general kenobi",
-        // },
-        // {
-        //     id: 7,
-        //     title: "hello there",
-        //     description: "general kenobi",
-        // },
-        // {
-        //     id: 7,
-        //     title: "hello there",
-        //     description: "general kenobi",
-        // },
-
-    ]
+// const data =
+//     [
+//         {
+//             id: 1,
+//             title: "סקר 2018",
+//             description: "רוית",
+//         },
+//         {
+//             id: 2,
+//             title: "סקר 2019",
+//             description: "רוית",
+//         },
+//         {
+//             id: 3,
+//             title: "סקר 2020",
+//             description: "רוית",
+//         },
+//         {
+//             id: 4,
+//             title: "סקר 2021",
+//             description: "רוית",
+//         }
+//         {
+//             id: 6,
+//             title: "hello there",
+//             description: "general kenobi",
+//         },
+//         {
+//             id: 7,
+//             title: "hello there",
+//             description: "general kenobi",
+//         },
+//         {
+//             id: 7,
+//             title: "hello there",
+//             description: "general kenobi",
+//         },
+//         {
+//             id: 7,
+//             title: "hello there",
+//             description: "general kenobi",
+//         },
+//         {
+//             id: 7,
+//             title: "hello there",
+//             description: "general kenobi",
+//         },
+//         {
+//             id: 7,
+//             title: "hello there",
+//             description: "general kenobi",
+//         },
+//         {
+//             id: 7,
+//             title: "hello there",
+//             description: "general kenobi",
+//         },
+//         {
+//             id: 7,
+//             title: "hello there",
+//             description: "general kenobi",
+//         },
+//         {
+//             id: 7,
+//             title: "hello there",
+//             description: "general kenobi",
+//         },
+//         {
+//             id: 7,
+//             title: "hello there",
+//             description: "general kenobi",
+//         },
+//         {
+//             id: 7,
+//             title: "hello there",
+//             description: "general kenobi",
+//         },
+//         {
+//             id: 7,
+//             title: "hello there",
+//             description: "general kenobi",
+//         },
+//
+//     ]
 
 export default function SurveyMenu(){
+    const [data, setData] = useState([]);
     let navigate = useNavigate();
 
     const create_survey_button_string = "יצירת סקר";
+
+    useEffect(() => {
+        new Connection().getCreatedSurveys(arrangeSurveys);
+
+    }, []);
+
+    /**
+     * arranges the survey data received from the server
+     * @param data the data from the server
+     */
+    const arrangeSurveys = (data) => {
+        console.log(data);
+        if (!data.failure){
+            data.result.forEach(survey => setData(data => [...data, {id: survey.id, title: survey.title, description: survey.description}]));
+        }
+    }
 
     // getting a list and an amount
     // returning a list of lists where in each sub-list there is at most amountInList elements

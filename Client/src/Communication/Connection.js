@@ -400,6 +400,18 @@ class Connection{
 
     // SURVEY REQUESTS
 
+    getSurvey() {
+
+    }
+
+    /**
+     * sends a GET request to get all the surveys created by the current active user
+     * @param callback a callback function to call once there's a response
+     */
+    getCreatedSurveys(callback) {
+        this.sendGET('/survey/getSurveys', callback);
+    }
+
     /**
      * sends a POST request to create a new survey
      * @param title the title of the survey

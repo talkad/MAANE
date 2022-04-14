@@ -77,11 +77,11 @@ function App(){
     // TODO: the greetings currently doesn't work well. but perhaps once TAL implements what i asked then it will (return the username with the response for the request)
     const greetings_string = "שלום " + name;
 
-    useEffect(() => {
-        window.addEventListener('beforeunload', () => {
-            handleLogout(); // TODO: test that it works
-        });
-    }, [])
+    // useEffect(() => {
+    //     window.addEventListener('beforeunload', () => {
+    //         handleLogout(); // TODO: refreshing causes it to trigger too
+    //     });
+    // }, [])
 
     /**
      * a callback to call when the result of the logout request got back

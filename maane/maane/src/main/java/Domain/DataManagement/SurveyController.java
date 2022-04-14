@@ -3,6 +3,7 @@ package Domain.DataManagement;
 import Communication.DTOs.GoalDTO;
 import Communication.DTOs.SurveyAnswersDTO;
 import Communication.DTOs.SurveyDTO;
+import Communication.DTOs.SurveyDetailsDTO;
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.AnswerState.AnswerType;
@@ -262,17 +263,20 @@ public class SurveyController {
         return new Response<>(rules, false, "success");
     }
 
-    public Response<List<String>> getSurveys(String username){
+    public Response<List<SurveyDetailsDTO>> getSurveys(String username){
         Response<List<String>> res = UserController.getInstance().getSurveys(username);
-        List<String> titles = new LinkedList<>();
+        List<SurveyDetailsDTO> surveyInfo = new LinkedList<>();
+        Survey survey;
 
         if(res.isFailure())
-            return res;
+            return new Response<>(new LinkedList<>(), true, res.getErrMsg());
 
-        for(String surveyID: res.getResult())
-            titles.add(surveys.get(surveyID).getFirst().getTitle());
+        for(String surveyID: res.getResult()) {
+            survey = surveys.get(surveyID).getFirst();
+            surveyInfo.add(new SurveyDetailsDTO(survey.getTitle(), survey.getDescription(), surveyID));
+        }
 
-        return new Response<>(titles, false, "success");
+        return new Response<>(surveyInfo, false, "success");
     }
 
     public void setAnswers(Map<String, List<SurveyAnswers>> answers) {

@@ -2,6 +2,7 @@ package Communication.Service.Interfaces;
 
 import Communication.DTOs.SurveyAnswersDTO;
 import Communication.DTOs.SurveyDTO;
+import Communication.DTOs.SurveyDetailsDTO;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.FaultDetector.Rules.Rule;
 
@@ -20,7 +21,7 @@ public interface SurveyService {
 
     Response<Boolean> removeRule(String username, String surveyID, int ruleID);
 
-    Response<List<String>> getSurveys(String username);
+    Response<List<SurveyDetailsDTO>> getSurveys(String username);
 
     Response<List<Rule>> getRules(String surveyID);
 
