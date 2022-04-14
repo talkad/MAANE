@@ -2,6 +2,7 @@ import axios from "axios";
 
 // TODO: secure store the JWT keys
 // TODO: deal with expired tokens
+// TODO for tal: if a user doesn't have a permission don't send back 403, send back 404
 
 class Connection{
 
@@ -49,8 +50,9 @@ class Connection{
     sendGET(url, callback){
         const config = {
             headers: {
-                'Authorization': "Bearer " + window.sessionStorage.getItem('access_token')
-            }
+                'Authorization': "Bearer " + window.sessionStorage.getItem('access_token'),
+                'access-control-allow-origin': "*"
+            },
         }
 
         this.axios_instance.get(url, config)
@@ -60,6 +62,21 @@ class Connection{
                 callback(response.data);
             })
             .catch(function (error) {
+                console.log("ERROR INCOMING");
+                console.log(error.response);
+                if (error.response){
+                    console.log("CHEKCING IT'S ERROR CODE");
+                    console.log("IT'S " + error.response.status);
+                    if (error.response.status === 403){
+                        console.log("hello there");
+                    }
+
+                    if (error.response.status === 404) {
+                        console.log("general kenobi");
+                    }
+                }
+
+
                 // handle error
                 console.log(`GET FAILED FOR ${url}`);
                 console.log(error);

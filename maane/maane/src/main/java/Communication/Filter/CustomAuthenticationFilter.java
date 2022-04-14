@@ -60,7 +60,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
         String accessToken = JWT.create()
                 .withSubject(user.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + 30 * 60 * 1000))
+                .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 1000))
                 .withIssuer(request.getRequestURL().toString())
                 .withClaim("roles", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                 .sign(algorithm);
@@ -88,9 +88,9 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     @Override
     //todo: implement it for preventing brute force attack
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
-        response.setStatus(200); // todo - magic numbers - remove this line
-        System.out.println("ccccccccccc");
-        super.unsuccessfulAuthentication(request, response, failed);
+//        response.setStatus(200); // todo - magic numbers - remove this line
+        System.out.println("helloooooooooooooooo");
+//        super.unsuccessfulAuthentication(request, response, failed);
     }
 
 }
