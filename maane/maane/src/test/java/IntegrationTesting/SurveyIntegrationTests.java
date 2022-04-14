@@ -30,6 +30,7 @@ public class SurveyIntegrationTests {
     public void setUp(){
         surveyDTO = new SurveyDTO();
         surveyController.clearCache();
+        UserController.getInstance().clearUsers();
 
         List<String> questions1 = Arrays.asList("que1", "que2", "que3");
         List<List<String>> answers1 = Arrays.asList(new LinkedList<>(), Arrays.asList("1", "2"), Arrays.asList("1", "2"));
@@ -67,6 +68,7 @@ public class SurveyIntegrationTests {
     @Test
     public void surveyCreationNoPermissionFailure(){
         UserController userController = UserController.getInstance();
+        userController.login("admin");
         userController.registerUserBySystemManager("admin", "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         userController.registerUserBySystemManager("admin", "Shlomit", "Malka", UserStateEnum.INSTRUCTOR, "sup1", "tech", "", "", "", "", "");
         userController.login("Shlomit");
@@ -101,7 +103,7 @@ public class SurveyIntegrationTests {
         UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
-        userController.registerUserBySystemManager(adminName, "Shosh", "Bar", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.registerUserBySystemManager(adminName, "Shosh", "Bar", UserStateEnum.SUPERVISOR, "", "hebrew", "", "", "", "", "");
 
         userController.login("Dvorit");
         userController.login("Shosh");
@@ -133,7 +135,7 @@ public class SurveyIntegrationTests {
         UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
-        userController.registerUserBySystemManager(adminName, "Levana", "Zoharim", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.registerUserBySystemManager(adminName, "Levana", "Zoharim", UserStateEnum.SUPERVISOR, "", "hebrew", "", "", "", "", "");
 
         userController.login("Dvorit");
         userController.login("Levana");
@@ -176,7 +178,7 @@ public class SurveyIntegrationTests {
         UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
-        userController.registerUserBySystemManager(adminName, "Levana", "Zoharim", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.registerUserBySystemManager(adminName, "Levana", "Zoharim", UserStateEnum.SUPERVISOR, "", "hebrew", "", "", "", "", "");
 
         userController.login("Dvorit");
         userController.login("Levana");

@@ -28,11 +28,10 @@ public class SupervisorTests extends AcceptanceTests{
     private SurveyAnswersDTO answersDTO1, answersDTO2, answersDTO3, answersDTO4, answersDTO5, answersDTO6;
 
     @Before
-    public void setUp() /*throws InterruptedException*/ {
+    public void setUp() {
         boolean initialized = false;
         if(!initialized) {
             super.setUp(true);
-            String guestName = userBridge.addGuest().getResult();
             String adminName = "admin";
             supervisorName1 = "supervisor1";
             instructorName1 = "instructor1";
@@ -50,7 +49,6 @@ public class SupervisorTests extends AcceptanceTests{
 
             userBridge.registerUserBySystemManager(adminName, new UserDTO(adminName, "", instructorName1, instructorName1, UserStateEnum.INSTRUCTOR, "dan", "dani", "dan@gmail.com", "0501111111", "Tel Aviv", ins1Schools), supervisorName1);
             userBridge.registerUserBySystemManager(adminName, new UserDTO(adminName, "", instructorName2, instructorName2, UserStateEnum.INSTRUCTOR, "ben", "beni", "ben@gmail.com", "0501111111", "Tel Aviv", ins2Schools), supervisorName1);
-            guestName = userBridge.addGuest().getResult();
             userBridge.login(supervisorName1);
 
             surveyDTO = new SurveyDTO();
@@ -154,10 +152,7 @@ public class SupervisorTests extends AcceptanceTests{
         surveyBridge.addRule(supervisorName1, res.getResult(), new MultipleChoiceBaseRule(1, 0), 1);
         surveyBridge.addRule(supervisorName1, res.getResult(), new MultipleChoiceBaseRule(2, 0), 2);
 
-        String guestName = userBridge.addGuest().getResult();
         userBridge.login(instructorName1);
-
-        guestName = userBridge.addGuest().getResult();
         userBridge.login(instructorName2);
         userBridge.assignSchoolsToUser(supervisorName1, instructorName1, Arrays.asList("1", "2", "3"));
         userBridge.assignSchoolsToUser(supervisorName1, instructorName2, Arrays.asList("4", "5", "6"));

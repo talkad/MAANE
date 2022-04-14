@@ -52,7 +52,7 @@ public class SurveyController {
 
         permissionRes = UserController.getInstance().createSurvey(username, indexer);
 
-        if(permissionRes.getResult().length() == 0)
+        if(permissionRes.isFailure() || permissionRes.getResult().length() == 0)
             return new Response<>("", true, permissionRes.getErrMsg());
 
         surveyRes = Survey.createSurvey(indexer, surveyDTO);

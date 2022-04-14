@@ -2,6 +2,7 @@ package Domain.UsersManagment;
 
 import Communication.DTOs.UserDTO;
 import Domain.CommonClasses.Response;
+import Persistence.UserDBDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -58,6 +59,24 @@ public class User {
         this.baskets = new Vector<>();
         if(this.state.getStateEnum() == UserStateEnum.INSTRUCTOR){
             this.workPlan = new ConcurrentHashMap<>();
+        }
+    }
+
+    public User(UserDBDTO userDBDTO) {
+        this.state = inferUserType(userDBDTO.getStateEnum());
+        this.username = userDBDTO.getUsername();
+        this.workField = userDBDTO.getWorkField();
+        this.firstName = userDBDTO.getFirstName();
+        this.lastName = userDBDTO.getLastName();
+        this.email = userDBDTO.getEmail();
+        this.phoneNumber = userDBDTO.getPhoneNumber();
+        this.city = userDBDTO.getCity();
+        this.appointments = userDBDTO.getAppointments();
+        this.schools = userDBDTO.getSchools();
+        this.surveys = userDBDTO.getSurveys();
+        this.baskets = userDBDTO.getBaskets();
+        if(this.state.getStateEnum() == UserStateEnum.INSTRUCTOR){
+            this.workPlan = userDBDTO.getWorkPlan();
         }
     }
 
@@ -162,7 +181,7 @@ public class User {
             if (appointments.contains(username)) {
                 boolean res = appointments.remove(username);
                 if (res) {
-                    return new Response<>(true, false, "successfully removed the user " + username);
+                    return new Response<>(false, false, "successfully removed the user " + username);
                 }
                 return new Response<>(false, true, "Tried removing a nonexistent appointment");
             } else {

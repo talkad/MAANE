@@ -68,12 +68,10 @@ public class SurveyControllerTests {
     @Test
     public void surveyCreationSuccess(){
         UserController userController = UserController.getInstance();
-        String guestName = userController.addGuest().getResult();
-
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
 
-        String newGuestName = userController.logout(adminName).getResult();
+        userController.logout(adminName);
         userController.login("Dvorit");
 
         Assert.assertFalse(surveyController.createSurvey("Dvorit", surveyDTO).isFailure());
@@ -82,12 +80,11 @@ public class SurveyControllerTests {
     @Test
     public void addAnswerSuccess(){
         UserController userController = UserController.getInstance();
-        String guestName = userController.addGuest().getResult();
 
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
 
-        String newGuestName = userController.logout(adminName).getResult();
+        userController.logout(adminName);
         userController.login("Dvorit");
 
         Response<String> res = surveyController.createSurvey("Dvorit", surveyDTO);
@@ -107,12 +104,11 @@ public class SurveyControllerTests {
         Response<List<List<String>>> faults;
 
         UserController userController = UserController.getInstance();
-        String guestName = userController.addGuest().getResult();
 
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
 
-        String newGuestName = userController.logout(adminName).getResult();
+        userController.logout(adminName);
         userController.login("Dvorit");
 
         Response<String> res = surveyController.createSurvey("Dvorit", surveyDTO);

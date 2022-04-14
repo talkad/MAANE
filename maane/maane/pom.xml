@@ -79,9 +79,15 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>42.3.3</version>
+		</dependency>
+
+<!--		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-		</dependency>
+		</dependency>-->
 
 		<dependency>
 			<groupId>javax.persistence</groupId>
@@ -113,11 +119,11 @@
 			<artifactId>poi-ooxml</artifactId>
 			<version>4.1.0</version>
 		</dependency>
-		<dependency>
+<!--		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-tx</artifactId>
 			<version>5.1.6.RELEASE</version>
-		</dependency>
+		</dependency>-->
 
 	</dependencies>
 
