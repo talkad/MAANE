@@ -155,7 +155,7 @@ public class UserController {
                 Response<User> result = user.registerUser(userToRegister, userStateEnum, firstName, lastName, email, phoneNumber, city);
                 if (!result.isFailure()) {
                     userDAO.insertUser(new UserDBDTO(result.getResult(), security.sha256(password)));
-                    userDAO.addAppointment(currUser, userToRegister);//todo maybe check though unnecessary
+                    userDAO.addAppointment(currUser, userToRegister);
                     return new Response<>(result.getResult().getUsername(), false, "Registration occurred");
                 }
                 return new Response<>(null, result.isFailure(), result.getErrMsg());
@@ -239,7 +239,7 @@ public class UserController {
                 }
             }
             else{
-                //todo some error
+                //todo some error related to bad db reading
             }
         }
         return true;
@@ -287,8 +287,7 @@ public class UserController {
                 userDBDTO.setPhoneNumber(phoneNumber);
                 userDBDTO.setCity(city);
 
-                userDAO.updateUserInfo(userDBDTO);//todo check not error
-                return new Response<>(true, false, response.getErrMsg());
+                return userDAO.updateUserInfo(userDBDTO);
             }
             else {
                 return new Response<>(false, true, response.getErrMsg());
@@ -318,8 +317,10 @@ public class UserController {
                     else{
                         userDAO.removeAppointment(currUser, userToRemove);
                     }
-                    userDAO.removeUser(userToRemove);//todo check if successful
-                    connectedUsers.remove(userToRemove);
+                    response = userDAO.removeUser(userToRemove);
+                    if(!response.isFailure()){
+                        connectedUsers.remove(userToRemove);
+                    }
                     return response;
                 }
                 else{
@@ -487,7 +488,7 @@ public class UserController {
                 return new Response<>(users, false, "");
             }
             else {
-                return new Response<>(null, true, viewAllUsersRes.getErrMsg());//todo should be isFailure false?
+                return new Response<>(null, true, viewAllUsersRes.getErrMsg());
             }
         }
         else{
@@ -716,7 +717,7 @@ public class UserController {
     }
 
     public void notifySurveyCreation(String username, String indexer) {
-        // todo - publisher and subscribers
+        // todo - talk to tal see if we still need this
     }
 
 
@@ -814,7 +815,7 @@ public class UserController {
     }
 
     public Response<Boolean> transferSupervision(String currUser, String currSupervisor, String newSupervisor, String password, String firstName, String lastName, String email, String phoneNumber, String city){
-        if(connectedUsers.containsKey(currUser)) {//todo maybe remove all plans
+        if(connectedUsers.containsKey(currUser)) {//todo maybe remove all workPlans and surveys
             User user = connectedUsers.get(currUser);
             Response<Boolean> transferSupervisionRes = user.transferSupervision(currSupervisor, newSupervisor);
             if(!transferSupervisionRes.isFailure()){
@@ -828,7 +829,7 @@ public class UserController {
                         }
                         result.getResult().setSurveys(supervisor.getSurveys().getResult());
                         userDAO.insertUser(new UserDBDTO(result.getResult(), security.sha256(password)));
-                        System.out.println(userDAO.removeUser(currSupervisor).isFailure());
+                        userDAO.removeUser(currSupervisor);
                         connectedUsers.remove(currSupervisor);
                         return transferSupervisionRes;
                     }
@@ -850,14 +851,14 @@ public class UserController {
     }
 
     public Response<Boolean> transferSupervisionToExistingUser(String currUser, String currSupervisor, String newSupervisor){
-        if(connectedUsers.containsKey(currUser)) {//todo maybe remove all plans
+        if(connectedUsers.containsKey(currUser)) {//todo maybe remove all workPlans and surveys
             User user = connectedUsers.get(currUser);
             Response<Boolean> transferSupervisionRes = user.transferSupervision(currSupervisor, newSupervisor);
             if(!transferSupervisionRes.isFailure()){
                 if(userDAO.userExists(newSupervisor) && userDAO.userExists(currSupervisor)){
                     User currSup = new User(userDAO.getFullUser(currSupervisor).getResult());
                     User newSup = new User(userDAO.getFullUser(newSupervisor).getResult());
-                    newSup.setState(UserStateEnum.SUPERVISOR);//todo fix state on db
+                    newSup.setState(UserStateEnum.SUPERVISOR);
                     newSup.setAppointments(currSup.getAppointments());
                     for (String appointee: currSup.getAppointments()) {
                         userDAO.addAppointment(newSup.getUsername(), appointee);
@@ -865,22 +866,18 @@ public class UserController {
                     newSup.removeAppointment(newSupervisor);//remove yourself from your own appointment
                     userDAO.removeAppointment(newSup.getUsername(), newSup.getUsername());
                     newSup.setSurveys(currSup.getSurveys().getResult());
-                    newSup.setSchools(new Vector<>());//todo remove all schools from the user in the  db
+                    newSup.setSchools(new Vector<>());//todo move surveys in db as well
+                    userDAO.resetSchools(newSup.getUsername());
                     userDAO.updateUserState(newSup.getUsername(), newSup.getState().getStateEnum().getState());
                     userDAO.removeUser(currSupervisor);
                     connectedUsers.remove(currSupervisor);//todo maybe dont delete old sup just change his role
                     if(connectedUsers.containsKey(newSupervisor)){
                         newSup = connectedUsers.get(newSupervisor);
-                        newSup.setState(UserStateEnum.SUPERVISOR);//todo update state func
+                        newSup.setState(UserStateEnum.SUPERVISOR);
                         newSup.setAppointments(currSup.getAppointments());
-                        for (String appointee: currSup.getAppointments()) {
-                            userDAO.addAppointment(newSup.getUsername(), appointee);
-                        }
                         newSup.removeAppointment(newSupervisor);//remove yourself from your own appointment
-                        userDAO.removeAppointment(newSup.getUsername(), newSupervisor);
                         newSup.setSurveys(currSup.getSurveys().getResult());
-                        newSup.setSchools(new Vector<>());//todo
-                        //userDAO.resetSchools(newSup.getUsername());
+                        newSup.setSchools(new Vector<>());
                     }
                     return transferSupervisionRes;
                 }

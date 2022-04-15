@@ -66,7 +66,6 @@ public class UserQueries {
                 userDBDTO.setCity(result.getString("city"));
                 userDBDTO.setPassword(result.getString("password"));
 
-
                 statement = Connect.conn.prepareStatement(userSchoolsSql);
                 statement.setString(1, username);
                 result = statement.executeQuery();
@@ -95,29 +94,29 @@ public class UserQueries {
         return new Response<>(null, true, "failed to get user");
     }
 
-    public Response<UserDBDTO> getUser(String username) {
+    public Response<UserDBDTO> getUser(String username) {//todo remove it later potentially
         Connect.createConnection();
         String sql = "SELECT * FROM \"Users\" WHERE username = ?";
         PreparedStatement statement;
         try {
             statement = Connect.conn.prepareStatement(sql);
 
-        statement.setString(1, username);
-        ResultSet result = statement.executeQuery();
-        if(result.next()) {
-            UserDBDTO userDBDTO = new UserDBDTO();
-            userDBDTO.setUsername(result.getString("username"));
-            userDBDTO.setStateEnum(UserStateEnum.valueOf(result.getString("userstateenum")));
-            userDBDTO.setWorkField(result.getString("workField"));
-            userDBDTO.setFirstName(result.getString("firstName"));
-            userDBDTO.setLastName(result.getString("lastName"));
-            userDBDTO.setEmail(result.getString("email"));
-            userDBDTO.setPhoneNumber(result.getString("phoneNumber"));
-            userDBDTO.setCity(result.getString("city"));
+            statement.setString(1, username);
+            ResultSet result = statement.executeQuery();
+            if(result.next()) {
+                UserDBDTO userDBDTO = new UserDBDTO();
+                userDBDTO.setUsername(result.getString("username"));
+                userDBDTO.setStateEnum(UserStateEnum.valueOf(result.getString("userstateenum")));
+                userDBDTO.setWorkField(result.getString("workField"));
+                userDBDTO.setFirstName(result.getString("firstName"));
+                userDBDTO.setLastName(result.getString("lastName"));
+                userDBDTO.setEmail(result.getString("email"));
+                userDBDTO.setPhoneNumber(result.getString("phoneNumber"));
+                userDBDTO.setCity(result.getString("city"));
+                Connect.closeConnection();
+                return new Response<>(userDBDTO, false, "successfully acquired user");
+            }
             Connect.closeConnection();
-            return new Response<>(userDBDTO, false, "successfully acquired user");
-        }
-        Connect.closeConnection();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -235,7 +234,7 @@ public class UserQueries {
                 new Response<>(false, true, "bad Db writing");
     }
 
-    public Response<Boolean> updateUserInfo(UserDBDTO userDBDTO){//todo test it
+    public Response<Boolean> updateUserInfo(UserDBDTO userDBDTO){
         Connect.createConnection();
         int rows = 0;
         String sql = "UPDATE \"Users\" SET firstName = ?, lastName = ?, email = ?, phoneNumber = ?, city = ? WHERE username = ?";
@@ -257,10 +256,10 @@ public class UserQueries {
             throwables.printStackTrace();
         }
         return rows > 0 ? new Response<>(true, false, "") :
-                new Response<>(false, true, "bad Db writing");
+                new Response<>(false, true, "failed to write to db");
     }
 
-    public Response<Boolean> updateUserPassword(String username, String password){//todo test it
+    public Response<Boolean> updateUserPassword(String username, String password){
         Connect.createConnection();
         int rows = 0;
         String sql = "UPDATE \"Users\" SET password = ? WHERE username = ?";
@@ -284,9 +283,9 @@ public class UserQueries {
     public Response<Boolean> removeUser(String username){
         Connect.createConnection();
         int rows = 0;
-        String sql = "DELETE FROM \"Users\" WHERE username = ?";//todo remove everything related to the user - schools appointees and etc
-        String sqlDeleteSchools = "DELETE FROM \"UsersSchools\" WHERE username = ?";//todo remove everything related to the user - schools appointees and etc
-        String sqlDeleteAppointments = "DELETE FROM \"Appointments\" WHERE appointor = ?";//todo remove everything related to the user - schools appointees and etc
+        String sql = "DELETE FROM \"Users\" WHERE username = ?";//todo see if its possible to make it as one query
+        String sqlDeleteSchools = "DELETE FROM \"UsersSchools\" WHERE username = ?";
+        String sqlDeleteAppointments = "DELETE FROM \"Appointments\" WHERE appointor = ?";
 
         PreparedStatement preparedStatement;
         try {
@@ -314,7 +313,7 @@ public class UserQueries {
     public Response<String> getPassword(String username) {
         Connect.createConnection();
         String sql = "SELECT * FROM \"Users\" WHERE username = ?";
-        PreparedStatement statement = null;
+        PreparedStatement statement;
         try {
             statement = Connect.conn.prepareStatement(sql);
 
@@ -323,16 +322,16 @@ public class UserQueries {
         if(result.next()) {
             String password = result.getString("password");
             Connect.closeConnection();
-            return new Response<>(password, false, "successfully acquired password");//todo
+            return new Response<>(password, false, "successfully acquired password");
         }
         Connect.closeConnection();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-        return new Response<>(null, true, "failed to acquire password");//todo
+        return new Response<>(null, true, "failed to acquire password");
     }
 
-    public Boolean userExists(String username) {//todo test it
+    public Boolean userExists(String username) {
         Connect.createConnection();
         String sql = "SELECT exists (SELECT 1 FROM \"Users\" WHERE username = ? LIMIT 1)";
         PreparedStatement statement;

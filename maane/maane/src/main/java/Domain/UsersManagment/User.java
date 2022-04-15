@@ -82,7 +82,7 @@ public class User {
 
     private UserDTO getUserDTO(){
         UserDTO userDTO = new UserDTO();
-        userDTO.setUsername(this.username);//todo problem to fix tell to aviad on his side s well
+        userDTO.setUsername(this.username);
         userDTO.setWorkField(this.workField);
         userDTO.setFirstName(this.firstName);
         userDTO.setLastName(this.lastName);
@@ -212,7 +212,7 @@ public class User {
     public Response<User> registerUserBySystemManager(String username, UserStateEnum registerUserStateEnum, String workField, String firstName, String lastName, String email, String phoneNumber, String city) {
         if(this.state.allowed(Permissions.REGISTER_BY_ADMIN, this) && (registerUserStateEnum == UserStateEnum.INSTRUCTOR
                 || registerUserStateEnum == UserStateEnum.GENERAL_SUPERVISOR)) {
-            return new Response<>(new User(username, registerUserStateEnum, workField, firstName, lastName, email, phoneNumber, city), false, "user successfully assigned");//todo split to 2 functions cause only admin can define work field?
+            return new Response<>(new User(username, registerUserStateEnum, workField, firstName, lastName, email, phoneNumber, city), false, "user successfully assigned");
         }
         else{
             return new Response<>(null, true, "user not allowed to register users");
