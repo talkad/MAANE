@@ -53,7 +53,7 @@ public class UserQueries {
             statement = Connect.conn.prepareStatement(userSql);
 
             statement.setString(1, username);
-            ResultSet result = statement.executeQuery();//todo test it
+            ResultSet result = statement.executeQuery();
             if(result.next()) {
                 UserDBDTO userDBDTO = new UserDBDTO();
                 userDBDTO.setUsername(result.getString("username"));
