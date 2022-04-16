@@ -9,7 +9,7 @@ import java.sql.SQLException;
 
 public class ExcelFormatter {
 
-    public static int getRowCount() throws IOException {
+    private static int getRowCount() throws IOException {
         String projDir = System.getProperty("user.dir");
         String exelPath = projDir + "\\Mosad.xlsx";
         XSSFWorkbook workbook = new XSSFWorkbook(exelPath);
@@ -48,7 +48,7 @@ public class ExcelFormatter {
         workbook.close();
     }
 
-    public static void insertToDb (int symbol, String name, String city, String city_mail, String address,
+    private static void insertToDb (int symbol, String name, String city, String city_mail, String address,
                                    String school_address, String principal, String manager, String supervisor,
                                    String phone, String mail, int zipcode, String education_stage, String education_type,
                                    String supervisor_type, String spector, int num_of_students) throws SQLException {

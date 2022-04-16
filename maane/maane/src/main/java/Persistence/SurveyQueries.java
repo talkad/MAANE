@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,8 @@ public class SurveyQueries {
 
     public String check(){return "hello";}
 
+    //========================== Survey ==========================
+
     public Response<Boolean> insertSurvey(SurveyDTO surveyDTO) throws SQLException {
         Connect.createConnection();
         String sql = "INSERT INTO \"Surveys\" (id, title, description) VALUES (?, ?, ?)";
@@ -45,7 +48,7 @@ public class SurveyQueries {
                 new Response<>(false, true, "bad Db writing");
     }
 
-    public void insertQuestions (String surveyId, List<String> questions) throws SQLException {
+    private void insertQuestions (String surveyId, List<String> questions) throws SQLException {
         String sql = "INSERT INTO \"Questions\" (survey_id, index, question) VALUES (?, ?, ?)";
         PreparedStatement preparedStatement = Connect.conn.prepareStatement(sql);
         for (String question : questions){
@@ -77,20 +80,22 @@ public class SurveyQueries {
         return result;
     }
 
-
-
     public Response<SurveyDTO> getSurvey(String id) throws SQLException {
         Connect.createConnection();
-        String sqlSurvey = "SELECT * FROM \"Surveys\" WHERE survey_id = ?";
+        String sqlSurvey = "SELECT * FROM \"Surveys\" WHERE id = ?";
         PreparedStatement statement = Connect.conn.prepareStatement(sqlSurvey);
         statement.setString(1, id);
-        ResultSet resultSurvey = statement.executeQuery(sqlSurvey);
+        ResultSet resultSurvey = statement.executeQuery();
         SurveyDTO surveyDTO = new SurveyDTO();
 
         if(resultSurvey.next()) {
-            surveyDTO.setId(resultSurvey.getString("survey_id"));
+            surveyDTO.setId(resultSurvey.getString("id"));
             surveyDTO.setTitle(resultSurvey.getString("title"));
             surveyDTO.setDescription(resultSurvey.getString("description"));
+            List<String> questions = getSurveyQuestions(id);
+            List<List<String>> answers = getSurveyAnswers(id, questions);
+            surveyDTO.setQuestions(questions);
+            surveyDTO.setAnswers(answers);
 
             Connect.closeConnection();
         }
@@ -99,8 +104,6 @@ public class SurveyQueries {
             return new Response<>(null, true, "failed to get survey");
         }
 
-        List<String> questions = getSurveyQuestions(id);
-        List<List<String>> answers = getSurveyAnswers(id, questions);
         return new Response<SurveyDTO>(surveyDTO, false, "survey loaded successfully");
     }
 
@@ -108,7 +111,7 @@ public class SurveyQueries {
         String query = "SELECT * FROM \"Questions\" WHERE survey_id = ?";
         PreparedStatement statement = Connect.conn.prepareStatement(query);
         statement.setString(1, survey_id);
-        ResultSet result = statement.executeQuery(query);
+        ResultSet result = statement.executeQuery();
         List<String> questions = new LinkedList<>();
 
         while (result.next()) {
@@ -119,24 +122,28 @@ public class SurveyQueries {
         return questions;
     }
 
-//This one not finished
     private List<List<String>> getSurveyAnswers (String survey_id, List<String> questions) throws SQLException {
-        String query = "SELECT * FROM \"Answers\" WHERE survey_id = ?";
+        String query = "SELECT * FROM \"MultiChoices\" WHERE survey_id = ?";
         PreparedStatement statement = Connect.conn.prepareStatement(query);
         statement.setString(1, survey_id);
-        ResultSet result = statement.executeQuery(query);
+        ResultSet result = statement.executeQuery();
         List<List<String>> answers = new LinkedList<>();
 
         while (result.next()) {
-            // int index = result.getInt("index");
-            String question = result.getString("question");
-            questions.add(question);
+            String answer = result.getString("choices");
+            answer = answer.substring(1,answer.length()-1);
+            String [] optionsArr = answer.split(",");
+            List<String> optionsList = new LinkedList<>(Arrays.asList(optionsArr));
+            answers.add(optionsList);
         }
         return answers;
     }
 
+    //===========================================================
 
-    public synchronized void insertRule(String survey_id, int goalID, RuleDTO dto) {
+    //========================== Rules ==========================
+
+    public void insertRule(String survey_id, int goalID, RuleDTO dto) {
         Connect.createConnection();
         String sql = "INSERT INTO \"Rules\" (survey_id, goal_id, type, comparsion, question_id, answer) VALUES (?, ?, ?, ?, ?, ?) RETURNING id";
         PreparedStatement preparedStatement = null;
@@ -177,7 +184,7 @@ public class SurveyQueries {
         } catch (SQLException e) { e.printStackTrace(); }
     }
 
-    //todo: delete all subs too?
+    //todo remove all subs too
     public Response<Boolean> removeRule (int ruleID) {
         Connect.createConnection();
         String sql = "DELETE FROM \"Rules\" WHERE id = ?";
@@ -193,6 +200,7 @@ public class SurveyQueries {
                 new Response<>(false, true, "bad Db writing");
     }
 
+    //todo Integer is survey id
     public List<Pair<RuleDTO, Integer>> getRules(String surveyID) {
         Connect.createConnection();
         String query = "SELECT * FROM \"Rules\" WHERE survey_id = ?";
@@ -241,9 +249,65 @@ public class SurveyQueries {
         return rules;
     }
 
-    public List<SurveyAnswersDTO> getAnswers(String surveyID) {
-        //todo - almog
-        return null;
+    //list of survey id's
+    public List<String> getSurveyTitles(List<String> surveyIds) {
+        List<String> titles = new LinkedList<>();
+        Connect.createConnection();
+        try {
+            for (String title : surveyIds) { titles.addAll(getTitles(title)); }
+            Connect.closeConnection();
+        } catch (SQLException e) { e.printStackTrace(); }
+        return titles;
+    }
+
+    //all titles of single survey id
+    private List<String> getTitles (String surveyId) throws SQLException {
+        String query = "SELECT * FROM \"Surveys\" WHERE id = ?";
+        PreparedStatement statement = Connect.conn.prepareStatement(query);
+        statement.setString(1, surveyId);
+        ResultSet result = statement.executeQuery();
+        List<String> titles = new LinkedList<>();
+
+        while (result.next()) {
+            String title = result.getString("title");
+            titles.add(title);
+        }
+        return titles;
+    }
+
+    //===========================================================
+
+    //========================== Answers ==========================
+
+    //todo fix
+    public List<SurveyAnswersDTO> getAnswers(String surveyId) {
+        Connect.createConnection();
+        String query = "SELECT * FROM \"Answers\" WHERE survey_id = ?";
+        PreparedStatement statement = null;
+
+        List<SurveyAnswersDTO> output = new LinkedList<>();
+        SurveyAnswersDTO surveyAnswersDTO;
+        List<String> answers = new LinkedList<>();
+        List<AnswerType> answerTypes = new LinkedList<>();
+        String symbol = "";
+        try {
+            statement = Connect.conn.prepareStatement(query);
+            statement.setString(1, surveyId);
+            ResultSet result = statement.executeQuery();
+            while (result.next()) {
+                symbol = result.getString("school_symbol");
+                String answer = result.getString("answer");
+                String answerType = result.getString("answer_type");
+                answers.add(answer);
+                answerTypes.add(AnswerType.valueOf(answerType));
+            }
+            surveyAnswersDTO = new SurveyAnswersDTO(surveyId, symbol, answers, answerTypes);
+            output.add(surveyAnswersDTO);
+
+            Connect.closeConnection();
+        } catch (SQLException e) {e.printStackTrace();}
+
+        return output;
     }
 
     public Map<String, List<SurveyAnswersDTO>> getAllAnswers() {
@@ -255,13 +319,9 @@ public class SurveyQueries {
         //todo - almog
         return null;
     }
-
-    public List<String> getSurveyTitles(List<String> result) {
-        //todo - almog
-        return null;
-    }
 }
 
+    //===========================================================
 
 // --- Old one ---
 //    public static void insertAnswers (String surveyId, List<List<String>> answers, List<AnswerType> answerTypes) throws SQLException {
