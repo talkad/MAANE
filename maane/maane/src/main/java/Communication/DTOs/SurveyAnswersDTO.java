@@ -35,7 +35,6 @@ public class SurveyAnswersDTO {
         this.id = id;
     }
 
-
     public void setAnswers(List<String> answers) {
         this.answers = answers;
     }
