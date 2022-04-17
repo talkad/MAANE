@@ -1,23 +1,23 @@
 import React, { useState } from "react";
-import '../SurveyBuilder/SurveryBuilderQuestion.css'
-import {FormControlLabel, Grid, Paper, Radio, RadioGroup} from "@mui/material";
+import {FormControl, FormControlLabel, FormHelperText, FormLabel, Grid, Paper, Radio, RadioGroup} from "@mui/material";
 import TextField from "@mui/material/TextField";
 
 export default function SurveyQuestion(props){
-    const [openAnswer, setOpenAnswer] = useState('');
-    const [multipleChoiceAnswer, setMultipleChoiceAnswer] = useState(0);
 
     // STRINGS
     const answer_label_string = 'תשובה';
     const numeral_answer_label_string = 'תשובה מספרית'
     const open_answer_helper_text_string = 'נא להזין תשובה מספרית בלבד'
 
+    const multiple_choice_label_string = "נא לבחור תשובה אחת:";
+    const multiple_choice_helper_text_string = "יש לבחור תשובה";
+
     /**
      * onChange callback when there a change to the answer text-field
      * @param event the changed element
      */
     const handleOpenAnswerChange = (event) => {
-        setOpenAnswer(event.target.value)
+        //setOpenAnswer(event.target.value)
         props.answerChange(props.id, event.target.value)
     }
 
@@ -26,7 +26,7 @@ export default function SurveyQuestion(props){
      * @param event
      */
     const handleMultipleChoiceAnswerChange = (event) => {
-        setMultipleChoiceAnswer(event.target.value);
+        //setMultipleChoiceAnswer(event.target.value);
         props.answerChange(props.id, event.target.value)
     }
 
@@ -39,7 +39,7 @@ export default function SurveyQuestion(props){
                         {/*the question*/}
                         <TextField
                             color="secondary"
-                            className="SurveyQuestion-text-field"
+                            sx={{width: "100%"}}
                             margin="normal"
                             variant="filled"
                             name="question"
@@ -50,46 +50,48 @@ export default function SurveyQuestion(props){
                         />
                     </Grid>
                     {/*multiple-choice view for question of this kind*/}
-                    {props.type === 'multiple' &&
+                    {props.type === 'MULTIPLE_CHOICE' &&
                         <Grid item xs={12}>
+                            <FormControl error={props.showError && props.answer.trim() === ''} variant="standard">
+                                <FormLabel>{multiple_choice_label_string}</FormLabel>
                                 <RadioGroup
-                                    aria-label="gender"
-                                    name="controlled-radio-buttons-group"
-                                    value={multipleChoiceAnswer}
+                                    value={props.answer}
                                     onChange={handleMultipleChoiceAnswerChange}
                                 >
-                                    {props.answers.map((element, index) =>
-                                        <FormControlLabel value={index} control={<Radio color="secondary"/>} label={element}/>)}
+                                    {props.choices.map((element, index) =>
+                                        <FormControlLabel value={index.toString()} control={<Radio color="secondary"/>} label={element}/>)}
                                 </RadioGroup>
+                                {props.showError && props.answer.trim() === '' && <FormHelperText>{multiple_choice_helper_text_string}</FormHelperText>}
+                            </FormControl>
                         </Grid>
-
 
                     }
                     {/*open view for question of this kind*/}
-                    {props.type === 'open' && <Grid sx={{alignItems: 'center'}} item xs={12}>
+                    {props.type === 'OPEN_ANSWER' && <Grid sx={{alignItems: 'center'}} item xs={12}>
                         <TextField
                             color="secondary"
-                            className="SurveyQuestion-text-field"
+                            sx={{width: "90%"}}
                             margin="normal"
                             variant="standard"
                             required
-                            value={openAnswer}
+                            value={props.answer}
+                            error={props.showError && props.answer.trim() === ''}
                             label={answer_label_string}
                             onChange={handleOpenAnswerChange}
                         />
                     </Grid>}
-                    {/*TODO: see about this thingy down below*/}
                     {/*open-numerical view for question of this kind*/}
-                    {props.type === 'open-number'  && <Grid sx={{alignItems: 'center'}} item xs={12}>
+                    {props.type === 'NUMERIC_ANSWER'  && <Grid sx={{alignItems: 'center'}} item xs={12}>
                         <TextField
                             color="secondary"
-                            className="SurveyQuestion-text-field"
+                            sx={{width: "90%"}}
                             margin="normal"
                             variant="standard"
                             required
                             type="number"
+                            error={props.showError && props.answer.trim() === ''}
                             inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                            value={openAnswer}
+                            value={props.answer}
                             helperText={open_answer_helper_text_string}
                             label={numeral_answer_label_string}
                             onChange={handleOpenAnswerChange}

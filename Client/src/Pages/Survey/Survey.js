@@ -1,93 +1,158 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import '../SurveyBuilder/SurveyBuilder.css';
-import {Pagination, Paper, TextField} from "@mui/material";
+import {Alert, AlertTitle, Box, Grid, Pagination, Paper, TextField} from "@mui/material";
 import Button from "@mui/material/Button";
 import SurveyQuestion from "./SurveyQuestion";
+import * as Space from 'react-spaces';
+import NotificationSnackbar from "../../CommonComponents/NotificationSnackbar";
+import Connection from "../../Communication/Connection";
 
-const questionsPerPage = 5
+const mock = [
+    {
+        id: 0,
+        question: 'a',
+        type: 'OPEN_ANSWER',
+        answer: '',
+    },
+    {
+        id: 1,
+        question: 'b',
+        type: 'NUMERIC_ANSWER',
+        answer: '',
+    },
+    {
+        id: 2,
+        choices: ['אנקין', 'פדמה',],
+        question: 'c',
+        type: 'MULTIPLE_CHOICE',
+        answer: '',
+    },
+    {
+        id: 3,
+        question: 'e',
+        type: 'NUMERIC_ANSWER',
+        answer: '',
+    },
+    {
+        id: 4,
+        question: 't',
+        type: 'NUMERIC_ANSWER',
+        answer: '',
+    },
+    {
+        id: 5,
+        question: 'u',
+        type: 'NUMERIC_ANSWER',
+        answer: '',
+    },
+    {
+        id: 6,
+        question: 'q',
+        type: 'NUMERIC_ANSWER',
+        answer: '',
+    },
+    {
+        id: 7,
+        question: 'z',
+        type: 'NUMERIC_ANSWER',
+        answer: '',
+    },
+];
+
+const questionsPerPage = 5;
+
+// TODO: make is so the supervisor who created it can't submit
+// TODO: if the supervisor who craeted the survey is viewing it then show her its current stats
 
 export default function Survey(){
-    // TODO: remove this once we get the info from the server
-    const handleAnswerChange = (questionID, value) => {
-        const index = questions.findIndex(element => element['id'] === questionID);
 
-        questions[index]['answer'] = value;
-    }
-
-    const [surveyTitle, setSurveyTitle] = useState('Hello there');
-    const [surveyDescription, setSurveyDescription] = useState('General Kenobi');
-    const [questionID, setQuestionID] = useState(0);
+    const [surveyTitle, setSurveyTitle] = useState('');
+    const [surveyDescription, setSurveyDescription] = useState('');
     // initializing with dummy data for offline testing
-    const [questions, setQuestions] = useState([
-        {
-            id: 0,
-            element: <SurveyQuestion id={0} questionString='שלום שם' type='open' answerChange={handleAnswerChange} />,
-            question: '',
-            type: 'open',
-            answer: '',
-        },
-        {
-            id: 1,
-            element: <SurveyQuestion id={1} questionString='גנרל קנובי' type='open-number' answerChange={handleAnswerChange} />,
-            question: '',
-            type: 'open-number',
-            answer: '',
-        },
-        {
-            id: 2,
-            element: <SurveyQuestion id={2} questionString='אתה עז מצח' type='multiple' answerChange={handleAnswerChange}
-                                     answers={['אנקין', 'פדמה',]} />,
-            question: '',
-            type: 'multiple',
-            answer: '',
-        },
-        {
-            id: 1,
-            element: <SurveyQuestion id={1} questionString='גנרל קנובי' type='open-number' answerChange={handleAnswerChange} />,
-            question: '',
-            type: 'open-number',
-            answer: '',
-        },
-        {
-            id: 1,
-            element: <SurveyQuestion id={1} questionString='גנרל קנובי' type='open-number' answerChange={handleAnswerChange} />,
-            question: '',
-            type: 'open-number',
-            answer: '',
-        },
-        {
-            id: 1,
-            element: <SurveyQuestion id={1} questionString='גנרל קנובי' type='open-number' answerChange={handleAnswerChange} />,
-            question: '',
-            type: 'open-number',
-            answer: '',
-        },
-        {
-            id: 1,
-            element: <SurveyQuestion id={1} questionString='גנרל קנובי' type='open-number' answerChange={handleAnswerChange} />,
-            question: '',
-            type: 'open-number',
-            answer: '',
-        },
-        {
-            id: 1,
-            element: <SurveyQuestion id={1} questionString='גנרל קנובי' type='open-number' answerChange={handleAnswerChange} />,
-            question: '',
-            type: 'open-number',
-            answer: '',
-        },
-    ]);
+    const [questions, setQuestions] = useState([]);
     const [page, setPage] = React.useState(1);
+
+    // error states
+    const [showError, setShowError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [errorSeverity, setErrorSeverity] = useState('error');
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+
+    const [surveyComplete, setSurveyComplete] = useState(false);
 
     // STRINGS
     const submit_survey_string = 'סיום מענה';
 
-    // TODO: return this once we get the info from the server
-    // const handleAnswerChange = (questionID, value) => {
-    //     const index = questions.findIndex(element => element['id'] === questionID);
-    //
-    //     questions[index]['answer'] = value;
-    // }
+    const survey_success_title_string = "תשובות הסקר נשמרו בהצלחה!"
+    const survey_success_message_string = "ניתן לסגור את החלון";
+
+    useEffect(() => {
+        var url = new URL(window.location.href);
+        var surveyID = url.searchParams.get("surveyID");
+        new Connection().getSurvey(surveyID, arrangeSurvey);
+
+        function onCloseMessage(e) {
+
+            if(!surveyComplete){
+                var dialogText = 'temp';
+                e.preventDefault();
+                e.returnValue = dialogText;
+            }
+        }
+
+
+        window.addEventListener('beforeunload', onCloseMessage); // todo: make this work
+
+        return () => {
+            window.removeEventListener('beforeunload', onCloseMessage);
+        }
+    }, []);
+
+    /**
+     * arranges the data received from the server regarding the request to view and fill a survey
+     * @param data the data recieved from the server
+     */
+    const arrangeSurvey = (data) => {
+        if(!data.failure){
+            function zip(arrays) {
+                return arrays[0].map(function(_,i){
+                    return arrays.map(function(array){return array[i]})
+                });
+            }
+
+            const survey = data.result;
+
+            setSurveyTitle(survey.title);
+            setSurveyDescription(survey.description);
+
+            const zippedQuestionsList = zip([survey.questions, survey.types, survey.answers]);
+
+            let questionIndexer = 0;
+            zippedQuestionsList.forEach(([question, type, answers]) => setQuestions(questions =>
+                [...questions, {id: questionIndexer++, question: question, type: type, choices: answers, answer: '',}]));
+        }
+        else {
+            // TODO: have a page for when showing the survey fails
+        }
+    }
+
+    /**
+     * handler for changing the answer of a question
+     * @param id the id of the question to which update the answer
+     * @param value the answer to the question
+     */
+    const handleAnswerChange = (id, value) => {
+        setQuestions(questions.map(function (element) {
+            if (element.id !== id) {
+                return element;
+            }
+
+            const temp_element = {...element};
+            temp_element["answer"] = value;
+
+            return temp_element;
+        }));
+    };
 
     /**
      * handler for changing a page in the survey
@@ -98,53 +163,115 @@ export default function Survey(){
         setPage(value);
     };
 
-    // TODO: have a function which gets the data from the server and sets the states
+    /**
+     * a call back function which handles the response from the server regarding the request to submit a fill survey
+     * @param data the response from the server
+     */
+    const submitCallback = (data) =>{
+        if (data.failure){
+            setOpenSnackbar(true);
+            setErrorMessage("הפעולה נכשלה. אנא נסה/י שנית");
+            setSurveyComplete(false);
+        }
+        else{
+            setSurveyComplete(true);
+        }
+    }
 
     /**
      * sends the answers to the survey to the server
      */
     const handleSubmit = () => {
-        // TODO: send the survey
+        // checking for an empty required field
+        if(questions.reduce((prev, curr) => prev ||
+                curr.answer.trim() === '', false)){
+            setShowError(true);
+            setOpenSnackbar(true);
+            setErrorMessage("נא למלא את כל השדות");
+            setErrorSeverity("error");
+        }
+        else{
+            setShowError(false);
+
+            var url = new URL(window.location.href);
+            var surveyID = url.searchParams.get("surveyID");
+            new Connection().submitSurvey(surveyID, questions.map(element => element.answer), questions.map(element => element.type), submitCallback);
+        }
     }
 
     return (
-        <div style={{margin: '5vh'}} className="Survey">
-            <Paper className="Survey-paper" elevation={3}>
-                {/*TODO: have this big and in bold*/}
-                {/*title of the survey*/}
-                <TextField
-                    color="secondary"
-                    margin="normal"
-                    className="Survey-text-field"
-                    defaultValue={surveyTitle}
-                    InputProps={{
-                        readOnly: true,
-                    }}
-                    variant="standard"
-                />
-                {/*TODO: have this a little smaller*/}
-                {/*description of the survey*/}
-                <TextField
-                    color="secondary"
-                    margin="normal"
-                    className="Survey-text-field"
-                    defaultValue={surveyDescription}
-                    InputProps={{
-                        readOnly: true,
-                    }}
-                    variant="standard"
-                />
-            </Paper>
+        <Space.Fill scrollable>
+            {!surveyComplete && <div style={{margin: '5vh'}} className="Survey">
+                {/*alert*/}
+                <Box sx={{width: "70%", marginBottom: "1%"}}>
+                    {showError && <Alert severity={errorSeverity}> {errorMessage} </Alert>}
+                </Box>
 
-            {/*the question to the survey*/}
-            {questions.slice((page-1) * questionsPerPage, Math.min(page * questionsPerPage, questions.length)).map(x => x['element'])}
+                <Paper className="Survey-paper" elevation={3}>
+                    {/*TODO: have this big and in bold*/}
+                    {/*title of the survey*/}
+                    <TextField
+                        color="secondary"
+                        margin="normal"
+                        className="Survey-text-field"
+                        value={surveyTitle}
+                        InputProps={{
+                            readOnly: true,
+                        }}
+                        variant="standard"
+                    />
+                    {/*TODO: have this a little smaller*/}
+                    {/*description of the survey*/}
+                    <TextField
+                        color="secondary"
+                        margin="normal"
+                        className="Survey-text-field"
+                        value={surveyDescription}
+                        InputProps={{
+                            readOnly: true,
+                        }}
+                        variant="standard"
+                    />
+                </Paper>
 
-            {/*paging component*/}
-            <Pagination count={Math.ceil(questions.length/questionsPerPage)} page={page} onChange={handlePageChange} />
-            <br/>
-            {/*submitting the survey*/}
-            {page === Math.ceil(questions.length/questionsPerPage) && <Button color="secondary" variant="contained" onClick={handleSubmit}>{submit_survey_string}</Button>}
+                {/*the question to the survey*/}
+                {questions.slice((page-1) * questionsPerPage, Math.min(page * questionsPerPage, questions.length)).map(question =>
+                    <SurveyQuestion id={question.id}
+                                    questionString={question.question}
+                                    choices={question.type === "MULTIPLE_CHOICE" ? question.choices : []}
+                                    type={question.type}
+                                    answer={question.answer}
+                                    showError={showError}
+                                    answerChange={handleAnswerChange} />)}
 
-        </div>
+                {/*paging component*/}
+                <Pagination count={Math.ceil(questions.length/questionsPerPage)} page={page} onChange={handlePageChange} />
+                <br/>
+                {/*submitting the survey*/}
+                {page === Math.ceil(questions.length/questionsPerPage) && <Button color="secondary" variant="contained" onClick={handleSubmit}>{submit_survey_string}</Button>}
+
+                {/*pop up notification*/}
+                <NotificationSnackbar
+                    open={openSnackbar}
+                    setOpen={setOpenSnackbar}
+                    severity={errorSeverity}
+                    message={errorMessage}/>
+            </div>}
+
+            {surveyComplete &&
+                <Grid container
+                      direction="column"
+                      alignItems="center"
+                      justifyContent="center"
+                      spacing={1}>
+                    <Grid item xs={12}>
+                        <Alert severity="success">
+                            <AlertTitle>{survey_success_title_string}</AlertTitle>
+                            {survey_success_message_string}
+                        </Alert>
+                    </Grid>
+                </Grid>}
+
+        </Space.Fill>
     )
 }

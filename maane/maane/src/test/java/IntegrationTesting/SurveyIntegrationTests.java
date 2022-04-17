@@ -60,7 +60,6 @@ public class SurveyIntegrationTests {
         List<AnswerType> types2 = Arrays.asList(NUMERIC_ANSWER, MULTIPLE_CHOICE, MULTIPLE_CHOICE);
 
         answersDTO.setId("");
-        answersDTO.setSymbol("A123");
         answersDTO.setAnswers(answers2);
         answersDTO.setTypes(types2);
 

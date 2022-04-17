@@ -20,7 +20,7 @@ public class SurveyAnswers {
     }
 
     public SurveyAnswers(SurveyAnswersDTO dto){
-        this.symbol = dto.getSymbol();
+        this.symbol = dto.getAnswers().get(0);
         this.indexer = 0;
         answers = new HashMap<>();
 

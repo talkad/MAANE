@@ -33,8 +33,6 @@ import Visibility from "@mui/icons-material/Visibility";
 import NotificationSnackbar from "../../CommonComponents/NotificationSnackbar";
 import DeleteIcon from '@mui/icons-material/Delete';
 
-// todo: have a different table for admin (think about having the main table be about the supervisors and then inside them there'll be a table of their instructors)
-
 /**
  * a function to return an object of the data the tables accepts
  * @param username username of the user
@@ -44,9 +42,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
  * @param phoneNumber the phone number of the user
  * @param city the city of the user
  * @param schools the schools under the user
+ * @param instructors the instructors under the supervisor. if the objects represents an instructor or general supervisor then it's empty
  * @returns {{role, phoneNumber, city, schools, name, email, username}} the object to return
  */
-function createData(username, name, role, email, phoneNumber, city, schools) {
+function createData(username, name, role, email, phoneNumber, city, schools, instructors) {
     return {
         username,
         name,
@@ -55,6 +54,7 @@ function createData(username, name, role, email, phoneNumber, city, schools) {
         phoneNumber,
         city,
         schools,
+        instructors,
     }
 }
 
@@ -71,6 +71,7 @@ function Row(props) {
     const delete_user_button_string = 'מחיקת משתמש';
     const change_password_button_string = 'שינוי סיסמה';
     const edit_schools_button_string = 'עריכת בתי ספר';
+    const make_supervisor_button_string = "הפיכה למפקח/ת";
 
     // data
     const user_email_string = 'דוא"ל';
@@ -109,7 +110,7 @@ function Row(props) {
                             {/* the user's general info */}
                             <List
                                 sx={{
-                                    width: '40%',
+                                    width: '80%',
                                     bgcolor: 'background.paper',
                                 }}
                             >
@@ -129,6 +130,139 @@ function Row(props) {
                                     <ListItemText primary={schools} secondary={row.schools.reduce((previous, current) => previous + `${current}, `, '')} />
                                 </ListItem>
                                 <Divider component="li" />
+                                <ListItem>
+                                    <ListItemText primary={actions}/>
+                                </ListItem>
+                            </List>
+                            <br/>
+                            {/* the action buttons for each user */}
+                            <Grid sx={{marginBottom: 1}} container spacing={1}>
+                                {/*editing actions*/}
+                                <Grid item xs={1.5}><Button fullWidth onClick={() => props.handleOpenCPDialog(row.username, row.name)} color="secondary" variant="outlined">{change_password_button_string}</Button></Grid>
+                                <Grid item xs={1.5}><Button fullWidth onClick={() => props.handleOpenEditSchoolsDialog(row.username, row.name, row.schools)} color="secondary" variant="outlined">{edit_schools_button_string}</Button></Grid>
+                                {props.supervisor !== undefined && <Grid item xs={1.5}>
+                                    <Button fullWidth onClick={() => props.handleOpenTransferSuperDialog(row.name, row.username, props.supervisorName, props.supervisor)} color="secondary" variant="outlined">{make_supervisor_button_string}</Button>
+                                </Grid>}
+                            </Grid>
+                            <Grid container spacing={1}>
+                                {/*removing user*/}
+                                <Grid item xs={1.5}><Button fullWidth onClick={() => props.handleOpenDeleteDialog(row.username, row.name)} color="error" variant="outlined">{delete_user_button_string}</Button></Grid>
+                            </Grid>
+                        </Box>
+                    </Collapse>
+                </TableCell>
+            </TableRow>
+        </React.Fragment>
+    );
+}
+
+/**
+ * this function is a hook of a row in the table showen to the system manager
+ * @param props data for a row
+ * @returns {JSX.Element} JSX element of the row
+ */
+function SystemManagerRow(props) {
+    const { row } = props;
+    const [open, setOpen] = React.useState(false);
+
+    // actions
+    const delete_user_button_string = 'מחיקת משתמש';
+    const change_password_button_string = 'שינוי סיסמה';
+    const edit_schools_button_string = 'עריכת בתי ספר';
+
+    // data
+    const user_email_string = 'דוא"ל';
+    const user_phone_number_string = 'מספר פלאפון';
+    const city = 'עיר';
+    const schools = 'בתי ספר';
+    const actions = 'פעולות:';
+
+    // inner table
+    const instructors_string = "מדריכות ומדריכים ומפקחים כלליים תחת המפקח/ת:"
+    const empty_instructors_string = "למפקח/ת זה/ו אין מדריכים או מפקחים כלליים"
+    const table_name_col_string = 'שם';
+    const table_role_col_string = 'תפקיד';
+
+    return (
+        <React.Fragment>
+            <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
+                {/* the arrow to open the extra info */}
+                <TableCell>
+                    <IconButton
+                        aria-label="expand row"
+                        size="small"
+                        onClick={() => setOpen(!open)}
+                    >
+                        {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                    </IconButton>
+                </TableCell>
+                {/* main user's info */}
+                <TableCell component="th" scope="row">
+                    <Grid container spacing={1}>
+                        <Grid item xs={2}><Avatar>{row.name.charAt(0)}</Avatar></Grid>
+                        <Grid item xs={4}>{row.name}</Grid>
+                    </Grid>
+                </TableCell>
+                <TableCell>{row.role}</TableCell>
+            </TableRow>
+            {/*secondary user's into*/}
+            <TableRow>
+                <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+                    <Collapse in={open} timeout="auto" unmountOnExit>
+                        <Box sx={{ margin: 1 }}>
+                            {/* the user's general info */}
+                            <List
+                                sx={{
+                                    width: '80%',
+                                    bgcolor: 'background.paper',
+                                }}
+                            >
+                                <ListItem>
+                                    <ListItemText primary={user_email_string} secondary={row.email} />
+                                </ListItem>
+                                <Divider component="li" />
+                                <ListItem>
+                                    <ListItemText primary={user_phone_number_string} secondary={row.phoneNumber} />
+                                </ListItem>
+                                <Divider component="li" />
+                                <ListItem>
+                                    <ListItemText primary={city} secondary={row.city} />
+                                </ListItem>
+                                <Divider component="li" />
+                                <ListItem>
+                                    <ListItemText primary={schools} secondary={row.schools.reduce((previous, current) => previous + `${current}, `, '')} />
+                                </ListItem>
+                                <Divider component="li" />
+                                <ListItem>
+                                    <ListItemText primary={instructors_string} secondary={row.instructors.length === 0 ? empty_instructors_string : ""}/>
+                                </ListItem>
+                                {row.instructors.length !== 0 && <ListItem>
+                                    <TableContainer id="Manage-users-inner-table" component={Paper}>
+                                        {/* the table */}
+                                        {/*TODO: implement a case for an empty table*/}
+                                        <Table aria-label="collapsible table">
+                                            <TableHead>
+                                                <TableRow>
+                                                    <TableCell />
+                                                    <TableCell>{table_name_col_string}</TableCell>
+                                                    <TableCell>{table_role_col_string}</TableCell>
+                                                </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                                {row.instructors.map((tableRows) => (
+                                                    <Row key={tableRows.username} row={tableRows} userType={props.userType}
+                                                         handleOpenEditSchoolsDialog={props.handleOpenEditSchoolsDialog}
+                                                         handleOpenCPDialog={props.handleOpenCPDialog}
+                                                         handleOpenDeleteDialog={props.handleOpenDeleteDialog}
+                                                         handleOpenTransferSuperDialog={props.handleOpenTransferSuperDialog}
+                                                         supervisor={row.username}
+                                                         supervisorName={row.name}
+                                                    />
+                                                ))}
+                                            </TableBody>
+                                        </Table>
+                                    </TableContainer>
+                                </ListItem>}
                                 <ListItem>
                                     <ListItemText primary={actions}/>
                                 </ListItem>
@@ -170,6 +304,39 @@ function DeleteUserDialog(props){
     return (
         <Dialog titleStyle={{textAlign: "center"}} sx={{alignItems: "right"}} fullWidth maxWidth="sm" onClose={props.onClose} open={props.open}>
             <DialogTitle><Typography variant="h5" align="center">?{title_string} {props.selectedName}</Typography></DialogTitle>
+            <Grid container justifyContent="center" spacing={0}>
+                <Grid item align="center" xs={6}>
+                    {/*the cancel button*/}
+                    <Button onClick={() => props.onClose()} sx={{marginBottom: 1, width: "50%"}} variant="outlined">{cancel_string}</Button>
+                </Grid>
+                <Grid item align="center" xs={6}>
+                    {/*the delete button*/}
+                    <Button onClick={() => handleSubmitDeletion()} sx={{marginBottom: 1, width: "50%"}} color="error" variant="outlined">{delete_string}</Button>
+                </Grid>
+            </Grid>
+        </Dialog>
+    )
+}
+
+/**
+ * a dialog element for transferring supervision between users
+ * @param props the properties the element gets
+ * @returns {JSX.Element} the element
+ */
+function TransferSupervisionDialog(props){
+
+    const title_string = `האם את/ה בטוח/ה שהינך רוצה להפוך את `;
+    const title_cont_string = "למפקח/ת במקום "
+    const delete_string = "אישור";
+    const cancel_string = "ביטול";
+
+    const handleSubmitDeletion = () => {
+        props.callback(props.selectedSupervisorUsername, props.selectUser);
+    }
+
+    return (
+        <Dialog titleStyle={{textAlign: "center"}} sx={{alignItems: "right"}} fullWidth maxWidth="sm" onClose={props.onClose} open={props.open}>
+            <DialogTitle><Typography variant="h5" align="center">{title_string} {props.selectedName} {title_cont_string} {props.selectedSupervisorName}</Typography></DialogTitle>
             <Grid container justifyContent="center" spacing={0}>
                 <Grid item align="center" xs={6}>
                     {/*the cancel button*/}
@@ -393,21 +560,33 @@ function EditSchoolsDialog(props){
 }
 
 // data for offline testing
-const rows = [
-    createData("Ronit", 'רונית שושי', "מפקחת", "ronit@post.bgu.ac.il", "000-123-4567", "פתח תקווה", ["מקיף ז'", "רגר"]),
-    createData("Shoshi", 'שושי רונית', "מדריכה", "shoshi@post.bgu.ac.il", "002-123-4567", "ירוחם", ["יהלום", "שהם"]),
+const rows_supervisor = [
+    createData("Ronit", 'רונית שושי', "מפקחת", "ronit@post.bgu.ac.il", "000-123-4567", "פתח תקווה", ["מקיף ז'", "רגר"], []),
+    createData("Shoshi", 'שושי רונית', "מדריכה", "shoshi@post.bgu.ac.il", "002-123-4567", "ירוחם", ["יהלום", "שהם"], []),
 ];
 
+const rows_system_manager = [
+    createData("Ronit", 'רונית שושי', "אנא ערף", "ronit@post.bgu.ac.il", "000-123-4567", "פתח תקווה", ["מקיף ז'", "רגר"],
+        [createData("anakin", 'אנקין', "מדריכה", "ana@post.bgu.ac.il", "000-123-4567", "naboo", ["מקיף ז'", "רגר"], [])]),
+    createData("Shoshi", 'שושי רונית', "לא יודע", "shoshi@post.bgu.ac.il", "002-123-4567", "ירוחם", ["יהלום", "שהם"], []),
+]
+
 export default function UsersManagement(props){
-    const [tableRows, setTableRows] = useState(rows);
+    const [tableRows, setTableRows] = useState(props.userType === "SUPERVISOR" ? rows_supervisor : rows_system_manager);
 
     // dialogs states
     const [openCPDialog, setOpenCPDialog] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [openEditSchoolsDialog, setOpenEditSchoolsDialog] = useState(false);
+
     const [selectedUser, setSelectedUser] = useState('');
     const [selectedName, setSelectedName] = useState('');
     const [selectedSchools, setSelectedSchools] = useState([]);
+
+    // supervision dialog
+    const [openSupervisionTransferDialog, setOpenSupervisionTransferDialog] = useState(false);
+    const [selectedSupervisor, setSelectedSupervisor] = useState('');
+    const [selectedSupervisorName, setSelectedSupervisorName] = useState('');
 
     // snackbar states
     const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -416,6 +595,7 @@ export default function UsersManagement(props){
 
     const table_name_col_string = 'שם';
     const table_role_col_string = 'תפקיד';
+    const table_work_field_col_string = "תחום המפקחת";
     const page_title_string = 'ניהול משתמשים';
 
     let navigate = useNavigate();
@@ -441,38 +621,89 @@ export default function UsersManagement(props){
         if (!data.failure){
             let rows = [];
 
-            for (const row of data.result){
-                let role = "";
+            if (props.userType === "SUPERVISOR") {
+                for (const row of data.result) {
+                    let role = "";
 
-                if (row.userStateEnum === "INSTRUCTOR") {
-                    role = "מדריכ/ה";
+                    if (row.userStateEnum === "INSTRUCTOR") {
+                        role = "מדריכ/ה";
+                    } else if (row.userStateEnum === "SUPERVISOR") {
+                        role = "מפקח/ת" + row.workField;
+                    } else if (row.userStateEnum === "GENERAL_SUPERVISOR") {
+                        role = "מפקח/ת כללי/ת";
+                    }
+
+                    // for live updating of the dialog while adding school to a user
+                    if (selectedUser === row.username) {
+                        setSelectedSchools(row.schools);
+                    }
+
+                    // not including admins in the table
+                    if (row.username === 'admin') { //todo: is that considered hardcoded?
+                        continue;
+                    }
+
+                    rows.push(createData(
+                        row.username,
+                        row.firstName + " " + row.lastName,
+                        role,
+                        row.email,
+                        row.phoneNumber,
+                        row.city,
+                        row.schools,
+                        []
+                    ));
                 }
-                else if (row.userStateEnum === "SUPERVISOR") {
-                    role = "מפקח/ת";
-                }
-                else if (row.userStateEnum === "GENERAL_SUPERVISOR") {
-                    role = "מפקח/ת כללי/ת";
+            }
+            else if(props.userType === "SYSTEM_MANAGER"){
+                // todo: test this once there's connection again
+                let workFieldsDict = {}
+                // first iteration to get all the work fields
+                for (const row of data.result) {
+                    if (row.userStateEnum === "SUPERVISOR") {
+                        workFieldsDict[row.workField] = []
+                    }
                 }
 
-                // for live updating of the dialog while adding school to a user
-                if (selectedUser === row.username){
-                    setSelectedSchools(row.schools);
+                // second iteration to populate with the instructors and general supervisors
+                for (const row of data.result) {
+                    if (row.userStateEnum === "INSTRUCTOR" || row.userStateEnum === "GENERAL_SUPERVISOR") {
+                        let role = "";
+
+                        if (row.userStateEnum === "INSTRUCTOR") {
+                            role = "מדריכ/ה";
+                        } else if (row.userStateEnum === "GENERAL_SUPERVISOR") {
+                            role = "מפקח/ת כללי/ת";
+                        }
+
+                        workFieldsDict[row.workField] = workFieldsDict.push(createData(
+                            row.username,
+                            row.firstName + " " + row.lastName,
+                            role,
+                            row.email,
+                            row.phoneNumber,
+                            row.city,
+                            row.schools,
+                            []
+                        ));
+                    }
                 }
 
-                // not including admins in the table
-                if(row.username === 'admin'){ //todo: is that considered hardcoded?
-                    continue;
+                // third iteration to populate with the supervisors
+                for (const row of data.result) {
+                    if (row.userStateEnum === "SUPERVISOR"){
+                        rows.push(createData(
+                            row.username,
+                            row.firstName + " " + row.lastName,
+                            "מפקח/ת",
+                            row.email,
+                            row.phoneNumber,
+                            row.city,
+                            row.schools,
+                            workFieldsDict[row.workField]
+                        ));
+                    }
                 }
-
-                rows.push(createData(
-                    row.username,
-                    row.firstName + " " + row.lastName,
-                    role,
-                    row.email,
-                    row.phoneNumber,
-                    row.city,
-                    row.schools
-                ));
             }
 
             setTableRows(rows);
@@ -492,8 +723,6 @@ export default function UsersManagement(props){
         else if(props.userType === "SYSTEM_MANAGER"){
             new Connection().getAllUsers(handleReceivedData); // TODO: check this (logging in with admin)
         }
-
-        //TODO: have a loading animation
     }
 
     // USER DELETION DIALOG
@@ -599,6 +828,64 @@ export default function UsersManagement(props){
         navigate(`../auth`, {replace: true})
     }
 
+    // MAKE USER SUPERVISOR DIALOG
+
+    /**
+     * handles the opening of the dialog to change password to a selected user
+     * @param username the selected user
+     * @param name the name of the selected user
+     * @param supervisorName the name of the selected supervisor
+     * @param supervisorUsername the username of the selected supervisor
+     */
+    const handleOpenSupervisionTransferDialog = (name, username, supervisorName, supervisorUsername) => {
+        setOpenSupervisionTransferDialog(true);
+        setSelectedUser(username);
+        setSelectedName(name);
+        setSelectedSupervisor(supervisorUsername);
+        setSelectedSupervisorName(supervisorName)
+    }
+
+    /**
+     * handles the closing of the dialog for changing the password for a selected user
+     */
+    const handleCloseSupervisionTransferDialog = () => {
+        setOpenSupervisionTransferDialog(false);
+    }
+
+    /**
+     * callback for the response of the server for transferring supervision
+     * @param data the response from the server
+     */
+    const makeUserSupervisorCallback = (data) => {
+        props.setAuthAvailability(false);
+        //TODO: doesn't work cause the page is not loaded when this part runs
+        if (!data.failure){
+            setSnackbarSeverity('success');
+            setSnackbarMessage('הפעולה הסתיימה בהצלחה');
+            setOpenSnackbar(true);
+        }
+        else{
+            setSnackbarSeverity('error');
+            setSnackbarMessage('הפעולה נכשלה. אנא נסה/י שוב');
+            setOpenSnackbar(true);
+        }
+    }
+
+    /**
+     * handler for transferring supervision between two users
+     * @param currentSupervisor the supervisor from which we are revoking the supervision
+     * @param newSupervisor the user to which we give supervision
+     */
+    const handleMakeUserSupervisor = (currentSupervisor, newSupervisor) => {
+        setOpenSupervisionTransferDialog(false);
+        // TODO: check it's working properly
+        props.setAuthCallBack(() => () => new Connection().transferSupervisionToExistingUser(
+            currentSupervisor, newSupervisor, userChangePasswordCallback));
+        props.setAuthAvailability(true);
+        props.setAuthCalleePage('../home');
+        props.setAuthGoToPage('../home');
+        navigate(`../auth`, {replace: true})
+    }
     // EDIT SCHOOLS DIALOG
 
     /**
@@ -685,7 +972,9 @@ export default function UsersManagement(props){
                 <div>
                     <Button variant="outlined" color="secondary" onClick={() => navigate('../registerUsers')}>הוספת משתמש</Button>
                 </div>
-                <TableContainer id="Manage-users-table" component={Paper}>
+
+                {/*supervisor table*/}
+                {props.userType === "SUPERVISOR" && <TableContainer id="Manage-users-table-supervisor" component={Paper}>
                     {/* the table */}
                     {/*TODO: implement a case for an empty table*/}
                     <Table aria-label="collapsible table">
@@ -698,11 +987,38 @@ export default function UsersManagement(props){
                         </TableHead>
                         <TableBody>
                             {tableRows.map((tableRows) => (
-                                <Row key={tableRows.username} row={tableRows} handleOpenEditSchoolsDialog={handleOpenEditSchoolsDialog} handleOpenCPDialog={handleOpenCPDialog} handleOpenDeleteDialog={handleOpenDeleteDialog}/>
+                                <Row key={tableRows.username} row={tableRows} userType={props.userType}
+                                     handleOpenEditSchoolsDialog={handleOpenEditSchoolsDialog}
+                                     handleOpenCPDialog={handleOpenCPDialog}
+                                     handleOpenDeleteDialog={handleOpenDeleteDialog}/>
                             ))}
                         </TableBody>
                     </Table>
-                </TableContainer>
+                </TableContainer>}
+
+                {/*system manager table*/}
+                {props.userType === "SYSTEM_MANAGER" && <TableContainer id="Manage-users-table-system-manager" component={Paper}>
+                    {/* the table */}
+                    {/*TODO: implement a case for an empty table*/}
+                    <Table aria-label="collapsible table">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell />
+                                <TableCell>{table_name_col_string}</TableCell>
+                                <TableCell>{table_work_field_col_string}</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {tableRows.map((tableRows) => (
+                                <SystemManagerRow key={tableRows.username} row={tableRows} userType={props.userType}
+                                                  handleOpenTransferSuperDialog={handleOpenSupervisionTransferDialog}
+                                                  handleOpenEditSchoolsDialog={handleOpenEditSchoolsDialog}
+                                                  handleOpenCPDialog={handleOpenCPDialog}
+                                                  handleOpenDeleteDialog={handleOpenDeleteDialog}/>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>}
 
                 {/*change password dialog pop up*/}
                 <ChangePasswordDialog
@@ -731,6 +1047,17 @@ export default function UsersManagement(props){
                     onClose={handleCloseEditSchoolsDialog}
                     addSchoolCallback={handleUserAddSchool}
                     removeSchoolCallback={handleUserRemoveSchool}/>
+
+                {/*transfer supervision dialog pop up*/}
+                <TransferSupervisionDialog
+                    selectedUser={selectedUser}
+                    selectedName={selectedName}
+                    selectedSupervisorUsername={selectedSupervisor}
+                    selectedSupervisorName={selectedSupervisorName}
+                    open={openSupervisionTransferDialog}
+                    onClose={handleCloseSupervisionTransferDialog}
+                    callback={handleMakeUserSupervisor}
+                />
 
                 {/*snackbar for notification on actions*/}
                 <NotificationSnackbar

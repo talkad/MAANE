@@ -11,7 +11,6 @@ import java.util.List;
 public class SurveyAnswersDTO {
 
     private String id;
-    private String symbol;
     private List<String> answers;
     private List<AnswerType> types;
 
@@ -27,10 +26,6 @@ public class SurveyAnswersDTO {
         return id;
     }
 
-    public String getSymbol(){
-        return symbol;
-    }
-
     public void setId(String id) {
         this.id = id;
     }
@@ -43,7 +38,4 @@ public class SurveyAnswersDTO {
         this.types = types;
     }
 
-    public void setSymbol(String symbol){
-        this.symbol = symbol;
-    }
 }

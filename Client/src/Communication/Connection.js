@@ -1,6 +1,8 @@
 import axios from "axios";
 
 // TODO: secure store the JWT keys
+// TODO: deal with expired tokens
+// TODO for tal: if a user doesn't have a permission don't send back 403, send back 404
 
 class Connection{
 
@@ -48,8 +50,9 @@ class Connection{
     sendGET(url, callback){
         const config = {
             headers: {
-                'Authorization': "Bearer " + window.sessionStorage.getItem('access_token')
-            }
+                'Authorization': "Bearer " + window.sessionStorage.getItem('access_token'),
+                'access-control-allow-origin': "*"
+            },
         }
 
         this.axios_instance.get(url, config)
@@ -59,6 +62,21 @@ class Connection{
                 callback(response.data);
             })
             .catch(function (error) {
+                console.log("ERROR INCOMING");
+                console.log(error.response);
+                if (error.response){
+                    console.log("CHEKCING IT'S ERROR CODE");
+                    console.log("IT'S " + error.response.status);
+                    if (error.response.status === 403){
+                        console.log("hello there");
+                    }
+
+                    if (error.response.status === 404) {
+                        console.log("general kenobi");
+                    }
+                }
+
+
                 // handle error
                 console.log(`GET FAILED FOR ${url}`);
                 console.log(error);
@@ -262,6 +280,21 @@ class Connection{
     }
 
     /**
+     * sends a POST request to transfer supervision to a given existing user from another existing user
+     * @param currentSupervisor the supervisor from which we are revoking the supervision
+     * @param newSupervisor the user to which we give supervision
+     * @param callback a callback function to call once there's a response
+     */
+    transferSupervisionToExistingUser(currentSupervisor, newSupervisor, callback){
+        this.sendPOST('/user/transferSupervisionToExistingUser',
+            {
+                currSupervisor: currentSupervisor,
+                newSupervisor: newSupervisor,
+            },
+            callback)
+    }
+
+    /**
      * sends a POST request to register a new user to the system by a system manager and the user replaces a current supervisor
      * @param currentSupervisor the supervisor to be replaced
      * @param newSupervisor the supervisor to replace to (also the username of the new user)
@@ -386,6 +419,40 @@ class Connection{
     // SURVEY REQUESTS
 
     /**
+     * sends a GET request to get the survey with id surveyID
+     * @param surveyID the id of the survey to get
+     * @param callback a callback function to call once there's a response
+     */
+    getSurvey(surveyID, callback) {
+        this.sendGET(`/survey/getSurvey/surveyID=${surveyID}`, callback);
+    }
+
+    /**
+     * sends a POST request to the server for submitting a filled survey
+     * @param id the id of the survey
+     * @param answers answers to the survey
+     * @param types the type of questions submitted
+     * @param callback a callback function to call once there's a response
+     */
+    submitSurvey(id, answers, types, callback){
+        this.sendPOST('/survey/submitAnswers',
+            {
+                id: id,
+                answers: answers,
+                types: types,
+            },
+            callback)
+    }
+
+    /**
+     * sends a GET request to get all the surveys created by the current active user
+     * @param callback a callback function to call once there's a response
+     */
+    getCreatedSurveys(callback) {
+        this.sendGET('/survey/getSurveys', callback);
+    }
+
+    /**
      * sends a POST request to create a new survey
      * @param title the title of the survey
      * @param description the description of the survey
@@ -397,7 +464,7 @@ class Connection{
     createSurvey(title, description, questions, answers, types, callback){
         this.sendPOST('/survey/createSurvey',
             {
-                id: -1,
+                id: "-1",
                 title: title,
                 description: description,
                 questions: questions,

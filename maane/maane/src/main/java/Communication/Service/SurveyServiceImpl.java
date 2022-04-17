@@ -2,6 +2,7 @@ package Communication.Service;
 
 import Communication.DTOs.SurveyAnswersDTO;
 import Communication.DTOs.SurveyDTO;
+import Communication.DTOs.SurveyDetailsDTO;
 import Communication.Service.Interfaces.SurveyService;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.FaultDetector.Rules.Rule;
@@ -98,8 +99,8 @@ public class SurveyServiceImpl implements SurveyService {
         return res;
     }
 
-    public Response<List<String>> getSurveys(String username) {
-        Response<List<String>> res = SurveyController.getInstance().getSurveys(username);
+    public Response<List<SurveyDetailsDTO>> getSurveys(String username) {
+        Response<List<SurveyDetailsDTO>> res = SurveyController.getInstance().getSurveys(username);
 
         if(res.isFailure())
             log.error(res.getErrMsg());

@@ -64,7 +64,6 @@ public class SurveyControllerTests {
         List<String> answers2 = Arrays.asList("30", "1", "2");
         List<AnswerType> types2 = Arrays.asList(NUMERIC_ANSWER, MULTIPLE_CHOICE, MULTIPLE_CHOICE);
         answersDTO1.setId("0");
-        answersDTO1.setSymbol("A123");
         answersDTO1.setAnswers(answers2);
         answersDTO1.setTypes(types2);
 
@@ -74,7 +73,6 @@ public class SurveyControllerTests {
         List<String> answers3 = Arrays.asList("30", "1");
         List<AnswerType> types3 = Arrays.asList(NUMERIC_ANSWER, MULTIPLE_CHOICE);
 
-        answersDTO1.setSymbol("B456");
         answersDTO2.setAnswers(answers3);
         answersDTO2.setTypes(types3);
     }

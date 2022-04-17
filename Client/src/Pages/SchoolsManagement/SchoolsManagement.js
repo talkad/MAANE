@@ -34,7 +34,7 @@ import NotificationSnackbar from "../../CommonComponents/NotificationSnackbar";
  * @param phoneNumber the phone number of the school
  * @param educationType the education type of the school
  * @param city the city in which the school is located
- * @param cityForMail the idk //TODO ask shaked
+ * @param cityForMail the idk
  * @param principleName the name of the principle of the school
  * @param zipCode the zip code of the shcool
  * @param supervisionType the type of supervision of the school is under
@@ -432,9 +432,6 @@ export default function SchoolsManagement(props){
     const arrangeSchoolCallback = (data) => {
         if (!data.failure){
             setSchools(data.result); // todo: this once i know how it's passed
-        }
-        else{
-            // todo: needed?
         }
     }
 

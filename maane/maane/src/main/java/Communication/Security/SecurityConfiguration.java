@@ -15,6 +15,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static org.springframework.http.HttpMethod.GET;
+
 
 @Configuration
 @EnableWebSecurity
@@ -37,11 +39,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+// todo: allow to view pages based on permission
+// todo: add to response the reason for forbidden
 
 //        http.authorizeRequests().antMatchers("/user/login/**", "/user/refreshToken/**").permitAll();
 //        http.authorizeRequests().antMatchers("/survey/createSurvey", "/survey/addRule", "/survey/removeRule",
-//                "/survey/detectFault", "/survey/getSurveys").hasAuthority("SUPERVISOR");
-//        // http.authorizeRequests().antMatchers(GET, "/user/**").hasAuthority("GENERAL_SUPERVISOR");
+//                "/survey/detectFault", "/survey/getSurveys").hasAnyAuthority("SUPERVISOR", "SYSTEM_MANAGER");
+//        http.authorizeRequests().antMatchers(GET, "/user/getUserInfo").hasAnyAuthority("SUPERVISOR",
+//                "REGISTERED", "INSTRUCTOR", "COORDINATOR", "GENERAL_SUPERVISOR", "SYSTEM_MANAGER");
 //        http.authorizeRequests().anyRequest().authenticated();
         http.authorizeHttpRequests().anyRequest().permitAll();
 

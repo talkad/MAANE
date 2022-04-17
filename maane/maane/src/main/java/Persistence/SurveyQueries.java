@@ -18,6 +18,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import static Domain.DataManagement.AnswerState.AnswerType.OPEN_ANSWER;
+
 @Repository
 public class SurveyQueries {
 
@@ -60,6 +62,7 @@ public class SurveyQueries {
     }
 
     public void insertAnswers (String surveyId, List<String> answers, List<AnswerType> answerTypes) throws SQLException {
+
         String sql = "INSERT INTO \"MultiChoices\" (survey_id, question_index, answer_type, choices) VALUES (?, ?, ?, ?)";
         PreparedStatement preparedStatement = Connect.conn.prepareStatement(sql);
         for (String answer: answers) {
@@ -301,7 +304,11 @@ public class SurveyQueries {
                 answers.add(answer);
                 answerTypes.add(AnswerType.valueOf(answerType));
             }
-            surveyAnswersDTO = new SurveyAnswersDTO(surveyId, symbol, answers, answerTypes);
+
+            answers.add(0, symbol);
+            answerTypes.add(0, OPEN_ANSWER);
+
+            surveyAnswersDTO = new SurveyAnswersDTO(surveyId, answers, answerTypes);
             output.add(surveyAnswersDTO);
 
             Connect.closeConnection();
@@ -318,6 +325,10 @@ public class SurveyQueries {
     public List<SurveyAnswersDTO> getAnswerForSurvey(String surveyId) {
         //todo - almog
         return null;
+    }
+
+    public void insertCoordinatorAnswers(String id, String symbol, List<String> answers, List<AnswerType> types) {
+        // todo - almog
     }
 }
 

@@ -4,6 +4,7 @@ import Communication.DTOs.GoalDTO;
 import Communication.DTOs.RuleDTO;
 import Communication.DTOs.SurveyAnswersDTO;
 import Communication.DTOs.SurveyDTO;
+import Communication.DTOs.SurveyDetailsDTO;
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.AnswerState.AnswerType;
@@ -110,6 +111,7 @@ public class SurveyController {
 
         SurveyAnswers answer = new SurveyAnswers();
         Response<Boolean> answerRes = answer.addAnswers(answersDTO);
+        String symbol;
 
         if(answerRes.isFailure())
             return new Response<>(false, true, answerRes.getErrMsg());
@@ -121,17 +123,18 @@ public class SurveyController {
         if(surveyResponse.getResult().getQuestions().size() != answersDTO.getTypes().size())
             return new Response<>(false, true, "number of answers cannot be different from number of questions");
 
-        if(answersDTO.getSymbol().length() == 0)
+        if(answersDTO.getAnswers().size() == 0)
+            return new Response<>(true, false, "empty survey");
+
+        symbol = answersDTO.getAnswers().get(0);
+
+        if(symbol.length() == 0)
             return new Response<>(false, true, "School symbol cannot be empty string");
 
-        answer.setSymbol(answersDTO.getSymbol());
+        answer.setSymbol(symbol);
+        answersDTO.getAnswers().remove(0);
 
-        try {
-            surveyDAO.insertAnswers(answersDTO.getId(), answersDTO.getAnswers(), answersDTO.getTypes());
-        }
-        catch(SQLException e){
-            return new Response<>(false, true, e.getMessage());
-        }
+        surveyDAO.insertCoordinatorAnswers(answersDTO.getId(), symbol, answersDTO.getAnswers(), answersDTO.getTypes());
 
         return new Response<>(true, false, "the answer added successfully");
     }
@@ -294,18 +297,20 @@ public class SurveyController {
         return new Response<>(rules, false, "success");
     }
 
-    public Response<List<String>> getSurveys(String username){
+    public Response<List<SurveyDetailsDTO>> getSurveys(String username){
         Response<List<String>> res = UserController.getInstance().getSurveys(username);
-        List<String> titles;
-//        List<String> titles = new LinkedList<>();
+        List<SurveyDetailsDTO> surveyInfo = new LinkedList<>();
+        Survey survey;
 
         if(res.isFailure())
-            return res;
+            return new Response<>(new LinkedList<>(), true, res.getErrMsg());
 
-//        for(String surveyID: res.getResult())
-//            titles.add(surveys.get(surveyID).getSecond().getTitle());
-        titles = surveyDAO.getSurveyTitles(res.getResult());
-        return new Response<>(titles, false, "success");
+        for(String surveyID: res.getResult()) {
+            survey = surveys.get(surveyID).getSecond();
+            surveyInfo.add(new SurveyDetailsDTO(survey.getTitle(), survey.getDescription(), surveyID));
+        }
+
+        return new Response<>(surveyInfo, false, "success");
     }
 
 //    public void setAnswers(Map<String, List<SurveyAnswers>> answers) {

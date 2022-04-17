@@ -71,7 +71,6 @@ public class SupervisorTests extends AcceptanceTests{
             List<String> answers1 = Arrays.asList("0", "0", "0");
             answersDTO1.setAnswers(answers1);
             answersDTO1.setTypes(questionTypes);
-            answersDTO1.setSymbol("1");
             answersDTO1.setId("");
 
 
@@ -79,7 +78,6 @@ public class SupervisorTests extends AcceptanceTests{
             List<String> answers2 = Arrays.asList("1", "0", "1");
             answersDTO2.setAnswers(answers2);
             answersDTO2.setTypes(questionTypes);
-            answersDTO2.setSymbol("2");
             answersDTO2.setId("");
 
 
@@ -87,7 +85,6 @@ public class SupervisorTests extends AcceptanceTests{
             List<String> answers3 = Arrays.asList("1", "0", "1");
             answersDTO3.setAnswers(answers3);
             answersDTO3.setTypes(questionTypes);
-            answersDTO3.setSymbol("3");
             answersDTO3.setId("");
 
 
@@ -95,7 +92,6 @@ public class SupervisorTests extends AcceptanceTests{
             List<String> answers4 = Arrays.asList("0", "0", "1");
             answersDTO4.setAnswers(answers4);
             answersDTO4.setTypes(questionTypes);
-            answersDTO4.setSymbol("4");
             answersDTO4.setId("");
 
 
@@ -103,7 +99,6 @@ public class SupervisorTests extends AcceptanceTests{
             List<String> answers5 = Arrays.asList("1", "1", "1");
             answersDTO5.setAnswers(answers5);
             answersDTO5.setTypes(questionTypes);
-            answersDTO5.setSymbol("5");
             answersDTO5.setId("");
 
 
@@ -111,7 +106,6 @@ public class SupervisorTests extends AcceptanceTests{
             List<String> answers6 = Arrays.asList("1", "0", "1");
             answersDTO6.setAnswers(answers3);
             answersDTO6.setTypes(questionTypes);
-            answersDTO6.setSymbol("6");
             answersDTO6.setId("");
         }
     }

@@ -23,7 +23,7 @@ public class KeyLoader {
 
     public KeyLoader(){
         password = "1234";
-        filepath = "maane\\src\\main\\resources\\store.keystore";
+        filepath = "D:\\University\\Final Project\\code\\MAANE\\maane\\maane\\src\\main\\resources\\store.keystore";
         encryptedText = "354132168465432";
     }
 
@@ -50,6 +50,7 @@ public class KeyLoader {
 
         }catch(Exception e){
             log.error("storing key failed");
+            log.error(e.getMessage());
         }
     }
 

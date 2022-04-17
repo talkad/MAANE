@@ -3,6 +3,7 @@ package Communication.Resource;
 import Communication.DTOs.RuleDTO;
 import Communication.DTOs.SurveyAnswersDTO;
 import Communication.DTOs.SurveyDTO;
+import Communication.DTOs.SurveyDetailsDTO;
 import Communication.Service.Interfaces.SurveyService;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.FaultDetector.Rules.Rule;
@@ -72,7 +73,7 @@ public class SurveyController {
     }
 
     @GetMapping("/getSurveys")
-    public ResponseEntity<Response<List<String>>> getSurveys(@RequestHeader(value = "Authorization") String token){
+    public ResponseEntity<Response<List<SurveyDetailsDTO>>> getSurveys(@RequestHeader(value = "Authorization") String token){
         return ResponseEntity.ok()
                 .body(service.getSurveys(sessionHandler.getUsernameByToken(token).getResult()));
     }

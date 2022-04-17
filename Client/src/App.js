@@ -1,5 +1,5 @@
 import './App.css';
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import { Routes, Route } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
@@ -20,7 +20,7 @@ import SurveyBuilder from "./Pages/SurveyBuilder/SurveyBuilder";
 
 // COMPONENTS
 import {
-    AppBar, Backdrop,
+    AppBar, Backdrop, Box,
     Button,
     Drawer, IconButton,
     List,
@@ -45,14 +45,17 @@ import MenuIcon from '@mui/icons-material/Menu';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import SchoolIcon from '@mui/icons-material/School';
 
+// TODO: what to do if the request for info from the server to show fails?
 // TODO: prevent users from going through the site by entering paths in the url
 // TODO: currently saving everything in local storage but IT IS NOT SAFE
-// TODO: when the user closes the window log the user out before it closes
 // TODO: save the state of the user between refreshes
+
+// TODO: if there'll be time then add a loading animation to the different pages
+
 
 function App(){
     // general state data
-    const [type, setType] = useState('SYSTEM_MANAGER'); //TODO: change back to 'GUEST' when not developing
+    const [type, setType] = useState('SUPERVISOR'); //TODO: change back to 'GUEST' when not developing
     const [openSidebar, setOpenSidebar] = useState(false);
     const [hideBars, setHideBars] = useState(false);
     const [openBackdrop, setOpenBackdrop] = useState(false);
@@ -73,6 +76,12 @@ function App(){
     const logout_button_string = "יציאה";
     // TODO: the greetings currently doesn't work well. but perhaps once TAL implements what i asked then it will (return the username with the response for the request)
     const greetings_string = "שלום " + name;
+
+    // useEffect(() => {
+    //     window.addEventListener('beforeunload', () => {
+    //         handleLogout(); // TODO: refreshing causes it to trigger too
+    //     });
+    // }, [])
 
     /**
      * a callback to call when the result of the logout request got back
@@ -211,9 +220,19 @@ function App(){
                                 variant="h6"
                                 noWrap
                                 component="div"
+                                onClick={() => navigate(`user/home`, {replace: false})}
                             >
                                 מענ"ה
                             </Typography>
+                            {/*todo: see about the logo*/}
+                            <Box
+                                component="img"
+                                sx={{
+                                    height: 64,
+                                }}
+                                alt="Your logo."
+                                src={"logo.svg"}
+                            />
                             {/*profile button*/}
                             <IconButton
                                 size="large"
