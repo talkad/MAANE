@@ -72,27 +72,33 @@ public class SurveyController {
         Response<Survey> surveyRes;
 
         String indexer = createToken();
-
+        System.out.println("a");
         permissionRes = UserController.getInstance().createSurvey(username, indexer);
-
+        System.out.println("1");
         if(permissionRes.isFailure() || permissionRes.getResult().length() == 0)
             return new Response<>("", true, permissionRes.getErrMsg());
-
+        System.out.println("2");
         surveyRes = Survey.createSurvey(indexer, surveyDTO);
+        System.out.println("b");
 
         if(surveyRes.isFailure()) {
             Response<String> res = UserController.getInstance().removeSurvey(username, indexer);
+            System.out.println("c");
 
             if(res.isFailure())
                 return res;
 
             return new Response<>("", true, surveyRes.getErrMsg());
         }
+        System.out.println("d");
 
         addSurveyToCache(indexer, surveyRes.getResult());
+        System.out.println("e");
 
         try {
             surveyDAO.insertSurvey(surveyDTO);
+            System.out.println("f");
+
         }catch(SQLException e){
             return new Response<>("", true, e.getMessage());
         }
@@ -304,6 +310,9 @@ public class SurveyController {
 
         if(res.isFailure())
             return new Response<>(new LinkedList<>(), true, res.getErrMsg());
+
+        if(res.getResult() == null)
+            return new Response<>(new LinkedList<>(), false, "There are no surveys");
 
         for(String surveyID: res.getResult()) {
             survey = surveys.get(surveyID).getSecond();

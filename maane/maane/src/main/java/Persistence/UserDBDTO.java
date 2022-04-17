@@ -4,6 +4,7 @@ import Domain.UsersManagment.User;
 import Domain.UsersManagment.UserStateEnum;
 import Domain.UsersManagment.WorkPlan;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +38,7 @@ public class UserDBDTO {
         this.phoneNumber = user.getPhoneNumber();
         this.city = user.getCity();
         this.password = password;
+        this.surveys = user.getSurveys().getResult();
     }
 
 

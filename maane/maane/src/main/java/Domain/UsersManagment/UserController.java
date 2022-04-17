@@ -437,7 +437,6 @@ public class UserController {
     }
 
     public Response<List<UserDTO>> getAppointedUsers(String currUser){
-        System.out.println("xxxxxxxxxxxxxxxxx " + currUser + " xxxxx");
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             Response<List<String>> appointeesRes = user.getAppointees();

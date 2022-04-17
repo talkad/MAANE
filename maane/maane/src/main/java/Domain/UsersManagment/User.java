@@ -4,6 +4,7 @@ import Communication.DTOs.UserDTO;
 import Domain.CommonClasses.Response;
 import Persistence.UserDBDTO;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -267,10 +268,13 @@ public class User {
 
     public Response<String> createSurvey(String surveyId) {
         if(this.state.allowed(Permissions.SURVEY_MANAGEMENT, this)){
+
             this.surveys.add(surveyId);
+
             return new Response<>(surveyId, false, "user is allowed to create survey");
         }
         else {
+
             return new Response<>("", true, "user not allowed to create survey");
         }
     }
@@ -315,7 +319,7 @@ public class User {
             return new Response<>(this.surveys, false, "");
         }
         else {
-            return new Response<>(null, true, "user not allowed to view surveys");
+            return new Response<>(new LinkedList<>(), true, "user not allowed to view surveys");
         }
     }
 

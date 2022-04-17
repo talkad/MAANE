@@ -160,7 +160,6 @@ public class UserController {
 
     @GetMapping(value = "/getAppointedUsers")
     public ResponseEntity<Response<List<UserDTO>>> getAppointedUsers(@RequestHeader(value = "Authorization") String token){
-        System.out.println("xxxxxxxxxxxxxxxxxx");
         return ResponseEntity.ok()
                 .body(service.getAppointedUsers(sessionHandler.getUsernameByToken(token).getResult()));
     }

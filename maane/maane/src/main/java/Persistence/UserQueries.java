@@ -6,6 +6,7 @@ import Domain.UsersManagment.UserStateEnum;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 
@@ -65,6 +66,7 @@ public class UserQueries {
                 userDBDTO.setPhoneNumber(result.getString("phoneNumber"));
                 userDBDTO.setCity(result.getString("city"));
                 userDBDTO.setPassword(result.getString("password"));
+                userDBDTO.setSurveys(getUserSurveys(result.getString("username")));
 
                 statement = Connect.conn.prepareStatement(userSchoolsSql);
                 statement.setString(1, username);
@@ -92,6 +94,20 @@ public class UserQueries {
             throwables.printStackTrace();
         }
         return new Response<>(null, true, "failed to get user");
+    }
+
+    private List<String> getUserSurveys (String username) throws SQLException{
+        String query = "SELECT * FROM \"UserToSurvey\" WHERE username = ?";
+        PreparedStatement statement = Connect.conn.prepareStatement(query);
+        statement.setString(1, username);
+        ResultSet result = statement.executeQuery();
+        List<String> surveys = new LinkedList<>();
+
+        while (result.next()) {
+            String survey = result.getString("surveyid");
+            surveys.add(survey);
+        }
+        return surveys;
     }
 
     public Response<UserDBDTO> getUser(String username) {//todo remove it later potentially
@@ -141,6 +157,9 @@ public class UserQueries {
             preparedStatement.setString(8, userDBDTO.getCity());
             preparedStatement.setString(9, userDBDTO.getPassword());
             rows = preparedStatement.executeUpdate();
+            for(String survey : userDBDTO.getSurveys()){
+                insertUserSurveys(userDBDTO.getUsername(), survey);
+            }
             Connect.closeConnection();
         }
         catch (SQLException throwables) {
@@ -148,6 +167,18 @@ public class UserQueries {
         }
         return rows > 0 ? new Response<>(true, false, "") :
                 new Response<>(false, true, "bad Db writing");
+    }
+
+    private void insertUserSurveys (String username, String surveyID){
+        String sql = "INSERT INTO \"UserToSurvey\"(username, surveyid) VALUES (?, ?)";
+        PreparedStatement preparedStatement;
+        try {
+            preparedStatement = Connect.conn.prepareStatement(sql);
+            preparedStatement.setString(1, username);
+            preparedStatement.setString(2, surveyID);
+            preparedStatement.executeUpdate();
+        }
+        catch (SQLException throwables) {throwables.printStackTrace();}
     }
 
     public Response<Boolean> assignSchoolsToUser(String username, List<String> schools){

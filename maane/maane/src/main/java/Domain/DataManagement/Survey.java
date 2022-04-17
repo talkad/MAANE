@@ -47,7 +47,7 @@ public class Survey {
         Response<Boolean> answerRes;
         Response<Survey> surveyRes = createSurvey(index, surveyDTO.getTitle(), surveyDTO.getDescription());
         Survey survey = surveyRes.getResult();
-
+        System.out.println("3");
         if(surveyRes.isFailure())
             return surveyRes;
 
@@ -57,7 +57,7 @@ public class Survey {
 
             if(questionRes.isFailure())
                 return new Response<>(null, true, questionRes.getErrMsg());
-
+            System.out.println("4");
             switch(type){
                 case MULTIPLE_CHOICE:
                     for(String ans: surveyDTO.getAnswers().get(i)){
