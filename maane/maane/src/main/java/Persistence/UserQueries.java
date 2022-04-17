@@ -295,11 +295,11 @@ public class UserQueries {
 
             preparedStatement = Connect.conn.prepareStatement(sqlDeleteSchools);
             preparedStatement.setString(1, username);
-            rows = preparedStatement.executeUpdate();
+            /*rows = */preparedStatement.executeUpdate();
 
             preparedStatement = Connect.conn.prepareStatement(sqlDeleteAppointments);
             preparedStatement.setString(1, username);
-            rows = preparedStatement.executeUpdate();
+            /*rows = */preparedStatement.executeUpdate();//todo not sure if should update failure here for the admin user removal case
 
             Connect.closeConnection();
         }

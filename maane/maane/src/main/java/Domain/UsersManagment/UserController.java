@@ -17,10 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class UserController {
-    private AtomicInteger availableId;
     private Map<String, User> connectedUsers;
     private Security security;
     private GoalsManagement goalsManagement;
@@ -29,7 +27,6 @@ public class UserController {
     private UserQueries userDAO;
 
     private UserController() {
-        this.availableId = new AtomicInteger(1);
         this.security = Security.getInstance();
         this.connectedUsers = new ConcurrentHashMap<>();
         this.goalsManagement = GoalsManagement.getInstance();
@@ -510,7 +507,6 @@ public class UserController {
 
     //for test purposes only
     public void clearUsers(){
-        this.availableId.set(1);
         this.security = Security.getInstance();
         this.connectedUsers = new ConcurrentHashMap<>();
         this.userDAO.deleteUsers();
