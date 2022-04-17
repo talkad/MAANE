@@ -23,10 +23,9 @@ public class DataControllerTests {
     public void assignCoordinatorSuccess(){
         UserController userController = UserController.getInstance();
         DataController dataController = DataController.getInstance();
-        String guestName = userController.addGuest().getResult();
         String adminName = userController.login("admin").getResult();
         String supervisorName = userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "").getResult();
-        guestName = userController.logout(adminName).getResult();
+        userController.logout(adminName);
         userController.login("sup1");
         userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "", "", "");
         Response<Boolean> res = dataController.assignCoordinator(supervisorName, "irrelevant", "coordinator", "1", "email@gmail.com", "5555555555", "1");
@@ -38,10 +37,9 @@ public class DataControllerTests {
     public void assignTwoCoordinatorToTheSameFieldFail(){
         UserController userController = UserController.getInstance();
         DataController dataController = DataController.getInstance();
-        String guestName = userController.addGuest().getResult();
         String adminName = userController.login("admin").getResult();
         String supervisorName = userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "").getResult();
-        guestName = userController.logout(adminName).getResult();
+        userController.logout(adminName);
         userController.login("sup1");
         userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "", "", "");
         Response<Boolean> res1 = dataController.assignCoordinator(supervisorName, "irrelevant", "coordinator", "1", "email@gmail.com", "5555555555", "1");
@@ -58,10 +56,9 @@ public class DataControllerTests {
     public void removeCoordinatorSuccess(){
         UserController userController = UserController.getInstance();
         DataController dataController = DataController.getInstance();
-        String guestName = userController.addGuest().getResult();
         String adminName = userController.login("admin").getResult();
         String supervisorName = userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "").getResult();
-        guestName = userController.logout(adminName).getResult();
+        userController.logout(adminName);
         userController.login("sup1");
         userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "", "", "");
         Response<Boolean> res = dataController.assignCoordinator(supervisorName, "irrelevant", "coordinator", "1", "email@gmail.com", "5555555555", "1");
@@ -76,10 +73,9 @@ public class DataControllerTests {
     public void removeCoordinatorFail(){
         UserController userController = UserController.getInstance();
         DataController dataController = DataController.getInstance();
-        String guestName = userController.addGuest().getResult();
         String adminName = userController.login("admin").getResult();
         String supervisorName = userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "").getResult();
-        guestName = userController.logout(adminName).getResult();
+        userController.logout(adminName);
         userController.login("sup1");
         userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "", "", "");
         Response<Boolean> res = dataController.removeCoordinator(supervisorName, "irrelevant", "1");

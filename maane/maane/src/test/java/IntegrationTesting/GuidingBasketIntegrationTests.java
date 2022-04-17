@@ -23,10 +23,9 @@ public class GuidingBasketIntegrationTests {
     @Test
     public void addBasketSuccess(){
         UserController userController = UserController.getInstance();
-        String guestName = userController.addGuest().getResult();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "","", "");
-        String newGuestName = userController.logout(adminName).getResult();
+        userController.logout(adminName);
         userController.login("Dvorit");
 
         Assert.assertFalse(guidingBasketController.addBasket("Dvorit", basketDTO).isFailure());
@@ -46,11 +45,10 @@ public class GuidingBasketIntegrationTests {
     @Test
     public void removeBasketSuccess(){
         UserController userController = UserController.getInstance();
-        String guestName = userController.addGuest().getResult();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "","", "");
 
-        String newGuestName = userController.logout(adminName).getResult();
+        userController.logout(adminName);
         userController.login("Dvorit");
 
         Assert.assertFalse(guidingBasketController.addBasket("Dvorit", basketDTO).isFailure());
@@ -59,12 +57,11 @@ public class GuidingBasketIntegrationTests {
     @Test
     public void removeBasketNoPermissionsFailure(){
         UserController userController = UserController.getInstance();
-        String guestName = userController.addGuest().getResult();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "","", "");
         userController.registerUserBySystemManager(adminName, "Miri", "Band", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
 
-        String newGuestName = userController.logout(adminName).getResult();
+        userController.logout(adminName);
         userController.login("Dvorit");
 
         Assert.assertTrue(guidingBasketController.removeBasket("Miri", basketDTO).isFailure());
@@ -73,11 +70,10 @@ public class GuidingBasketIntegrationTests {
     @Test
     public void setTitleSuccess(){
         UserController userController = UserController.getInstance();
-        String guestName = userController.addGuest().getResult();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "","", "");
 
-        String newGuestName = userController.logout(adminName).getResult();
+        userController.logout(adminName);
         userController.login("Dvorit");
         guidingBasketController.addBasket("Dvorit", basketDTO);
 
@@ -87,12 +83,11 @@ public class GuidingBasketIntegrationTests {
     @Test
     public void setTitleNoPermissionsFailure(){
         UserController userController = UserController.getInstance();
-        String guestName = userController.addGuest().getResult();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "","", "");
         userController.registerUserBySystemManager(adminName, "Miri", "Band", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
 
-        String newGuestName = userController.logout(adminName).getResult();
+        userController.logout(adminName);
         userController.login("Dvorit");
 
         Assert.assertTrue(guidingBasketController.setBasketTitle("Miri", basketDTO, "new Title").isFailure());
@@ -101,11 +96,10 @@ public class GuidingBasketIntegrationTests {
     @Test
     public void addBasketLabelSuccess(){
         UserController userController = UserController.getInstance();
-        String guestName = userController.addGuest().getResult();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "","", "");
 
-        String newGuestName = userController.logout(adminName).getResult();
+        userController.logout(adminName);
         userController.login("Dvorit");
         guidingBasketController.addBasket("Dvorit", basketDTO);
 
@@ -115,12 +109,11 @@ public class GuidingBasketIntegrationTests {
     @Test
     public void addBasketLabelNoPermissionsFailure(){
         UserController userController = UserController.getInstance();
-        String guestName = userController.addGuest().getResult();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "","", "");
         userController.registerUserBySystemManager(adminName, "Miri", "Band", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
 
-        String newGuestName = userController.logout(adminName).getResult();
+        userController.logout(adminName);
         userController.login("Dvorit");
 
         Assert.assertTrue(guidingBasketController.addBasketLabel("Miri", basketDTO, "label").isFailure());
@@ -129,11 +122,10 @@ public class GuidingBasketIntegrationTests {
     @Test
     public void removeBasketLabelSuccess(){
         UserController userController = UserController.getInstance();
-        String guestName = userController.addGuest().getResult();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "","", "");
 
-        String newGuestName = userController.logout(adminName).getResult();
+        userController.logout(adminName);
         userController.login("Dvorit");
         guidingBasketController.addBasket("Dvorit", basketDTO);
 
@@ -144,12 +136,11 @@ public class GuidingBasketIntegrationTests {
     @Test
     public void removeBasketLabelNoPermissionsFailure(){
         UserController userController = UserController.getInstance();
-        String guestName = userController.addGuest().getResult();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "","", "");
         userController.registerUserBySystemManager(adminName, "Miri", "Band", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
 
-        String newGuestName = userController.logout(adminName).getResult();
+        userController.logout(adminName);
         userController.login("Dvorit");
         guidingBasketController.addBasketLabel("Dvorit", basketDTO, "label");
 

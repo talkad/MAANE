@@ -7,17 +7,29 @@ import Domain.UsersManagment.Security;
 import Domain.UsersManagment.UserController;
 import Domain.UsersManagment.UserStateEnum;
 import Domain.WorkPlan.GoalsManagement;
+import Persistence.UserDBDTO;
+import Persistence.UserQueries;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.util.List;
 import java.util.Vector;
 
 public class UserControllerTest {
 
+/*    @InjectMocks
+    private UserController userController;
+
+    @Mock
+    private UserQueries userQueries;*/
+
     @Before
     public void setup(){
+        //MockitoAnnotations.openMocks(this);
         UserController.getInstance().clearUsers();
         GoalsManagement.getInstance().clearGoals();
     }
@@ -25,31 +37,35 @@ public class UserControllerTest {
     @Test
     public void loginAsSystemManagerSuccess(){
         UserController userController = UserController.getInstance();
-        String guestName = userController.addGuest().getResult();
-        Assert.assertTrue(userController.getConnectedUsers().containsKey(guestName));
         String adminName = userController.login("admin").getResult();
         Assert.assertTrue(userController.getConnectedUsers().containsKey(adminName));
-        Assert.assertTrue(userController.getRegisteredUsers().containsKey(adminName));
+        Assert.assertTrue(UserQueries.getInstance().userExists(adminName));
     }
 
 
     @Test
     public void tester(){
         UserController userController = UserController.getInstance();
+        String adminName = userController.login("admin").getResult();
+        userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.logout(adminName);
+        String supervisorName = userController.login("sup1").getResult();
+        userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "", "", "");
+        List<String> schools = new Vector<>();
+        schools.add("a");
+        schools.add("b");
+        schools.add("c");
+
+        userController.assignSchoolsToUser(supervisorName, "ins1", schools);
+        List<String> schoolsToRemove = new Vector<>();
+        schoolsToRemove.add("a");
+        schoolsToRemove.add("b");
+        userController.removeSchoolsFromUser(supervisorName, "ins1", schoolsToRemove);
+        Response<UserDBDTO> userDBDTOResponse = UserQueries.getInstance().getFullUser("ins1");
+        System.out.println(userDBDTOResponse.getResult().getUsername() + " " + userDBDTOResponse.getResult().getSchools());
+        System.out.println(UserQueries.getInstance().getFullUser(supervisorName).getResult().getAppointments());
     }//todo remove later
 
-    /*@Test
-    public void loginAsAlreadyLoggedInUser(){
-        UserController userController = UserController.getInstance();
-        String guestName = userController.addGuest().getResult();
-        Assert.assertTrue(userController.getConnectedUsers().containsKey(guestName));
-        String adminName = userController.login("admin").getResult();
-        Assert.assertFalse(userController.getConnectedUsers().containsKey(guestName));
-        Assert.assertTrue(userController.getConnectedUsers().containsKey(adminName));
-        Assert.assertTrue(userController.getRegisteredUsers().containsKey(adminName));
-        Response<String> loginShouldFailRes = userController.login("admin");
-        Assert.assertTrue(loginShouldFailRes.isFailure());
-    }*/
 
     @Test
     public void assigningSupervisorSuccess(){
@@ -58,6 +74,8 @@ public class UserControllerTest {
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         Response<String> supervisorName = userController.login("sup1");
         Assert.assertTrue(userController.getConnectedUsers().containsKey("sup1"));
+        Assert.assertTrue(UserQueries.getInstance().userExists("sup1"));
+
     }
 
     @Test
@@ -65,23 +83,23 @@ public class UserControllerTest {
         UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
-        userController.logout(adminName).getResult();
+        userController.logout(adminName);
         userController.login("sup1");
         userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "", "", "");
-        Assert.assertTrue(userController.getRegisteredUsers().containsKey("ins1"));
-        Assert.assertTrue(userController.getRegisteredUsers().get("ins1").getFirst().getWorkField().equals("tech"));
+        Assert.assertTrue(UserQueries.getInstance().userExists("ins1"));
+        Assert.assertTrue(UserQueries.getInstance().getFullUser("ins1").getResult().getWorkField().equals("tech"));
     }
 
     @Test
     public void assigningInstructorByAdminSuccess(){
         UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
-        userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        System.out.println(userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "").isFailure());
         userController.login("sup1");
-        userController.registerUserBySystemManager(adminName, "ins1", "ins1", UserStateEnum.INSTRUCTOR, "sup1", "", "", "", "", "", "");
-        Assert.assertTrue(userController.getRegisteredUsers().containsKey("ins1"));
-        Assert.assertTrue(userController.getRegisteredUsers().get("ins1").getFirst().getWorkField().equals("tech"));
-        Assert.assertTrue(userController.getRegisteredUsers().get("sup1").getFirst().getAppointees().getResult().contains("ins1"));
+        System.out.println(userController.registerUserBySystemManager(adminName, "ins1", "ins1", UserStateEnum.INSTRUCTOR, "sup1", "", "", "", "", "", "").isFailure());
+        Assert.assertTrue(UserQueries.getInstance().userExists("ins1"));
+        Assert.assertTrue(UserQueries.getInstance().getFullUser("ins1").getResult().getWorkField().equals("tech"));
+        Assert.assertTrue(UserQueries.getInstance().getFullUser("sup1").getResult().getAppointments().contains("ins1"));
     }
 
     @Test
@@ -120,9 +138,9 @@ public class UserControllerTest {
         schools.add("1");
         schools.add("2");
         Response<Boolean> res =  userController.assignSchoolsToUser("sup1", "ins1", schools);
-        Assert.assertTrue(userController.getRegisteredUsers().get("ins1").getFirst().getSchools().size() == 2);
-        Assert.assertTrue(userController.getRegisteredUsers().get("ins1").getFirst().getSchools().contains("1"));
-        Assert.assertTrue(userController.getRegisteredUsers().get("ins1").getFirst().getSchools().contains("2"));
+        Assert.assertTrue(UserQueries.getInstance().getFullUser("ins1").getResult().getSchools().size() == 2);
+        Assert.assertTrue(UserQueries.getInstance().getFullUser("ins1").getResult().getSchools().contains("1"));
+        Assert.assertTrue(UserQueries.getInstance().getFullUser("ins1").getResult().getSchools().contains("2"));
     }
 
     @Test
@@ -140,9 +158,9 @@ public class UserControllerTest {
         List<String> schoolsToRemoveList = new Vector<>();
         schoolsToRemoveList.add("1");
         userController.removeSchoolsFromUser("sup1", "ins1", schoolsToRemoveList);
-        Assert.assertTrue(userController.getRegisteredUsers().get("ins1").getFirst().getSchools().size() == 1);
-        Assert.assertFalse(userController.getRegisteredUsers().get("ins1").getFirst().getSchools().contains("1"));
-        Assert.assertTrue(userController.getRegisteredUsers().get("ins1").getFirst().getSchools().contains("2"));
+        Assert.assertTrue(UserQueries.getInstance().getFullUser("ins1").getResult().getSchools().size() == 1);
+        Assert.assertFalse(UserQueries.getInstance().getFullUser("ins1").getResult().getSchools().contains("1"));
+        Assert.assertTrue(UserQueries.getInstance().getFullUser("ins1").getResult().getSchools().contains("2"));
     }
 
     @Test
@@ -157,33 +175,33 @@ public class UserControllerTest {
         schools.add("1");
         schools.add("2");
         userController.assignSchoolsToUser("sup1", "ins1", schools);
+        System.out.println(UserQueries.getInstance().getFullUser("sup1").getResult().getAppointments());
         userController.removeUser("sup1", "ins1");
-        Assert.assertFalse(userController.getRegisteredUsers().containsKey("ins1"));
-        Assert.assertFalse(userController.getRegisteredUsers().get("sup1").getFirst().getAppointments().contains("ins1"));
+        Assert.assertFalse(UserQueries.getInstance().userExists("ins1"));
+        Assert.assertFalse(UserQueries.getInstance().getFullUser("sup1").getResult().getAppointments().contains("ins1"));
     }
 
     @Test
-    public void changePasswordBySupervisorFail(){//todo fix later
+    public void changePasswordBySupervisorFail(){
         Security security = Security.getInstance();
         UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         userController.changePasswordToUser(adminName, "sup1", "sup111", "sup11");
-        //Assert.assertTrue(res.isFailure());
-        Assert.assertFalse(userController.getRegisteredUsers().get("sup1").getSecond().equals(security.sha256("sup111")));
+        Assert.assertFalse(UserQueries.getInstance().getFullUser("sup1").getResult().getPassword().equals(security.sha256("sup111")));
     }
 
     @Test
-    public void changePasswordBySupervisorSuccess(){//todo fix fail
+    public void changePasswordBySupervisorSuccess(){
         Security security = Security.getInstance();
         UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         userController.changePasswordToUser(adminName, "sup1", "sup111", "sup111");
-        userController.logout(adminName).getResult();
+        userController.logout(adminName);
         Response<String> res = userController.login("sup1");
         Assert.assertFalse(res.isFailure());
-        Assert.assertTrue(userController.getRegisteredUsers().get("sup1").getSecond().equals(security.sha256("sup111")));
+        Assert.assertTrue(UserQueries.getInstance().getFullUser("sup1").getResult().getPassword().equals(security.sha256("sup111")));
     }
 
     @Test
@@ -202,24 +220,22 @@ public class UserControllerTest {
         UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
-        userController.logout(adminName).getResult();
+        userController.logout(adminName);
         Response<String> supervisorName = userController.login("sup1");
         userController.updateInfo("sup1", "1", "", "", "", "");
-        Assert.assertTrue(userController.getRegisteredUsers().get("sup1").getFirst().getFirstName().equals("1"));
+        Assert.assertTrue(UserQueries.getInstance().getFullUser("sup1").getResult().getFirstName().equals("1"));
     }
 
     @Test
-    public void changePasswordToInstructor() {//todo fix
+    public void changePasswordToInstructor() {
         UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
-        userController.logout(adminName).getResult();
+        userController.logout(adminName);
         userController.login("sup1");
         userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "", "", "");
         userController.changePasswordToUser("sup1", "ins1", "ins111", "ins111");
-        userController.logout("sup1").getResult();
-        userController.login("ins1");
-        Assert.assertTrue(userController.getConnectedUsers().containsKey("ins1"));
+        Assert.assertTrue(UserQueries.getInstance().getFullUser("ins1").getResult().getPassword().equals(Security.getInstance().sha256("ins111")));//userController.getConnectedUsers().containsKey("ins1"));
     }
 
     @Test
@@ -228,7 +244,7 @@ public class UserControllerTest {
         UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
-        userController.logout(adminName).getResult();
+        userController.logout(adminName);
         String supervisorName = userController.login("sup1").getResult();
 
         userController.addGoal(supervisorName, new GoalDTO(1, "goal1", "goal1", 1, 1), year);
@@ -262,13 +278,13 @@ public class UserControllerTest {
         UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
-        userController.logout(adminName).getResult();
+        userController.logout(adminName);
         userController.login("sup1");
         userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "", "", "");
-        userController.logout("sup1").getResult();
+        userController.logout("sup1");
         adminName = userController.login("admin").getResult();
         List<UserDTO> allUsers = userController.getAllUsers(adminName).getResult();
-        Assert.assertTrue(allUsers.size() == userController.getRegisteredUsers().size());
+        Assert.assertTrue(allUsers.size() == UserQueries.getInstance().getUsers().size());
     }
 
     @Test
@@ -278,8 +294,8 @@ public class UserControllerTest {
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         Response<String> res = userController.registerUserBySystemManager(adminName, "sup2", "sup2", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         Assert.assertTrue(res.isFailure());
-        Assert.assertTrue(userController.getRegisteredUsers().containsKey("sup1"));
-        Assert.assertFalse(userController.getRegisteredUsers().containsKey("sup2"));
+        Assert.assertTrue(UserQueries.getInstance().userExists("sup1"));
+        Assert.assertFalse(UserQueries.getInstance().userExists("sup2"));
     }
 
     @Test
@@ -294,8 +310,8 @@ public class UserControllerTest {
         userController.login("admin");
         Response<Boolean> res = userController.removeUser(adminName, "ins1");
         Assert.assertFalse(res.isFailure());
-        Assert.assertFalse(userController.getRegisteredUsers().containsKey("ins1"));
-        Assert.assertFalse(userController.getRegisteredUsers().get("sup1").getFirst().getAppointees().getResult().contains("ins1"));
+        Assert.assertFalse(UserQueries.getInstance().userExists("ins1"));
+        Assert.assertFalse(UserQueries.getInstance().getFullUser("sup1").getResult().getAppointments().contains("ins1"));
     }
 
     @Test
@@ -310,9 +326,9 @@ public class UserControllerTest {
         userController.login(adminName);
         Response<Boolean> res = userController.transferSupervision(adminName, "sup1", "new_sup", "new_sup", "", "", "", "", "");
         Assert.assertFalse(res.isFailure());
-        Assert.assertTrue(userController.getRegisteredUsers().containsKey("new_sup"));
-        Assert.assertFalse(userController.getRegisteredUsers().containsKey("sup1"));
-        Assert.assertTrue(userController.getRegisteredUsers().get("new_sup").getFirst().getAppointees().getResult().contains("ins1"));
+        Assert.assertTrue(UserQueries.getInstance().userExists("new_sup"));
+        Assert.assertFalse(UserQueries.getInstance().userExists("sup1"));
+        Assert.assertTrue(UserQueries.getInstance().getFullUser("new_sup").getResult().getAppointments().contains("ins1"));
     }
 
     @Test
@@ -341,13 +357,13 @@ public class UserControllerTest {
         userController.login(adminName);
         Response<Boolean> res = userController.transferSupervisionToExistingUser(adminName, "sup1", "ins1");
         Assert.assertFalse(res.isFailure());
-        Assert.assertTrue(userController.getRegisteredUsers().containsKey("ins1"));
-        Assert.assertFalse(userController.getRegisteredUsers().containsKey("sup1"));
-        Assert.assertTrue(userController.getRegisteredUsers().get("ins1").getFirst().getAppointees().getResult().isEmpty());
+        Assert.assertTrue(UserQueries.getInstance().userExists("ins1"));
+        Assert.assertFalse(UserQueries.getInstance().userExists("sup1"));
+        Assert.assertTrue(UserQueries.getInstance().getFullUser("ins1").getResult().getAppointments().isEmpty());
         userController.logout(adminName);
         userController.login("ins1");
         userController.registerUser("ins1", "ins2", "ins2", UserStateEnum.INSTRUCTOR, "", "", "", "", "");
-        Assert.assertTrue(userController.getRegisteredUsers().containsKey("ins2"));
-        Assert.assertTrue(userController.getRegisteredUsers().get("ins1").getFirst().getAppointees().getResult().contains("ins2"));
+        Assert.assertTrue(UserQueries.getInstance().userExists("ins2"));
+        Assert.assertTrue(UserQueries.getInstance().getFullUser("ins1").getResult().getAppointments().contains("ins2"));
     }
 }

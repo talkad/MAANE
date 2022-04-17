@@ -69,30 +69,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 //    }
 
     @Override
-    public Response<String> addGuest() {
-        Response<String> res = UserController.getInstance().addGuest();
-
-        if (res.isFailure())
-            log.error("failed to add new guest");
-        else
-            log.info("created new guest");
-
-        return res;
-    }
-
-    @Override
-    public Response<String> removeGuest(String name) {
-        Response<String> res = UserController.getInstance().removeGuest(name);
-
-        if (res.isFailure())
-            log.error("failed to remove guest {}", name);
-        else
-            log.info("removing guest with name: {}", name);
-
-        return res;
-    }
-
-    @Override
     public Response<String> login(String username) {
         Response<String> res = UserController.getInstance().login(username);
 
@@ -133,7 +109,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public Response<String> registerUserBySystemManager(String currUser, UserDTO user, String optionalSupervisor) {
         Response<String> res = UserController.getInstance().registerUserBySystemManager(currUser, user.getUserToRegister(), user.getPassword(), user.getUserStateEnum(), optionalSupervisor, user.getWorkField(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getPhoneNumber(), user.getCity());
-
         if (res.isFailure())
             log.error("failed to register user {}", user.getUserToRegister());
         else
@@ -329,5 +304,4 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             log.info("successfully transferred supervision from {} to {} by {}", currSupervisor,  newSupervisor, currUser);
         return res;
     }
-
 }

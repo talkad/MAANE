@@ -3,7 +3,7 @@ package AcceptanceTesting.Bridge;
 import Communication.Service.Interfaces.DataService;
 import Domain.CommonClasses.Response;
 
-public class ProxyBridgeData implements DataService {//do tests for this class
+public class ProxyBridgeData implements DataService {//todo tests for this class
     private DataService real;
 
     public ProxyBridgeData(){

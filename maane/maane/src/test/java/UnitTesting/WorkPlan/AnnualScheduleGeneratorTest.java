@@ -15,17 +15,15 @@ import java.util.Vector;
 public class AnnualScheduleGeneratorTest {
 
     private UserController userController;
-    private String guestName;
 
     @Before
     public void setup(){
         GoalsManagement.getInstance().clearGoals();
         UserController.getInstance().clearUsers();
         userController = UserController.getInstance();
-        guestName = userController.addGuest().getResult();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
-        guestName = userController.logout(adminName).getResult();
+        userController.logout(adminName);
         //Response<String> supervisorName = userController.login(guestName, "sup1", "sup1");
     }
 

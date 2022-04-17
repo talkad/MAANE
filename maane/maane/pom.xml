@@ -85,6 +85,7 @@
 			<version>42.3.3</version>
 		</dependency>
 
+
 		<dependency>
 			<groupId>javax.persistence</groupId>
 			<artifactId>javax.persistence-api</artifactId>
@@ -116,11 +117,6 @@
 			<version>4.1.0</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.jooq</groupId>
-			<artifactId>jool</artifactId>
-			<version>0.9.14</version>
-		</dependency>
 
 	</dependencies>
 

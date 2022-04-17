@@ -9,8 +9,6 @@ import Domain.UsersManagment.User;
 import java.util.List;
 
 public interface UserService {
-    Response<String> addGuest();
-    Response<String> removeGuest(String name);
 
     Response<String> login(String username);
     Response<String> logout(String name);
@@ -53,4 +51,5 @@ public interface UserService {
     Response<List<UserDTO>> getSupervisors(String currUser);
 
     Response<Boolean> transferSupervisionToExistingUser(String currUser, String currSupervisor, String newSupervisor);
+
 }

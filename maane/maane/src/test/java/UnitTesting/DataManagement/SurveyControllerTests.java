@@ -90,6 +90,7 @@ public class SurveyControllerTests {
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
 
+        userController.logout(adminName);
         userController.login("Dvorit");
 
         Assert.assertFalse(surveyController.createSurvey("Dvorit", surveyDTO).isFailure());
@@ -115,6 +116,8 @@ public class SurveyControllerTests {
 
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+
+        userController.logout(adminName);
 
         userController.login("Dvorit");
 
@@ -153,6 +156,8 @@ public class SurveyControllerTests {
 
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+
+        userController.logout(adminName);
 
         userController.login("Dvorit");
 
