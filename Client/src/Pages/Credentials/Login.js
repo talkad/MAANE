@@ -13,7 +13,6 @@ export default function Login(props){
     const [showPassword, setShowPassword] = useState(false);
     const [showError, setShowError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-    const [loaded, setLoaded] = useState(true);
 
     let navigate = useNavigate();
 
@@ -77,7 +76,7 @@ export default function Login(props){
 
     return (
         <div className="Login">
-            {loaded && <div>
+            <div>
                 <h1>{header_string}</h1>
                 <Paper className="Login-paper" elevation={3}>
                     <Box className="Login-form" component="form" onSubmit={handleSubmit} noValidate sx={{mt: 1, }}>
@@ -89,7 +88,7 @@ export default function Login(props){
                             variant="standard"
                             required
                             fullWidth
-                            id="username"
+                            id="login_username"
                             label={username_label_string}
                             name="username"
                             autoComplete="username"
@@ -106,7 +105,7 @@ export default function Login(props){
                             name="password"
                             label={password_label_string}
                             type={showPassword ? 'text' : 'password'}
-                            id="password"
+                            id="login_password"
                             autoComplete="current-password"
                             InputProps={{
                                 endAdornment: (
@@ -121,9 +120,10 @@ export default function Login(props){
                                 ),
                             }}
                         />
-                        {showError && <Alert severity="error">{errorMessage}</Alert>}
+                        {showError && <Alert id="login_alert" severity="error">{errorMessage}</Alert>}
                         {/* submit login */}
                         <Button
+                            id="login_button"
                             color="secondary"
                             type="submit"
                             fullWidth
@@ -134,7 +134,7 @@ export default function Login(props){
                         </Button>
                     </Box>
                 </Paper>
-            </div>}
+            </div>
         </div>
     );
 }
