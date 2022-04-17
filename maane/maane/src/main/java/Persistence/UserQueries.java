@@ -372,7 +372,7 @@ public class UserQueries {
     public void resetSchools(String username) {
         Connect.createConnection();
         int rows = 0;
-        String sql = "DELETE * FROM \"Users\" WHERE username = ?";
+        String sql = "DELETE FROM \"Users\" WHERE username = ?";
         PreparedStatement preparedStatement;
         try {
             preparedStatement = Connect.conn.prepareStatement(sql);
