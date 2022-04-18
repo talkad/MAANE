@@ -55,7 +55,7 @@ import SchoolIcon from '@mui/icons-material/School';
 
 function App(){
     // general state data
-    const [type, setType] = useState('SUPERVISOR'); //TODO: change back to 'GUEST' when not developing
+    const [type, setType] = useState(window.sessionStorage.getItem('permission')); //TODO: change back to 'GUEST' when not developing
     const [openSidebar, setOpenSidebar] = useState(false);
     const [hideBars, setHideBars] = useState(false);
     const [openBackdrop, setOpenBackdrop] = useState(false);
@@ -88,9 +88,13 @@ function App(){
      * @param data the response for the logout request
      */
     const logoutCallback = (data) => {
-        setType("GUEST")
-        setHideBars(true);
-        navigate('/user/login', {replace: true})
+        console.log(data)
+        if(!data.failure){
+            window.sessionStorage.removeItem('permission');
+            setType(null);
+            setHideBars(true);
+            navigate('/user/login', {replace: true});
+        }
     }
 
     /**
@@ -249,7 +253,7 @@ function App(){
                                 {greetings_string}
                             </Typography>
                             {/*logout button*/}
-                            <Button onClick={() => handleLogout()} color="inherit">{logout_button_string}</Button>
+                            <Button id="logout_button" onClick={() => handleLogout()} color="inherit">{logout_button_string}</Button>
                         </Toolbar>
                     </AppBar>
                     {/*sidebar*/}
@@ -274,7 +278,7 @@ function App(){
                     <Routes>
                         {/*TODO: find a more elegant way for the permissions*/}
                         <Route path="user">
-                            <Route path="login" element={<Login changeType={setType} setName={setName} setHideBars={setHideBars}/>}/>
+                            <Route path="login" element={<Login type={type} setType={setType} setName={setName} setHideBars={setHideBars}/>}/>
 
                             {authAvailability && <Route path="auth" element={<PasswordAuthentication callback={authCallback} callee={authCalleePage} goto={authGoToPage} setHideBars={setHideBars}/>}/>}
 

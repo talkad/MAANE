@@ -27,6 +27,12 @@ export default function Login(props){
      */
     useEffect(() => {
         props.setHideBars(true);
+
+        console.log(props.type)
+        if (props.type !== null){ // if the user tries to get to the login when he's already logged in. moving him back to the home page
+            props.setHideBars(false);
+            navigate(`../home`, {replace: true})
+        }
       }, []);
 
     /**
@@ -34,21 +40,20 @@ export default function Login(props){
      * @param data the response from the server
      */
     const loginCallback = (data) => {
-
-        if(data.failure){
+        if(data.failure === "true"){
             setShowError(true);
             setErrorMessage('שם משתמש או סיסמה לא נכונים');
         }
         else{
             window.sessionStorage.setItem('access_token', data.access_token);
             window.sessionStorage.setItem('refresh_token', data.refresh_token);
-            props.changeType(data.permission);
+            window.sessionStorage.setItem('permission', data.permission);
+            props.setType(data.permission);
             props.setName(data.name);
             props.setHideBars(false);
 
             navigate(`../home`, {replace: true}) // replace meaning: https://reactrouter.com/docs/en/v6/examples/auth
         }
-
     }
 
     /**
