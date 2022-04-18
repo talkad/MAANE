@@ -37,26 +37,36 @@ public class SurveyQueries {
 
     public Response<Boolean> insertSurvey(SurveyDTO surveyDTO) throws SQLException {
         Connect.createConnection();
+
         String sql = "INSERT INTO \"Surveys\" (id, title, description) VALUES (?, ?, ?)";
         PreparedStatement preparedStatement = Connect.conn.prepareStatement(sql);
         preparedStatement.setString(1, surveyDTO.getId());
         preparedStatement.setString(2, surveyDTO.getTitle());
         preparedStatement.setString(3, surveyDTO.getDescription());
         int rows = preparedStatement.executeUpdate();
+
         insertQuestions(surveyDTO.getId(), surveyDTO.getQuestions());
+
         insertAnswers(surveyDTO.getId(), ListToString(surveyDTO.getAnswers()), surveyDTO.getTypes());
         Connect.closeConnection();
+
         return rows>0 ? new Response<>(true, false, "") :
                 new Response<>(false, true, "bad Db writing");
     }
 
     private void insertQuestions (String surveyId, List<String> questions) throws SQLException {
+        System.out.println("1");
         String sql = "INSERT INTO \"Questions\" (survey_id, index, question) VALUES (?, ?, ?)";
+        System.out.println("2");
         PreparedStatement preparedStatement = Connect.conn.prepareStatement(sql);
+        System.out.println("a");
+        System.out.println(questions);
+
         for (String question : questions){
             preparedStatement.setString(1, surveyId);
             preparedStatement.setInt(2, questions.indexOf(question));
             preparedStatement.setString(3, question);
+            System.out.println("3");
             preparedStatement.executeUpdate();
         }
     }

@@ -102,6 +102,7 @@ public class SurveyServiceImpl implements SurveyService {
     public Response<List<SurveyDetailsDTO>> getSurveys(String username) {
         Response<List<SurveyDetailsDTO>> res = SurveyController.getInstance().getSurveys(username);
 
+        System.out.println(res);
         if(res.isFailure())
             log.error(res.getErrMsg());
         else

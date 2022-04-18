@@ -3,8 +3,10 @@ package Communication;
 import Communication.DTOs.UserDTO;
 import Communication.Security.KeyLoader;
 import Communication.Service.UserServiceImpl;
+import DataManagement.DataController;
 import Domain.UsersManagment.UserController;
 import Domain.UsersManagment.UserStateEnum;
+import Persistence.UserQueries;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -35,9 +37,12 @@ public class MaaneApplication {
 	@Bean
 	CommandLineRunner run(UserServiceImpl service){
 		return args -> {
+			UserQueries.getInstance().deleteUsers();
 			UserController userController = UserController.getInstance();
 //			String guestName = userController.addGuest().getResult();
 			userController.login("admin");
+
+
 			service.registerUserBySystemManager("admin", new UserDTO("admin", "tech", "tal", "1234", UserStateEnum.SUPERVISOR,
 					"tal", "kad", "", "", "", null), "");
 		};

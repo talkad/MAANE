@@ -73,11 +73,11 @@ public class SurveyController {
 
         String indexer = createToken();
 
+        surveyDTO.setId(indexer);
         permissionRes = UserController.getInstance().createSurvey(username, indexer);
 
         if(permissionRes.isFailure() || permissionRes.getResult().length() == 0)
             return new Response<>("", true, permissionRes.getErrMsg());
-
         surveyRes = Survey.createSurvey(indexer, surveyDTO);
 
         if(surveyRes.isFailure()) {
@@ -93,6 +93,7 @@ public class SurveyController {
 
         try {
             surveyDAO.insertSurvey(surveyDTO);
+
         }catch(SQLException e){
             return new Response<>("", true, e.getMessage());
         }
@@ -304,6 +305,9 @@ public class SurveyController {
 
         if(res.isFailure())
             return new Response<>(new LinkedList<>(), true, res.getErrMsg());
+
+        if(res.getResult() == null)
+            return new Response<>(new LinkedList<>(), false, "There are no surveys");
 
         for(String surveyID: res.getResult()) {
             survey = surveys.get(surveyID).getSecond();
