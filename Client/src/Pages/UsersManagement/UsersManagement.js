@@ -203,7 +203,7 @@ function SystemManagerRow(props) {
                         <Grid item xs={4}>{row.name}</Grid>
                     </Grid>
                 </TableCell>
-                <TableCell>{row.role}</TableCell>
+                <TableCell id={`td_role_${row.username}`}>{row.role}</TableCell>
             </TableRow>
             {/*secondary user's into*/}
             <TableRow>

@@ -1,5 +1,5 @@
 
-describe('Login test', () =>{
+describe('Login tests', () =>{
     beforeEach(() => {
         // visiting the login page
         cy.visit('/user/login')
