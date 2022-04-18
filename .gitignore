@@ -1,5 +1,9 @@
 *.idea
 Server/target/
+maane/maane/target/
+
+# binary files
+*.class
 
 # dependencies
 Client/node_modules
