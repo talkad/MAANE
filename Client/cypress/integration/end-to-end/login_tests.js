@@ -1,15 +1,18 @@
 
-// TODO: fill the form with real values when the server works again
 describe('Login test', () =>{
+    beforeEach(() => {
+        // visiting the login page
+        cy.visit('/user/login')
+    })
+
     it('Logging in with an existing user', () => {
-        cy.visit('http://localhost:3000/user/login')
 
         // filling the form
-        cy.get('input[id=login_username]').type('stam').should('have.value','stam')
-        cy.get('input[id=login_password]').type('clum').should('have.value','clum')
+        cy.get('input[id=login_username]').type('tal').should('have.value','tal')
+        cy.get('input[id=login_password]').type('1234').should('have.value','1234')
 
         // submitting
-        cy.get('login_button').click()
+        cy.get('[id=login_button]').click()
 
         // not expecting the error alert to be visible
         cy.get('[id=login_alert]').should('not.be.visible')
@@ -19,31 +22,52 @@ describe('Login test', () =>{
     })
 
     it('Logging in with a user which does not exist', () => {
-        cy.visit('http://localhost:3000/user/login')
 
         // filling the form
-        cy.get('input[id=login_username]').type('stam').should('have.value','stam')
-        cy.get('input[id=login_password]').type('clum').should('have.value','clum')
+        cy.get('input[id=login_username]').type('yosi').should('have.value','yosi')
+        cy.get('input[id=login_password]').type('1111').should('have.value','1111')
 
         // submitting
-        cy.get('login_button').click()
+        cy.get('[id=login_button]').click()
 
         // should expect an alert error to appear
         cy.get('[id=login_alert]').should('be.visible')
 
+        // checking we remained in the same url
+        cy.url().should('include', '/user/home')
     })
 
     it('Logging in with an existing user but with incorrect password', () => {
-        cy.visit('http://localhost:3000/user/login')
 
         // filling the form
-        cy.get('input[id=login_username]').type('stam').should('have.value','stam')
-        cy.get('input[id=login_password]').type('clum').should('have.value','clum')
+        cy.get('input[id=login_username]').type('tal').should('have.value','tal')
+        cy.get('input[id=login_password]').type('123').should('have.value','123')
 
         // submitting
-        cy.get('login_button').click()
+        cy.get('[id=login_button]').click()
 
         // should expect an alert error to appear
         cy.get('[id=login_alert]').should('be.visible')
+
+        // checking we remained in the same url
+        cy.url().should('include', '/user/home')
+    })
+
+    it('logs in programmatically without using the UI', () => {
+        cy.request({
+            method: 'POST',
+            url: "http://localhost:8080/user/login",
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: {
+                username: "tal",
+                password: "1234",
+            }
+        }).then((response) => {
+            console.log(response)
+            window.sessionStorage.setItem('access_token', response.body.access_token);
+            window.sessionStorage.setItem('refresh_token', response.body.refresh_token);
+        })
     })
 })

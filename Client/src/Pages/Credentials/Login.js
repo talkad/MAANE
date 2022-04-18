@@ -5,7 +5,7 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import {Alert, IconButton, InputAdornment, Paper,} from "@mui/material";
+import {Alert, Collapse, IconButton, InputAdornment, Paper,} from "@mui/material";
 import Connection from "../../Communication/Connection";
 import { useNavigate } from 'react-router-dom'
 
@@ -40,9 +40,8 @@ export default function Login(props){
             setErrorMessage('שם משתמש או סיסמה לא נכונים');
         }
         else{
-            console.log(data);
             window.sessionStorage.setItem('access_token', data.access_token);
-            window.sessionStorage.setItem('refresh_token', data.refresh_token)
+            window.sessionStorage.setItem('refresh_token', data.refresh_token);
             props.changeType(data.permission);
             props.setName(data.name);
             props.setHideBars(false);
@@ -120,7 +119,9 @@ export default function Login(props){
                                 ),
                             }}
                         />
-                        {showError && <Alert id="login_alert" severity="error">{errorMessage}</Alert>}
+                        <Collapse in={showError}>
+                            <Alert id="login_alert" severity="error">{errorMessage}</Alert>
+                        </Collapse>
                         {/* submit login */}
                         <Button
                             id="login_button"
