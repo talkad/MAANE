@@ -159,6 +159,7 @@ export default function RegisterUsers(props){
      * @param event the radio element in which the change occurred
      */
     const handleRadioChange = (event) => {
+        setSupervisorChoiceUsername('');
         setRadioValue(event.target.value);
     }
 
@@ -294,7 +295,7 @@ export default function RegisterUsers(props){
                                 color="secondary"
                                 value={values.username}
                                 onChange={handleTextFieldsChange('username')}
-                                error={showError}
+                                error={showError && values.username.trim() === ''}
                                 margin="normal"
                                 variant="outlined"
                                 required
@@ -313,7 +314,7 @@ export default function RegisterUsers(props){
                                 color="secondary"
                                 value={values.password}
                                 onChange={handleTextFieldsChange('password')}
-                                error={showError}
+                                error={showError && values.password.trim() === ''}
                                 margin="normal"
                                 variant="outlined"
                                 required
@@ -355,7 +356,7 @@ export default function RegisterUsers(props){
                                         label={first_name_label_string}
                                         value={values.firstName}
                                         onChange={handleTextFieldsChange('firstName')}
-                                        error={showError}
+                                        error={showError && values.firstName.trim() === ''}
                                         fullWidth
                                         required
                                     />
@@ -371,7 +372,7 @@ export default function RegisterUsers(props){
                                         label={last_name_label_string}
                                         value={values.lastName}
                                         onChange={handleTextFieldsChange('lastName')}
-                                        error={showError}
+                                        error={showError && values.lastName.trim() === ''}
                                         fullWidth
                                         required
                                     />
@@ -442,7 +443,7 @@ export default function RegisterUsers(props){
 
                         <Grid item xs={12} sx={{marginRight: "3%", marginLeft: "3%"}}>
                             {/* role choice form */}
-                            {radioValue === "0" && <FormControl error={showError}  color="secondary" sx={{ m: 1, minWidth: 120 }}>
+                            {radioValue === "0" && <FormControl error={showError && roleChoiceEnum === ''}  color="secondary" sx={{ m: 1, minWidth: 120 }}>
                                 <InputLabel id="role-select-helper-label">{select_role_label_string}</InputLabel>
                                 <Select
                                     id="register_role_choice"
@@ -460,9 +461,10 @@ export default function RegisterUsers(props){
                         <Grid item xs={12} sx={{marginRight: "3%", marginLeft: "3%"}}>
                             {/*optional select if the user is admin and want to register a non-supervisor user under an existing supervisor*/}
                             {props.type === 'SYSTEM_MANAGER' && radioValue === "0" && (roleChoiceEnum === "INSTRUCTOR" || roleChoiceEnum === "GENERAL_SUPERVISOR") &&
-                                <FormControl id="register_supervisor_choice" color="secondary" sx={{ m: 1, minWidth: 120 }}>
+                                <FormControl error={showError && supervisorChoiceUsername === ''}  color="secondary" sx={{ m: 1, minWidth: 120 }}>
                                     <InputLabel id="supervisor-select-helper-label">{select_supervisor_label_string}</InputLabel>
                                     <Select
+                                        id="register_supervisor_choice"
                                         labelId="supervisor-select-helper-label"
                                         value={supervisorChoiceUsername}
                                         label={select_supervisor_label_string}
@@ -482,7 +484,7 @@ export default function RegisterUsers(props){
                                     color="secondary"
                                     value={values.workField}
                                     onChange={handleTextFieldsChange('workField')}
-                                    error={showError}
+                                    error={showError && values.workField.trim() === ''}
                                     margin="normal"
                                     variant="outlined"
                                     required
@@ -494,7 +496,7 @@ export default function RegisterUsers(props){
                         <Grid item xs={12} sx={{marginRight: "3%", marginLeft: "3%"}}>
                             {/*optional select if the user is admin and want to register a user and make it a supervisor in the place of an existing one*/}
                             {(props.type === 'SYSTEM_MANAGER' && radioValue === "1") &&
-                                <FormControl id="register_supervisor_to_replace" color="secondary" sx={{ m: 1, minWidth: 120 }}>
+                                <FormControl error={showError && supervisorChoiceUsername === ''} id="register_supervisor_to_replace" color="secondary" sx={{ m: 1, minWidth: 120 }}>
                                     <InputLabel>{select_supervisor_label_string}</InputLabel>
                                     <Select
                                         value={supervisorChoiceUsername}
