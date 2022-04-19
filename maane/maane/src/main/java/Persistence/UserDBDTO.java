@@ -6,6 +6,7 @@ import Domain.UsersManagment.WorkPlan;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 public class UserDBDTO {
     protected String username;
@@ -37,6 +38,15 @@ public class UserDBDTO {
         this.phoneNumber = user.getPhoneNumber();
         this.city = user.getCity();
         this.password = password;
+    }
+
+    public UserDBDTO(String name, String password, UserStateEnum userStateEnum, String workField){
+        this.username = name;
+        this.password = password;
+        this.userStateEnum = userStateEnum;
+        this.appointments = new Vector<>();
+        this.schools = new Vector<>();
+        this.workField = workField;
     }
 
 

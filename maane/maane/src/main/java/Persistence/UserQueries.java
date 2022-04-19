@@ -42,9 +42,61 @@ public class UserQueries {
         return null;
     }
 
+    /*public List<String> getFullUsers() {
+        Connect.createConnection();
+        String userSql = "SELECT * FROM \"Users\"";
+        String userSchoolsSql = "SELECT * FROM \"UsersSchools\"";
+        String userAppointmentsSql = "SELECT appointee FROM \"Appointments\"";
+
+        PreparedStatement statement;
+        try {
+            statement = Connect.conn.prepareStatement(userSql);
+
+            statement.setString(1, username);
+            ResultSet result = statement.executeQuery();
+            if(result.next()) {
+                UserDBDTO userDBDTO = new UserDBDTO();
+                userDBDTO.setUsername(result.getString("username"));
+                userDBDTO.setStateEnum(UserStateEnum.valueOf(result.getString("userstateenum")));
+                userDBDTO.setWorkField(result.getString("workField"));
+                userDBDTO.setFirstName(result.getString("firstName"));
+                userDBDTO.setLastName(result.getString("lastName"));
+                userDBDTO.setEmail(result.getString("email"));
+                userDBDTO.setPhoneNumber(result.getString("phoneNumber"));
+                userDBDTO.setCity(result.getString("city"));
+                userDBDTO.setPassword(result.getString("password"));
+
+                statement = Connect.conn.prepareStatement(userSchoolsSql);
+                statement.setString(1, username);
+                result = statement.executeQuery();
+                List<String> schools = new Vector<>();
+                while (result.next()){
+                    schools.add(result.getString(1));
+                }
+                userDBDTO.setSchools(schools);
+
+                statement = Connect.conn.prepareStatement(userAppointmentsSql);
+                statement.setString(1, username);
+                result = statement.executeQuery();
+                List<String> appointments = new Vector<>();
+                while (result.next()){
+                    appointments.add(result.getString(1));
+                }
+                userDBDTO.setAppointments(appointments);
+
+                Connect.closeConnection();
+                return new Response<>(userDBDTO, false, "successfully acquired user");
+            }
+            Connect.closeConnection();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return new Response<>(null, true, "failed to get user");
+    }*/
+
     public Response<UserDBDTO> getFullUser(String username) {
         Connect.createConnection();
-        String userSql = "SELECT * FROM \"Users\" WHERE username = ?";
+        String userSql = "SELECT * FROM \"Users\" WHERE username = ?";//todo make into one query
         String userSchoolsSql = "SELECT school FROM \"UsersSchools\" WHERE username = ?";
         String userAppointmentsSql = "SELECT appointee FROM \"Appointments\" WHERE appointor = ?";
 

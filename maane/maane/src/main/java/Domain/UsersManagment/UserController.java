@@ -36,7 +36,6 @@ public class UserController {
         adminBoot("admin", "admin");
     }
 
-
     private static class CreateSafeThreadSingleton {
         private static final UserController INSTANCE = new UserController();
     }
@@ -437,11 +436,11 @@ public class UserController {
     }
 
     public Response<List<UserDTO>> getAppointedUsers(String currUser){
-        System.out.println("xxxxxxxxxxxxxxxxx " + currUser + " xxxxx");
+        //System.out.println("xxxxxxxxxxxxxxxxx " + currUser + " xxxxx");
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             Response<List<String>> appointeesRes = user.getAppointees();
-            System.out.println(appointeesRes.getResult());
+            //System.out.println(appointeesRes.getResult());
             if (!appointeesRes.isFailure()) {
                 List<UserDTO> appointeesDTOs = new Vector<>();
                 for (String appointee : appointeesRes.getResult()) {
