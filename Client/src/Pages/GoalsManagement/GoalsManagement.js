@@ -22,6 +22,9 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Connection from "../../Communication/Connection";
 import gematriya from "gematriya";
 import {add} from "react-big-calendar/lib/utils/dates";
+import NotificationSnackbar from "../../CommonComponents/NotificationSnackbar";
+
+// TODO: have the option to edit a goal
 
 /**
  * a function that returns an object containing the data for a row in the table
@@ -72,7 +75,7 @@ function Row(props) {
                 <TableCell>{row.weight}</TableCell>
                 {/*goal deletion button*/}
                 <TableCell>
-                    <IconButton color="error" onClick={() => props.handleOpenDeleteDialog(row.id)}>
+                    <IconButton id={`delete_goal_${row.id}`} color="error" onClick={() => props.handleOpenDeleteDialog(row.id)}>
                         <DeleteIcon/>
                     </IconButton>
                 </TableCell>
@@ -93,7 +96,6 @@ function Row(props) {
                                 </ListItem>
                             </List>
                         </Box>
-
                     </Collapse>
                 </TableCell>
             </TableRow>
@@ -105,10 +107,10 @@ function Row(props) {
 function NewGoalForm(props) {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
-    const [weight, setWeight] = useState(1);
-    const [quarter, setQuarter] = useState(1);
+    const [weight, setWeight] = useState(0);
+    const [quarter, setQuarter] = useState(0);
     const [years, setYears] = useState([]);
-    const [hebrewYear, setHebrewYear] = useState('');
+    const [hebrewYear, setHebrewYear] = useState(0);
 
     // errors
     const [error, setError] = useState(false);
@@ -117,8 +119,11 @@ function NewGoalForm(props) {
     const form_title_string = "הוספת יעד חדש";
     const form_title_field_label_string = "כותרת היעד";
     const form_description_field_label_string = "תיאור היעד";
+    const form_choose_quarter_string = "בחירת רבעון";
     const form_quarter_string = "רבעון השלמת היעד";
+    const form_choose_weight_string = "בחירת משקל";
     const form_weight_string = "משקל היעד";
+    const form_choose_year_string = "בחירת שנה";
     const form_year_string = "שנת לימודים";
     const form_add_button_string = "הוספ/י יעד";
 
@@ -134,7 +139,7 @@ function NewGoalForm(props) {
             delta++;
         }
 
-        setHebrewYear(gematriya(currentYear + 3760, {punctuate: true, limit: 3}))
+        //setHebrewYear(gematriya(currentYear + 3760, {punctuate: true, limit: 3}))
         setYears(years_range);
     }, []);
 
@@ -192,10 +197,9 @@ function NewGoalForm(props) {
 
             setTitle('');
             setDescription('');
-            setWeight(1);
-            setQuarter(1);
-            let currentYear = new Date().getFullYear();
-            setHebrewYear(gematriya(currentYear + 3760, {punctuate: true, limit: 3}))
+            setWeight(0);
+            setQuarter(0);
+            setHebrewYear('');
             props.refreshData();
         }
     }
@@ -246,37 +250,43 @@ function NewGoalForm(props) {
                     <Typography sx={{paddingLeft: "1%"}} variant="h5">{form_title_string}</Typography>
 
                     {/*alert*/}
-                    {error && <Alert severity="error">{errorMessage}</Alert>}
+                    <Collapse in={error}>
+                        <Alert id={"add_goal_alert"} severity="error">{errorMessage}</Alert>
+                    </Collapse>
 
                     {/*form title*/}
                     <TextField
+                        id={"add_goal_title"}
                         name="title"
                         value={title}
                         onChange={handleTitleChange}
                         label={form_title_field_label_string}
-                        error={error}
+                        error={error && title.trim() === ''}
                     />
 
                     {/*form description*/}
                     <TextField
+                        id={"add_goal_description"}
                         name="description"
                         value={description}
                         onChange={handleDescriptionChange}
                         label={form_description_field_label_string}
                         multiline
                         rows={4}
-                        error={error}
+                        error={error && description.trim() === ''}
                     />
 
                     {/*form weight select*/}
-                    <FormControl sx={{width: "40%"}}>
+                    <FormControl error={error && weight === 0} sx={{width: "40%"}}>
                         <InputLabel id="weight-label">{form_weight_string}</InputLabel>
                         <Select
+                            id={"add_goal_weigh_selection"}
                             labelId="weight-label"
                             value={weight}
                             label={form_weight_string}
                             onChange={handleWeightChange}
                         >
+                            <MenuItem value={0}>{form_choose_weight_string}</MenuItem>
                             <MenuItem value={1}>1</MenuItem>
                             <MenuItem value={2}>2</MenuItem>
                             <MenuItem value={3}>3</MenuItem>
@@ -291,14 +301,16 @@ function NewGoalForm(props) {
                     </FormControl>
 
                     {/*form quarter select*/}
-                    <FormControl sx={{width: "40%"}}>
+                    <FormControl error={error && quarter === 0} sx={{width: "40%"}}>
                         <InputLabel id="quarter-label">{form_quarter_string}</InputLabel>
                         <Select
+                            id={"add_goal_quarter_selection"}
                             labelId="quarter-label"
                             value={quarter}
                             label={form_quarter_string}
                             onChange={handleQuarterChange}
                         >
+                            <MenuItem value={0}>{form_choose_quarter_string}</MenuItem>
                             <MenuItem value={1}>1</MenuItem>
                             <MenuItem value={2}>2</MenuItem>
                             <MenuItem value={3}>3</MenuItem>
@@ -307,14 +319,16 @@ function NewGoalForm(props) {
                     </FormControl>
 
                     {/*hebrew year picker*/}
-                    <FormControl sx={{width: "40%"}}>
+                    <FormControl error={error && hebrewYear === 0} sx={{width: "40%"}}>
                         <InputLabel id="year-label">{form_year_string}</InputLabel>
                         <Select
+                            id={"add_goal_hebrew_year_picker"}
                             labelId="year-label"
                             value={hebrewYear}
                             label={form_year_string}
                             onChange={handleYearChange}
                         >
+                            <MenuItem value={0}>{form_choose_year_string}</MenuItem>
                             {years.map((year) => (
                                 <MenuItem value={gematriya(year, {punctuate: true, limit: 3})}>{gematriya(year, {punctuate: true, limit: 3})}</MenuItem>
                             ))}
@@ -322,7 +336,7 @@ function NewGoalForm(props) {
                     </FormControl>
 
                     {/*form submit button*/}
-                    <Button type="submit" variant={"contained"} sx={{width: "20%", marginBottom: "1%"}}>{form_add_button_string}</Button>
+                    <Button id={"add_goal_submit_button"} type="submit" variant={"contained"} sx={{width: "20%", marginBottom: "1%"}}>{form_add_button_string}</Button>
                 </Stack>
             </Paper>
     );
@@ -338,16 +352,16 @@ function DeleteGoalDialog(props){
     }
 
     return (
-        <Dialog titleStyle={{textAlign: "center"}} sx={{alignItems: "right"}} fullWidth maxWidth="sm" onClose={props.onClose} open={props.open}>
+        <Dialog id={"delete_goal_dialog"} titleStyle={{textAlign: "center"}} sx={{alignItems: "right"}} fullWidth maxWidth="sm" onClose={props.onClose} open={props.open}>
             <DialogTitle><Typography variant="h5" align="center">?{title_string}</Typography></DialogTitle>
             <Grid container justifyContent="center" spacing={0}>
                 <Grid item align="center" xs={6}>
                     {/*the cancel button*/}
-                    <Button onClick={() => props.onClose()} sx={{marginBottom: 1, width: "50%"}} variant="outlined">{cancel_string}</Button>
+                    <Button id={"delete_goal_cancel"} onClick={() => props.onClose()} sx={{marginBottom: 1, width: "50%"}} variant="outlined">{cancel_string}</Button>
                 </Grid>
                 <Grid item align="center" xs={6}>
                     {/*the delete button*/}
-                    <Button onClick={() => handleSubmitDeletion()} sx={{marginBottom: 1, width: "50%"}} color="error" variant="outlined">{delete_string}</Button>
+                    <Button id={"delete_goal_submit"} onClick={() => handleSubmitDeletion()} sx={{marginBottom: 1, width: "50%"}} color="error" variant="outlined">{delete_string}</Button>
                 </Grid>
             </Grid>
         </Dialog>
@@ -493,7 +507,7 @@ export default function GoalsManagement(props){
             <div id="Manage-goals">
                 <h1>{page_title_string}</h1>
                 <div id="Add-goal-button-div">
-                    <Button onClick={function () {setShowNewGoalForm(!showNewGoalForm); setAddButtonPressed(!addButtonPressed)}}
+                    <Button id={"goal_management_add_goal_collapse_button"} onClick={function () {setShowNewGoalForm(!showNewGoalForm); setAddButtonPressed(!addButtonPressed)}}
                         variant={addButtonPressed ? "outlined" : "contained"} startIcon={addButtonPressed ? <ExpandLessIcon/> : <ExpandMoreIcon/>}>
                         {add_goal_button_string}</Button>
                     {/*collapsed new goal form*/}
@@ -512,6 +526,7 @@ export default function GoalsManagement(props){
                                 <FormControl sx={{width: "50%", marginTop: "3%"}}>
                                     <InputLabel>{year_to_view_string}</InputLabel>
                                     <Select
+                                        id={"goals_management_year_selection"}
                                         value={selectedYear}
                                         onChange={handleYearChange}
                                         label={year_to_view_string}
@@ -539,11 +554,12 @@ export default function GoalsManagement(props){
                     </Table>
                 </TableContainer>
 
-                <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleSnackbarClose}>
-                    <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '100%' }}>
-                        {snackbarMessage}
-                    </Alert>
-                </Snackbar>
+                {/*notification snackbar*/}
+                <NotificationSnackbar
+                    open={openSnackbar}
+                    setOpen={setOpenSnackbar}
+                    severity={snackbarSeverity}
+                    message={snackbarMessage}/>
 
                 {/*deleting a goal dialog*/}
                 <DeleteGoalDialog
