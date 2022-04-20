@@ -18,6 +18,7 @@ public class SurveyTest {
 
     private SurveyDTO surveyDTO1;
     private SurveyDTO surveyDTO2;
+    private SurveyDTO surveyDTO3;
     private Survey survey;
 
     @Before
@@ -42,7 +43,7 @@ public class SurveyTest {
         surveyDTO2 = new SurveyDTO();
 
         List<String> questions2 = Arrays.asList("que1", "que2");
-        List<List<String>> answers2 = Arrays.asList(new LinkedList<>(), Arrays.asList(""));
+        List<List<String>> answers2 = Arrays.asList(new LinkedList<>(), List.of(""));
         List<AnswerType> types2 = Arrays.asList(OPEN_ANSWER, MULTIPLE_CHOICE);;
 
         surveyDTO2.setId("");
@@ -51,6 +52,20 @@ public class SurveyTest {
         surveyDTO2.setQuestions(questions2);
         surveyDTO2.setTypes(types2);
         surveyDTO2.setAnswers(answers2);
+
+        // illegal surveyDTO
+        surveyDTO3 = new SurveyDTO();
+
+        List<String> questions3 = List.of("");
+        List<List<String>> answers3 = List.of(new LinkedList<>());
+        List<AnswerType> types3 = List.of(OPEN_ANSWER);;
+
+        surveyDTO3.setId("");
+        surveyDTO3.setTitle("title");
+        surveyDTO3.setDescription("description");
+        surveyDTO3.setQuestions(questions3);
+        surveyDTO3.setTypes(types3);
+        surveyDTO3.setAnswers(answers3);
     }
 
     @Test
@@ -64,6 +79,14 @@ public class SurveyTest {
     @Test
     public void surveyCreationFail(){
         Response<Survey> res = Survey.createSurvey("", surveyDTO2);
+        survey = res.getResult();
+
+        Assert.assertTrue(res.isFailure());
+    }
+
+    @Test
+    public void surveyCreationEmptyQueFail(){
+        Response<Survey> res = Survey.createSurvey("", surveyDTO3);
         survey = res.getResult();
 
         Assert.assertTrue(res.isFailure());

@@ -1,4 +1,4 @@
-package UnitTesting.UserManagement;
+package UnitTesting.WorkPlan.UserManagement;
 
 import Communication.DTOs.GoalDTO;
 import Communication.DTOs.UserDTO;

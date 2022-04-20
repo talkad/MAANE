@@ -78,12 +78,6 @@ public class SurveyControllerTests {
         answersDTO2.setTypes(types3);
     }
 
-    @Test
-    public void testCheck(){
-        UserController.getInstance().clearUsers();
-        when(surveyDAO.check()).thenReturn("hey");
-        System.out.println(surveyController.check());
-    }
 
     @Test
     public void surveyCreationSuccess(){
@@ -98,6 +92,21 @@ public class SurveyControllerTests {
 //        userController.login("Dvorit");
 //
 //        Assert.assertFalse(surveyController.createSurvey("Dvorit", surveyDTO).isFailure());
+    }
+
+    @Test
+    public void surveyCreationFail(){
+        UserController.getInstance().clearUsers();
+
+        UserController userController = UserController.getInstance();
+
+        String adminName = userController.login("admin").getResult();
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.COORDINATOR, "", "tech", "", "", "", "", "");
+
+        userController.logout(adminName);
+        userController.login("Dvorit");
+
+        Assert.assertFalse(surveyController.createSurvey("Dvorit", surveyDTO).isFailure());
     }
 
     @Test

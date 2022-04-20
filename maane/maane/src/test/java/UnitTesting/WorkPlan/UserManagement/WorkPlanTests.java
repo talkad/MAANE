@@ -1,4 +1,4 @@
-package UnitTesting.UserManagement;
+package UnitTesting.WorkPlan.UserManagement;
 
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
