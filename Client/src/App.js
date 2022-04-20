@@ -55,7 +55,7 @@ import SchoolIcon from '@mui/icons-material/School';
 
 function App(){
     // general state data
-    const [type, setType] = useState("SUPERVISOR"); //TODO: change back to window.sessionStorage.getItem('permission') when not developing
+    const [type, setType] = useState(window.sessionStorage.getItem('permission')); //TODO: change back to window.sessionStorage.getItem('permission') when not developing
     const [openSidebar, setOpenSidebar] = useState(false);
     const [hideBars, setHideBars] = useState(false);
     const [openBackdrop, setOpenBackdrop] = useState(false);

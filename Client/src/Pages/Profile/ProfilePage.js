@@ -1,7 +1,18 @@
 import * as Space from 'react-spaces';
 import React, {useEffect, useState} from "react";
 import Connection from "../../Communication/Connection";
-import {Button, Grid, IconButton, InputAdornment, Tab, Tabs, TextField, Typography} from "@mui/material";
+import {
+    Alert,
+    Button,
+    Collapse,
+    Grid,
+    IconButton,
+    InputAdornment,
+    Tab,
+    Tabs,
+    TextField,
+    Typography
+} from "@mui/material";
 
 import InfoIcon from '@mui/icons-material/Info';
 import LockIcon from '@mui/icons-material/Lock';
@@ -57,6 +68,10 @@ function InfoTabPanel(props){
 
     const [edit, setEdit] = useState(false);
 
+    const [error, setError] = useState(false);
+    const [errorSeverity, setErrorSeverity] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+
     const first_name_label_string = "שם פרטי";
     const last_name_label_string = "שם משפחה";
     const email_label_string = "כתובת דואר אלקטרוני";
@@ -64,7 +79,7 @@ function InfoTabPanel(props){
     const city_label_string = "עיר";
     const save_button_string = "שמירה";
 
-    const edit_string = 'ערכית פרטים';
+    const edit_string = 'עריכת פרטים';
 
     useEffect(() => {
         if (changes) {
@@ -105,25 +120,41 @@ function InfoTabPanel(props){
      * handler for saving the info data (sending the data to the server)
      */
     const saveInfoHandler = () => {
-        new Connection().updateProfileInfo(
-            values.firstName,
-            values.lastName,
-            values.email,
-            values.phoneNumber,
-            values.city,
-            saveInfoCallback
-        )
+        if(values.firstName.trim() === '' || values.lastName.trim() === ''){
+            setError(true)
+            setErrorSeverity('error')
+            setErrorMessage('שדות החובה לא יכולים להיות ריקים')
+        }
+        else{
+            setError(false)
+            new Connection().updateProfileInfo(
+                values.firstName,
+                values.lastName,
+                values.email,
+                values.phoneNumber,
+                values.city,
+                saveInfoCallback
+            )
+        }
     }
 
     return (
         <Grid container spacing={2} rowSpacing={4} sx={{paddingTop: 1}}>
             {/*edit button*/}
             <Grid item xs={6}>
-                <Button onClick={() => setEdit(!edit)} variant={edit ? "outlined" : "contained"} startIcon={edit? <EditOffIcon />  : <EditIcon />}>
+                <Button id={"profile_edit_button"} onClick={() => setEdit(!edit)} variant={edit ? "outlined" : "contained"} startIcon={edit? <EditOffIcon />  : <EditIcon />}>
                     {edit_string}
                 </Button>
             </Grid>
             <Grid item xs={8}/>
+
+            <Grid item xs={12}>
+                <Collapse in={error}>
+                    <Alert severity={errorSeverity}>
+                        {errorMessage}
+                    </Alert>
+                </Collapse>
+            </Grid>
 
             {/*first name*/}
             <Grid item xs={6}>
@@ -135,6 +166,8 @@ function InfoTabPanel(props){
                         readOnly: !edit,
                     }}
                     fullWidth
+                    required
+                    error={error && values.firstName.trim() === ''}
                 />
             </Grid>
 
@@ -148,6 +181,8 @@ function InfoTabPanel(props){
                         readOnly: !edit,
                     }}
                     fullWidth
+                    required
+                    error={error && values.lastName.trim() === ''}
                 />
             </Grid>
 
