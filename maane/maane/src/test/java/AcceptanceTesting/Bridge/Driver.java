@@ -16,7 +16,7 @@ public abstract class Driver {
 
         UserService real = new UserServiceImpl(new BCryptPasswordEncoder()); // real bridge
         bridge.setRealBridge(real);
-
+        bridge.setMockDB();//todo notice i initialized mock db here
         return bridge;
     }
 

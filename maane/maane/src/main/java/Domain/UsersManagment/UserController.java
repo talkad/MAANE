@@ -168,10 +168,12 @@ public class UserController {
     public Response<String> registerUserBySystemManager(String currUser, String userToRegister, String password, UserStateEnum userStateEnum, String optionalSupervisor, String workField, String firstName, String lastName, String email, String phoneNumber, String city){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
-            if (!userDAO.userExists(userToRegister) ){
+            if (!userDAO.userExists(userToRegister)){
+                System.out.println(1);
                 if(userStateEnum == UserStateEnum.SUPERVISOR) {
+                    System.out.println(2);
                     if (onlyOneSupervisorPerWorkField(user, workField)) {
-
+                        System.out.println(3);
                         Response<User> result = user.registerSupervisor(userToRegister, userStateEnum, workField, firstName, lastName, email, phoneNumber, city);
                         if (!result.isFailure()) {
                             userDAO.insertUser(new UserDBDTO(result.getResult(), security.sha256(password)));
@@ -576,6 +578,10 @@ public class UserController {
     public Response<String> createSurvey(String currUser, String surveyId) {
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
+            Response<String> surveyCreation = user.createSurvey(surveyId);
+            if(!surveyCreation.isFailure()){
+                userDAO.addSurvey(currUser, surveyId);//todo need to add check it didnt fail on db
+            }
             return user.createSurvey(surveyId);
         }
         else {

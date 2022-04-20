@@ -99,6 +99,7 @@ public class UserQueries {
         String userSql = "SELECT * FROM \"Users\" WHERE username = ?";//todo make into one query
         String userSchoolsSql = "SELECT school FROM \"UsersSchools\" WHERE username = ?";
         String userAppointmentsSql = "SELECT appointee FROM \"Appointments\" WHERE appointor = ?";
+        String userSurveysSql = "SELECT surveyid FROM \"UsersSurveys\" WHERE username = ?";
 
         PreparedStatement statement;
         try {
@@ -135,6 +136,15 @@ public class UserQueries {
                     appointments.add(result.getString(1));
                 }
                 userDBDTO.setAppointments(appointments);
+
+                statement = Connect.conn.prepareStatement(userSurveysSql);
+                statement.setString(1, username);
+                result = statement.executeQuery();
+                List<String> surveys = new Vector<>();
+                while (result.next()){
+                    surveys.add(result.getString(1));
+                }
+                userDBDTO.setSurveys(surveys);
 
                 Connect.closeConnection();
                 return new Response<>(userDBDTO, false, "successfully acquired user");
@@ -338,6 +348,8 @@ public class UserQueries {
         String sql = "DELETE FROM \"Users\" WHERE username = ?";//todo see if its possible to make it as one query
         String sqlDeleteSchools = "DELETE FROM \"UsersSchools\" WHERE username = ?";
         String sqlDeleteAppointments = "DELETE FROM \"Appointments\" WHERE appointor = ?";
+        String sqlDeleteSurveys = "DELETE FROM \"UsersSurveys\" WHERE username = ?";
+
 
         PreparedStatement preparedStatement;
         try {
@@ -350,6 +362,10 @@ public class UserQueries {
             /*rows = */preparedStatement.executeUpdate();
 
             preparedStatement = Connect.conn.prepareStatement(sqlDeleteAppointments);
+            preparedStatement.setString(1, username);
+            /*rows = */preparedStatement.executeUpdate();//todo not sure if should update failure here for the admin user removal case
+
+            preparedStatement = Connect.conn.prepareStatement(sqlDeleteSurveys);
             preparedStatement.setString(1, username);
             /*rows = */preparedStatement.executeUpdate();//todo not sure if should update failure here for the admin user removal case
 
@@ -460,5 +476,25 @@ public class UserQueries {
         }
 /*        return rows > 0 ? new Response<>(true, false, "") :
                 new Response<>(false, true, "bad Db writing");*/
+    }
+
+    public Response<Boolean> addSurvey(String username, String surveyId) {
+        Connect.createConnection();
+        int rows = 0;
+        String sql = "INSERT INTO \"UsersSurveys\"(username, surveyid) VALUES (?, ?)";
+        PreparedStatement preparedStatement;
+        try {//todo check user actually exists
+            preparedStatement = Connect.conn.prepareStatement(sql);
+            preparedStatement.setString(1, username);
+            preparedStatement.setString(2, surveyId);
+            rows = preparedStatement.executeUpdate();
+
+            Connect.closeConnection();
+        }
+        catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return rows > 0 ? new Response<>(true, false, "") :
+                new Response<>(false, true, "bad Db writing");
     }
 }

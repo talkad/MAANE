@@ -268,6 +268,7 @@ public class User {
     public Response<String> createSurvey(String surveyId) {
         if(this.state.allowed(Permissions.SURVEY_MANAGEMENT, this)){
             this.surveys.add(surveyId);
+            System.out.println("here");
             return new Response<>(surveyId, false, "user is allowed to create survey");
         }
         else {

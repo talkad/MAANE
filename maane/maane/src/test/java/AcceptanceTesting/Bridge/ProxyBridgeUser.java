@@ -6,6 +6,7 @@ import Communication.DTOs.WorkPlanDTO;
 import Communication.Service.Interfaces.UserService;
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.User;
+import Persistence.Connect;
 
 import java.util.List;
 
@@ -214,5 +215,11 @@ public class ProxyBridgeUser implements UserService {
         }
 
         return new Response<>(null, true, "not implemented");
+    }
+
+    public void setMockDB() { //for tests purposes only
+        if (real != null) {
+            Connect.setMockDB();
+        }
     }
 }

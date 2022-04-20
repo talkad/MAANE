@@ -46,6 +46,7 @@ public class UserDBDTO {
         this.userStateEnum = userStateEnum;
         this.appointments = new Vector<>();
         this.schools = new Vector<>();
+        this.surveys = new Vector<>();
         this.workField = workField;
     }
 

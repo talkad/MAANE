@@ -24,7 +24,7 @@ public class UserControllerTest {
     
     @Before
     public void setup(){
-        Connect.setMockUrl();
+        Connect.setMockDB();
 /*        if(!UserControllerTest.initialized){
             //setInitialization();
         }*/
