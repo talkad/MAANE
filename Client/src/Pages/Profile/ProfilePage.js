@@ -150,7 +150,7 @@ function InfoTabPanel(props){
 
             <Grid item xs={12}>
                 <Collapse in={error}>
-                    <Alert severity={errorSeverity}>
+                    <Alert id={"profile_edit_alert"} severity={errorSeverity}>
                         {errorMessage}
                     </Alert>
                 </Collapse>
@@ -159,6 +159,7 @@ function InfoTabPanel(props){
             {/*first name*/}
             <Grid item xs={6}>
                 <TextField
+                    id={"profile_edit_first_name"}
                     value={values.firstName}
                     onChange={handleChange('firstName')}
                     label={first_name_label_string}
@@ -174,6 +175,7 @@ function InfoTabPanel(props){
             {/*last name*/}
             <Grid item xs={6}>
                 <TextField
+                    id={"profile_edit_last_name"}
                     value={values.lastName}
                     onChange={handleChange('lastName')}
                     label={last_name_label_string}
@@ -189,6 +191,7 @@ function InfoTabPanel(props){
             {/*email*/}
             <Grid item xs={12}>
                 <TextField
+                    id={"profile_edit_email"}
                     value={values.email}
                     onChange={handleChange('email')}
                     label={email_label_string}
@@ -202,6 +205,7 @@ function InfoTabPanel(props){
             {/*phone number*/}
             <Grid item xs={12}>
                 <TextField
+                    id={"profile_edit_phone_number"}
                     value={values.phoneNumber}
                     onChange={handleChange('phoneNumber')}
                     label={phone_number_label_string}
@@ -215,6 +219,7 @@ function InfoTabPanel(props){
             {/*city*/}
             <Grid item xs={12}>
                 <TextField
+                    id={"profile_edit_city"}
                     value={values.city}
                     onChange={handleChange('city')}
                     label={city_label_string}
@@ -227,7 +232,7 @@ function InfoTabPanel(props){
 
             {/*save button*/}
             <Grid item xs={4}>
-                <Button disabled={!edit} onClick={saveInfoHandler} variant="contained" fullWidth>{save_button_string}</Button>
+                <Button id={"profile_edit_submit"} disabled={!edit} onClick={saveInfoHandler} variant="contained" fullWidth>{save_button_string}</Button>
             </Grid>
         </Grid>
     )
@@ -243,6 +248,10 @@ function SecurityTabPanel(props){
         newPassword: '',
         confirmNewPassword: '',
     });
+
+    const [error, setError] = useState(false);
+    const [errorSeverity, setErrorSeverity] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     const [showCurrentPassword, setShowCurrentPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
@@ -289,11 +298,21 @@ function SecurityTabPanel(props){
      * handles the update password action. sends a request to the server to change the password to the current user
      */
     const handleUpdatePassword = () => {
-        new Connection().changePassword(
-            values.currentPassword,
-            values.newPassword,
-            values.confirmNewPassword,
-            updatePasswordCallback);
+        if(values.currentPassword.trim() === '' || values.newPassword.trim() === '' ||
+            values.confirmNewPassword.trim() === ''){
+            setError(true);
+            setErrorSeverity('error');
+            setErrorMessage('נא למלא את כל השדות');
+        }
+        else{
+            setError(false);
+            new Connection().changePassword(
+                values.currentPassword,
+                values.newPassword,
+                values.confirmNewPassword,
+                updatePasswordCallback);
+        }
+
     }
 
     return (
@@ -301,7 +320,15 @@ function SecurityTabPanel(props){
             {/*current password*/}
             <Grid item xs={3}><Typography variant="h6">{change_password_title_section_string}</Typography></Grid>
             <Grid item xs={12}>
+                <Collapse in={error}>
+                    <Alert id={"change_password_alert"} severity={errorSeverity}>
+                        {errorMessage}
+                    </Alert>
+                </Collapse>
+            </Grid>
+            <Grid item xs={12}>
                 <TextField
+                    id={"change_password_current"}
                     value={values.currentPassword}
                     onChange={handleChange('currentPassword')}
                     label={current_password_label_string}
@@ -319,12 +346,14 @@ function SecurityTabPanel(props){
                         ),
                     }}
                     fullWidth
+                    error={error && values.currentPassword.trim() === ''}
                 />
             </Grid>
 
             {/*new password*/}
             <Grid item xs={12}>
                 <TextField
+                    id={"change_password_new"}
                     value={values.newPassword}
                     onChange={handleChange('newPassword')}
                     label={new_password_label_string}
@@ -342,12 +371,14 @@ function SecurityTabPanel(props){
                         ),
                     }}
                     fullWidth
+                    error={error && values.newPassword.trim() === ''}
                 />
             </Grid>
 
             {/*confirm new password*/}
             <Grid item xs={12}>
                 <TextField
+                    id={"change_password_confirm"}
                     value={values.confirmNewPassword}
                     onChange={handleChange('confirmNewPassword')}
                     label={confirm_new_password_label_string}
@@ -365,12 +396,13 @@ function SecurityTabPanel(props){
                         ),
                     }}
                     fullWidth
+                    error={error && values.confirmNewPassword.trim() === ''}
                 />
             </Grid>
 
             {/*save button*/}
             <Grid item xs={4}>
-                <Button onClick={handleUpdatePassword} variant="contained" fullWidth>{update_password_button_string}</Button>
+                <Button id={"change_password_submit_button"} onClick={handleUpdatePassword} variant="contained" fullWidth>{update_password_button_string}</Button>
             </Grid>
         </Grid>
     )

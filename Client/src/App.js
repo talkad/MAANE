@@ -49,6 +49,7 @@ import SchoolIcon from '@mui/icons-material/School';
 // TODO: prevent users from going through the site by entering paths in the url
 // TODO: currently saving everything in local storage but IT IS NOT SAFE
 // TODO: save the state of the user between refreshes
+// TODO: require better passwords on sign up and changing password
 
 // TODO: if there'll be time then add a loading animation to the different pages
 

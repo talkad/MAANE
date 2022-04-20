@@ -97,6 +97,30 @@ describe('Register users tests as supervisor', () => {
         cy.contains(user_to_register.firstName).should('not.exist')
     })
 
+    it('registering a new user with an invalid password', () => {
+        // filling the form
+        cy.get('#register_username').type(user_to_register.username)
+        cy.get('#register_password').type("123")
+        cy.get('#register_first_name').type(user_to_register.firstName)
+        cy.get('#register_last_name').type(user_to_register.lastName)
+
+        cy.get('#register_role_choice') // selecting from the menu
+            .parent()
+            .click()
+            .get(`ul > li[data-value="INSTRUCTOR"]`)
+            .click()
+
+        cy.get('#register_submit_button').click() // submitting
+
+        // an error alert should pop up
+        cy.get('#snackbar_alert_error').should('be.visible')
+
+        // going back to the table of the users and making sure the user is not appearing there
+        cy.get('#register_finish_button').click()
+
+        cy.contains(user_to_register.firstName).should('not.exist')
+    })
+
     it('registering two users with the same username', () => {
         // filling the form
         cy.get('#register_username').type(user_to_register.username)
