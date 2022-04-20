@@ -1,6 +1,7 @@
 package Communication;
 
 import Communication.DTOs.UserDTO;
+import Communication.Initializer.ServerContextInitializer;
 import Communication.Security.KeyLoader;
 import Communication.Service.UserServiceImpl;
 import DataManagement.DataController;
@@ -21,6 +22,8 @@ public class MaaneApplication {
 
 	public static void main(String[] args) {
 
+		ServerContextInitializer.getInstance().setMockMode();
+
 		SpringApplication.run(MaaneApplication.class, args);
 	}
 
@@ -39,12 +42,18 @@ public class MaaneApplication {
 		return args -> {
 			UserQueries.getInstance().deleteUsers();
 			UserController userController = UserController.getInstance();
-//			String guestName = userController.addGuest().getResult();
 			userController.login("admin");
-
 
 			service.registerUserBySystemManager("admin", new UserDTO("admin", "tech", "tal", "1234", UserStateEnum.SUPERVISOR,
 					"tal", "kad", "", "", "", null), "");
+
+			userController.logout("admin");
+
+			if(ServerContextInitializer.getInstance().isMockMode()){
+				UserQueries.getInstance().clearDB();
+				System.out.println("Mock Mode is Activated!");
+			}
+
 		};
 	}
 

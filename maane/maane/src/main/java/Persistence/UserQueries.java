@@ -440,4 +440,23 @@ public class UserQueries {
 /*        return rows > 0 ? new Response<>(true, false, "") :
                 new Response<>(false, true, "bad Db writing");*/
     }
+
+    // for end2end testing (mock mode)
+    public void clearDB(){
+        Connect.createConnection();
+        String sql = "TRUNCATE \"Answers\", \"Appointments\", \"MultiChoices\"" +
+                ", \"Questions\", \"Surveys\", \"Users\"" +
+                ", \"UsersSchools\", \"UserToSurvey\"";
+
+        PreparedStatement preparedStatement;
+        try {
+            preparedStatement = Connect.conn.prepareStatement(sql);
+            preparedStatement.executeUpdate();
+
+            Connect.closeConnection();
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

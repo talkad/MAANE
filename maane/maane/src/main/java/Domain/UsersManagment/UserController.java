@@ -98,7 +98,7 @@ public class UserController {
         if(!userRes.isFailure()){
             User user = new User(userRes.getResult());
             connectedUsers.put(username, user);
-            System.out.println(username + " logged in successfully");
+
             return new Response<>(username, false, "successfully Logged in");
         }
         else{
