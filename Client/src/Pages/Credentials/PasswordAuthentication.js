@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import * as Space from 'react-spaces';
 import {
     Alert,
-    Button,
+    Button, Collapse,
     Grid,
     IconButton,
     InputAdornment,
@@ -16,8 +16,11 @@ import {useNavigate} from "react-router-dom";
 import Connection from "../../Communication/Connection";
 
 // todo: refreshing on this page breaks the client
+// TODO: test this page
 
 export default function PasswordAuthentication(props){
+    const [password, setPassword] = useState('');
+
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
@@ -54,13 +57,13 @@ export default function PasswordAuthentication(props){
         event.preventDefault();
         const data = new FormData(event.currentTarget);
 
-        if (data.get('password') === ''){
+        if (password){
             setError(true);
             setAlertMessage('נא להכניס סיסמה');
         }
         else{
             setError(false);
-            new Connection().authenticatePassword(data.get('password'), submitCallback)
+            new Connection().authenticatePassword(password, submitCallback)
         }
 
     }
@@ -73,35 +76,38 @@ export default function PasswordAuthentication(props){
                     <h2>{auth_password_string}</h2>
                     <p>{explanation_string}</p>
                     <Stack component="form" sx={{alignItems: "center"}} onSubmit={handleSubmit}>
-                        <TextField name="password"
-                                   sx={{paddingBottom: 1, width: "50%"}}
-                                   id="outlined-basic"
-                                   label={password_string}
-                                   variant="outlined"
-                                   type={showPassword ? 'text' : 'password'}
-                                   error={error}
-                                   InputProps={{
-                                       endAdornment: (
-                                           <InputAdornment position="end">
-                                               <IconButton
-                                                   onClick={() => setShowPassword(!showPassword)}
-                                                   onMouseDown={(event) => event.preventDefault()}
-                                               >
-                                                   {showPassword ? <VisibilityOff /> : <Visibility />}
-                                               </IconButton>
-                                           </InputAdornment>
-                                       ),
-                                   }}/>
-                        {error && <Alert severity="error">
-                            {alertMessage}
-                        </Alert>}
+                        <Collapse>
+                            <Alert id={"auth_alert"} severity="error">
+                                {alertMessage}
+                            </Alert>
+                        </Collapse>
+                        <TextField
+                            id={"auth_password"}
+                            value={password}
+                            sx={{paddingBottom: 1, width: "50%"}}
+                            label={password_string}
+                            variant="outlined"
+                            type={showPassword ? 'text' : 'password'}
+                            error={error}
+                            InputProps={{
+                                   endAdornment: (
+                                       <InputAdornment position="end">
+                                           <IconButton
+                                               onClick={() => setShowPassword(!showPassword)}
+                                               onMouseDown={(event) => event.preventDefault()}
+                                           >
+                                               {showPassword ? <VisibilityOff /> : <Visibility />}
+                                           </IconButton>
+                                       </InputAdornment>
+                                   ),
+                               }}/>
                         <Grid container spacing={1} alignItems="center" justifyContent="center">
                             <Grid item xs={2.5}>
-                                <Button fullWidth type="submit" sx={{marginBottom: 1, marginTop: 1}} variant="outlined">{auth_string}</Button>
+                                <Button id={'auth_submit_button'} fullWidth type="submit" sx={{marginBottom: 1, marginTop: 1}} variant="outlined">{auth_string}</Button>
                             </Grid>
                             <Grid item xs={0.5}/>
                             <Grid item xs={2.5}>
-                                <Button onClick={() => navigate(props.callee, {replace: true})} fullWidth color="error" sx={{marginBottom: 1, marginTop: 1}} variant="outlined">{cancel_string}</Button>
+                                <Button id={'auth_cancel_button'} onClick={() => navigate(props.callee, {replace: true})} fullWidth color="error" sx={{marginBottom: 1, marginTop: 1}} variant="outlined">{cancel_string}</Button>
                             </Grid>
                         </Grid>
                     </Stack>

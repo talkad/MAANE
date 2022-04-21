@@ -4,6 +4,8 @@ let selected_user_as_supervisor = {
     new_pwd: "colors!"
 }
 
+let current_user_password = 'kaladsphantoms'
+
 describe('User management test as a supervisor', () => {
     beforeEach(() => {
         //TODO: format the db and log in as a supervisor
@@ -21,6 +23,10 @@ describe('User management test as a supervisor', () => {
         cy.get('#change_password_confirm').type(selected_user_as_supervisor.new_pwd)
 
         cy.get('#change_password_submit_button').click() // submitting
+
+        // filling auth page form
+        cy.get('#auth_password').type(current_user_password)
+        cy.get('#auth_submit_button').click()
 
         // should expect a success snackbar alert to pop
         cy.get('#snackbar_alert_success').should('be.visible')
@@ -132,6 +138,41 @@ describe('User management test as a supervisor', () => {
         cy.url().should('include', '/user/login')
     })
 
+    it('Removing a user', () => {
+        // opening the dialog to remove a user
+        cy.get(`#remove_user_${selected_user_as_supervisor.username}`).click()
+
+        cy.get('#remove_user_submit_button').click()
+
+        // filling auth page form
+        cy.get('#auth_password').type(current_user_password)
+        cy.get('#auth_submit_button').click() // submitting
+
+        // should expect a success snackbar alert to pop
+        cy.get('#snackbar_alert_success').should('be.visible')
+
+        // the user should not appear anymore
+        cy.get(`#user_collapse_button_${selected_user_as_supervisor.username}`).should('not.exist') // the row for the user should not exist
+    })
+
+    it('Removing a user but someone else just removed him', () => {
+        //  TODO: removing the user programmatically
+
+        // opening the dialog to remove a user
+        cy.get(`#remove_user_${selected_user_as_supervisor.username}`).click()
+
+        cy.get('#remove_user_submit_button').click()
+
+        // filling auth page form
+        cy.get('#auth_password').type(current_user_password)
+        cy.get('#auth_submit_button').click() // submitting
+
+        // should expect an error snackbar alert to pop
+        cy.get('#snackbar_alert_error').should('be.visible')
+
+        // but the user should still not appear anymore
+        cy.get(`#user_collapse_button_${selected_user_as_supervisor.username}`).should('not.exist') // the row for the user should not exist
+    })
 })
 
 describe('User management test as a system manager', () => {
