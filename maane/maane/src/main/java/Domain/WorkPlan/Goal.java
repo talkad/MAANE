@@ -8,13 +8,17 @@ public class Goal {
     private String description;
     private int quarterly;
     private int weight;
+    private String workField;
+    private String year;
 
-    public Goal(int goalId, String title, String description, int quarterly, int weight) {
+    public Goal(int goalId, String title, String description, int quarterly, int weight, String workField, String year) {
         this.goalId = goalId;
         this.title = title;
         this.description = description;
         this.quarterly = quarterly;
         this.weight = weight;
+        this.workField = workField;
+        this.year = year;
     }
 
     public Goal(GoalDTO gDTO) {
@@ -23,6 +27,8 @@ public class Goal {
         this.description = gDTO.getDescription();
         this.quarterly = gDTO.getQuarterly();
         this.weight = gDTO.getWeight();
+        this.workField = gDTO.getWorkField();
+        this.year = gDTO.getYear();
     }
 
     public String getTitle() {
@@ -63,6 +69,22 @@ public class Goal {
 
     public void setQuarterly(int quarterly) {
         this.quarterly = quarterly;
+    }
+
+    public String getWorkField() {
+        return workField;
+    }
+
+    public void setWorkField(String workField) {
+        this.workField = workField;
+    }
+
+    public String getYear() {
+        return year;
+    }
+
+    public void setYear(String year) {
+        this.year = year;
     }
 
     public String toString(){

@@ -169,16 +169,13 @@ public class UserController {
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             if (!userDAO.userExists(userToRegister)){
-                System.out.println(1);
                 if(userStateEnum == UserStateEnum.SUPERVISOR) {
-                    System.out.println(2);
                     if (onlyOneSupervisorPerWorkField(user, workField)) {
-                        System.out.println(3);
                         Response<User> result = user.registerSupervisor(userToRegister, userStateEnum, workField, firstName, lastName, email, phoneNumber, city);
                         if (!result.isFailure()) {
                             userDAO.insertUser(new UserDBDTO(result.getResult(), security.sha256(password)));
                             userDAO.addAppointment(currUser, userToRegister);
-                            goalsManagement.addGoalsField(workField);
+                            //goalsManagement.addGoalsField(workField);
                             return new Response<>(result.getResult().getUsername(), false, "Registration occurred");
                         }
                         return new Response<>(null, result.isFailure(), result.getErrMsg());
@@ -438,11 +435,9 @@ public class UserController {
     }
 
     public Response<List<UserDTO>> getAppointedUsers(String currUser){
-        //System.out.println("xxxxxxxxxxxxxxxxx " + currUser + " xxxxx");
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             Response<List<String>> appointeesRes = user.getAppointees();
-            //System.out.println(appointeesRes.getResult());
             if (!appointeesRes.isFailure()) {
                 List<UserDTO> appointeesDTOs = new Vector<>();
                 for (String appointee : appointeesRes.getResult()) {
@@ -677,6 +672,8 @@ public class UserController {
             User user = connectedUsers.get(currUser);
             Response<String> res = user.addGoals();
             if(!res.isFailure()){
+                goalDTO.setYear(year);//todo maybe make this a little less messy
+                goalDTO.setWorkField(user.getWorkField());//todo maybe make this a little less messy
                 return goalsManagement.addGoalToField(res.getResult(), goalDTO, year);
             }
             else{
