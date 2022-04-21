@@ -575,9 +575,11 @@ public class UserController {
             User user = connectedUsers.get(currUser);
             Response<String> surveyCreation = user.createSurvey(surveyId);
             if(!surveyCreation.isFailure()){
-                userDAO.addSurvey(currUser, surveyId);//todo need to add check it didnt fail on db
+                return userDAO.addSurvey(currUser, surveyId);
             }
-            return user.createSurvey(surveyId);
+            else {
+                return surveyCreation;
+            }
         }
         else {
             return new Response<>("", true, "User not connected");
@@ -825,7 +827,7 @@ public class UserController {
                         for (String appointee: supervisor.getAppointments()) {
                             userDAO.addAppointment(result.getResult().getUsername(), appointee);
                         }
-                        result.getResult().setSurveys(supervisor.getSurveys().getResult());
+                        result.getResult().setSurveys(supervisor.getSurveys().getResult());//todo update surveys
                         userDAO.insertUser(new UserDBDTO(result.getResult(), security.sha256(password)));
                         userDAO.removeUser(currSupervisor);
                         connectedUsers.remove(currSupervisor);

@@ -478,7 +478,7 @@ public class UserQueries {
                 new Response<>(false, true, "bad Db writing");*/
     }
 
-    public Response<Boolean> addSurvey(String username, String surveyId) {
+    public Response<String> addSurvey(String username, String surveyId) {
         Connect.createConnection();
         int rows = 0;
         String sql = "INSERT INTO \"UsersSurveys\"(username, surveyid) VALUES (?, ?)";
@@ -494,7 +494,7 @@ public class UserQueries {
         catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-        return rows > 0 ? new Response<>(true, false, "") :
-                new Response<>(false, true, "bad Db writing");
+        return rows > 0 ? new Response<>(surveyId, false, "") :
+                new Response<>(null, true, "bad Db writing");
     }
 }
