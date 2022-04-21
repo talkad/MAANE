@@ -86,6 +86,23 @@ describe('Login tests', () =>{
         cy.url().should('include', '/user/home')
     })
 
+    it('logging in when someone just changed that password to that account', () => {
+        // TODO: programmatically change the password to the current user who tries to log in
+
+        // filling the form
+        cy.get('input[id=login_username]').type('tal').should('have.value','tal')
+        cy.get('input[id=login_password]').type('123').should('have.value','123')
+
+        // submitting
+        cy.get('[id=login_button]').click()
+
+        // should expect an alert error to appear
+        cy.get('[id=login_alert]').should('be.visible')
+
+        // checking we remained in the same url
+        cy.url().should('include', '/user/login')
+    })
+
     it('logs in programmatically without using the UI', () => {
         cy.request({
             method: 'POST',
