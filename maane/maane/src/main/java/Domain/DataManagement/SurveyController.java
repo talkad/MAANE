@@ -90,13 +90,8 @@ public class SurveyController {
         }
 
         addSurveyToCache(indexer, surveyRes.getResult());
+        surveyDAO.insertSurvey(surveyDTO);
 
-        try {
-            surveyDAO.insertSurvey(surveyDTO);
-
-        }catch(SQLException e){
-            return new Response<>("", true, e.getMessage());
-        }
 
         UserController.getInstance().notifySurveyCreation(username, indexer);
 
