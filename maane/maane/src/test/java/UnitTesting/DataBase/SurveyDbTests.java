@@ -1,5 +1,6 @@
 package UnitTesting.DataBase;
 
+import Communication.DTOs.SurveyAnswersDTO;
 import Communication.DTOs.SurveyDTO;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.AnswerState.AnswerType;
@@ -45,6 +46,23 @@ public class SurveyDbTests {
     public void getSurvey() throws SQLException {
         Response<SurveyDTO> surveyDTO = surveyQueries.getSurvey("1");
         Assert.assertEquals(4, surveyDTO.getResult().getQuestions().size() + surveyDTO.getResult().getAnswers().size());
+    }
+
+    @Test
+    public void insertAnswer() throws SQLException {
+        List<String> answers = new LinkedList<>();
+        answers.add("a1"); answers.add("a2");
+
+        List<AnswerType> types = new LinkedList<>();
+        types.add(AnswerType.OPEN_ANSWER); types.add(AnswerType.NUMERIC_ANSWER);
+
+        surveyQueries.insertCoordinatorAnswers("1", "lala", answers, types);
+    }
+
+    @Test
+    public void getAnswers() throws SQLException {
+        List<SurveyAnswersDTO> surveyAnswersDTOS = surveyQueries.getAnswers("1");
+        int checkMe;
     }
 
 }

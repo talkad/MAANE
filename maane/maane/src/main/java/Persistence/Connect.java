@@ -9,8 +9,8 @@ public class Connect {
 
     public static void createConnection()  {
         try {
-            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/MAANE", "postgres", "1234");
-//            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/MaaneDb", "postgres", "12345");
+//            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/MAANE", "postgres", "1234");
+            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/MaaneDb", "postgres", "12345");
             // shaked's line probably ===> conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/maaneDB", "postgres", "123456");
         } catch (SQLException throwables) {
             throwables.printStackTrace();

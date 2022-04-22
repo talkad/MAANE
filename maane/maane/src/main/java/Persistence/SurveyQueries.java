@@ -18,7 +18,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static Domain.DataManagement.AnswerState.AnswerType.OPEN_ANSWER;
 
 @Repository
 public class SurveyQueries {
@@ -35,56 +34,63 @@ public class SurveyQueries {
 
     //========================== Survey ==========================
 
-    public Response<Boolean> insertSurvey(SurveyDTO surveyDTO) throws SQLException {
+    public Response<Boolean> insertSurvey(SurveyDTO surveyDTO) {
         Connect.createConnection();
-
+        int rows = 0;
         String sql = "INSERT INTO \"Surveys\" (id, title, description) VALUES (?, ?, ?)";
-        PreparedStatement preparedStatement = Connect.conn.prepareStatement(sql);
-        preparedStatement.setString(1, surveyDTO.getId());
-        preparedStatement.setString(2, surveyDTO.getTitle());
-        preparedStatement.setString(3, surveyDTO.getDescription());
-        int rows = preparedStatement.executeUpdate();
+        PreparedStatement preparedStatement = null;
+        try {
+            preparedStatement = Connect.conn.prepareStatement(sql);
+            preparedStatement.setString(1, surveyDTO.getId());
+            preparedStatement.setString(2, surveyDTO.getTitle());
+            preparedStatement.setString(3, surveyDTO.getDescription());
+            rows = preparedStatement.executeUpdate();
 
-        insertQuestions(surveyDTO.getId(), surveyDTO.getQuestions());
+            insertQuestions(surveyDTO.getId(), surveyDTO.getQuestions());
 
-        insertAnswers(surveyDTO.getId(), ListToString(surveyDTO.getAnswers()), surveyDTO.getTypes());
-        Connect.closeConnection();
+            insertAnswers(surveyDTO.getId(), ListListToStringList(surveyDTO.getAnswers()), surveyDTO.getTypes());
+            Connect.closeConnection();
+        } catch (SQLException e) {e.printStackTrace();}
 
         return rows>0 ? new Response<>(true, false, "") :
                 new Response<>(false, true, "bad Db writing");
     }
 
-    private void insertQuestions (String surveyId, List<String> questions) throws SQLException {
+    private void insertQuestions (String surveyId, List<String> questions) {
         System.out.println("1");
         String sql = "INSERT INTO \"Questions\" (survey_id, index, question) VALUES (?, ?, ?)";
         System.out.println("2");
-        PreparedStatement preparedStatement = Connect.conn.prepareStatement(sql);
-        System.out.println("a");
-        System.out.println(questions);
+        PreparedStatement preparedStatement = null;
+        try {
+            preparedStatement = Connect.conn.prepareStatement(sql);
+            for (String question : questions){
+                preparedStatement.setString(1, surveyId);
+                preparedStatement.setInt(2, questions.indexOf(question));
+                preparedStatement.setString(3, question);
+                System.out.println("3");
+                preparedStatement.executeUpdate();
+            }
+        } catch (SQLException e) {e.printStackTrace();}
 
-        for (String question : questions){
-            preparedStatement.setString(1, surveyId);
-            preparedStatement.setInt(2, questions.indexOf(question));
-            preparedStatement.setString(3, question);
-            System.out.println("3");
-            preparedStatement.executeUpdate();
-        }
     }
 
-    public void insertAnswers (String surveyId, List<String> answers, List<AnswerType> answerTypes) throws SQLException {
+    public void insertAnswers (String surveyId, List<String> answers, List<AnswerType> answerTypes) {
 
         String sql = "INSERT INTO \"MultiChoices\" (survey_id, question_index, answer_type, choices) VALUES (?, ?, ?, ?)";
-        PreparedStatement preparedStatement = Connect.conn.prepareStatement(sql);
-        for (String answer: answers) {
-            preparedStatement.setString(1, surveyId);
-            preparedStatement.setInt(2, answers.indexOf(answer));
-            preparedStatement.setString(3, answerTypes.get(answers.indexOf(answer)).toString());
-            preparedStatement.setString(4, answer);
-            preparedStatement.executeUpdate();
-        }
+        PreparedStatement preparedStatement = null;
+        try {
+            preparedStatement = Connect.conn.prepareStatement(sql);
+            for (String answer: answers) {
+                preparedStatement.setString(1, surveyId);
+                preparedStatement.setInt(2, answers.indexOf(answer));
+                preparedStatement.setString(3, answerTypes.get(answers.indexOf(answer)).toString());
+                preparedStatement.setString(4, answer);
+                preparedStatement.executeUpdate();
+            }
+        } catch (SQLException e) {e.printStackTrace();}
     }
 
-    private List<String> ListToString(List<List<String>> l){
+    private List<String> ListListToStringList(List<List<String>> l){
         List<String> result = new LinkedList<>();
 
         for(List<String> list: l){
@@ -197,7 +203,6 @@ public class SurveyQueries {
         } catch (SQLException e) { e.printStackTrace(); }
     }
 
-    //todo remove all subs too
     public Response<Boolean> removeRule (int ruleID) {
         Connect.createConnection();
         String sql = "DELETE FROM \"Rules\" WHERE id = ?";
@@ -205,6 +210,9 @@ public class SurveyQueries {
         try (PreparedStatement pstmt = Connect.conn.prepareStatement(sql)) {
             pstmt.setInt(1, ruleID);
             rows = pstmt.executeUpdate();
+            removeSubRules(ruleID);
+
+            Connect.closeConnection();
 
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
@@ -213,7 +221,17 @@ public class SurveyQueries {
                 new Response<>(false, true, "bad Db writing");
     }
 
-    //todo Integer is survey id
+    private void removeSubRules (int parentId){
+        String sql = "DELETE FROM \"Rules\" WHERE parent_id = ?";
+        try (PreparedStatement pstmt = Connect.conn.prepareStatement(sql)) {
+            pstmt.setInt(1, parentId);
+            pstmt.executeUpdate();
+
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
     public List<Pair<RuleDTO, Integer>> getRules(String surveyID) {
         Connect.createConnection();
         String query = "SELECT * FROM \"Rules\" WHERE survey_id = ?";
@@ -224,7 +242,7 @@ public class SurveyQueries {
             statement.setString(1, surveyID);
             ResultSet result = statement.executeQuery();
             while (result.next()) {
-                int goalID = result.getInt("goal_id");
+                int surveyId = result.getInt("survey_id");
                 String type = result.getString("type");
                 String comparsion = result.getString("comparsion");
                 int questionId = result.getInt("question_id");
@@ -232,7 +250,7 @@ public class SurveyQueries {
                 int id = result.getInt("id");
                 List<RuleDTO> subRules = getSubRules(id);
                 RuleDTO ruleDTO = new RuleDTO(subRules, RuleType.valueOf(type), Comparison.valueOf(comparsion), questionId, answer);
-                Pair <RuleDTO, Integer> toAdd = new Pair<>(ruleDTO, goalID);
+                Pair <RuleDTO, Integer> toAdd = new Pair<>(ruleDTO, surveyId);
                 rules.add(toAdd);
             }
             Connect.closeConnection();
@@ -292,7 +310,6 @@ public class SurveyQueries {
 
     //========================== Answers ==========================
 
-    //todo fix
     public List<SurveyAnswersDTO> getAnswers(String surveyId) {
         Connect.createConnection();
         String query = "SELECT * FROM \"Answers\" WHERE survey_id = ?";
@@ -300,8 +317,6 @@ public class SurveyQueries {
 
         List<SurveyAnswersDTO> output = new LinkedList<>();
         SurveyAnswersDTO surveyAnswersDTO;
-        List<String> answers = new LinkedList<>();
-        List<AnswerType> answerTypes = new LinkedList<>();
         String symbol = "";
         try {
             statement = Connect.conn.prepareStatement(query);
@@ -311,15 +326,18 @@ public class SurveyQueries {
                 symbol = result.getString("school_symbol");
                 String answer = result.getString("answer");
                 String answerType = result.getString("answer_type");
-                answers.add(answer);
-                answerTypes.add(AnswerType.valueOf(answerType));
+
+                List<String> parsedAnswers = Arrays.asList(answer.split(","));
+                List<String> answers = new LinkedList<>(parsedAnswers);
+
+                List<String> parsedTypes = Arrays.asList(answerType.split(","));
+                List<String> typesStrings = new LinkedList<>(parsedTypes);
+                List<AnswerType> types = new LinkedList<>();
+                for (String s : typesStrings) { types.add(AnswerType.valueOf(s)); };
+
+                surveyAnswersDTO = new SurveyAnswersDTO(surveyId, answers, types);
+                output.add(surveyAnswersDTO);
             }
-
-            answers.add(0, symbol);
-            answerTypes.add(0, OPEN_ANSWER);
-
-            surveyAnswersDTO = new SurveyAnswersDTO(surveyId, answers, answerTypes);
-            output.add(surveyAnswersDTO);
 
             Connect.closeConnection();
         } catch (SQLException e) {e.printStackTrace();}
@@ -332,49 +350,42 @@ public class SurveyQueries {
         return null;
     }
 
+    //todo drop it later
     public List<SurveyAnswersDTO> getAnswerForSurvey(String surveyId) {
-        //todo - almog
-        return null;
+        return getAnswers(surveyId);
     }
 
     public void insertCoordinatorAnswers(String id, String symbol, List<String> answers, List<AnswerType> types) {
-        // todo - almog
+        Connect.createConnection();
+        String sql = "INSERT INTO \"Answers\" (survey_id, school_symbol, answer, answer_type) VALUES (?, ?, ?, ?)";
+        PreparedStatement preparedStatement = null;
+        try {
+            preparedStatement = Connect.conn.prepareStatement(sql);
+            preparedStatement.setString(1, id);
+            preparedStatement.setString(2, symbol);
+            preparedStatement.setString(3, ListToString(answers));
+            preparedStatement.setString(4, ListATToString(types));
+            preparedStatement.executeUpdate();
+
+            Connect.closeConnection();
+        } catch (SQLException e) { e.printStackTrace(); }
+    }
+
+    private String ListToString (List<String> list){ //output seperated by ,
+        StringBuilder output = new StringBuilder();
+        for (String s : list){
+            output.append(s).append(",");
+        }
+        return output.substring(0,output.length()-1); //drop last ,
+    }
+
+    private String ListATToString (List<AnswerType> list){ //output seperated by ,
+        StringBuilder output = new StringBuilder();
+        for (AnswerType s : list){
+            output.append(s).append(",");
+        }
+        return output.substring(0,output.length()-1); //drop last ,
     }
 }
 
-    //===========================================================
-
-// --- Old one ---
-//    public static void insertAnswers (String surveyId, List<List<String>> answers, List<AnswerType> answerTypes) throws SQLException {
-//        String sql = "INSERT INTO \"Answers\" (survey_id, question_index, answer_index, answer_type, answer) VALUES (?, ?, ?, ?, ?)";
-//        PreparedStatement preparedStatement = Connect.conn.prepareStatement(sql);
-//        for (List<String> answersList : answers){
-//            for (String answer: answersList) {
-//                preparedStatement.setString(1, surveyId);
-//                preparedStatement.setInt(2, answers.indexOf(answersList));
-//                preparedStatement.setInt(3, answersList.indexOf(answer));
-//                preparedStatement.setString(4, answerTypes.get(answers.indexOf(answersList)).toString());
-//                preparedStatement.setString(5, answer);
-//                preparedStatement.executeUpdate();
-//            }
-//        }
-//    }
-
-
-
-
-
-//    private int getParentId (String survey_id, List<String> questions) throws SQLException {
-//        String query = "SELECT * FROM \"Answers\" WHERE survey_id = ?";
-//        PreparedStatement statement = Connect.conn.prepareStatement(query);
-//        statement.setString(1, survey_id);
-//        ResultSet result = statement.executeQuery(query);
-//        List<List<String>> answers = new LinkedList<>();
-//
-//        while (result.next()) {
-//            // int index = result.getInt("index");
-//            String question = result.getString("question");
-//            questions.add(question);
-//        }
-//        return 2;
-//    }
+//===========================================================
