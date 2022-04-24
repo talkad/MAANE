@@ -15,6 +15,7 @@ public class Connect {
         try {
             conn = DriverManager.getConnection(initializer.getDbConnection(), initializer.getDbUsername(), initializer.getDbPassword());
 //            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/MaaneDb", "postgres", "12345");
+
             // shaked's line probably ===> conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/maaneDB", "postgres", "123456");
 
         } catch (SQLException throwables) {
