@@ -11,6 +11,16 @@ public class GoalDTO {
     private String description;
     private int quarterly;
     private int weight;
+    private String workField;
+    private String year;
+
+    public GoalDTO(int goalId, String title, String description, int quarterly, int weight) {
+        this.goalId = goalId;
+        this.title = title;
+        this.description = description;
+        this.quarterly = quarterly;
+        this.weight = weight;
+    }
 
     public String getDescription() {
         return description;
@@ -50,6 +60,22 @@ public class GoalDTO {
 
     public void setWeight(int weight) {
         this.weight = weight;
+    }
+
+    public String getWorkField() {
+        return workField;
+    }
+
+    public void setWorkField(String workField) {
+        this.workField = workField;
+    }
+
+    public String getYear() {
+        return year;
+    }
+
+    public void setYear(String year) {
+        this.year = year;
     }
 }
 

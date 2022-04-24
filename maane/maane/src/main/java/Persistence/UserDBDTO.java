@@ -7,6 +7,8 @@ import Domain.UsersManagment.WorkPlan;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class UserDBDTO {
     protected String username;
@@ -39,6 +41,18 @@ public class UserDBDTO {
         this.city = user.getCity();
         this.password = password;
         this.surveys = user.getSurveys().getResult();
+        //this.workPlan = new ConcurrentHashMap<>();
+    }
+
+    public UserDBDTO(String name, String password, UserStateEnum userStateEnum, String workField){
+        this.username = name;
+        this.password = password;
+        this.userStateEnum = userStateEnum;
+        this.appointments = new Vector<>();
+        this.schools = new Vector<>();
+        this.surveys = new Vector<>();
+        this.workField = workField;
+        //this.workPlan = new ConcurrentHashMap<>();
     }
 
 

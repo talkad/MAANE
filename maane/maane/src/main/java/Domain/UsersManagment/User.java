@@ -509,7 +509,8 @@ public class User {
     }
 
     public void assignWorkPlan(WorkPlan workPlan, String year) {
-        this.workPlan.put(year, workPlan);//todo prevent errors
+        //this.workPlan = new ConcurrentHashMap<>();
+        this.workPlan.put(year, workPlan);//todo prevent errors initialize in db
     }
 
     public Response<WorkPlan> getWorkPlan(String year) {

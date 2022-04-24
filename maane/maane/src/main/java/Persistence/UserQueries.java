@@ -43,11 +43,64 @@ public class UserQueries {
         return null;
     }
 
+    /*public List<String> getFullUsers() {
+        Connect.createConnection();
+        String userSql = "SELECT * FROM \"Users\"";
+        String userSchoolsSql = "SELECT * FROM \"UsersSchools\"";
+        String userAppointmentsSql = "SELECT appointee FROM \"Appointments\"";
+
+        PreparedStatement statement;
+        try {
+            statement = Connect.conn.prepareStatement(userSql);
+
+            statement.setString(1, username);
+            ResultSet result = statement.executeQuery();
+            if(result.next()) {
+                UserDBDTO userDBDTO = new UserDBDTO();
+                userDBDTO.setUsername(result.getString("username"));
+                userDBDTO.setStateEnum(UserStateEnum.valueOf(result.getString("userstateenum")));
+                userDBDTO.setWorkField(result.getString("workField"));
+                userDBDTO.setFirstName(result.getString("firstName"));
+                userDBDTO.setLastName(result.getString("lastName"));
+                userDBDTO.setEmail(result.getString("email"));
+                userDBDTO.setPhoneNumber(result.getString("phoneNumber"));
+                userDBDTO.setCity(result.getString("city"));
+                userDBDTO.setPassword(result.getString("password"));
+
+                statement = Connect.conn.prepareStatement(userSchoolsSql);
+                statement.setString(1, username);
+                result = statement.executeQuery();
+                List<String> schools = new Vector<>();
+                while (result.next()){
+                    schools.add(result.getString(1));
+                }
+                userDBDTO.setSchools(schools);
+
+                statement = Connect.conn.prepareStatement(userAppointmentsSql);
+                statement.setString(1, username);
+                result = statement.executeQuery();
+                List<String> appointments = new Vector<>();
+                while (result.next()){
+                    appointments.add(result.getString(1));
+                }
+                userDBDTO.setAppointments(appointments);
+
+                Connect.closeConnection();
+                return new Response<>(userDBDTO, false, "successfully acquired user");
+            }
+            Connect.closeConnection();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return new Response<>(null, true, "failed to get user");
+    }*/
+
     public Response<UserDBDTO> getFullUser(String username) {
         Connect.createConnection();
-        String userSql = "SELECT * FROM \"Users\" WHERE username = ?";
+        String userSql = "SELECT * FROM \"Users\" WHERE username = ?";//todo make into one query
         String userSchoolsSql = "SELECT school FROM \"UsersSchools\" WHERE username = ?";
         String userAppointmentsSql = "SELECT appointee FROM \"Appointments\" WHERE appointor = ?";
+        String userSurveysSql = "SELECT surveyid FROM \"UsersSurveys\" WHERE username = ?";
 
         PreparedStatement statement;
         try {
@@ -85,6 +138,15 @@ public class UserQueries {
                     appointments.add(result.getString(1));
                 }
                 userDBDTO.setAppointments(appointments);
+
+                statement = Connect.conn.prepareStatement(userSurveysSql);
+                statement.setString(1, username);
+                result = statement.executeQuery();
+                List<String> surveys = new Vector<>();
+                while (result.next()){
+                    surveys.add(result.getString(1));
+                }
+                userDBDTO.setSurveys(surveys);
 
                 Connect.closeConnection();
                 return new Response<>(userDBDTO, false, "successfully acquired user");
@@ -317,6 +379,8 @@ public class UserQueries {
         String sql = "DELETE FROM \"Users\" WHERE username = ?";//todo see if its possible to make it as one query
         String sqlDeleteSchools = "DELETE FROM \"UsersSchools\" WHERE username = ?";
         String sqlDeleteAppointments = "DELETE FROM \"Appointments\" WHERE appointor = ?";
+        String sqlDeleteSurveys = "DELETE FROM \"UsersSurveys\" WHERE username = ?";
+
 
         PreparedStatement preparedStatement;
         try {
@@ -329,6 +393,10 @@ public class UserQueries {
             /*rows = */preparedStatement.executeUpdate();
 
             preparedStatement = Connect.conn.prepareStatement(sqlDeleteAppointments);
+            preparedStatement.setString(1, username);
+            /*rows = */preparedStatement.executeUpdate();//todo not sure if should update failure here for the admin user removal case
+
+            preparedStatement = Connect.conn.prepareStatement(sqlDeleteSurveys);
             preparedStatement.setString(1, username);
             /*rows = */preparedStatement.executeUpdate();//todo not sure if should update failure here for the admin user removal case
 
@@ -403,7 +471,7 @@ public class UserQueries {
     public void resetSchools(String username) {
         Connect.createConnection();
         int rows = 0;
-        String sql = "DELETE FROM \"Users\" WHERE username = ?";
+        String sql = "DELETE FROM \"UsersSchools\" WHERE username = ?";
         PreparedStatement preparedStatement;
         try {
             preparedStatement = Connect.conn.prepareStatement(sql);
@@ -441,8 +509,9 @@ public class UserQueries {
                 new Response<>(false, true, "bad Db writing");*/
     }
 
+
     // for end2end testing (mock mode)
-    public void clearDB(){
+    public void clearDB() {
         Connect.createConnection();
         String sql = "TRUNCATE \"Answers\", \"Appointments\", \"MultiChoices\"" +
                 ", \"Questions\", \"Surveys\", \"Users\"" +
@@ -454,9 +523,28 @@ public class UserQueries {
             preparedStatement.executeUpdate();
 
             Connect.closeConnection();
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public Response<String> addSurvey(String username, String surveyId) {
+        Connect.createConnection();
+        int rows = 0;
+        String sql = "INSERT INTO \"UsersSurveys\"(username, surveyid) VALUES (?, ?)";
+        PreparedStatement preparedStatement;
+        try {//todo check user actually exists
+            preparedStatement = Connect.conn.prepareStatement(sql);
+            preparedStatement.setString(1, username);
+            preparedStatement.setString(2, surveyId);
+            rows = preparedStatement.executeUpdate();
+
+            Connect.closeConnection();
+        }
+        catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return rows > 0 ? new Response<>(surveyId, false, "") :
+                new Response<>(null, true, "bad Db writing");
     }
 }

@@ -38,7 +38,6 @@ public class UserController {
         adminBoot("admin", "admin");
     }
 
-
     private static class CreateSafeThreadSingleton {
         private static final UserController INSTANCE = new UserController();
     }
@@ -171,15 +170,14 @@ public class UserController {
     public Response<String> registerUserBySystemManager(String currUser, String userToRegister, String password, UserStateEnum userStateEnum, String optionalSupervisor, String workField, String firstName, String lastName, String email, String phoneNumber, String city){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
-            if (!userDAO.userExists(userToRegister) ){
+            if (!userDAO.userExists(userToRegister)){
                 if(userStateEnum == UserStateEnum.SUPERVISOR) {
                     if (onlyOneSupervisorPerWorkField(user, workField)) {
-
                         Response<User> result = user.registerSupervisor(userToRegister, userStateEnum, workField, firstName, lastName, email, phoneNumber, city);
                         if (!result.isFailure()) {
                             userDAO.insertUser(new UserDBDTO(result.getResult(), passwordEncoder.encode(password)));
                             userDAO.addAppointment(currUser, userToRegister);
-                            goalsManagement.addGoalsField(workField);
+                            //goalsManagement.addGoalsField(workField);
                             return new Response<>(result.getResult().getUsername(), false, "Registration occurred");
                         }
                         return new Response<>(null, result.isFailure(), result.getErrMsg());
@@ -442,7 +440,6 @@ public class UserController {
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             Response<List<String>> appointeesRes = user.getAppointees();
-            System.out.println(appointeesRes.getResult());
             if (!appointeesRes.isFailure()) {
                 List<UserDTO> appointeesDTOs = new Vector<>();
                 for (String appointee : appointeesRes.getResult()) {
@@ -578,7 +575,13 @@ public class UserController {
     public Response<String> createSurvey(String currUser, String surveyId) {
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
-            return user.createSurvey(surveyId);
+            Response<String> surveyCreation = user.createSurvey(surveyId);
+            if(!surveyCreation.isFailure()){
+                return userDAO.addSurvey(currUser, surveyId);
+            }
+            else {
+                return surveyCreation;
+            }
         }
         else {
             return new Response<>("", true, "User not connected");
@@ -673,6 +676,8 @@ public class UserController {
             User user = connectedUsers.get(currUser);
             Response<String> res = user.addGoals();
             if(!res.isFailure()){
+                goalDTO.setYear(year);//todo maybe make this a little less messy
+                goalDTO.setWorkField(user.getWorkField());//todo maybe make this a little less messy
                 return goalsManagement.addGoalToField(res.getResult(), goalDTO, year);
             }
             else{
@@ -830,8 +835,10 @@ public class UserController {
                         for (String appointee: supervisor.getAppointments()) {
                             userDAO.addAppointment(result.getResult().getUsername(), appointee);
                         }
+
                         result.getResult().setSurveys(supervisor.getSurveys().getResult());
                         userDAO.insertUser(new UserDBDTO(result.getResult(),passwordEncoder.encode(password)));
+
                         userDAO.removeUser(currSupervisor);
                         connectedUsers.remove(currSupervisor);
                         return transferSupervisionRes;

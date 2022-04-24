@@ -228,10 +228,10 @@ public class AnnualScheduleGenerator {
                 schoolsAndFaults = new ConcurrentHashMap<>();
                 for (String school : schoolsOfInstructor) { //4 - schools of this instructor
                     schoolFaultsGoals = new Vector<>();
-
                     Response<List<Integer>> schoolFaultsRes = surveyController.detectSchoolFaultsMock(schoolFaultsMock, school);
-                    if(schoolFaultsRes.isFailure())
+                    if(schoolFaultsRes.isFailure()) {
                         return; //todo some error
+                    }
                     schoolFaults = schoolFaultsRes.getResult();
                     if(schoolFaults != null && schoolFaults.size() > 0) {
                         Response<List<Goal>> goalsRes = goalsManagement.getGoalsById(workField, schoolFaults, year);
