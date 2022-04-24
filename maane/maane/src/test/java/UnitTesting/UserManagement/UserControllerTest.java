@@ -3,7 +3,6 @@ package UnitTesting.UserManagement;
 import Communication.DTOs.GoalDTO;
 import Communication.DTOs.UserDTO;
 import Domain.CommonClasses.Response;
-import Domain.UsersManagment.Security;
 import Domain.UsersManagment.UserController;
 import Domain.UsersManagment.UserStateEnum;
 import Domain.WorkPlan.GoalsManagement;
@@ -12,15 +11,15 @@ import Persistence.UserQueries;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.Vector;
 
 public class UserControllerTest {
 
+    private PasswordEncoder passwordEncoder;
 /*    @InjectMocks
     private UserController userController;
 
@@ -30,6 +29,8 @@ public class UserControllerTest {
     @Before
     public void setup(){
         //MockitoAnnotations.openMocks(this);
+        this.passwordEncoder = new BCryptPasswordEncoder();
+
         UserController.getInstance().clearUsers();
         GoalsManagement.getInstance().clearGoals();
     }
@@ -41,7 +42,6 @@ public class UserControllerTest {
         Assert.assertTrue(userController.getConnectedUsers().containsKey(adminName));
         Assert.assertTrue(UserQueries.getInstance().userExists(adminName));
     }
-
 
     @Test
     public void tester(){
@@ -183,17 +183,15 @@ public class UserControllerTest {
 
     @Test
     public void changePasswordBySupervisorFail(){
-        Security security = Security.getInstance();
         UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         userController.changePasswordToUser(adminName, "sup1", "sup111", "sup11");
-        Assert.assertFalse(UserQueries.getInstance().getFullUser("sup1").getResult().getPassword().equals(security.sha256("sup111")));
+        Assert.assertFalse(UserQueries.getInstance().getFullUser("sup1").getResult().getPassword().equals(passwordEncoder.encode("sup111")));
     }
 
     @Test
     public void changePasswordBySupervisorSuccess(){
-        Security security = Security.getInstance();
         UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
@@ -201,7 +199,7 @@ public class UserControllerTest {
         userController.logout(adminName);
         Response<String> res = userController.login("sup1");
         Assert.assertFalse(res.isFailure());
-        Assert.assertTrue(UserQueries.getInstance().getFullUser("sup1").getResult().getPassword().equals(security.sha256("sup111")));
+        Assert.assertTrue(UserQueries.getInstance().getFullUser("sup1").getResult().getPassword().equals(passwordEncoder.encode("sup111")));
     }
 
     @Test
@@ -235,7 +233,7 @@ public class UserControllerTest {
         userController.login("sup1");
         userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "", "", "");
         userController.changePasswordToUser("sup1", "ins1", "ins111", "ins111");
-        Assert.assertTrue(UserQueries.getInstance().getFullUser("ins1").getResult().getPassword().equals(Security.getInstance().sha256("ins111")));//userController.getConnectedUsers().containsKey("ins1"));
+        Assert.assertTrue(UserQueries.getInstance().getFullUser("ins1").getResult().getPassword().equals(passwordEncoder.encode("ins111")));//userController.getConnectedUsers().containsKey("ins1"));
     }
 
     @Test

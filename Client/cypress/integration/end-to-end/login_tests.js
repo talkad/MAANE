@@ -5,7 +5,7 @@ describe('Login tests', () =>{
         cy.visit('/user/login')
     })
 
-    it('logging in with an existing user and logging out', () => {
+    it('logging in with an existing SUPERVISOR user and logging out', () => {
 
         // filling the form
         cy.get('input[id=login_username]').type('tal').should('have.value','tal')
@@ -19,6 +19,54 @@ describe('Login tests', () =>{
 
         // checking the login was successful by checking the url
         cy.url().should('include', '/user/home')
+
+        // todo: tal is a SUPERVISOR, check that its homepage contains a table of instructors
+
+        // logging out cause it clashes with the other tests
+        cy.get('[id=logout_button]').click()
+
+        cy.url().should('include', '/user/login')
+    })
+
+    it('logging in with an existing SYSTEM_MANAGER user and logging out', () => {
+
+        // filling the form
+        cy.get('input[id=login_username]').type('admin').should('have.value','admin')
+        cy.get('input[id=login_password]').type('admin').should('have.value','admin')
+
+        // submitting
+        cy.get('[id=login_button]').click()
+
+        // not expecting the error alert to be visible
+        cy.get('[id=login_alert]').should('not.be.visible')
+
+        // checking the login was successful by checking the url
+        cy.url().should('include', '/user/home')
+
+        // todo: admin is a SYSTEM_MANAGER, check that its homepage contains something idk
+
+        // logging out cause it clashes with the other tests
+        cy.get('[id=logout_button]').click()
+
+        cy.url().should('include', '/user/login')
+    })
+
+    it('logging in with an existing INSTRUCTOR user and logging out', () => {
+
+        // filling the form
+        cy.get('input[id=login_username]').type('shoshi').should('have.value','shoshi')
+        cy.get('input[id=login_password]').type('works_with_mom').should('have.value','works_with_mom')
+
+        // submitting
+        cy.get('[id=login_button]').click()
+
+        // not expecting the error alert to be visible
+        cy.get('[id=login_alert]').should('not.be.visible')
+
+        // checking the login was successful by checking the url
+        cy.url().should('include', '/user/home')
+
+        // todo: shoshi is a INSTRUCTOR, check that its homepage contains the work plan
 
         // logging out cause it clashes with the other tests
         cy.get('[id=logout_button]').click()
