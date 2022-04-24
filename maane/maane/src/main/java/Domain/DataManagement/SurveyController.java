@@ -266,9 +266,10 @@ public class SurveyController {
 
     public Map<String, List<SurveyAnswers>> getAnswers() {
         Map<String, List<SurveyAnswers>> answers = new ConcurrentHashMap<>();
+        Map<String, List<SurveyAnswersDTO>> answersDB = surveyDAO.getAllAnswers();
 
-        for(String key: surveyDAO.getAllAnswers().keySet())
-            answers.put(key, answerConverter(surveyDAO.getAllAnswers().get(key)));
+        for(String key: answersDB.keySet())
+            answers.put(key, answerConverter(answersDB.get(key)));
 
         return answers;
     }

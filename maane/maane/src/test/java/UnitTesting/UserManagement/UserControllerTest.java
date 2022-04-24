@@ -42,7 +42,7 @@ public class UserControllerTest {
         Assert.assertTrue(userController.getConnectedUsers().containsKey(adminName));
         Assert.assertTrue(UserQueries.getInstance().userExists(adminName));
     }
-    
+
     @Test
     public void tester(){
         UserController userController = UserController.getInstance();
