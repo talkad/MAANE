@@ -1,7 +1,18 @@
 import * as Space from 'react-spaces';
 import React, {useEffect, useState} from "react";
 import Connection from "../../Communication/Connection";
-import {Button, Grid, IconButton, InputAdornment, Tab, Tabs, TextField, Typography} from "@mui/material";
+import {
+    Alert,
+    Button,
+    Collapse,
+    Grid,
+    IconButton,
+    InputAdornment,
+    Tab,
+    Tabs,
+    TextField,
+    Typography
+} from "@mui/material";
 
 import InfoIcon from '@mui/icons-material/Info';
 import LockIcon from '@mui/icons-material/Lock';
@@ -57,6 +68,10 @@ function InfoTabPanel(props){
 
     const [edit, setEdit] = useState(false);
 
+    const [error, setError] = useState(false);
+    const [errorSeverity, setErrorSeverity] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+
     const first_name_label_string = "שם פרטי";
     const last_name_label_string = "שם משפחה";
     const email_label_string = "כתובת דואר אלקטרוני";
@@ -64,7 +79,7 @@ function InfoTabPanel(props){
     const city_label_string = "עיר";
     const save_button_string = "שמירה";
 
-    const edit_string = 'ערכית פרטים';
+    const edit_string = 'עריכת פרטים';
 
     useEffect(() => {
         if (changes) {
@@ -105,29 +120,46 @@ function InfoTabPanel(props){
      * handler for saving the info data (sending the data to the server)
      */
     const saveInfoHandler = () => {
-        new Connection().updateProfileInfo(
-            values.firstName,
-            values.lastName,
-            values.email,
-            values.phoneNumber,
-            values.city,
-            saveInfoCallback
-        )
+        if(values.firstName.trim() === '' || values.lastName.trim() === ''){
+            setError(true)
+            setErrorSeverity('error')
+            setErrorMessage('שדות החובה לא יכולים להיות ריקים')
+        }
+        else{
+            setError(false)
+            new Connection().updateProfileInfo(
+                values.firstName,
+                values.lastName,
+                values.email,
+                values.phoneNumber,
+                values.city,
+                saveInfoCallback
+            )
+        }
     }
 
     return (
         <Grid container spacing={2} rowSpacing={4} sx={{paddingTop: 1}}>
             {/*edit button*/}
             <Grid item xs={6}>
-                <Button onClick={() => setEdit(!edit)} variant={edit ? "outlined" : "contained"} startIcon={edit? <EditOffIcon />  : <EditIcon />}>
+                <Button id={"profile_edit_button"} onClick={() => setEdit(!edit)} variant={edit ? "outlined" : "contained"} startIcon={edit? <EditOffIcon />  : <EditIcon />}>
                     {edit_string}
                 </Button>
             </Grid>
             <Grid item xs={8}/>
 
+            <Grid item xs={12}>
+                <Collapse in={error}>
+                    <Alert id={"profile_edit_alert"} severity={errorSeverity}>
+                        {errorMessage}
+                    </Alert>
+                </Collapse>
+            </Grid>
+
             {/*first name*/}
             <Grid item xs={6}>
                 <TextField
+                    id={"profile_edit_first_name"}
                     value={values.firstName}
                     onChange={handleChange('firstName')}
                     label={first_name_label_string}
@@ -135,12 +167,15 @@ function InfoTabPanel(props){
                         readOnly: !edit,
                     }}
                     fullWidth
+                    required
+                    error={error && values.firstName.trim() === ''}
                 />
             </Grid>
 
             {/*last name*/}
             <Grid item xs={6}>
                 <TextField
+                    id={"profile_edit_last_name"}
                     value={values.lastName}
                     onChange={handleChange('lastName')}
                     label={last_name_label_string}
@@ -148,12 +183,15 @@ function InfoTabPanel(props){
                         readOnly: !edit,
                     }}
                     fullWidth
+                    required
+                    error={error && values.lastName.trim() === ''}
                 />
             </Grid>
 
             {/*email*/}
             <Grid item xs={12}>
                 <TextField
+                    id={"profile_edit_email"}
                     value={values.email}
                     onChange={handleChange('email')}
                     label={email_label_string}
@@ -167,6 +205,7 @@ function InfoTabPanel(props){
             {/*phone number*/}
             <Grid item xs={12}>
                 <TextField
+                    id={"profile_edit_phone_number"}
                     value={values.phoneNumber}
                     onChange={handleChange('phoneNumber')}
                     label={phone_number_label_string}
@@ -180,6 +219,7 @@ function InfoTabPanel(props){
             {/*city*/}
             <Grid item xs={12}>
                 <TextField
+                    id={"profile_edit_city"}
                     value={values.city}
                     onChange={handleChange('city')}
                     label={city_label_string}
@@ -192,7 +232,7 @@ function InfoTabPanel(props){
 
             {/*save button*/}
             <Grid item xs={4}>
-                <Button disabled={!edit} onClick={saveInfoHandler} variant="contained" fullWidth>{save_button_string}</Button>
+                <Button id={"profile_edit_submit"} disabled={!edit} onClick={saveInfoHandler} variant="contained" fullWidth>{save_button_string}</Button>
             </Grid>
         </Grid>
     )
@@ -208,6 +248,10 @@ function SecurityTabPanel(props){
         newPassword: '',
         confirmNewPassword: '',
     });
+
+    const [error, setError] = useState(false);
+    const [errorSeverity, setErrorSeverity] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     const [showCurrentPassword, setShowCurrentPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
@@ -254,11 +298,21 @@ function SecurityTabPanel(props){
      * handles the update password action. sends a request to the server to change the password to the current user
      */
     const handleUpdatePassword = () => {
-        new Connection().changePassword(
-            values.currentPassword,
-            values.newPassword,
-            values.confirmNewPassword,
-            updatePasswordCallback);
+        if(values.currentPassword.trim() === '' || values.newPassword.trim() === '' ||
+            values.confirmNewPassword.trim() === ''){
+            setError(true);
+            setErrorSeverity('error');
+            setErrorMessage('נא למלא את כל השדות');
+        }
+        else{
+            setError(false);
+            new Connection().changePassword(
+                values.currentPassword,
+                values.newPassword,
+                values.confirmNewPassword,
+                updatePasswordCallback);
+        }
+
     }
 
     return (
@@ -266,7 +320,15 @@ function SecurityTabPanel(props){
             {/*current password*/}
             <Grid item xs={3}><Typography variant="h6">{change_password_title_section_string}</Typography></Grid>
             <Grid item xs={12}>
+                <Collapse in={error}>
+                    <Alert id={"change_password_alert"} severity={errorSeverity}>
+                        {errorMessage}
+                    </Alert>
+                </Collapse>
+            </Grid>
+            <Grid item xs={12}>
                 <TextField
+                    id={"change_password_current"}
                     value={values.currentPassword}
                     onChange={handleChange('currentPassword')}
                     label={current_password_label_string}
@@ -284,12 +346,14 @@ function SecurityTabPanel(props){
                         ),
                     }}
                     fullWidth
+                    error={error && values.currentPassword.trim() === ''}
                 />
             </Grid>
 
             {/*new password*/}
             <Grid item xs={12}>
                 <TextField
+                    id={"change_password_new"}
                     value={values.newPassword}
                     onChange={handleChange('newPassword')}
                     label={new_password_label_string}
@@ -307,12 +371,14 @@ function SecurityTabPanel(props){
                         ),
                     }}
                     fullWidth
+                    error={error && values.newPassword.trim() === ''}
                 />
             </Grid>
 
             {/*confirm new password*/}
             <Grid item xs={12}>
                 <TextField
+                    id={"change_password_confirm"}
                     value={values.confirmNewPassword}
                     onChange={handleChange('confirmNewPassword')}
                     label={confirm_new_password_label_string}
@@ -330,12 +396,13 @@ function SecurityTabPanel(props){
                         ),
                     }}
                     fullWidth
+                    error={error && values.confirmNewPassword.trim() === ''}
                 />
             </Grid>
 
             {/*save button*/}
             <Grid item xs={4}>
-                <Button onClick={handleUpdatePassword} variant="contained" fullWidth>{update_password_button_string}</Button>
+                <Button id={"change_password_submit_button"} onClick={handleUpdatePassword} variant="contained" fullWidth>{update_password_button_string}</Button>
             </Grid>
         </Grid>
     )

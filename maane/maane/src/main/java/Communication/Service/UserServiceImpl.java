@@ -8,6 +8,7 @@ import DataManagement.DataController;
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.User;
 import Domain.UsersManagment.UserController;
+import Persistence.UserQueries;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -32,6 +33,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Response<String> pwdRes;
         Response<User> userRes = UserController.getInstance().getUserRes(username);
 
         if(userRes.isFailure()){
@@ -45,28 +47,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority(userRes.getResult().getState().getStateEnum().getState()));
 
-        return new org.springframework.security.core.userdetails.User(username, DataController.getInstance().loadPassword(username), authorities); //todo - implement the function that loads a password by username
-    }
+        pwdRes = UserQueries.getInstance().getPassword(username);
 
-//    @Override
-//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-//        Response<User> userRes = UserController.getInstance().getUserRes(username);
-//        Response<String> pwdRes = UserController.getInstance().getPassword(username);
-//        User user = userRes.getResult();
-//        System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaa");
-//        if(userRes.isFailure() || pwdRes.isFailure()){
-//            log.error("user not found");
-//            throw new UsernameNotFoundException("user not found");
-//        }
-//        else {
-//            log.info("user {} found", username);
-//        }
-//
-//        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-//        authorities.add(new SimpleGrantedAuthority(user.getState().getStateEnum().getState()));
-//
-//        return new org.springframework.security.core.userdetails.User(user.getUsername(), pwdRes.getResult(), authorities);
-//    }
+        return new org.springframework.security.core.userdetails.User(username, pwdRes.isFailure()? "" : pwdRes.getResult(), authorities);
+    }
 
     @Override
     public Response<String> login(String username) {

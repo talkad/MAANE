@@ -109,6 +109,7 @@ function Row(props) {
                 {/* the arrow to open the extra info */}
                 <TableCell>
                     <IconButton
+                        id={`school_collapse_button_${row.id}`}
                         aria-label="expand row"
                         size="small"
                         onClick={() => setOpen(!open)}
@@ -122,7 +123,7 @@ function Row(props) {
                 <TableCell>{row.city}</TableCell>
             </TableRow>
             {/*secondary school's into*/}
-            <TableRow>
+            <TableRow id={`school_${row.id}_row`}>
                 <TableCell style={{ paddingBottom: 0, paddingTop: 0}} colSpan={6}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         <Grid container spacing={1}>
@@ -214,7 +215,7 @@ function Row(props) {
                                         <ListItemText primary={coordinator_name_primary_string} secondary={coordinator.firstName + " " + coordinator.lastName} />
                                         <ListItemText primary={coordinator_email_primary_string} secondary={coordinator.email} />
                                         <ListItemText primary={coordinator_phone_number_primary_string} secondary={coordinator.phoneNumber} />
-                                        <Button onClick={() => props.handleOpenRemoveCoordinatorDialog(coordinator.firstName + " " + coordinator.lastName, row.id)} variant="outlined" color="error">{remove_coordinator_button_string}</Button>
+                                        <Button id={`remove_coordinator_${coordinator.email}`} onClick={() => props.handleOpenRemoveCoordinatorDialog(coordinator.firstName + " " + coordinator.lastName, row.id)} variant="outlined" color="error">{remove_coordinator_button_string}</Button>
                                     </ListItem>)}
                                 </List>
                             </Grid>
@@ -224,7 +225,7 @@ function Row(props) {
                                 <Typography>{action_title_string}</Typography>
                             </Grid>
                             <Grid item xs={6}>
-                                <Button onClick={() => props.handleOpenAddCoordinatorDialog(row.id, row.name)} variant="outlined" sx={{marginBottom: 1}}>{add_coordinator_string}</Button>
+                                <Button id={`school_add_coordinator_button_${row.id}`} onClick={() => props.handleOpenAddCoordinatorDialog(row.id, row.name)} variant="outlined" sx={{marginBottom: 1}}>{add_coordinator_string}</Button>
                             </Grid>
                         </Grid>
                     </Collapse>
@@ -258,6 +259,7 @@ function AddCoordinatorDialog(props){
 
     const error_message_string = "נא למלא את כל השדות";
     const submit_button_string = "הוספ/י";
+    const cancel_button_string = "ביטול";
 
     /**
      * onChange handler for the text-fields
@@ -290,13 +292,19 @@ function AddCoordinatorDialog(props){
             <DialogTitle><Typography variant="h5" align="center">{title_string} {props.schoolName} ({props.schoolID})</Typography></DialogTitle>
 
             <Stack component="form" sx={{alignItems: "center"}} onSubmit={handleSubmit}>
-                {/*todo: make this look better*/}
                 <Grid container spacing={1}>
+                    <Collapse in={error}>
+                        <Grid item xs={12} sx={{marginRight: "3%", marginLeft: "3%"}}>
+                            <Alert id={"add_coordinator_alert"} severity="error">{error_message_string}</Alert>
+                        </Grid>
+                    </Collapse>
+
                     <Grid item xs={12}  sx={{marginRight: "3%", marginLeft: "3%"}}>
                         <Grid container spacing={1}>
                             {/*first name*/}
                             <Grid item xs={6}>
                                 <TextField
+                                    id={"add_coordinator_first_name"}
                                     value={values.firstName}
                                     onChange={handleTextFieldsChange("firstName")}
                                     label={first_name_label_string}
@@ -308,6 +316,7 @@ function AddCoordinatorDialog(props){
                             {/*last name*/}
                             <Grid item xs={6}>
                                 <TextField
+                                    id={"add_coordinator_last_name"}
                                     value={values.lastName}
                                     onChange={handleTextFieldsChange("lastName")}
                                     label={last_name_label_string}
@@ -321,6 +330,7 @@ function AddCoordinatorDialog(props){
                     {/*email*/}
                     <Grid item xs={12} sx={{marginRight: "3%", marginLeft: "3%"}}>
                         <TextField
+                            id={"add_coordinator_email"}
                             value={values.email}
                             onChange={handleTextFieldsChange("email")}
                             label={email_label_string}
@@ -332,6 +342,7 @@ function AddCoordinatorDialog(props){
                     {/*phone number*/}
                     <Grid item xs={12} sx={{marginRight: "3%", marginLeft: "3%"}}>
                         <TextField
+                            id={"add_coordinator_phone_number"}
                             value={values.phoneNumber}
                             onChange={handleTextFieldsChange("phoneNumber")}
                             label={phone_number_label_string}
@@ -340,14 +351,10 @@ function AddCoordinatorDialog(props){
                             fullWidth
                         />
                     </Grid>
-                    {error && <Grid item xs={6} sx={{marginRight: "3%", marginLeft: "3%"}}>
-                        <Alert severity="error">{error_message_string}</Alert>
-                    </Grid>}
-
-                    <Grid item xs={6} sx={{marginRight: "3%", marginLeft: "3%"}}>
-                        <Button fullWidth type="submit" color="primary" sx={{marginBottom: 1}} variant="outlined">{submit_button_string}</Button>
-                    </Grid>
                 </Grid>
+                <Button id={"add_coordinator_submit_button"} type="submit" color="primary" variant="contained" sx={{width: "40%", marginBottom: "1%", marginTop: "1%"}}>{submit_button_string}</Button>
+
+                <Button id={"add_coordinator_cancel_button"} color="error" onClick={() => props.onClose()} variant="contained" sx={{width: "40%", marginBottom: "1%", marginTop: "1%"}}>{cancel_button_string}</Button>
             </Stack>
         </Dialog>
     )
@@ -374,11 +381,11 @@ function RemoveCoordinatorDialog(props){
             <Grid container justifyContent="center" spacing={0}>
                 <Grid item align="center" xs={6}>
                     {/*the cancel button*/}
-                    <Button onClick={() => props.onClose()} sx={{marginBottom: 1, width: "50%"}} variant="outlined">{cancel_string}</Button>
+                    <Button id={"remove_coordinator_submit_button"} onClick={() => props.onClose()} sx={{marginBottom: 1, width: "50%"}} variant="outlined">{cancel_string}</Button>
                 </Grid>
                 <Grid item align="center" xs={6}>
                     {/*the delete button*/}
-                    <Button onClick={() => handleSubmitDeletion()} sx={{marginBottom: 1, width: "50%"}} color="error" variant="outlined">{delete_string}</Button>
+                    <Button id={"remove_coordinator_cancel_button"} onClick={() => handleSubmitDeletion()} sx={{marginBottom: 1, width: "50%"}} color="error" variant="outlined">{delete_string}</Button>
                 </Grid>
             </Grid>
         </Dialog>
@@ -390,7 +397,11 @@ const rows = [
         "idk", 420, "050-1234567", "lame", "narnia", "idk",
         "shula","35423", "super supervision", "hahawhoreadsthis@lmao.lol",
         [{firstName: "a", lastName: "b", email: "idk@post.lol", phoneNumber: "050-lmao"},
-            {firstName: "c", lastName: "d", email: "idk2@post.lol", phoneNumber: "054-lmao"}])
+            {firstName: "c", lastName: "d", email: "idk2@post.lol", phoneNumber: "054-lmao"}]),
+    createData(431, "hello there", "grove street", "ronit", "elementary",
+        "idk", 420, "050-1234567", "lame", "narnia", "idk",
+        "shula","35423", "super supervision", "hahawhoreadsthis@lmao.lol",
+        [{firstName: "c", lastName: "d", email: "idk2@post.lol", phoneNumber: "054-lmao"}])
 ]
 
 export default function SchoolsManagement(props){

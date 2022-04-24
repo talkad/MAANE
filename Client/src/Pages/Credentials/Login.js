@@ -5,7 +5,7 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import {Alert, IconButton, InputAdornment, Paper,} from "@mui/material";
+import {Alert, Collapse, IconButton, InputAdornment, Paper,} from "@mui/material";
 import Connection from "../../Communication/Connection";
 import { useNavigate } from 'react-router-dom'
 
@@ -13,7 +13,6 @@ export default function Login(props){
     const [showPassword, setShowPassword] = useState(false);
     const [showError, setShowError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-    const [loaded, setLoaded] = useState(true);
 
     let navigate = useNavigate();
 
@@ -28,6 +27,12 @@ export default function Login(props){
      */
     useEffect(() => {
         props.setHideBars(true);
+
+        console.log(props.type)
+        if (props.type !== null){ // if the user tries to get to the login when he's already logged in. moving him back to the home page
+            props.setHideBars(false);
+            navigate(`../home`, {replace: true})
+        }
       }, []);
 
     /**
@@ -35,22 +40,20 @@ export default function Login(props){
      * @param data the response from the server
      */
     const loginCallback = (data) => {
-
-        if(data.failure){
+        if(data.failure === "true"){
             setShowError(true);
             setErrorMessage('שם משתמש או סיסמה לא נכונים');
         }
         else{
-            console.log(data);
             window.sessionStorage.setItem('access_token', data.access_token);
-            window.sessionStorage.setItem('refresh_token', data.refresh_token)
-            props.changeType(data.permission);
+            window.sessionStorage.setItem('refresh_token', data.refresh_token);
+            window.sessionStorage.setItem('permission', data.permission);
+            props.setType(data.permission);
             props.setName(data.name);
             props.setHideBars(false);
 
             navigate(`../home`, {replace: true}) // replace meaning: https://reactrouter.com/docs/en/v6/examples/auth
         }
-
     }
 
     /**
@@ -77,7 +80,7 @@ export default function Login(props){
 
     return (
         <div className="Login">
-            {loaded && <div>
+            <div>
                 <h1>{header_string}</h1>
                 <Paper className="Login-paper" elevation={3}>
                     <Box className="Login-form" component="form" onSubmit={handleSubmit} noValidate sx={{mt: 1, }}>
@@ -89,7 +92,7 @@ export default function Login(props){
                             variant="standard"
                             required
                             fullWidth
-                            id="username"
+                            id="login_username"
                             label={username_label_string}
                             name="username"
                             autoComplete="username"
@@ -106,7 +109,7 @@ export default function Login(props){
                             name="password"
                             label={password_label_string}
                             type={showPassword ? 'text' : 'password'}
-                            id="password"
+                            id="login_password"
                             autoComplete="current-password"
                             InputProps={{
                                 endAdornment: (
@@ -121,9 +124,12 @@ export default function Login(props){
                                 ),
                             }}
                         />
-                        {showError && <Alert severity="error">{errorMessage}</Alert>}
+                        <Collapse in={showError}>
+                            <Alert id="login_alert" severity="error">{errorMessage}</Alert>
+                        </Collapse>
                         {/* submit login */}
                         <Button
+                            id="login_button"
                             color="secondary"
                             type="submit"
                             fullWidth
@@ -134,7 +140,7 @@ export default function Login(props){
                         </Button>
                     </Box>
                 </Paper>
-            </div>}
+            </div>
         </div>
     );
 }

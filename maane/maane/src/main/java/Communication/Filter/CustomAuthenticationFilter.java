@@ -55,7 +55,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         User user = (User)authentication.getPrincipal();
         Algorithm algorithm = Algorithm.HMAC256(KeyLoader.getInstance().getEncryptionKey());
         log.info("user {} attempts authentication", user);
-
+        System.out.println(user);
         UserController.getInstance().login(user.getUsername());
 
         String accessToken = JWT.create()
@@ -77,6 +77,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         Map<String, String> tokens = new HashMap<>();
         tokens.put("access_token", accessToken);
         tokens.put("refresh_token", refreshToken);
+        tokens.put("failure", "false");
         tokens.put("permission", user.getAuthorities().iterator().next().getAuthority());
         tokens.put("name", UserController.getInstance().getUser(user.getUsername()).getFirstName());
 
@@ -84,13 +85,18 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         new ObjectMapper().writeValue(response.getOutputStream(), tokens);
     }
 
-
     @Override
     //todo: implement it for preventing brute force attack
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
-//        response.setStatus(200); // todo - magic numbers - remove this line
-        System.out.println("helloooooooooooooooo");
-//        super.unsuccessfulAuthentication(request, response, failed);
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+
+        Map<String, String> tokens = new HashMap<>();
+        tokens.put("failure", "true");
+
+        response.setContentType(APPLICATION_JSON_VALUE);
+        new ObjectMapper().writeValue(response.getOutputStream(), tokens);
+
+        //        super.unsuccessfulAuthentication(request, response, failed);
     }
 
 }

@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import './RegisterUsers.css'
 import {
-    Alert, FormControlLabel,
+    Alert, Collapse, FormControlLabel,
     FormHelperText, FormLabel,
     Grid,
     IconButton,
@@ -85,7 +85,7 @@ export default function RegisterUsers(props){
 
     // notification snackbar
     const [openSnackbar, setOpenSnackbar] = useState(false);
-    const [snackbarSeverity, setSnackbarSeverity] = useState('error');
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
     const [snackbarMessage, setSnackbarMessage] = useState('');
 
     let navigate = useNavigate();
@@ -159,6 +159,7 @@ export default function RegisterUsers(props){
      * @param event the radio element in which the change occurred
      */
     const handleRadioChange = (event) => {
+        setSupervisorChoiceUsername('');
         setRadioValue(event.target.value);
     }
 
@@ -290,10 +291,11 @@ export default function RegisterUsers(props){
                         <Grid item xs={12} sx={{marginRight: "3%", marginLeft: "3%"}}>
                             {/* username text field */}
                             <TextField
+                                id="register_username"
                                 color="secondary"
                                 value={values.username}
                                 onChange={handleTextFieldsChange('username')}
-                                error={showError}
+                                error={showError && values.username.trim() === ''}
                                 margin="normal"
                                 variant="outlined"
                                 required
@@ -308,10 +310,11 @@ export default function RegisterUsers(props){
                         <Grid item xs={12} sx={{marginRight: "3%", marginLeft: "3%"}}>
                             {/* password text field */}
                             <TextField
+                                id="register_password"
                                 color="secondary"
                                 value={values.password}
                                 onChange={handleTextFieldsChange('password')}
-                                error={showError}
+                                error={showError && values.password.trim() === ''}
                                 margin="normal"
                                 variant="outlined"
                                 required
@@ -346,13 +349,14 @@ export default function RegisterUsers(props){
                                 {/*first name*/}
                                 <Grid item xs={6}>
                                     <TextField
+                                        id="register_first_name"
                                         color="secondary"
                                         variant="outlined"
                                         margin="normal"
                                         label={first_name_label_string}
                                         value={values.firstName}
                                         onChange={handleTextFieldsChange('firstName')}
-                                        error={showError}
+                                        error={showError && values.firstName.trim() === ''}
                                         fullWidth
                                         required
                                     />
@@ -361,13 +365,14 @@ export default function RegisterUsers(props){
                                 {/*last name*/}
                                 <Grid item xs={6}>
                                     <TextField
+                                        id="register_last_name"
                                         color="secondary"
                                         variant="outlined"
                                         margin="normal"
                                         label={last_name_label_string}
                                         value={values.lastName}
                                         onChange={handleTextFieldsChange('lastName')}
-                                        error={showError}
+                                        error={showError && values.lastName.trim() === ''}
                                         fullWidth
                                         required
                                     />
@@ -376,6 +381,7 @@ export default function RegisterUsers(props){
                                 {/*email name*/}
                                 <Grid item xs={12}>
                                     <TextField
+                                        id="register_email"
                                         color="secondary"
                                         variant="outlined"
                                         margin="normal"
@@ -389,6 +395,7 @@ export default function RegisterUsers(props){
                                 {/*phone number name*/}
                                 <Grid item xs={12}>
                                     <TextField
+                                        id="register_phone_number"
                                         color="secondary"
                                         variant="outlined"
                                         margin="normal"
@@ -402,6 +409,7 @@ export default function RegisterUsers(props){
                                 {/*city name*/}
                                 <Grid item xs={12}>
                                     <TextField
+                                        id="register_city"
                                         color="secondary"
                                         variant="outlined"
                                         margin="normal"
@@ -421,7 +429,7 @@ export default function RegisterUsers(props){
 
                         <Grid item xs={12} sx={{marginRight: "3%", marginLeft: "3%", marginTop: "3%"}}>
                             {/* registration action radio */}
-                            {props.type === "SYSTEM_MANAGER" && <FormControl>
+                            {props.type === "SYSTEM_MANAGER" && <FormControl id="register_action">
                                 <FormLabel>{action_radio_title_string}</FormLabel>
                                 <RadioGroup
                                     value={radioValue}
@@ -435,9 +443,10 @@ export default function RegisterUsers(props){
 
                         <Grid item xs={12} sx={{marginRight: "3%", marginLeft: "3%"}}>
                             {/* role choice form */}
-                            {radioValue === "0" && <FormControl color="secondary" sx={{ m: 1, minWidth: 120 }}>
+                            {radioValue === "0" && <FormControl error={showError && roleChoiceEnum === ''}  color="secondary" sx={{ m: 1, minWidth: 120 }}>
                                 <InputLabel id="role-select-helper-label">{select_role_label_string}</InputLabel>
                                 <Select
+                                    id="register_role_choice"
                                     labelId="role-select-helper-label"
                                     value={roleChoiceEnum}
                                     label={select_role_label_string}
@@ -452,9 +461,10 @@ export default function RegisterUsers(props){
                         <Grid item xs={12} sx={{marginRight: "3%", marginLeft: "3%"}}>
                             {/*optional select if the user is admin and want to register a non-supervisor user under an existing supervisor*/}
                             {props.type === 'SYSTEM_MANAGER' && radioValue === "0" && (roleChoiceEnum === "INSTRUCTOR" || roleChoiceEnum === "GENERAL_SUPERVISOR") &&
-                                <FormControl color="secondary" sx={{ m: 1, minWidth: 120 }}>
+                                <FormControl error={showError && supervisorChoiceUsername === ''}  color="secondary" sx={{ m: 1, minWidth: 120 }}>
                                     <InputLabel id="supervisor-select-helper-label">{select_supervisor_label_string}</InputLabel>
                                     <Select
+                                        id="register_supervisor_choice"
                                         labelId="supervisor-select-helper-label"
                                         value={supervisorChoiceUsername}
                                         label={select_supervisor_label_string}
@@ -470,10 +480,11 @@ export default function RegisterUsers(props){
                             {/*optional text-field if the user chose to register a supervisor*/}
                             {roleChoiceEnum === "SUPERVISOR" && radioValue === "0" &&
                                 <TextField
+                                    id="register_work_field"
                                     color="secondary"
                                     value={values.workField}
                                     onChange={handleTextFieldsChange('workField')}
-                                    error={showError}
+                                    error={showError && values.workField.trim() === ''}
                                     margin="normal"
                                     variant="outlined"
                                     required
@@ -485,7 +496,7 @@ export default function RegisterUsers(props){
                         <Grid item xs={12} sx={{marginRight: "3%", marginLeft: "3%"}}>
                             {/*optional select if the user is admin and want to register a user and make it a supervisor in the place of an existing one*/}
                             {(props.type === 'SYSTEM_MANAGER' && radioValue === "1") &&
-                                <FormControl color="secondary" sx={{ m: 1, minWidth: 120 }}>
+                                <FormControl error={showError && supervisorChoiceUsername === ''} id="register_supervisor_to_replace" color="secondary" sx={{ m: 1, minWidth: 120 }}>
                                     <InputLabel>{select_supervisor_label_string}</InputLabel>
                                     <Select
                                         value={supervisorChoiceUsername}
@@ -500,13 +511,16 @@ export default function RegisterUsers(props){
 
                         <Grid item xs={12} sx={{marginRight: "3%", marginLeft: "3%"}}>
                             {/*alert for errors*/}
-                            {showError && <Alert severity="error">{errorMessage}</Alert>}
+                            <Collapse in={showError}>
+                                <Alert id="register_alert" severity="error">{errorMessage}</Alert>
+                            </Collapse>
                         </Grid>
 
                         <Grid item xs={4}/>
                         <Grid item xs={8}>
                             {/* submit register button */}
                             <Button
+                                id="register_submit_button"
                                 color="secondary"
                                 type="submit"
                                 fullWidth
@@ -520,7 +534,7 @@ export default function RegisterUsers(props){
 
                         <Grid item xs={4}/>
                         <Grid item xs={8}>
-                            <Button sx={{marginBottom: 1, width: "50%"}} color='success' fullWidth variant="contained" onClick={() => navigate(-1)}>{finished_button_string}</Button>
+                            <Button id="register_finish_button" sx={{marginBottom: 1, width: "50%"}} color='success' fullWidth variant="contained" onClick={() => navigate(-1)}>{finished_button_string}</Button>
                         </Grid>
 
                     </Grid>

@@ -141,8 +141,14 @@ class Connection{
         })
             .catch(function (error) {
                 // handle error
-                console.log(`POST FAILED FOR '/user/login' with args: ${params}`)
+                console.log(`POST FAILED FOR '/user/login' with args: ${params}`) // TODO: remove this when done
                 console.log(error);
+
+                if (error.response){
+                    if (error.response.status === 401){
+                        callback({failure: "true"})
+                    }
+                }
             });
     }
 

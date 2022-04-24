@@ -11,6 +11,8 @@ import Domain.EmailManagement.EmailController;
 import Domain.WorkPlan.GoalsManagement;
 import Persistence.UserDBDTO;
 import Persistence.UserQueries;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,14 +22,14 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class UserController {
     private Map<String, User> connectedUsers;
-    private Security security;
+    private PasswordEncoder passwordEncoder;
     private GoalsManagement goalsManagement;
     private SurveyController surveyController;
     private EmailController emailController;
     private UserQueries userDAO;
 
     private UserController() {
-        this.security = Security.getInstance();
+        this.passwordEncoder = new BCryptPasswordEncoder();
         this.connectedUsers = new ConcurrentHashMap<>();
         this.goalsManagement = GoalsManagement.getInstance();
         this.surveyController = SurveyController.getInstance();
@@ -98,7 +100,7 @@ public class UserController {
         if(!userRes.isFailure()){
             User user = new User(userRes.getResult());
             connectedUsers.put(username, user);
-            System.out.println(username + " logged in successfully");
+
             return new Response<>(username, false, "successfully Logged in");
         }
         else{
@@ -151,7 +153,7 @@ public class UserController {
             if (!userDAO.userExists(userToRegister)){
                 Response<User> result = user.registerUser(userToRegister, userStateEnum, firstName, lastName, email, phoneNumber, city);
                 if (!result.isFailure()) {
-                    userDAO.insertUser(new UserDBDTO(result.getResult(), security.sha256(password)));
+                    userDAO.insertUser(new UserDBDTO(result.getResult(), passwordEncoder.encode(password)));
                     userDAO.addAppointment(currUser, userToRegister);
                     return new Response<>(result.getResult().getUsername(), false, "Registration occurred");
                 }
@@ -175,7 +177,7 @@ public class UserController {
 
                         Response<User> result = user.registerSupervisor(userToRegister, userStateEnum, workField, firstName, lastName, email, phoneNumber, city);
                         if (!result.isFailure()) {
-                            userDAO.insertUser(new UserDBDTO(result.getResult(), security.sha256(password)));
+                            userDAO.insertUser(new UserDBDTO(result.getResult(), passwordEncoder.encode(password)));
                             userDAO.addAppointment(currUser, userToRegister);
                             goalsManagement.addGoalsField(workField);
                             return new Response<>(result.getResult().getUsername(), false, "Registration occurred");
@@ -196,7 +198,7 @@ public class UserController {
                             if (!result.isFailure()) {
                                 Response<Boolean> appointmentRes = supervisor.addAppointment(userToRegister);
                                 if (appointmentRes.getResult()) {
-                                    userDAO.insertUser(new UserDBDTO(result.getResult(), security.sha256(password)));
+                                    userDAO.insertUser(new UserDBDTO(result.getResult(), passwordEncoder.encode(password)));
                                     userDAO.addAppointment(supervisor.getUsername(), userToRegister);
                                     return new Response<>(result.getResult().getUsername(), false, "Registration occurred");
                                 } else {
@@ -506,7 +508,7 @@ public class UserController {
 
     //for test purposes only
     public void clearUsers(){
-        this.security = Security.getInstance();
+        this.passwordEncoder = new BCryptPasswordEncoder();
         this.connectedUsers = new ConcurrentHashMap<>();
         this.userDAO.deleteUsers();
         this.goalsManagement = GoalsManagement.getInstance();
@@ -532,7 +534,7 @@ public class UserController {
                 if (userDAO.userExists(userToChangePassword)) {
                     Response<Boolean> res = user.changePasswordToUser(userToChangePassword);
                     if(res.getResult()){
-                        userDAO.updateUserPassword(userToChangePassword, security.sha256(newPassword));
+                        userDAO.updateUserPassword(userToChangePassword, passwordEncoder.encode(newPassword));
                     }
                     return res;
                 }
@@ -552,12 +554,12 @@ public class UserController {
     public Response<Boolean> changePassword(String currUser, String currPassword, String newPassword, String confirmPassword){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
-            if (security.sha256(currPassword).equals(userDAO.getPassword(currUser).getResult()))
+            if (passwordEncoder.encode(currPassword).equals(userDAO.getPassword(currUser).getResult()))
             {
                 if (newPassword.equals(confirmPassword)) {
                     Response<Boolean> res = user.changePassword();
                     if (res.getResult()) {
-                        userDAO.updateUserPassword(currUser, security.sha256(newPassword));
+                        userDAO.updateUserPassword(currUser, passwordEncoder.encode(newPassword));
                     }
                     return res;
                 } else {
@@ -694,16 +696,16 @@ public class UserController {
 
     public Response<Boolean> verifyUser(String currUser, String password){
          if(connectedUsers.containsKey(currUser)) {
-             return new Response<>(security.sha256(password).equals(userDAO.getPassword(currUser).getResult()), false, "");
+             return new Response<>(passwordEncoder.encode(password).equals(userDAO.getPassword(currUser).getResult()), false, "");
          }
          else {
              return new Response<>(null, true, "User not connected");
          }
      }
 
-    public void adminBoot(String username, String password) { // this is not going to work because of incorrect pwd encryption
+    public void adminBoot(String username, String password) {
         User user = new User(username, UserStateEnum.SYSTEM_MANAGER);
-        userDAO.insertUser(new UserDBDTO(user, security.sha256(password)));
+        userDAO.insertUser(new UserDBDTO(user, passwordEncoder.encode(password)));
         //todo temp static data
 /*        login("admin");
         registerUserBySystemManager("admin", "ronit", "ronit", UserStateEnum.SUPERVISOR, "", "science", "ronit", "ronit", "ronit@gmail.com", "", "");
@@ -711,8 +713,14 @@ public class UserController {
         logout("admin");*/
     }
 
-    public void notifySurveyCreation(String username, String indexer) {
+    public void notifySurveyCreation(String username, String surveyToken) {
         // todo - talk to tal see if we still need this
+
+        // Yes we need it,
+        // the username is the name of the supervisor created a survey,
+        // so you need to email all relevant coordinator and send them this link (for now):
+        // http://localhot:8080/survey/getSurvey/surveyID={surveyToken}
+        // thanks in advance, Tal
     }
 
 
@@ -823,7 +831,7 @@ public class UserController {
                             userDAO.addAppointment(result.getResult().getUsername(), appointee);
                         }
                         result.getResult().setSurveys(supervisor.getSurveys().getResult());
-                        userDAO.insertUser(new UserDBDTO(result.getResult(), security.sha256(password)));
+                        userDAO.insertUser(new UserDBDTO(result.getResult(),passwordEncoder.encode(password)));
                         userDAO.removeUser(currSupervisor);
                         connectedUsers.remove(currSupervisor);
                         return transferSupervisionRes;

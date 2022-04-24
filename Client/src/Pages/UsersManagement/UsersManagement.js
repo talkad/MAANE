@@ -86,6 +86,7 @@ function Row(props) {
                 {/* the arrow to open the extra info */}
                 <TableCell>
                     <IconButton
+                        id={`user_collapse_button_${row.username}`}
                         aria-label="expand row"
                         size="small"
                         onClick={() => setOpen(!open)}
@@ -100,7 +101,7 @@ function Row(props) {
                         <Grid item xs={4}>{row.name}</Grid>
                     </Grid>
                 </TableCell>
-                <TableCell>{row.role}</TableCell>
+                <TableCell id={`td_role_${row.username}`}>{row.role}</TableCell>
             </TableRow>
             {/*secondary user's into*/}
             <TableRow>
@@ -138,15 +139,15 @@ function Row(props) {
                             {/* the action buttons for each user */}
                             <Grid sx={{marginBottom: 1}} container spacing={1}>
                                 {/*editing actions*/}
-                                <Grid item xs={1.5}><Button fullWidth onClick={() => props.handleOpenCPDialog(row.username, row.name)} color="secondary" variant="outlined">{change_password_button_string}</Button></Grid>
-                                <Grid item xs={1.5}><Button fullWidth onClick={() => props.handleOpenEditSchoolsDialog(row.username, row.name, row.schools)} color="secondary" variant="outlined">{edit_schools_button_string}</Button></Grid>
+                                <Grid item xs={1.5}><Button id={`change_password_${row.username}`} fullWidth onClick={() => props.handleOpenCPDialog(row.username, row.name)} color="secondary" variant="outlined">{change_password_button_string}</Button></Grid>
+                                <Grid item xs={1.5}><Button id={`edit_schools_${row.username}`} fullWidth onClick={() => props.handleOpenEditSchoolsDialog(row.username, row.name, row.schools)} color="secondary" variant="outlined">{edit_schools_button_string}</Button></Grid>
                                 {props.supervisor !== undefined && <Grid item xs={1.5}>
                                     <Button fullWidth onClick={() => props.handleOpenTransferSuperDialog(row.name, row.username, props.supervisorName, props.supervisor)} color="secondary" variant="outlined">{make_supervisor_button_string}</Button>
                                 </Grid>}
                             </Grid>
                             <Grid container spacing={1}>
                                 {/*removing user*/}
-                                <Grid item xs={1.5}><Button fullWidth onClick={() => props.handleOpenDeleteDialog(row.username, row.name)} color="error" variant="outlined">{delete_user_button_string}</Button></Grid>
+                                <Grid item xs={1.5}><Button id={`remove_user_${row.username}`} fullWidth onClick={() => props.handleOpenDeleteDialog(row.username, row.name)} color="error" variant="outlined">{delete_user_button_string}</Button></Grid>
                             </Grid>
                         </Box>
                     </Collapse>
@@ -203,7 +204,7 @@ function SystemManagerRow(props) {
                         <Grid item xs={4}>{row.name}</Grid>
                     </Grid>
                 </TableCell>
-                <TableCell>{row.role}</TableCell>
+                <TableCell id={`td_work_field_${row.username}`}>{row.role}</TableCell>
             </TableRow>
             {/*secondary user's into*/}
             <TableRow>
@@ -307,11 +308,11 @@ function DeleteUserDialog(props){
             <Grid container justifyContent="center" spacing={0}>
                 <Grid item align="center" xs={6}>
                     {/*the cancel button*/}
-                    <Button onClick={() => props.onClose()} sx={{marginBottom: 1, width: "50%"}} variant="outlined">{cancel_string}</Button>
+                    <Button id={"remove_user_submit_button"} onClick={() => props.onClose()} sx={{marginBottom: 1, width: "50%"}} variant="outlined">{cancel_string}</Button>
                 </Grid>
                 <Grid item align="center" xs={6}>
                     {/*the delete button*/}
-                    <Button onClick={() => handleSubmitDeletion()} sx={{marginBottom: 1, width: "50%"}} color="error" variant="outlined">{delete_string}</Button>
+                    <Button id={"remove_user_cancel_button"} onClick={() => handleSubmitDeletion()} sx={{marginBottom: 1, width: "50%"}} color="error" variant="outlined">{delete_string}</Button>
                 </Grid>
             </Grid>
         </Dialog>
@@ -357,8 +358,19 @@ function TransferSupervisionDialog(props){
  * @returns {JSX.Element} the element
  */
 function ChangePasswordDialog(props){
+    const [values, setValues] = useState({
+        newPassword: '',
+        confirmPassword: ''
+    });
+
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+    // error states
+    const [error, setError] = useState(false);
+    const [noMatchError, setNoMatchError] = useState(false);
+    const [errorSeverity, setErrorSeverity] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     const title_string = "שינוי סיסמה עבור";
     const password_string = "סיסמה חדשה";
@@ -367,22 +379,36 @@ function ChangePasswordDialog(props){
     const cancel_string = "ביטול";
 
     /**
+     * onChange handler for the text-fields
+     * @param props the field who's been changed
+     * @returns {(function(*): void)|*} updating the new values in the state hook
+     */
+    const handleTextFieldsChange = (props) => (event) => {
+        setValues({ ...values, [props]: event.target.value})
+    }
+
+    /**
      * gathers the input and passing it to the provided callback
      * @param event the elements' status
      */
     const handleSubmit = (event) => {
         event.preventDefault();
-        const data = new FormData(event.currentTarget);
 
-        if (data.get("password") === '' || data.get('confirmPassword') === ''){
-            // todo: raise error
+        if (values.newPassword === '' || values.confirmPassword === ''){
+            setError(true);
+            setNoMatchError(false);
+            setErrorSeverity('error');
+            setErrorMessage('נא למלא את כל השדות');
         }
         else{
-            if (data.get('password') === data.get('confirmPassword')){
-                props.callback(props.selectedUser, data.get("password"), data.get("confirmPassword"));
+            if (values.newPassword === values.confirmPassword){
+                props.callback(props.selectedUser, values.newPassword, values.confirmPassword);
             }
             else{
-                // todo: raise error
+                setNoMatchError(true);
+                setError(false);
+                setErrorSeverity('error');
+                setErrorMessage('הסיסמאות שהוכנסו לא תואמות');
             }
         }
     }
@@ -391,53 +417,66 @@ function ChangePasswordDialog(props){
         <Dialog fullWidth maxWidth="sm" onClose={props.onClose} open={props.open}>
             <DialogTitle><Typography variant="h5" align="center">{title_string} {props.selectedName}</Typography></DialogTitle>
             <Stack component="form" sx={{alignItems: "center"}} onSubmit={handleSubmit}>
+                <Collapse in={error || noMatchError}>
+                    <Alert id={`change_password_alert`} severity={errorSeverity}>
+                        {errorMessage}
+                    </Alert>
+                </Collapse>
+
                 {/*the new password field*/}
                 {/*todo: the adornment is on the wrong side for some reason*/}
-                <TextField name="password"
-                           sx={{paddingBottom: 1, width: "50%"}}
-                           id="outlined-basic"
-                           label={password_string}
-                           variant="outlined"
-                           type={showPassword ? 'text' : 'password'}
-                           InputProps={{
-                               endAdornment: (
-                                   <InputAdornment position="end">
-                                       <IconButton
-                                           onClick={() => setShowPassword(!showPassword)}
-                                           onMouseDown={(event) => event.preventDefault()}
-                                       >
-                                           {showPassword ? <VisibilityOff /> : <Visibility />}
-                                       </IconButton>
-                                   </InputAdornment>
-                               ),
-                           }}/>
+                <TextField
+                    id={`change_password_new`}
+                    error={noMatchError || (error && values.newPassword.trim() === '')}
+                    value={values.newPassword}
+                    onChange={handleTextFieldsChange('newPassword')}
+                    sx={{paddingBottom: 1, width: "50%"}}
+                    label={password_string}
+                    variant="outlined"
+                    type={showPassword ? 'text' : 'password'}
+                    InputProps={{
+                           endAdornment: (
+                               <InputAdornment position="end">
+                                   <IconButton
+                                       onClick={() => setShowPassword(!showPassword)}
+                                       onMouseDown={(event) => event.preventDefault()}
+                                   >
+                                       {showPassword ? <VisibilityOff /> : <Visibility />}
+                                   </IconButton>
+                               </InputAdornment>
+                           ),
+                       }}/>
                 {/*confirm password*/}
-                <TextField name="confirmPassword"
-                           sx={{paddingBottom: 1, width: "50%"}}
-                           label={confirm_password_string}
-                           variant="outlined"
-                           type={showConfirmPassword ? 'text' : 'password'}
-                           InputProps={{
-                               endAdornment: (
-                                   <InputAdornment position="end">
-                                       <IconButton
-                                           onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                           onMouseDown={(event) => event.preventDefault()}
-                                       >
-                                           {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
-                                       </IconButton>
-                                   </InputAdornment>
-                               ),
-                           }}/>
+                <TextField
+                    id={`change_password_confirm`}
+                    error={noMatchError || (error && values.confirmPassword.trim() === '')}
+                    value={values.confirmPassword}
+                    onChange={handleTextFieldsChange('confirmPassword')}
+                    sx={{paddingBottom: 1, width: "50%"}}
+                    label={confirm_password_string}
+                    variant="outlined"
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    InputProps={{
+                       endAdornment: (
+                           <InputAdornment position="end">
+                               <IconButton
+                                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                   onMouseDown={(event) => event.preventDefault()}
+                               >
+                                   {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                               </IconButton>
+                           </InputAdornment>
+                       ),
+                   }}/>
                 {/*the submit button*/}
                 <Grid container justifyContent="center" spacing={0}>
                     <Grid item align="center" xs={4}>
                         {/*the cancel button*/}
-                        <Button onClick={() => props.onClose()} sx={{marginBottom: 1, width: "50%"}} variant="outlined">{cancel_string}</Button>
+                        <Button id={`change_password_cancel_button`} onClick={() => props.onClose()} sx={{marginBottom: 1, width: "50%"}} variant="outlined">{cancel_string}</Button>
                     </Grid>
                     <Grid item align="center" xs={4}>
                         {/*the change button*/}
-                        <Button type="submit" color="success" sx={{marginBottom: 1, width: "50%"}} variant="outlined">{change_string}</Button>
+                        <Button id={`change_password_submit_button`} type="submit" color="success" sx={{marginBottom: 1, width: "50%"}} variant="outlined">{change_string}</Button>
                     </Grid>
                 </Grid>
             </Stack>
