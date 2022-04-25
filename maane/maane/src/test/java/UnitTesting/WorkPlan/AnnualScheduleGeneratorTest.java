@@ -7,7 +7,6 @@ import Domain.UsersManagment.UserController;
 import Domain.UsersManagment.UserStateEnum;
 import Domain.WorkPlan.AnnualScheduleGenerator;
 import Domain.WorkPlan.GoalsManagement;
-import Persistence.Connect;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -21,8 +20,8 @@ public class AnnualScheduleGeneratorTest {
     @Before
     public void setup(){
         ServerContextInitializer.getInstance().setMockMode();
-        GoalsManagement.getInstance().clearGoals();
         UserController.getInstance().clearUsers();
+        GoalsManagement.getInstance().clearGoals();
         userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");

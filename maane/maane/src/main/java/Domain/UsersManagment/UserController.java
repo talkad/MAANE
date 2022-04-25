@@ -35,7 +35,7 @@ public class UserController {
         this.surveyController = SurveyController.getInstance();
         this.emailController = EmailController.getInstance();
         this.userDAO = UserQueries.getInstance();
-        adminBoot("admin", "admin");
+        adminBoot("admin", "admin");//todo need to hide password in db
     }
 
     private static class CreateSafeThreadSingleton {
@@ -824,7 +824,7 @@ public class UserController {
     }
 
     public Response<Boolean> transferSupervision(String currUser, String currSupervisor, String newSupervisor, String password, String firstName, String lastName, String email, String phoneNumber, String city){
-        if(connectedUsers.containsKey(currUser)) {//todo maybe remove all workPlans and surveys
+        if(connectedUsers.containsKey(currUser)) {//todo maybe remove all workPlans
             User user = connectedUsers.get(currUser);
             Response<Boolean> transferSupervisionRes = user.transferSupervision(currSupervisor, newSupervisor);
             if(!transferSupervisionRes.isFailure()){
@@ -862,7 +862,7 @@ public class UserController {
     }
 
     public Response<Boolean> transferSupervisionToExistingUser(String currUser, String currSupervisor, String newSupervisor){
-        if(connectedUsers.containsKey(currUser)) {//todo maybe remove all workPlans and surveys
+        if(connectedUsers.containsKey(currUser)) {//todo maybe remove all workPlans
             User user = connectedUsers.get(currUser);
             Response<Boolean> transferSupervisionRes = user.transferSupervision(currSupervisor, newSupervisor);
             if(!transferSupervisionRes.isFailure()){
@@ -877,9 +877,10 @@ public class UserController {
                     newSup.removeAppointment(newSupervisor);//remove yourself from your own appointment
                     userDAO.removeAppointment(newSup.getUsername(), newSup.getUsername());
                     newSup.setSurveys(currSup.getSurveys().getResult());
-                    newSup.setSchools(new Vector<>());//todo move surveys in db as well
+                    newSup.setSchools(new Vector<>());
                     userDAO.resetSchools(newSup.getUsername());
                     userDAO.updateUserState(newSup.getUsername(), newSup.getState().getStateEnum().getState());
+                    userDAO.updateSurveys(newSup.getUsername(), newSup.getSurveys().getResult());
                     userDAO.removeUser(currSupervisor);
                     connectedUsers.remove(currSupervisor);//todo maybe dont delete old sup just change his role
                     if(connectedUsers.containsKey(newSupervisor)){

@@ -19,7 +19,7 @@ import java.util.Vector;
 import static Domain.DataManagement.AnswerState.AnswerType.MULTIPLE_CHOICE;
 
 
-public class SupervisorTests extends AcceptanceTests{
+public class SupervisorTests extends AcceptanceTests{//todo reset the usercontroller db and the surveys db
 
     private String supervisorName1;
     private String instructorName1;
@@ -32,6 +32,7 @@ public class SupervisorTests extends AcceptanceTests{
         boolean initialized = false;
         if(!initialized) {
             super.setUp(true);
+
             String adminName = "admin";
             supervisorName1 = "supervisor1";
             instructorName1 = "instructor1";
@@ -45,8 +46,7 @@ public class SupervisorTests extends AcceptanceTests{
             ins2Schools.add("5");
             ins2Schools.add("6");
             userBridge.login(adminName);
-            System.out.println(userBridge.registerUserBySystemManager(adminName, new UserDTO(adminName, "science", supervisorName1, supervisorName1, UserStateEnum.SUPERVISOR,"Ronit", "Blisco", "ronit@gmail.com", "0501111111", "Tel Aviv", new Vector<>()), "").isFailure());
-
+            userBridge.registerUserBySystemManager(adminName, new UserDTO(adminName, "science", supervisorName1, supervisorName1, UserStateEnum.SUPERVISOR,"Ronit", "Blisco", "ronit@gmail.com", "0501111111", "Tel Aviv", new Vector<>()), "");
             userBridge.registerUserBySystemManager(adminName, new UserDTO(adminName, "", instructorName1, instructorName1, UserStateEnum.INSTRUCTOR, "dan", "dani", "dan@gmail.com", "0501111111", "Tel Aviv", ins1Schools), supervisorName1);
             userBridge.registerUserBySystemManager(adminName, new UserDTO(adminName, "", instructorName2, instructorName2, UserStateEnum.INSTRUCTOR, "ben", "beni", "ben@gmail.com", "0501111111", "Tel Aviv", ins2Schools), supervisorName1);
             userBridge.login(supervisorName1);

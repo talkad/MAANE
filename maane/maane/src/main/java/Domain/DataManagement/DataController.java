@@ -12,12 +12,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DataController {
     private Map<String, School> schools;
-    //private UserController userController;
 
 
     private DataController() {
         this.schools = new ConcurrentHashMap<>();
-        //this.userController = UserController.getInstance();
     }
 
     private static class CreateSafeThreadSingleton {
@@ -31,7 +29,7 @@ public class DataController {
     public Response<List<String>> getCoordinatorsEmails(String workField){
         List<String> emails = new Vector<>();
         for (String symbol: schools.keySet()) {
-            if(schools.get(symbol).getCoordinators().containsKey(workField)){
+            if(schools.get(symbol).getCoordinators().containsKey(workField)){//todo check that there is actually an email assigned
                 emails.add(schools.get(symbol).getCoordinators().get(workField).getEmail());
             }
         }
