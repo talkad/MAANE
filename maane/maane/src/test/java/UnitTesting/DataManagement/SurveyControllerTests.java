@@ -46,7 +46,7 @@ public class SurveyControllerTests {
 
         surveyDTO = new SurveyDTO();
         surveyController.clearCache();
-        UserController.getInstance().clearUsers();
+        UserController.getInstance().clearUsers();//todo probably set ock mode on users
 
         List<String> questions1 = Arrays.asList("que1", "que2", "que3");
         List<List<String>> answers1 = Arrays.asList(new LinkedList<>(), Arrays.asList("1", "2"), Arrays.asList("1", "2"));

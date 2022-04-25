@@ -22,7 +22,7 @@ public class Connect {
 
 //            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/MAANE", "postgres", "1234");
 //            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/MaaneDb", "postgres", "12345");
-//            conn = DriverManager.getConnection(url, dbUsername, dbPassword);
+            //conn = DriverManager.getConnection(url, dbUsername, dbPassword);
 
         } catch (SQLException throwables) {
             throwables.printStackTrace();

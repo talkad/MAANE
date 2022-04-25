@@ -12,7 +12,7 @@ import org.junit.Test;
 public class DataControllerTests {
 
     @Before
-    public void setup(){
+    public void setup(){//todo probably set mock mode
         UserController.getInstance().clearUsers();
         GoalsManagement.getInstance().clearGoals();
         DataController.getInstance().clearSchools();

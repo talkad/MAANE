@@ -3,6 +3,7 @@ package AcceptanceTesting.Bridge;
 import Communication.DTOs.GoalDTO;
 import Communication.DTOs.UserDTO;
 import Communication.DTOs.WorkPlanDTO;
+import Communication.Initializer.ServerContextInitializer;
 import Communication.Service.Interfaces.UserService;
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.User;
@@ -219,7 +220,7 @@ public class ProxyBridgeUser implements UserService {
 
     public void setMockDB() { //for tests purposes only
         if (real != null) {
-            Connect.setMockDB();
+            ServerContextInitializer.getInstance().setMockMode();
         }
     }
 }

@@ -119,7 +119,7 @@ public class UserQueries {
                 userDBDTO.setPhoneNumber(result.getString("phoneNumber"));
                 userDBDTO.setCity(result.getString("city"));
                 userDBDTO.setPassword(result.getString("password"));
-                userDBDTO.setSurveys(getUserSurveys(result.getString("username")));
+                //userDBDTO.setSurveys(getUserSurveys(result.getString("username")));//todo bring back when fixed
 
                 statement = Connect.conn.prepareStatement(userSchoolsSql);
                 statement.setString(1, username);
@@ -219,9 +219,9 @@ public class UserQueries {
             preparedStatement.setString(8, userDBDTO.getCity());
             preparedStatement.setString(9, userDBDTO.getPassword());
             rows = preparedStatement.executeUpdate();
-            for(String survey : userDBDTO.getSurveys()){
+/*            for(String survey : userDBDTO.getSurveys()){
                 insertUserSurveys(userDBDTO.getUsername(), survey);
-            }
+            }*///todo bring back when fixed
             Connect.closeConnection();
         }
         catch (SQLException throwables) {
@@ -512,11 +512,13 @@ public class UserQueries {
 
     // for end2end testing (mock mode)
     public void clearDB() {
-        Connect.createConnection();
+        Connect.createConnection();//todo UserToSurvey is probably UsersSurveys
+        /*String sql = "TRUNCATE \"Answers\", \"Appointments\", \"MultiChoices\"" +
+                ", \"Questions\", \"Surveys\", \"Users\"" +
+                ", \"UsersSchools\", \"UserToSurvey\"";*/
         String sql = "TRUNCATE \"Answers\", \"Appointments\", \"MultiChoices\"" +
                 ", \"Questions\", \"Surveys\", \"Users\"" +
-                ", \"UsersSchools\", \"UserToSurvey\"";
-
+                ", \"UsersSchools\"";
         PreparedStatement preparedStatement;
         try {
             preparedStatement = Connect.conn.prepareStatement(sql);

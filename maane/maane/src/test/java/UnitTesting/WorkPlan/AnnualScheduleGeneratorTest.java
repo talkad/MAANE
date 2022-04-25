@@ -1,6 +1,7 @@
 package UnitTesting.WorkPlan;
 
 import Communication.DTOs.GoalDTO;
+import Communication.Initializer.ServerContextInitializer;
 import Domain.CommonClasses.Pair;
 import Domain.UsersManagment.UserController;
 import Domain.UsersManagment.UserStateEnum;
@@ -19,7 +20,7 @@ public class AnnualScheduleGeneratorTest {
 
     @Before
     public void setup(){
-        Connect.setMockDB();
+        ServerContextInitializer.getInstance().setMockMode();
         GoalsManagement.getInstance().clearGoals();
         UserController.getInstance().clearUsers();
         userController = UserController.getInstance();

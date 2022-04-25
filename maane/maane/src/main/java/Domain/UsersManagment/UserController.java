@@ -112,7 +112,7 @@ public class UserController {
         if(userDAO.userExists(username)){
             Response<String> pass = userDAO.getPassword(username);
             if(!pass.isFailure()){
-                 return pass.getResult().equals(password);
+                return passwordEncoder.matches(password, pass.getResult());
             }
         }
         return false;
@@ -551,7 +551,7 @@ public class UserController {
     public Response<Boolean> changePassword(String currUser, String currPassword, String newPassword, String confirmPassword){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
-            if (passwordEncoder.encode(currPassword).equals(userDAO.getPassword(currUser).getResult()))
+            if (passwordEncoder.matches(currPassword, userDAO.getPassword(currUser).getResult()))
             {
                 if (newPassword.equals(confirmPassword)) {
                     Response<Boolean> res = user.changePassword();
@@ -701,7 +701,8 @@ public class UserController {
 
     public Response<Boolean> verifyUser(String currUser, String password){
          if(connectedUsers.containsKey(currUser)) {
-             return new Response<>(passwordEncoder.encode(password).equals(userDAO.getPassword(currUser).getResult()), false, "");
+             boolean verify = passwordEncoder.matches(password, userDAO.getPassword(currUser).getResult());
+             return new Response<>(verify, !verify, "");
          }
          else {
              return new Response<>(null, true, "User not connected");
