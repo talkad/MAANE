@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 @Repository
 public class SchoolQueries {
@@ -150,5 +151,45 @@ public class SchoolQueries {
             throwables.printStackTrace();
         }
         return false;
+    }
+
+    public SchoolDBDTO getSchool (String symbol){
+        Connect.createConnection();
+        String sql = "SELECT * FROM \"School\" WHERE symbol = ?";
+        PreparedStatement statement = null;
+        SchoolDBDTO schoolDBDTO = null;
+        try {
+            statement = Connect.conn.prepareStatement(sql);
+            statement.setInt(1, Integer.getInteger(symbol));
+            ResultSet resultSchool = statement.executeQuery();
+
+            if(resultSchool.next()) {
+                String name = resultSchool.getString("name");
+                String city = resultSchool.getString("city");
+                String city_mail = resultSchool.getString("city_mail");
+                String address = resultSchool.getString("address");
+                String school_address = resultSchool.getString("school_address");
+                String principal = resultSchool.getString("principal");
+                String manager = resultSchool.getString("manager");
+                String supervisor = resultSchool.getString("supervisor");
+                String phone = resultSchool.getString("phone");
+                String mail = resultSchool.getString("mail");
+                int zipcode = resultSchool.getInt("zipcode");
+                String education_stage = resultSchool.getString("education_stage");
+                String education_type = resultSchool.getString("education_type");
+                String supervisor_type = resultSchool.getString("supervisor_type");
+                String spector = resultSchool.getString("spector");
+                int num_of_students = resultSchool.getInt("num_of_students");
+                schoolDBDTO = new SchoolDBDTO (symbol, name, city, city_mail, address, school_address, principal, manager, supervisor, phone, mail, zipcode, education_stage, education_type, supervisor_type, spector, num_of_students);
+                Connect.closeConnection();
+            }
+            else {
+                Connect.closeConnection();
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return schoolDBDTO;
     }
 }

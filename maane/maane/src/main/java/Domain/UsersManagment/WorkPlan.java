@@ -20,7 +20,7 @@ public class WorkPlan {
         this.calendar = GenerateCalendarForYear(year);
     }
 
-    public TreeMap<String, List<Activity>> getCalendar (){
+    public TreeMap<String, List<Activity>> getCalendar(){
         return calendar;
     }
 
