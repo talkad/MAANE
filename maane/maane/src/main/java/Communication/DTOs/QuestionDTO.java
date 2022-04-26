@@ -12,6 +12,7 @@ import java.util.List;
 @Data
 public class QuestionDTO {
 
+    private String surveyID;
     private String question;
     private List<String> answers;
     private AnswerType type;

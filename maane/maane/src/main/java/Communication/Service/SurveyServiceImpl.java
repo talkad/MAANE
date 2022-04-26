@@ -113,16 +113,27 @@ public class SurveyServiceImpl implements SurveyService {
     }
 
     @Override
-    public Response<Boolean> addQuestion(String result, QuestionDTO questionDTO) {
-        //todo: tal
-        return null;
+    public Response<Boolean> addQuestion(String username, QuestionDTO questionDTO) {
+        Response<Boolean> res = SurveyController.getInstance().addQuestion(username, questionDTO);
+
+        if(res.isFailure())
+            log.error(res.getErrMsg());
+        else
+            log.info(res.getErrMsg());
+
+        return res;
     }
 
     @Override
-    public Response<Boolean> removeQuestion(String result, String surveyID, Integer questionID) {
-        //todo: tal
+    public Response<Boolean> removeQuestion(String username, String surveyID, Integer questionID) {
+        Response<Boolean> res = SurveyController.getInstance().removeQuestion(username, surveyID, questionID);
 
-        return null;
+        if(res.isFailure())
+            log.error(res.getErrMsg());
+        else
+            log.info(res.getErrMsg());
+
+        return res;
     }
 
     public Response<List<SurveyDetailsDTO>> getSurveys(String username) {

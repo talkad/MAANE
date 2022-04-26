@@ -1,10 +1,6 @@
 package Domain.DataManagement;
 
-import Communication.DTOs.GoalDTO;
-import Communication.DTOs.RuleDTO;
-import Communication.DTOs.SurveyAnswersDTO;
-import Communication.DTOs.SurveyDTO;
-import Communication.DTOs.SurveyDetailsDTO;
+import Communication.DTOs.*;
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.AnswerState.AnswerType;
@@ -41,6 +37,7 @@ public class SurveyController {
      * maximal size of surveys cache
      */
     private final int cacheSize = 50;
+
 
     private static class CreateSafeThreadSingleton {
         private static final SurveyController INSTANCE = new SurveyController();
@@ -98,6 +95,43 @@ public class SurveyController {
         return new Response<>(indexer, false, "new survey created successfully");
     }
 
+    public Response<Boolean> addQuestion(String username, QuestionDTO questionDTO) {
+        Response<Boolean> resDB;
+        Response<SurveyDTO> resSurvey;
+        Response<Boolean> legalAdd = UserController.getInstance().hasCreatedSurvey(username, questionDTO.getSurveyID());
+
+        if(!legalAdd.getResult())
+            return new Response<>(false, true, username + " does not created survey " + questionDTO.getSurveyID());
+
+        resSurvey = surveyDAO.getSurvey(questionDTO.getSurveyID());
+
+        if(resSurvey.isFailure())
+            return new Response<>(false, true, resSurvey.getErrMsg());
+
+        resDB = surveyDAO.addQuestion(questionDTO, resSurvey.getResult().getQuestions().size());
+
+        if(resDB.isFailure())
+            return new Response<>(false, true, resDB.getErrMsg());
+
+        return new Response<>(true, false, "question added successfully");
+    }
+
+    public Response<Boolean> removeQuestion(String username, String surveyID, Integer questionID) {
+        Response<Boolean> resDB;
+        Response<Boolean> legalAdd = UserController.getInstance().hasCreatedSurvey(username, surveyID);
+
+        if(!legalAdd.getResult())
+            return new Response<>(false, true, username + " does not created survey " + surveyID);
+
+        resDB = surveyDAO.removeQuestions(surveyID, questionID);
+
+        if(resDB.isFailure())
+            return new Response<>(false, true, resDB.getErrMsg());
+
+        return new Response<>(true, false, "question removed successfully");
+
+    }
+
     /**
      * new answers for certain survey
      * @param answersDTO is the answers for a given survey
@@ -148,12 +182,7 @@ public class SurveyController {
         List<AnswerType> types = new LinkedList<>();
 
         if(!surveys.containsKey(id)) {
-            try {
-                return surveyDAO.getSurvey(id);
-            }
-            catch(SQLException e){
-                return new Response<>(null, true, e.getMessage());
-            }
+            return surveyDAO.getSurvey(id);
         }
 
         survey = surveys.get(id).getSecond();
@@ -442,11 +471,8 @@ public class SurveyController {
         Pair<LocalDateTime, Survey> surveyPair = surveys.get(id);
 
         if(surveyPair == null){
-            try {
-                surveyRes = surveyDAO.getSurvey(id);
-            }catch(SQLException e){
-                return new Response<>(null, true, e.getMessage());
-            }
+            surveyRes = surveyDAO.getSurvey(id);
+
 
             if(surveyRes.isFailure())
                 return new Response<>(null, true, surveyRes.getErrMsg());
