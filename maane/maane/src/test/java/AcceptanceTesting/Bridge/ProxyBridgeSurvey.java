@@ -1,5 +1,6 @@
 package AcceptanceTesting.Bridge;
 
+import Communication.DTOs.QuestionDTO;
 import Communication.DTOs.SurveyAnswersDTO;
 import Communication.DTOs.SurveyDTO;
 import Communication.DTOs.SurveyDetailsDTO;
@@ -76,6 +77,22 @@ public class ProxyBridgeSurvey implements SurveyService {
 
         return new Response<>(null, true, "not implemented");
     }
+
+    @Override
+    public Response<Boolean> addQuestion(String result, QuestionDTO questionDTO) {
+        if (real != null){
+            return real.addQuestion(result, questionDTO);
+        }
+
+        return new Response<>(null, true, "not implemented");    }
+
+    @Override
+    public Response<Boolean> removeQuestion(String result, String surveyID, Integer questionID) {
+        if (real != null){
+            return real.removeQuestion(result, surveyID, questionID);
+        }
+
+        return new Response<>(null, true, "not implemented");    }
 
     @Override
     public Response<List<SurveyDetailsDTO>> getSurveys(String username) {

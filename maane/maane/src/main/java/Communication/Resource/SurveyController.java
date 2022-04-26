@@ -1,13 +1,11 @@
 package Communication.Resource;
 
-import Communication.DTOs.RuleDTO;
-import Communication.DTOs.SurveyAnswersDTO;
-import Communication.DTOs.SurveyDTO;
-import Communication.DTOs.SurveyDetailsDTO;
+import Communication.DTOs.*;
 import Communication.Service.Interfaces.SurveyService;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.FaultDetector.Rules.Rule;
 import Domain.DataManagement.FaultDetector.Rules.RuleConverter;
+import Domain.DataManagement.Question;
 import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -35,9 +33,9 @@ public class SurveyController {
     }
 
     @PostMapping(value = "/addQuestion")
-    public ResponseEntity<Response<Boolean>> addQuestion(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object> body){
+    public ResponseEntity<Response<Boolean>> addQuestion(@RequestHeader(value = "Authorization") String token, @RequestBody QuestionDTO questionDTO){
         return ResponseEntity.ok(
-                service.addQuestion(sessionHandler.getUsernameByToken(token).getResult(), surveyDTO)
+                service.addQuestion(sessionHandler.getUsernameByToken(token).getResult(), questionDTO)
         );
     }
 

@@ -1,5 +1,6 @@
 package Communication.Service;
 
+import Communication.DTOs.QuestionDTO;
 import Communication.DTOs.SurveyAnswersDTO;
 import Communication.DTOs.SurveyDTO;
 import Communication.DTOs.SurveyDetailsDTO;
@@ -109,6 +110,19 @@ public class SurveyServiceImpl implements SurveyService {
             log.info("removed all rules in survey {}", surveyID);
 
         return res;
+    }
+
+    @Override
+    public Response<Boolean> addQuestion(String result, QuestionDTO questionDTO) {
+        //todo: tal
+        return null;
+    }
+
+    @Override
+    public Response<Boolean> removeQuestion(String result, String surveyID, Integer questionID) {
+        //todo: tal
+
+        return null;
     }
 
     public Response<List<SurveyDetailsDTO>> getSurveys(String username) {
