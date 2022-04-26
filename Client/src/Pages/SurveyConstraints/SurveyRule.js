@@ -35,11 +35,13 @@ export default function SurveyRule(props){
 
     return (
         <div>
-            <Paper elevation={3} className={"Rule-paper"}>
+            <Paper elevation={3} className={"Rule-paper"}
+                   sx={{backgroundColor: props.colors[Math.min(props.colors.length-1, props.depth)]}}>
                 <h1>hello there {props.id}</h1>
 
+                {/*goal selection for the main cells*/}
                 {props.goals !== undefined &&
-                    <FormControl fullWidth>
+                    <FormControl fullWidth sx={{backgroundColor: 'white'}}>
                         <InputLabel id={`goal-select-label-${props.id}`}>{goal_select_label_string}</InputLabel>
                         <Select
                             labelId={`goal-select-label-${props.id}`}
@@ -52,7 +54,8 @@ export default function SurveyRule(props){
                         </Select>
                     </FormControl>}
 
-                {props.children.map(child => <SurveyRule id={child.id} children={child.children} trace={trace}
+                {/*child cells*/}
+                {props.children.map(child => <SurveyRule id={child.id} depth={props.depth + 1} colors={props.colors} children={child.children} trace={trace}
                                                          addCondition={props.addCondition}/>)}
 
                 <Button onClick={() => addCondition()} variant={"contained"}>{add_condition_button_string}</Button>

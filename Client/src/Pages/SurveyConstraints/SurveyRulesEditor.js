@@ -8,6 +8,8 @@ const offline_data_rules = [{id: 1, goalSelection: 1, children: [{id: 4, childre
     {id: 2, goalSelection: 2, children: []}];
 const offline_goals_data = [{value: 1, description: "hello there"}, {value: 2, description: "general kenobi"}];
 
+const color_stack = ['#ffffff', '#d89af5', '#93b6fa']; // todo: add more colors
+
 export default function SurveyRulesEditor(){
 
     const [id, setId] = useState('');
@@ -126,7 +128,7 @@ export default function SurveyRulesEditor(){
 
                 {/*the rules*/}
                 {rules.map((rule) =>
-                    <SurveyRule id={rule.id} goalSelection={rule.goalSelection} children={rule.children} trace={[]} goals={goals}
+                    <SurveyRule id={rule.id} depth={0} colors={color_stack} goalSelection={rule.goalSelection} children={rule.children} trace={[]} goals={goals}
                                 addCondition={addCondition} goalSelectionChange={handleGoalSelectionChange}/>)}
 
                 {/*add rule button*/}
