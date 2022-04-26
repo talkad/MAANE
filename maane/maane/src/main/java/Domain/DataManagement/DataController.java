@@ -4,7 +4,6 @@ package Domain.DataManagement;
 import Communication.DTOs.UserDTO;
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.UserController;
-import Persistence.Connect;
 import Persistence.DbDtos.SchoolDBDTO;
 import Persistence.SchoolQueries;
 
@@ -16,12 +15,10 @@ import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DataController {
-    private Map<String, School> schools;
+
     private SchoolQueries schoolDAO;
 
-
     private DataController() {
-        this.schools = new ConcurrentHashMap<>();
         this.schoolDAO = SchoolQueries.getInstance();
     }
 
@@ -34,23 +31,26 @@ public class DataController {
     }
 
     public Response<List<String>> getCoordinatorsEmails(String workField){
-        List<String> emails = new Vector<>();
+        //todo change to one query
+        schoolDAO.getCoordinatorEmails(workField);
+       /* List<String> emails = new Vector<>();
         for (String symbol: schools.keySet()) {
             if(schools.get(symbol).getCoordinators().containsKey(workField)){//todo check that there is actually an email assigned
                 emails.add(schools.get(symbol).getCoordinators().get(workField).getEmail());
             }
         }
-        return new Response<>(emails, false, "successfully acquired emails");
+        return new Response<>(emails, false, "successfully acquired emails");*/
     }
 
     public Response<Boolean> assignCoordinator(String currUser, String workField, String firstName, String lastName, String email, String phoneNumber, String school) {
-        if(this.schools.containsKey(school)){
-            Response<UserDTO> coordinator = UserController.getInstance().assignCoordinator(currUser, workField, firstName, lastName, email, phoneNumber, school);
-            if(!coordinator.isFailure() && !this.schools.get(school).getCoordinators().containsKey(coordinator.getResult().getWorkField())){
+        if(schoolDAO.schoolSymbolExists(school)/*this.schools.containsKey(school)*/){
+            return UserController.getInstance().assignCoordinator(currUser, workField, firstName, lastName, email, phoneNumber, school);
+            //Response<Boolean> coordinator = UserController.getInstance().assignCoordinator(currUser, workField, firstName, lastName, email, phoneNumber, school);
+            /*if(!coordinator.isFailure() && !this.schools.get(school).getCoordinators().containsKey(coordinator.getResult().getWorkField())){
                 this.schools.get(school).getCoordinators().put(coordinator.getResult().getWorkField(), coordinator.getResult());
                 return new Response<>(true, coordinator.isFailure(), coordinator.getErrMsg());
-            }
-            return new Response<>(false, true, coordinator.getErrMsg());
+            }*/
+            //return new Response<>(false, true, coordinator.getErrMsg());
         }
         else{
             return new Response<>(false, true, "no such school exists");
@@ -58,12 +58,12 @@ public class DataController {
     }
 
     public Response<Boolean> removeCoordinator(String currUser, String workField, String school) {
-        if(schools.containsKey(school)){
-            Response<String> coordinatorWorkFieldRes = UserController.getInstance().removeCoordinator(currUser, workField, school);
-            if(!coordinatorWorkFieldRes.isFailure() && schools.get(school).getCoordinators().containsKey(coordinatorWorkFieldRes.getResult())){
+        if(schoolDAO.schoolSymbolExists(school)/*schools.containsKey(school)*/){
+            Response<Boolean> coordinatorWorkFieldRes = UserController.getInstance().removeCoordinator(currUser, workField, school);
+            /*if(!coordinatorWorkFieldRes.isFailure() && schools.get(school).getCoordinators().containsKey(coordinatorWorkFieldRes.getResult())){
                 schools.get(school).getCoordinators().remove(coordinatorWorkFieldRes.getResult());
                 return new Response<>(true, false, coordinatorWorkFieldRes.getErrMsg());
-            }
+            }*/
             return new Response<>(false, true, coordinatorWorkFieldRes.getErrMsg());
         }
         else {
@@ -85,17 +85,22 @@ public class DataController {
 
 
     //for tests purposes
-    public School getSchool(String symbol){
-        return this.schools.get(symbol);
+    public SchoolDBDTO getSchool(String symbol){
+        return schoolDAO.getSchool(symbol);
+        //return this.schools.get(symbol);
     }
 
     //for test purposes only
     public void clearSchools() {
-        this.schools = new ConcurrentHashMap<>();
+        schoolDAO.deleteSchools();
+        //this.schools = new ConcurrentHashMap<>();
     }
 
     //for test purposes only
     public void addOneSchool() {
-        schools.put("1", new School("1", "", "", ""));
+        SchoolDBDTO schoolDBDTO = new SchoolDBDTO();
+        schoolDBDTO.setSymbol("1");
+        schoolDAO.insertSchool(schoolDBDTO);
+        //schools.put("1", new School("1", "", "", ""));
     }
 }

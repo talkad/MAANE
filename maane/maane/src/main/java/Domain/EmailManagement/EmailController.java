@@ -3,6 +3,7 @@ package Domain.EmailManagement;
 
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.DataController;
+import Domain.UsersManagment.UserController;
 
 import javax.mail.*;
 import javax.mail.internet.*;
@@ -33,7 +34,7 @@ public class EmailController {
     }
 
     public Response<Boolean> sendEmail(String workField, String surveyLink, String surveyToken)  {
-        Response<List<String>> emailsToRes = dataController.getCoordinatorsEmails(workField);
+        Response<List<String>> emailsToRes = UserController.getInstance().getCoordinatorsEmails(workField);
         if (!emailsToRes.isFailure()) {
             String emailsTo = String.join(", ", emailsToRes.getResult());
             Session mailSession = Session.getInstance(prop, new javax.mail.Authenticator() {

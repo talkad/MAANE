@@ -19,6 +19,29 @@ public class SchoolDBDTO {
     String spector;
     int num_of_students;
 
+    public SchoolDBDTO(String symbol, String name, String city, String city_mail, String address, String school_address, String principal, String manager, String supervisor, String phone, String mail, int zipcode, String education_stage, String education_type, String supervisor_type, String spector, int num_of_students) {
+        this.symbol = symbol;
+        this.name = name;
+        this.city = city;
+        this.city_mail = city_mail;
+        this.address = address;
+        this.school_address = school_address;
+        this.principal = principal;
+        this.manager = manager;
+        this.supervisor = supervisor;
+        this.phone = phone;
+        this.mail = mail;
+        this.zipcode = zipcode;
+        this.education_stage = education_stage;
+        this.education_type = education_type;
+        this.supervisor_type = supervisor_type;
+        this.spector = spector;
+        this.num_of_students = num_of_students;
+    }
+
+    public SchoolDBDTO(){
+    }
+
     public String getSymbol() {
         return symbol;
     }
@@ -87,23 +110,71 @@ public class SchoolDBDTO {
         return num_of_students;
     }
 
-    public SchoolDBDTO(String symbol, String name, String city, String city_mail, String address, String school_address, String principal, String manager, String supervisor, String phone, String mail, int zipcode, String education_stage, String education_type, String supervisor_type, String spector, int num_of_students) {
+    public void setSymbol(String symbol) {
         this.symbol = symbol;
+    }
+
+    public void setName(String name) {
         this.name = name;
+    }
+
+    public void setCity(String city) {
         this.city = city;
+    }
+
+    public void setCity_mail(String city_mail) {
         this.city_mail = city_mail;
+    }
+
+    public void setAddress(String address) {
         this.address = address;
+    }
+
+    public void setSchool_address(String school_address) {
         this.school_address = school_address;
+    }
+
+    public void setPrincipal(String principal) {
         this.principal = principal;
+    }
+
+    public void setManager(String manager) {
         this.manager = manager;
+    }
+
+    public void setSupervisor(String supervisor) {
         this.supervisor = supervisor;
+    }
+
+    public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public void setMail(String mail) {
         this.mail = mail;
+    }
+
+    public void setZipcode(int zipcode) {
         this.zipcode = zipcode;
+    }
+
+    public void setEducation_stage(String education_stage) {
         this.education_stage = education_stage;
+    }
+
+    public void setEducation_type(String education_type) {
         this.education_type = education_type;
+    }
+
+    public void setSupervisor_type(String supervisor_type) {
         this.supervisor_type = supervisor_type;
+    }
+
+    public void setSpector(String spector) {
         this.spector = spector;
+    }
+
+    public void setNum_of_students(int num_of_students) {
         this.num_of_students = num_of_students;
     }
 }

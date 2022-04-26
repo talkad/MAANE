@@ -63,6 +63,17 @@ public class User {
         }
     }
 
+    public User(String username, UserStateEnum userStateEnum, String workField, String firstName, String lastName, String email, String phoneNumber, List<String> school) {
+        this.state = inferUserType(userStateEnum);
+        this.username = username;
+        this.workField = workField;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.schools = school;
+    }
+
     public User(UserDBDTO userDBDTO) {
         this.state = inferUserType(userDBDTO.getStateEnum());
         this.username = userDBDTO.getUsername();
@@ -96,7 +107,7 @@ public class User {
     }
 
 
-    private UserDTO getCoordinatorDTO(String firstName, String lastName, String email, String phoneNumber, String school, String otherWorkField){
+    private UserDTO createCoordinator(String firstName, String lastName, String email, String phoneNumber, String school, String otherWorkField){
         UserDTO userDTO = new UserDTO();
         userDTO.setWorkField(otherWorkField);
         userDTO.setFirstName(firstName);
@@ -125,6 +136,9 @@ public class User {
                 break;
             case SYSTEM_MANAGER:
                 state = new SystemManager();
+                break;
+            case COORDINATOR:
+                state = new Coordinator();
                 break;
             default:
                 state = new Registered(); //this is a problem
@@ -561,22 +575,41 @@ public class User {
         }
     }
 
-    public Response<UserDTO> assignCoordinator(String workField, String school, String firstName, String lastName, String email, String phoneNumber) {
+/*    public User(String username, UserStateEnum userStateEnum, String workField, String firstName, String lastName, String email, String phoneNumber, String city) {
+        this.state = inferUserType(userStateEnum);
+        this.username = username;
+        this.workField = workField;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.city = city;
+        this.appointments = new Vector<>();
+        this.schools = new Vector<>();
+        this.surveys = new Vector<>();
+        this.baskets = new Vector<>();
+        if(this.state.getStateEnum() == UserStateEnum.INSTRUCTOR){
+            this.workPlan = new ConcurrentHashMap<>();
+        }*/
+
+    public Response<User> assignCoordinator(String username, String workField, String school, String firstName, String lastName, String email, String phoneNumber) {
         if (this.state.allowed(Permissions.REGISTER_COORDINATOR, this))
         {
+            List<String> schoolList = new Vector<>();
+            schoolList.add(school);
             if(this.state.getStateEnum() == UserStateEnum.SUPERVISOR) {
-                return new Response<>(getCoordinatorDTO(firstName, lastName, email, phoneNumber, school, this.workField), false, "successfully assigned coordinator");
+                return new Response<>(new User(username, UserStateEnum.COORDINATOR, firstName, lastName, email, phoneNumber, this.workField, schoolList), false, "successfully assigned coordinator");
             }
             else if(this.state.getStateEnum() == UserStateEnum.INSTRUCTOR) {
                 if(this.schools.contains(school)){
-                    return new Response<>(getCoordinatorDTO(firstName, lastName, email, phoneNumber, school, this.workField), false, "successfully assigned coordinator");
+                    return new Response<>(new User(username,UserStateEnum.COORDINATOR, firstName, lastName, email, phoneNumber, this.workField, schoolList), false, "successfully assigned coordinator");
                 }
                 else{
                     return new Response<>(null, true, "user not allowed to assign coordinator to the given school");
                 }
             }
             else if(this.state.getStateEnum() == UserStateEnum.SYSTEM_MANAGER){
-                return new Response<>(getCoordinatorDTO(firstName, lastName, email, phoneNumber, school, workField), false, "successfully assigned coordinator");
+                return new Response<>(new User(username,UserStateEnum.COORDINATOR, firstName, lastName, email, phoneNumber, workField, schoolList), false, "successfully assigned coordinator");
             }
         }
         return new Response<>(null, true, "user not allowed to assign coordinator");

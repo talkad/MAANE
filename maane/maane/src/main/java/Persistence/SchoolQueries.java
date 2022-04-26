@@ -13,6 +13,7 @@ import java.util.List;
 
 @Repository
 public class SchoolQueries {
+
     private static class CreateSafeThreadSingleton {
         private static final SchoolQueries INSTANCE = new SchoolQueries();
     }
@@ -21,7 +22,7 @@ public class SchoolQueries {
         return SchoolQueries.CreateSafeThreadSingleton.INSTANCE;
     }
 
-    public Response<Boolean> insertSchool (SchoolDBDTO school){
+    public Response<Boolean> insertSchool(SchoolDBDTO school){
         Connect.createConnection();
         int rows = 0;
         String sql = "INSERT INTO \"Schools\" (symbol, name, city, city_mail, address, school_address, principal," +
@@ -57,7 +58,7 @@ public class SchoolQueries {
 
     }
 
-    public Response<Boolean> removeSchool (String symbol){
+    public Response<Boolean> removeSchool(String symbol){
         Connect.createConnection();
         String sql = "DELETE FROM \"Schools\" WHERE symbol = ?";
         try (PreparedStatement pstmt = Connect.conn.prepareStatement(sql)) {
@@ -153,7 +154,7 @@ public class SchoolQueries {
         return false;
     }
 
-    public SchoolDBDTO getSchool (String symbol){
+    public SchoolDBDTO getSchool (String symbol) {
         Connect.createConnection();
         String sql = "SELECT * FROM \"School\" WHERE symbol = ?";
         PreparedStatement statement = null;
@@ -163,7 +164,7 @@ public class SchoolQueries {
             statement.setInt(1, Integer.getInteger(symbol));
             ResultSet resultSchool = statement.executeQuery();
 
-            if(resultSchool.next()) {
+            if (resultSchool.next()) {
                 String name = resultSchool.getString("name");
                 String city = resultSchool.getString("city");
                 String city_mail = resultSchool.getString("city_mail");
@@ -180,10 +181,9 @@ public class SchoolQueries {
                 String supervisor_type = resultSchool.getString("supervisor_type");
                 String spector = resultSchool.getString("spector");
                 int num_of_students = resultSchool.getInt("num_of_students");
-                schoolDBDTO = new SchoolDBDTO (symbol, name, city, city_mail, address, school_address, principal, manager, supervisor, phone, mail, zipcode, education_stage, education_type, supervisor_type, spector, num_of_students);
+                schoolDBDTO = new SchoolDBDTO(symbol, name, city, city_mail, address, school_address, principal, manager, supervisor, phone, mail, zipcode, education_stage, education_type, supervisor_type, spector, num_of_students);
                 Connect.closeConnection();
-            }
-            else {
+            } else {
                 Connect.closeConnection();
             }
 
@@ -191,5 +191,22 @@ public class SchoolQueries {
             e.printStackTrace();
         }
         return schoolDBDTO;
+    }
+
+    //for test purposes only
+    public void deleteSchools(){
+        Connect.createConnection();
+        String sql = "TRUNCATE \"Schools\"";
+
+        PreparedStatement preparedStatement;
+        try {
+            preparedStatement = Connect.conn.prepareStatement(sql);
+            preparedStatement.executeUpdate();
+
+            Connect.closeConnection();
+        }
+        catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
     }
 }

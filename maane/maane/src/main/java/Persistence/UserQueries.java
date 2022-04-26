@@ -578,4 +578,27 @@ public class UserQueries {
 /*        return rows > 0 ? new Response<>(true, false, "") :
                 new Response<>(false, true, "bad Db writing");*/
     }
+
+
+    public Response<Boolean> removeCoordinator(String workField, String school) {
+        Connect.createConnection();
+        int rows = 0;//todo add cascade to all tables with foreign keys
+        String sql = "DELETE FROM \"Users\", \"UsersSchools\" WHERE userame = (SELECT username FROM \"Users\" JOIN \"UsersSchools\" ON username WHERE workfield = ? AND symbol = ? AND userstateenum = COORDINATOR)";
+        PreparedStatement preparedStatement;
+        try {
+            preparedStatement = Connect.conn.prepareStatement(sql);
+
+            preparedStatement.setString(1, workField);
+            preparedStatement.setString(2, school);
+
+            rows = preparedStatement.executeUpdate();
+            Connect.closeConnection();
+        }
+        catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }//todo
+        return rows > 0 ? new Response<>(true, false, "") :
+                new Response<>(false, true, "bad Db writing");
+    }
+
 }
