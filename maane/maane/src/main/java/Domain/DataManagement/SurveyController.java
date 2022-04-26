@@ -221,6 +221,21 @@ public class SurveyController {
     }
 
     /**
+     * remove all rules related to given surveyID
+     * @param username the user trying to remove the rules
+     * @param surveyID the survey all the rules will be deleted
+     * @return if the function call succeeded
+     */
+    public Response<Boolean> removeRules(String username, String surveyID) {
+        Response<Boolean> legalAdd = UserController.getInstance().hasCreatedSurvey(username, surveyID);
+
+        if(!legalAdd.getResult())
+            return new Response<>(false, true, username + " removed all rules from survey " + surveyID);
+
+        return surveyDAO.removeRules(surveyID);
+    }
+
+    /**
      * detects irregularities in survey answers
      * @param username the name of the user want to detect fault
      * @param id of the survey

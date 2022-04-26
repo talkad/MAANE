@@ -99,6 +99,18 @@ public class SurveyServiceImpl implements SurveyService {
         return res;
     }
 
+    @Override
+    public Response<Boolean> removeRules(String username, String surveyID) {
+        Response<Boolean> res = SurveyController.getInstance().removeRules(username, surveyID);
+
+        if(res.isFailure())
+            log.error("failed to remove rules in survey {}", surveyID);
+        else
+            log.info("removed all rules in survey {}", surveyID);
+
+        return res;
+    }
+
     public Response<List<SurveyDetailsDTO>> getSurveys(String username) {
         Response<List<SurveyDetailsDTO>> res = SurveyController.getInstance().getSurveys(username);
 

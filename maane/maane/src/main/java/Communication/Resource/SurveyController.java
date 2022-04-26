@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -64,6 +65,13 @@ public class SurveyController {
 
         return ResponseEntity.ok()
                 .body(service.removeRule(sessionHandler.getUsernameByToken(token).getResult(), (String)body.get("surveyID"), (Integer)body.get("ruleID")));
+    }
+
+    @PostMapping(value = "/removeRules")
+    public ResponseEntity<Response<Boolean>> removeRules(@RequestHeader(value = "Authorization") String token, @RequestBody String surveyID){
+
+        return ResponseEntity.ok()
+                .body(service.removeRules(sessionHandler.getUsernameByToken(token).getResult(), surveyID));
     }
 
     @GetMapping("/detectFault/surveyID={surveyID}&year={year}")
