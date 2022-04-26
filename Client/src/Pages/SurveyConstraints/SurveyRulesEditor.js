@@ -4,13 +4,18 @@ import Connection from "../../Communication/Connection";
 import {Button} from "@mui/material";
 import SurveyRule from "./SurveyRule";
 
+const offline_data_rules = [{id: 1, goalSelection: 1, children: [{id: 4, children: [{id: 5, children: []}]}]},
+    {id: 2, goalSelection: 2, children: []}];
+const offline_goals_data = [{value: 1, description: "hello there"}, {value: 2, description: "general kenobi"}];
 
 export default function SurveyRulesEditor(){
 
     const [id, setId] = useState('');
 
-    const [rules, setRules] = useState([{id: 1, children: [{id: 4, children: [{id: 5, children: []}]}]}, {id: 2, children: []}])
+    const [rules, setRules] = useState(offline_data_rules)
     const [ruleID, setRuleID] = useState(10);
+
+    const [goals, setGoals] = useState(offline_goals_data);
 
     const add_rules_button_string = "הוספת חוק";
 
@@ -27,7 +32,7 @@ export default function SurveyRulesEditor(){
      * adds a new rule
      */
     const addRule = () => {
-        setRules([...rules, {id: 3}])
+        setRules([...rules, {id: ruleID, children: []}])
         setRuleID(ruleID + 1)
     }
 
@@ -37,7 +42,7 @@ export default function SurveyRulesEditor(){
      * @param trace the trace of parents of the sub-rule
      */
     const addCondition = (id, trace) => {
-        console.log(`the trace of id ${id} is ${trace}`)
+        //console.log(`the trace of id ${id} is ${trace}`)
         let temp_trace = [...trace];
         setRules(rules.map(function(rule) {
 
@@ -87,22 +92,27 @@ export default function SurveyRulesEditor(){
                 return temp_child;
             }
 
-            current_rule.children = current_rule.children.map(find_and_add)
-
-            // while(trace.length !== 0){
-            //     const next_trace_id = trace.shift()
-            //     current_rule = {...current_rule.children.find(child => child.id === next_trace_id)}
-            // }
-            //
-            // // now we are at its parent rule
-            // current_rule = {...current_rule.children.find(child => child.id === id)}
-            //
-            // // we found it and adding the condition to it
-            // current_rule.children.push({id: ruleID, children: []})
-            // setRuleID(ruleID + 1)
-
+            current_rule.children = current_rule.children.map(find_and_add);
 
             return current_rule;
+        }))
+    }
+
+    /**
+     * handler for the onChange of the goal select element
+     * @param id the id of the cell affected
+     * @param value the new value which has been selected
+     */
+    const handleGoalSelectionChange = (id, value) => {
+        setRules(rules.map(rule => {
+            if(rule.id !== id){
+                return rule;
+            }
+
+            const temp_rule = {...rule};
+            temp_rule.goalSelection = value;
+
+            return temp_rule;
         }))
     }
 
@@ -116,7 +126,8 @@ export default function SurveyRulesEditor(){
 
                 {/*the rules*/}
                 {rules.map((rule) =>
-                    <SurveyRule id={rule.id} children={rule.children} trace={[]} addCondition={addCondition}/>)}
+                    <SurveyRule id={rule.id} goalSelection={rule.goalSelection} children={rule.children} trace={[]} goals={goals}
+                                addCondition={addCondition} goalSelectionChange={handleGoalSelectionChange}/>)}
 
                 {/*add rule button*/}
                 <Button onClick={() => addRule()} variant={'contained'}>{add_rules_button_string}</Button>
