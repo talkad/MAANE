@@ -7,9 +7,7 @@ import org.apache.poi.ss.formula.eval.NotImplementedException;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 
 @Repository
 public class SchoolQueries {
@@ -55,5 +53,32 @@ public class SchoolQueries {
         return rows>0 ? new Response<>(true, false, "") :
                 new Response<>(false, true, "bad Db writing");
 
+    }
+
+    public void removeSchool (String symbol){
+        Connect.createConnection();
+        String sql = "DELETE FROM \"Schools\" WHERE symbol = ?";
+        try (PreparedStatement pstmt = Connect.conn.prepareStatement(sql)) {
+            pstmt.setInt(1, Integer.getInteger(symbol));
+            pstmt.executeUpdate();
+            Connect.closeConnection();
+        } catch (SQLException ex) {System.out.println(ex.getMessage());}
+    }
+
+    public void updateSchool (String symbol, SchoolDBDTO school){
+        Connect.createConnection();
+        String sql = "UPDATE \"Schools\" SET symbol = ?, name = ? WHERE symbol = ?";
+        PreparedStatement preparedStatement;
+        try {
+            preparedStatement = Connect.conn.prepareStatement(sql);
+
+            preparedStatement.setString(1, school.getSymbol());
+            preparedStatement.setString(2, school.getName());
+            preparedStatement.setString(3, symbol);
+
+            preparedStatement.executeUpdate();
+            Connect.closeConnection();
+        }
+        catch (SQLException throwables) {throwables.printStackTrace();}
     }
 }
