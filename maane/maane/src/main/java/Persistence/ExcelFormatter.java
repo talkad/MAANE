@@ -1,5 +1,6 @@
 package Persistence;
 
+import Communication.Initializer.ServerContextInitializer;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -20,7 +21,7 @@ public class   ExcelFormatter {
 
     public static void MosadExelToDb() throws IOException, SQLException {
         String projDir = System.getProperty("user.dir");
-        String exelPath = projDir + "\\Server" + "\\Mosad.xlsx";
+        String exelPath = projDir + "\\Mosad.xlsx";
         XSSFWorkbook workbook = new XSSFWorkbook(exelPath);
         XSSFSheet sheet = workbook.getSheet("Mosad");
         int rowCount = getRowCount();
@@ -80,6 +81,7 @@ public class   ExcelFormatter {
     }
 
     public static void main (String [] args) throws SQLException, IOException {
+        ServerContextInitializer.getInstance().setMockMode();
         MosadExelToDb();
     }
 }

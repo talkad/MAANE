@@ -8,9 +8,14 @@ import java.sql.SQLException;
 
 public class Connect {
     static Connection conn;
-    private static String url = "jdbc:postgresql://tai.db.elephantsql.com:5432/pxbghxfm";
-    private static String dbUsername = "pxbghxfm";
-    private static String dbPassword = "ogms2UJpzqjopRw29YcJ5Wau7wHQLkcJ";
+//    private static String url = "jdbc:postgresql://tai.db.elephantsql.com:5432/pxbghxfm";
+//    private static String dbUsername = "pxbghxfm";
+//    private static String dbPassword = "ogms2UJpzqjopRw29YcJ5Wau7wHQLkcJ";
+
+    private static String url = "jdbc:postgresql://localhost:5432/maaneDBMock";;
+    private static String dbUsername = "postgres";
+    private static String dbPassword = "12345";
+
 
     //conn = DriverManager.getConnection("jdbc:postgresql://tai.db.elephantsql.com:5432/pxbghxfm", "pxbghxfm", "ogms2UJpzqjopRw29YcJ5Wau7wHQLkcJ");
 
@@ -38,7 +43,7 @@ public class Connect {
     public static void setMockDB(){
         url = "jdbc:postgresql://localhost:5432/maaneDBMock";
         dbUsername = "postgres";
-        dbPassword = "123456";
+        dbPassword = "12345";
     }
 
 
