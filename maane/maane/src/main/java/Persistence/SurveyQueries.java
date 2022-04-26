@@ -221,6 +221,24 @@ public class SurveyQueries {
                 new Response<>(false, true, "bad Db writing");
     }
 
+    public Response<Boolean> removeRules(String surveyID) {
+        Connect.createConnection();
+        String sql = "DELETE FROM \"Rules\" WHERE survey_id = ?";
+        int rows = 0;
+        try (PreparedStatement pstmt = Connect.conn.prepareStatement(sql)) {
+            pstmt.setString(1, surveyID);
+            rows = pstmt.executeUpdate();
+
+            Connect.closeConnection();
+
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+
+        return rows>0 ? new Response<>(true, false, "") :
+                new Response<>(false, true, "bad Db writing");
+    }
+
     private void removeSubRules (int parentId){
         String sql = "DELETE FROM \"Rules\" WHERE parent_id = ?";
         try (PreparedStatement pstmt = Connect.conn.prepareStatement(sql)) {

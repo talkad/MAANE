@@ -1,5 +1,6 @@
 package Communication.Service.Interfaces;
 
+import Communication.DTOs.QuestionDTO;
 import Communication.DTOs.SurveyAnswersDTO;
 import Communication.DTOs.SurveyDTO;
 import Communication.DTOs.SurveyDetailsDTO;
@@ -45,6 +46,9 @@ public interface SurveyService {
 
     Response<List<List<String>>> detectFault(String username, String surveyID, String year);
 
+    Response<Boolean> removeRules(String username, String surveyID);
 
+    Response<Boolean> addQuestion(String result, QuestionDTO questionDTO);
 
+    Response<Boolean> removeQuestion(String result, String surveyID, Integer questionID);
 }
