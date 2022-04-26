@@ -3,6 +3,8 @@ package Communication.Service;
 import Communication.Service.Interfaces.DataService;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.DataController;
+import Persistence.DbDtos.SchoolDBDTO;
+import Persistence.SchoolQueries;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +41,43 @@ public class DataServiceImpl implements DataService {
             log.error("failed to remove the {} coordinator from the school {} by {}", workField, school, currUser);
         else
             log.info("successfully removed the {} coordinator from the school {} by {}", workField, school, currUser);
+        return res;
+    }
+
+    @Override
+    public Response<Boolean> insertSchool(SchoolDBDTO school) {
+        Response<Boolean> res = DataController.getInstance().insertSchool(school);
+
+        if (res.isFailure())
+            log.error("failed to insert school {} ", school.getName());
+        else
+            log.info("inserted school {} successfully",school.getName());
+
+        return res;
+
+    }
+
+    @Override
+    public Response<Boolean> removeSchool(String symbol) {
+        Response<Boolean> res = DataController.getInstance().removeSchool(symbol);
+
+        if (res.isFailure())
+            log.error("failed to remove the school associated with symbol {} ", symbol);
+        else
+            log.info("removed school {} successfully",symbol);
+
+        return res;
+    }
+
+    @Override
+    public Response<Boolean> updateSchool(String symbol, SchoolDBDTO school) {
+        Response<Boolean> res = DataController.getInstance().updateSchool(symbol, school);
+
+        if (res.isFailure())
+            log.error(res.getErrMsg());
+        else
+            log.info(res.getErrMsg());
+
         return res;
     }
 }

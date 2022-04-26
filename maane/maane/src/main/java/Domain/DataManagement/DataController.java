@@ -4,7 +4,12 @@ package Domain.DataManagement;
 import Communication.DTOs.UserDTO;
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.UserController;
+import Persistence.Connect;
+import Persistence.DbDtos.SchoolDBDTO;
+import Persistence.SchoolQueries;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -12,10 +17,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DataController {
     private Map<String, School> schools;
+    private SchoolQueries schoolDAO;
 
 
     private DataController() {
         this.schools = new ConcurrentHashMap<>();
+        this.schoolDAO = SchoolQueries.getInstance();
     }
 
     private static class CreateSafeThreadSingleton {
@@ -63,6 +70,19 @@ public class DataController {
             return new Response<>(false, true, "no such coordinator found");
         }
     }
+
+    public Response<Boolean> insertSchool (SchoolDBDTO school){
+        return schoolDAO.insertSchool(school);
+    }
+
+    public Response<Boolean> removeSchool (String symbol){
+        return schoolDAO.removeSchool(symbol);
+    }
+
+    public Response<Boolean> updateSchool (String symbol, SchoolDBDTO school){
+        return schoolDAO.updateSchool(symbol, school);
+    }
+
 
     //for tests purposes
     public School getSchool(String symbol){
