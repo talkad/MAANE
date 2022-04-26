@@ -17,9 +17,9 @@ public class ServerContextInitializer {
 
     public ServerContextInitializer() {
         this.mockMode = false;
-        this.dbConnection = "jdbc:postgresql://localhost:5432/MAANE";
-        this.dbUsername = "postgres";
-        this.dbPassword = "1234";
+        this.dbConnection = "jdbc:postgresql://tai.db.elephantsql.com:5432/pxbghxfm";
+        this.dbUsername = "pxbghxfm";
+        this.dbPassword = "ogms2UJpzqjopRw29YcJ5Wau7wHQLkcJ";
     }
 
     public void setMockMode() {

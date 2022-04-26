@@ -1,5 +1,6 @@
 package UnitTesting.DataBase;
 import Communication.DTOs.RuleDTO;
+import Communication.Initializer.ServerContextInitializer;
 import Domain.CommonClasses.Pair;
 import Domain.DataManagement.FaultDetector.Rules.Comparison;
 import Domain.DataManagement.FaultDetector.Rules.RuleType;
@@ -18,6 +19,7 @@ public class RuleDbTests {
 
     @Before
     public void setUp(){
+        ServerContextInitializer.getInstance().setMockMode();
         surveyQueries = SurveyQueries.getInstance();
 
         List<RuleDTO> subRuleSubRules= new LinkedList<>();

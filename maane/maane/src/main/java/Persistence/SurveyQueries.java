@@ -164,7 +164,7 @@ public class SurveyQueries {
 
     public void insertRule(String survey_id, int goalID, RuleDTO dto) {
         Connect.createConnection();
-        String sql = "INSERT INTO \"Rules\" (survey_id, goal_id, type, comparsion, question_id, answer) VALUES (?, ?, ?, ?, ?, ?) RETURNING id";
+        String sql = "INSERT INTO \"Rules\" (survey_id, goal_id, type, comparison, question_id, answer) VALUES (?, ?, ?, ?, ?, ?) RETURNING id";
         PreparedStatement preparedStatement = null;
         try {
             preparedStatement = Connect.conn.prepareStatement(sql);
@@ -188,7 +188,7 @@ public class SurveyQueries {
     }
 
     private void insertSubRule(String survey_id, int goalID, RuleDTO dto, int parent_id) {
-        String sql = "INSERT INTO \"Rules\" (survey_id, goal_id, type, comparsion, question_id, answer, parent_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO \"Rules\" (survey_id, goal_id, type, comparison, question_id, answer, parent_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
         PreparedStatement preparedStatement = null;
         try {
             preparedStatement = Connect.conn.prepareStatement(sql);
@@ -244,12 +244,12 @@ public class SurveyQueries {
             while (result.next()) {
                 int surveyId = result.getInt("survey_id");
                 String type = result.getString("type");
-                String comparsion = result.getString("comparsion");
+                String comparison = result.getString("comparison");
                 int questionId = result.getInt("question_id");
                 int answer = result.getInt("answer");
                 int id = result.getInt("id");
                 List<RuleDTO> subRules = getSubRules(id);
-                RuleDTO ruleDTO = new RuleDTO(subRules, RuleType.valueOf(type), Comparison.valueOf(comparsion), questionId, answer);
+                RuleDTO ruleDTO = new RuleDTO(subRules, RuleType.valueOf(type), Comparison.valueOf(comparison), questionId, answer);
                 Pair <RuleDTO, Integer> toAdd = new Pair<>(ruleDTO, surveyId);
                 rules.add(toAdd);
             }
@@ -268,12 +268,12 @@ public class SurveyQueries {
             ResultSet result = statement.executeQuery();
             while (result.next()) {
                 String type = result.getString("type");
-                String comparsion = result.getString("comparsion");
+                String comparison = result.getString("comparison");
                 int questionId = result.getInt("question_id");
                 int answer = result.getInt("answer");
                 int id = result.getInt("id");
                 List<RuleDTO> subRules = getSubRules(id);
-                RuleDTO ruleDTO = new RuleDTO(subRules, RuleType.valueOf(type), Comparison.valueOf(comparsion), questionId, answer);
+                RuleDTO ruleDTO = new RuleDTO(subRules, RuleType.valueOf(type), Comparison.valueOf(comparison), questionId, answer);
                 rules.add(ruleDTO);
             }
         } catch (SQLException e) {e.printStackTrace();}
