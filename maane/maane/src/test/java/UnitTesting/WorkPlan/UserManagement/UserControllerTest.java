@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Vector;
 
 
-
 public class UserControllerTest {
 
     private PasswordEncoder passwordEncoder;
@@ -44,7 +43,6 @@ public class UserControllerTest {
 
     @Test
     public void loginAsSystemManagerSuccess(){
-//UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
         Assert.assertTrue(userController.getConnectedUsers().containsKey(adminName));
         Assert.assertTrue(userQueries.userExists(adminName));
@@ -52,7 +50,6 @@ public class UserControllerTest {
 
     @Test
     public void assigningSupervisorSuccess(){
-//UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         Response<String> supervisorName = userController.login("sup1");
@@ -62,7 +59,6 @@ public class UserControllerTest {
 
     @Test
     public void assigningInstructorBySupervisorSuccess(){
-//UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         userController.logout(adminName);
@@ -74,7 +70,6 @@ public class UserControllerTest {
 
     @Test
     public void emailTest(){
-//UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         userController.logout(adminName);
@@ -84,7 +79,6 @@ public class UserControllerTest {
 
     @Test
     public void assigningInstructorByAdminSuccess(){
-//UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         userController.login("sup1");
@@ -96,7 +90,6 @@ public class UserControllerTest {
 
     @Test
     public void assigningInstructorByAdminToAlreadyAppointedUserFail(){
-//UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         userController.login("sup1");
@@ -107,7 +100,6 @@ public class UserControllerTest {
 
     @Test
     public void getAppointedUsers(){
-//UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         userController.logout(adminName);
@@ -120,7 +112,6 @@ public class UserControllerTest {
 
     @Test
     public void assigningSchoolsToInstructorSuccess(){
-//UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         userController.logout(adminName);
@@ -137,7 +128,6 @@ public class UserControllerTest {
 
     @Test
     public void removingSchoolsFromInstructorSuccess(){
-//UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         userController.logout(adminName);
@@ -157,7 +147,6 @@ public class UserControllerTest {
 
     @Test
     public void removeAssignedInstructorSuccess(){
-//UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         userController.logout(adminName);
@@ -175,7 +164,6 @@ public class UserControllerTest {
 
     @Test
     public void changePasswordBySupervisorFail(){
-//UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         userController.changePasswordToUser(adminName, "sup1", "sup111", "sup11");
@@ -184,7 +172,6 @@ public class UserControllerTest {
 
     @Test
     public void changePasswordBySupervisorSuccess(){
-//UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         userController.changePasswordToUser(adminName, "sup1", "sup111", "sup111");
@@ -193,7 +180,6 @@ public class UserControllerTest {
 
     @Test
     public void changePasswordSuccess(){//todo check the password itself not that the user is connected
-//UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         userController.login("sup1");
@@ -203,7 +189,6 @@ public class UserControllerTest {
 
     @Test
     public void updateInfoSuccess(){
-//UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         userController.logout(adminName);
@@ -214,7 +199,6 @@ public class UserControllerTest {
 
     @Test
     public void changePasswordToInstructor() {
-//UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         userController.logout(adminName);
@@ -227,7 +211,6 @@ public class UserControllerTest {
     @Test
     public void assigningYeadimSuccess(){
         String year = "תשפ\"ג";
-//UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         userController.logout(adminName);
@@ -243,7 +226,6 @@ public class UserControllerTest {
     @Test
     public void removingGoalSuccess(){
         String year = "תשפ\"ג";
-//UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         userController.logout(adminName);
@@ -261,7 +243,6 @@ public class UserControllerTest {
 
     @Test
     public void viewAllUsersSuccess(){
-//UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         userController.logout(adminName);
@@ -275,7 +256,6 @@ public class UserControllerTest {
 
     @Test
     public void assigningTwoSupervisorsToTheSameWorkFieldFail(){
-//UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         Response<String> res = userController.registerUserBySystemManager(adminName, "sup2", "sup2", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
@@ -286,7 +266,6 @@ public class UserControllerTest {
 
     @Test
     public void RemovingInstructorAssignedBySupervisorBySystemManagerSuccess(){
-//UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         userController.logout(adminName);
@@ -302,7 +281,6 @@ public class UserControllerTest {
 
     @Test
     public void transferSupervisionSuccess(){
-//UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         userController.logout(adminName);
@@ -319,7 +297,6 @@ public class UserControllerTest {
 
     @Test
     public void transferSupervisionFail(){
-//UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         userController.logout(adminName);
@@ -333,7 +310,6 @@ public class UserControllerTest {
 
     @Test
     public void transferSupervisionToExistingUserSuccess(){
-//UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
         userController.logout(adminName);
