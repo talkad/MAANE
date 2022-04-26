@@ -44,7 +44,7 @@ import TaskIcon from '@mui/icons-material/Task';
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import SchoolIcon from '@mui/icons-material/School';
-import SurveyRules from "./Pages/Survey/SurveyRules";
+import SurveyRulesEditor from "./Pages/SurveyConstraints/SurveyRulesEditor";
 
 // TODO: what to do if the request for info from the server to show fails?
 // TODO: prevent users from going through the site by entering paths in the url
@@ -318,8 +318,7 @@ function App(){
                                 <Route path="menu" element={<SurveyMenu />}/>
                                 <Route path="createSurvey" element={<SurveyBuilder/>}/>
                                 <Route path="getSurvey" element={<Survey/>}/>
-                                <Route path="rules" element={<SurveyRules/>}/>
-                                {/*<Route path="surveyConstraint" element={<SurveyConstraintBuilder/>}/>*/}
+                                <Route path="rules" element={<SurveyRulesEditor/>}/>
                             </Route>}
 
                         <Route
