@@ -16,11 +16,12 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import java.security.SecureRandom;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
 
 public class UserController {
     private Map<String, User> connectedUsers;

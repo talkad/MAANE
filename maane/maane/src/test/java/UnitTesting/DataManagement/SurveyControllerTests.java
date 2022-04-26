@@ -20,7 +20,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -138,11 +137,7 @@ public class SurveyControllerTests {
         answersDTO1.setId(res.getResult());
         surveyController.clearCache();
 
-        try {
-            when(surveyDAO.getSurvey(res.getResult())).thenReturn(new Response<>(surveyDTO, false, "OK"));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        when(surveyDAO.getSurvey(res.getResult())).thenReturn(new Response<>(surveyDTO, false, "OK"));
 
         Assert.assertFalse(surveyController.addAnswers(answersDTO1).isFailure());
     }
@@ -151,11 +146,8 @@ public class SurveyControllerTests {
     public void addAnswerFailure(){
         Response<String> res = surveyController.createSurvey("Dvorit", surveyDTO);
 
-        try {
-            when(surveyDAO.getSurvey(answersDTO2.getId())).thenReturn(new Response<>(surveyDTO, false, "OK"));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        when(surveyDAO.getSurvey(answersDTO2.getId())).thenReturn(new Response<>(surveyDTO, false, "OK"));
+
 
         Assert.assertTrue(surveyController.addAnswers(answersDTO2).isFailure());
     }

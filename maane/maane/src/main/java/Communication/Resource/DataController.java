@@ -1,6 +1,5 @@
 package Communication.Resource;
 
-import Communication.DTOs.RuleDTO;
 import Communication.Service.Interfaces.DataService;
 import Domain.CommonClasses.Response;
 import Persistence.DbDtos.SchoolDBDTO;

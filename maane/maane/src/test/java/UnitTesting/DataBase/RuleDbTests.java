@@ -1,4 +1,5 @@
 package UnitTesting.DataBase;
+
 import Communication.DTOs.RuleDTO;
 import Communication.Initializer.ServerContextInitializer;
 import Domain.CommonClasses.Pair;
@@ -7,6 +8,7 @@ import Domain.DataManagement.FaultDetector.Rules.RuleType;
 import Persistence.SurveyQueries;
 import org.junit.Before;
 import org.junit.Test;
+
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;

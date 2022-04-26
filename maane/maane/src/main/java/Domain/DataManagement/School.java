@@ -1,8 +1,4 @@
 package Domain.DataManagement;
-import Communication.DTOs.UserDTO;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /*
  * Represents School that gets his information from exel

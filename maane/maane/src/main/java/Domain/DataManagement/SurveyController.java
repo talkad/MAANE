@@ -11,7 +11,6 @@ import Domain.UsersManagment.UserController;
 import Persistence.SurveyQueries;
 
 import java.security.SecureRandom;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.LinkedList;

@@ -4,11 +4,9 @@ import Domain.UsersManagment.User;
 import Domain.UsersManagment.UserStateEnum;
 import Domain.UsersManagment.WorkPlan;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class UserDBDTO {
     protected String username;

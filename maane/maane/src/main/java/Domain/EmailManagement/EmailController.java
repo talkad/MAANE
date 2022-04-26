@@ -3,7 +3,6 @@ package Domain.EmailManagement;
 
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.DataController;
-import Domain.UsersManagment.UserController;
 
 import javax.mail.*;
 import javax.mail.internet.*;

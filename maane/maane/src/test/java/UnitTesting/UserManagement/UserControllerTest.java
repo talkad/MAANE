@@ -1,4 +1,4 @@
-package UnitTesting.WorkPlan.UserManagement;
+package UnitTesting.UserManagement;
 
 import Communication.DTOs.GoalDTO;
 import Communication.DTOs.UserDTO;
@@ -7,14 +7,12 @@ import Domain.CommonClasses.Response;
 import Domain.UsersManagment.UserController;
 import Domain.UsersManagment.UserStateEnum;
 import Domain.WorkPlan.GoalsManagement;
-import Persistence.Connect;
 import Persistence.UserQueries;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.junit.*;
 
 import java.util.List;
 import java.util.Vector;

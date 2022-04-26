@@ -1,15 +1,12 @@
 package Persistence;
 
-import Communication.DTOs.SurveyDTO;
 import Domain.CommonClasses.Response;
 import Persistence.DbDtos.SchoolDBDTO;
-import org.apache.poi.ss.formula.eval.NotImplementedException;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 
 @Repository
 public class SchoolQueries {

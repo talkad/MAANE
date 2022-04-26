@@ -7,7 +7,6 @@ import Communication.Initializer.ServerContextInitializer;
 import Communication.Service.Interfaces.UserService;
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.User;
-import Persistence.Connect;
 
 import java.util.List;
 

@@ -14,7 +14,7 @@ public class Connect {
 
     private static String url = "jdbc:postgresql://localhost:5432/maaneDBMock";;
     private static String dbUsername = "postgres";
-    private static String dbPassword = "12345";
+    private static String dbPassword = "1234";
 
 
     //conn = DriverManager.getConnection("jdbc:postgresql://tai.db.elephantsql.com:5432/pxbghxfm", "pxbghxfm", "ogms2UJpzqjopRw29YcJ5Wau7wHQLkcJ");

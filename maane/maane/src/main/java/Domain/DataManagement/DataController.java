@@ -1,19 +1,13 @@
 package Domain.DataManagement;
 
 
-import Communication.DTOs.UserDTO;
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.UserController;
 import Persistence.DbDtos.SchoolDBDTO;
 import Persistence.SchoolQueries;
 import Persistence.UserQueries;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class DataController {
 
