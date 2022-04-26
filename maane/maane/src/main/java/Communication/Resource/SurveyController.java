@@ -1,18 +1,17 @@
 package Communication.Resource;
 
-import Communication.DTOs.RuleDTO;
-import Communication.DTOs.SurveyAnswersDTO;
-import Communication.DTOs.SurveyDTO;
-import Communication.DTOs.SurveyDetailsDTO;
+import Communication.DTOs.*;
 import Communication.Service.Interfaces.SurveyService;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.FaultDetector.Rules.Rule;
 import Domain.DataManagement.FaultDetector.Rules.RuleConverter;
+import Domain.DataManagement.Question;
 import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +29,20 @@ public class SurveyController {
     public ResponseEntity<Response<String>> createSurvey(@RequestHeader(value = "Authorization") String token, @RequestBody SurveyDTO surveyDTO){
         return ResponseEntity.ok(
                 service.createSurvey(sessionHandler.getUsernameByToken(token).getResult(), surveyDTO)
+        );
+    }
+
+    @PostMapping(value = "/addQuestion")
+    public ResponseEntity<Response<Boolean>> addQuestion(@RequestHeader(value = "Authorization") String token, @RequestBody QuestionDTO questionDTO){
+        return ResponseEntity.ok(
+                service.addQuestion(sessionHandler.getUsernameByToken(token).getResult(), questionDTO)
+        );
+    }
+
+    @PostMapping(value = "/removeQuestion")
+    public ResponseEntity<Response<Boolean>> removeQuestion(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object> body){
+        return ResponseEntity.ok(
+                service.removeQuestion(sessionHandler.getUsernameByToken(token).getResult(), (String)body.get("surveyID"), (Integer)body.get("QuestionID"))
         );
     }
 
@@ -64,6 +77,13 @@ public class SurveyController {
 
         return ResponseEntity.ok()
                 .body(service.removeRule(sessionHandler.getUsernameByToken(token).getResult(), (String)body.get("surveyID"), (Integer)body.get("ruleID")));
+    }
+
+    @PostMapping(value = "/removeRules")
+    public ResponseEntity<Response<Boolean>> removeRules(@RequestHeader(value = "Authorization") String token, @RequestBody String surveyID){
+
+        return ResponseEntity.ok()
+                .body(service.removeRules(sessionHandler.getUsernameByToken(token).getResult(), surveyID));
     }
 
     @GetMapping("/detectFault/surveyID={surveyID}&year={year}")

@@ -1,5 +1,6 @@
 package Communication.Service;
 
+import Communication.DTOs.QuestionDTO;
 import Communication.DTOs.SurveyAnswersDTO;
 import Communication.DTOs.SurveyDTO;
 import Communication.DTOs.SurveyDetailsDTO;
@@ -95,6 +96,42 @@ public class SurveyServiceImpl implements SurveyService {
             log.error("failed to detect faults in survey {}", surveyID);
         else
             log.info("detected faults in survey {}", surveyID);
+
+        return res;
+    }
+
+    @Override
+    public Response<Boolean> removeRules(String username, String surveyID) {
+        Response<Boolean> res = SurveyController.getInstance().removeRules(username, surveyID);
+
+        if(res.isFailure())
+            log.error("failed to remove rules in survey {}", surveyID);
+        else
+            log.info("removed all rules in survey {}", surveyID);
+
+        return res;
+    }
+
+    @Override
+    public Response<Boolean> addQuestion(String username, QuestionDTO questionDTO) {
+        Response<Boolean> res = SurveyController.getInstance().addQuestion(username, questionDTO);
+
+        if(res.isFailure())
+            log.error(res.getErrMsg());
+        else
+            log.info(res.getErrMsg());
+
+        return res;
+    }
+
+    @Override
+    public Response<Boolean> removeQuestion(String username, String surveyID, Integer questionID) {
+        Response<Boolean> res = SurveyController.getInstance().removeQuestion(username, surveyID, questionID);
+
+        if(res.isFailure())
+            log.error(res.getErrMsg());
+        else
+            log.info(res.getErrMsg());
 
         return res;
     }

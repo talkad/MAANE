@@ -1,5 +1,6 @@
 package Persistence;
 
+import Communication.DTOs.QuestionDTO;
 import Communication.DTOs.RuleDTO;
 import Communication.DTOs.SurveyAnswersDTO;
 import Communication.DTOs.SurveyDTO;
@@ -56,10 +57,8 @@ public class SurveyQueries {
                 new Response<>(false, true, "bad Db writing");
     }
 
-    private void insertQuestions (String surveyId, List<String> questions) {
-        System.out.println("1");
+    public void insertQuestions (String surveyId, List<String> questions) {
         String sql = "INSERT INTO \"Questions\" (survey_id, index, question) VALUES (?, ?, ?)";
-        System.out.println("2");
         PreparedStatement preparedStatement = null;
         try {
             preparedStatement = Connect.conn.prepareStatement(sql);
@@ -67,11 +66,54 @@ public class SurveyQueries {
                 preparedStatement.setString(1, surveyId);
                 preparedStatement.setInt(2, questions.indexOf(question));
                 preparedStatement.setString(3, question);
-                System.out.println("3");
                 preparedStatement.executeUpdate();
             }
         } catch (SQLException e) {e.printStackTrace();}
+    }
 
+    public Response<Boolean> addQuestion(QuestionDTO questionDTO, int question_index) {
+        String sql = "INSERT INTO \"Questions\" (survey_id, index, question) VALUES (?, ?, ?)";
+        PreparedStatement preparedStatement = null;
+        try {
+            preparedStatement = Connect.conn.prepareStatement(sql);
+            preparedStatement.setString(1, questionDTO.getSurveyID());
+            preparedStatement.setInt(2, question_index);
+            preparedStatement.setString(3, questionDTO.getQuestion());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            return new Response<>(false, true, "failed to add question");
+        }
+
+        String sql2 = "INSERT INTO \"MultiChoices\" (survey_id, question_index, answer_type, choices) VALUES (?, ?, ?, ?)";
+        preparedStatement = null;
+        try{
+            preparedStatement = Connect.conn.prepareStatement(sql2);
+            preparedStatement.setString(1, questionDTO.getSurveyID());
+            preparedStatement.setInt(2, question_index);
+            preparedStatement.setString(3, questionDTO.getType().getType());
+            preparedStatement.setString(4, questionDTO.getQuestion());
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            return new Response<>(false, true, "failed to add question");
+        }
+
+        return new Response<>(false, true, "inserted question successfully");
+    }
+
+    public Response<Boolean> removeQuestions(String surveyID, int questionID) {
+        String sql = "DELETE FROM  \"Questions\" WHERE survey_id=? and index=?";
+        PreparedStatement preparedStatement = null;
+        try {
+            preparedStatement = Connect.conn.prepareStatement(sql);
+            preparedStatement.setString(1, surveyID);
+            preparedStatement.setInt(2, questionID);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            return new Response<>(false, true, "question deletion failed");
+        }
+
+        return new Response<>(true, false, "question removed successfully");
     }
 
     public void insertAnswers (String surveyId, List<String> answers, List<AnswerType> answerTypes) {
@@ -99,31 +141,34 @@ public class SurveyQueries {
         return result;
     }
 
-    public Response<SurveyDTO> getSurvey(String id) throws SQLException {
+    public Response<SurveyDTO> getSurvey(String id)  {
         Connect.createConnection();
         String sqlSurvey = "SELECT * FROM \"Surveys\" WHERE id = ?";
-        PreparedStatement statement = Connect.conn.prepareStatement(sqlSurvey);
-        statement.setString(1, id);
-        ResultSet resultSurvey = statement.executeQuery();
-        SurveyDTO surveyDTO = new SurveyDTO();
+        try {
+            PreparedStatement statement = Connect.conn.prepareStatement(sqlSurvey);
+            statement.setString(1, id);
+            ResultSet resultSurvey = statement.executeQuery();
+            SurveyDTO surveyDTO = new SurveyDTO();
 
-        if(resultSurvey.next()) {
-            surveyDTO.setId(resultSurvey.getString("id"));
-            surveyDTO.setTitle(resultSurvey.getString("title"));
-            surveyDTO.setDescription(resultSurvey.getString("description"));
-            List<String> questions = getSurveyQuestions(id);
-            List<List<String>> answers = getSurveyAnswers(id, questions);
-            surveyDTO.setQuestions(questions);
-            surveyDTO.setAnswers(answers);
+            if (resultSurvey.next()) {
+                surveyDTO.setId(resultSurvey.getString("id"));
+                surveyDTO.setTitle(resultSurvey.getString("title"));
+                surveyDTO.setDescription(resultSurvey.getString("description"));
+                List<String> questions = getSurveyQuestions(id);
+                List<List<String>> answers = getSurveyAnswers(id, questions);
+                surveyDTO.setQuestions(questions);
+                surveyDTO.setAnswers(answers);
 
-            Connect.closeConnection();
+                Connect.closeConnection();
+            } else {
+                Connect.closeConnection();
+                return new Response<>(null, true, "failed to get survey");
+            }
+
+            return new Response<>(surveyDTO, false, "survey loaded successfully");
+        } catch(SQLException e) {
+            return new Response<>(null, true, "Failed to get survey");
         }
-        else {
-            Connect.closeConnection();
-            return new Response<>(null, true, "failed to get survey");
-        }
-
-        return new Response<SurveyDTO>(surveyDTO, false, "survey loaded successfully");
     }
 
     private List<String> getSurveyQuestions (String survey_id) throws SQLException {
@@ -217,6 +262,24 @@ public class SurveyQueries {
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
+        return rows>0 ? new Response<>(true, false, "") :
+                new Response<>(false, true, "bad Db writing");
+    }
+
+    public Response<Boolean> removeRules(String surveyID) {
+        Connect.createConnection();
+        String sql = "DELETE FROM \"Rules\" WHERE survey_id = ?";
+        int rows = 0;
+        try (PreparedStatement pstmt = Connect.conn.prepareStatement(sql)) {
+            pstmt.setString(1, surveyID);
+            rows = pstmt.executeUpdate();
+
+            Connect.closeConnection();
+
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+
         return rows>0 ? new Response<>(true, false, "") :
                 new Response<>(false, true, "bad Db writing");
     }
