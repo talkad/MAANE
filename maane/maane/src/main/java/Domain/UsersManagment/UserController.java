@@ -14,10 +14,8 @@ import Persistence.UserQueries;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
+import java.security.SecureRandom;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class UserController {
@@ -27,6 +25,9 @@ public class UserController {
     private SurveyController surveyController;
     private EmailController emailController;
     private UserQueries userDAO;
+    private final SecureRandom secureRandom;
+    private final Base64.Encoder base64Encoder;
+
 
     private UserController() {
         this.passwordEncoder = new BCryptPasswordEncoder();
@@ -35,6 +36,9 @@ public class UserController {
         this.surveyController = SurveyController.getInstance();
         this.emailController = EmailController.getInstance();
         this.userDAO = UserQueries.getInstance();
+        secureRandom = new SecureRandom();
+        base64Encoder = Base64.getUrlEncoder();
+
         adminBoot("admin", "admin");//todo need to hide password in db
     }
 
@@ -799,24 +803,40 @@ public class UserController {
         }
     }
 
-    public Response<UserDTO> assignCoordinator(String currUser, String workField, String firstName, String lastName, String email, String phoneNumber, String school){
+    private String createToken(){
+        byte[] randomBytes = new byte[32];
+        secureRandom.nextBytes(randomBytes);
+        return base64Encoder.encodeToString(randomBytes);
+    }
+
+    public Response<Boolean> assignCoordinator(String currUser, String workField, String firstName, String lastName, String email, String phoneNumber, String school){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
-            Response<UserDTO> result = user.assignCoordinator(workField, school, firstName, lastName, email, phoneNumber);
+            Response<User> result = user.assignCoordinator(createToken(), workField, school, firstName, lastName, email, phoneNumber);
+
             if (!result.isFailure()) {
-                return new Response<>(result.getResult(), false, "assigned coordinator");
+                userDAO.insertUser(new UserDBDTO(result.getResult(), null));
+                return new Response<>(true, false, "assigned coordinator");
             }
-            return new Response<>(null, result.isFailure(), result.getErrMsg());
+            else{
+                return new Response<>(null, result.isFailure(), result.getErrMsg());
+            }
         }
         else {
             return new Response<>(null, true, "User not connected");
         }
     }
 
-    public Response<String> removeCoordinator(String currUser, String workField, String school){
+    public Response<Boolean> removeCoordinator(String currUser, String workField, String school){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);//todo make sure when displaying coordinators only display the ones from the same workField
-            return user.removeCoordinator(school, workField);
+            Response<String> response = user.removeCoordinator(school, workField);
+            if(!response.isFailure()){
+                return userDAO.removeCoordinator(response.getResult(), school);//todo check not failed
+            }
+            else{
+                return new Response<>(false, true, response.getErrMsg());
+            }
         }
         else {
             return new Response<>(null, true, "User not connected");
