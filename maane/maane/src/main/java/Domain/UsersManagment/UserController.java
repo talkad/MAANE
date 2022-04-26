@@ -14,6 +14,8 @@ import Persistence.UserQueries;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -55,11 +57,11 @@ public class UserController {
         new User(userDAO.getFullUser(instructor).getResult()).assignWorkPlan(workPlan, instructor);
     }
 
-    public Response<Boolean> sendCoordinatorEmails(String currUser, String surveyLink, String surveyToken) {
+    public Response<Boolean> sendCoordinatorEmails(String currUser, String surveyLink) {
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             if(user.isSupervisor().getResult()){
-                return emailController.sendEmail(user.getWorkField(),  surveyLink,  surveyToken);//todo verify existence of the link and survey token
+                return emailController.sendEmail(user.getWorkField(),  surveyLink);//todo verify existence of the link and survey token
             }
             else{
                 return new Response<>(null, true, "user isn't supervisor");
@@ -165,6 +167,41 @@ public class UserController {
         else {
             return new Response<>(null, true, "User not connected");
         }
+    }
+
+    /**
+     * validate email address at user registration
+     * @param email the email address
+     * @return true if the email address is valid, false otherwise.
+     */
+    private boolean isValidEmailAddress(String email) {
+        boolean result = true;
+
+        try {
+            InternetAddress emailAddr = new InternetAddress(email);
+            emailAddr.validate();
+        } catch (AddressException ex) {
+            result = false;
+        }
+
+        return result;
+    }
+
+    /**
+     * validate phone number at user registration
+     * @param phoneNumber the phone number
+     * @return true if the phone number is valid, false otherwise.
+     */
+    private boolean isValidPhoneNumber(String phoneNumber) {
+                /// todo:tal
+        PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
+        try {
+            PhoneNumber swissNumberProto = phoneUtil.parse(swissNumberStr, "CH");
+        } catch (NumberParseException e) {
+            System.err.println("NumberParseException was thrown: " + e.toString());
+        }
+
+
     }
 
     public Response<String> registerUserBySystemManager(String currUser, String userToRegister, String password, UserStateEnum userStateEnum, String optionalSupervisor, String workField, String firstName, String lastName, String email, String phoneNumber, String city){
@@ -720,8 +757,16 @@ public class UserController {
     }
 
     public void notifySurveyCreation(String username, String surveyToken) {
-        // todo - talk to tal see if we still need this
-
+        if(connectedUsers.containsKey(username)) {
+            User user = connectedUsers.get(username);
+            Response<String> response = user.publishSurvey();
+            if(!response.isFailure()){
+                emailController.sendEmail(response.getResult(), "http://localhot:8080/survey/getSurvey/surveyID={" + surveyToken + "}");
+            }
+        }
+        else {
+            //return new Response<>(null, true, "User not connected");
+        }
         // Yes we need it,
         // the username is the name of the supervisor created a survey,
         // so you need to email all relevant coordinator and send them this link (for now):

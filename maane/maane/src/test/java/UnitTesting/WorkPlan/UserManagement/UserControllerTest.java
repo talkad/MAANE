@@ -73,6 +73,16 @@ public class UserControllerTest {
     }
 
     @Test
+    public void emailTest(){
+//UserController userController = UserController.getInstance();
+        String adminName = userController.login("admin").getResult();
+        userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.logout(adminName);
+        userController.login("sup1");
+        userController.sendCoordinatorEmails("sup1", "https://www.cs.bgu.ac.il/~comp211/Main");
+    }
+
+    @Test
     public void assigningInstructorByAdminSuccess(){
 //UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();

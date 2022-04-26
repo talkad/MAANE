@@ -26,7 +26,14 @@ public class DataController {
         return CreateSafeThreadSingleton.INSTANCE;
     }
 
-    public Response<List<String>> getCoordinatorsEmails(String workField){
+    public Response<List<String>> testemail() {
+        List<String> emails = new Vector<>();
+        emails.add("shaked6@post.bgu.ac.il");
+
+        return new Response<>(emails, false, "");
+    }
+
+        public Response<List<String>> getCoordinatorsEmails(String workField){
         List<String> emails = new Vector<>();
         for (String symbol: schools.keySet()) {
             if(schools.get(symbol).getCoordinators().containsKey(workField)){//todo check that there is actually an email assigned

@@ -15,8 +15,8 @@ public class EmailController {
     private final DataController dataController;
 
     private EmailController(){
-        prop.put("mail.smtp.username", "invalidinvalid9@gmail.com");//todo create proper email and password
-        prop.put("mail.smtp.password", "");
+        prop.put("mail.smtp.username", "maane@hityash.org");//todo create proper email and password
+        prop.put("mail.smtp.password", "maruhdrrsomuulzn");
         prop.put("mail.smtp.host", "smtp.gmail.com");
         prop.put("mail.smtp.port", "587");
         prop.put("mail.smtp.auth", "true");
@@ -32,8 +32,10 @@ public class EmailController {
         return CreateSafeThreadSingleton.INSTANCE;
     }
 
-    public Response<Boolean> sendEmail(String workField, String surveyLink, String surveyToken)  {
-        Response<List<String>> emailsToRes = dataController.getCoordinatorsEmails(workField);
+    public Response<Boolean> sendEmail(String workField, String surveyLink)  {
+        //Response<List<String>> emailsToRes = dataController.getCoordinatorsEmails(workField);
+        Response<List<String>> emailsToRes = dataController.testemail();
+
         if (!emailsToRes.isFailure()) {
             String emailsTo = String.join(", ", emailsToRes.getResult());
             Session mailSession = Session.getInstance(prop, new javax.mail.Authenticator() {
@@ -51,7 +53,7 @@ public class EmailController {
                 e.printStackTrace();
             }
             try {
-                message.setSubject("Sending Mail with pure Java Mail API ");
+                message.setSubject("סקר סטטוס שנתי");
             } catch (MessagingException e) {
                 e.printStackTrace();
             }
@@ -87,7 +89,7 @@ public class EmailController {
             /* Step 1: Create MimeBodyPart and set content and its Mime Type */
             BodyPart mimeBody = new MimeBodyPart();
             try {
-                mimeBody.setContent("<h1> This is HTML content </h1><br> <b> User </b>" + " " + surveyLink + " survey token: " + surveyToken, "text/html");//todo make a better msg
+                mimeBody.setContent("<h1></h1><br> <b>survey link: </b>" + surveyLink, "text/html");//todo make a better msg
             } catch (MessagingException e) {
                 e.printStackTrace();
             }

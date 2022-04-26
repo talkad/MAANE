@@ -261,7 +261,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public Response<Boolean> sendCoordinatorEmails(String currUser, String surveyLink, String surveyToken) { //todo: shaked - exception handler
-        Response<Boolean> res = UserController.getInstance().sendCoordinatorEmails(currUser, surveyLink, surveyToken);
+        Response<Boolean> res = UserController.getInstance().sendCoordinatorEmails(currUser, surveyLink);
         if (res.isFailure())
             log.error("failed send emails by {}", currUser);
         else
