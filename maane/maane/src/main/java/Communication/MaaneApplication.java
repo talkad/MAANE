@@ -22,7 +22,7 @@ public class MaaneApplication {
 
 	public static void main(String[] args) {
 
-//		ServerContextInitializer.getInstance().setMockMode();
+		ServerContextInitializer.getInstance().setMockMode();
 
 		SpringApplication.run(MaaneApplication.class, args);
 	}

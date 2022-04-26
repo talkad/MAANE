@@ -34,6 +34,20 @@ public class SurveyController {
         );
     }
 
+    @PostMapping(value = "/addQuestion")
+    public ResponseEntity<Response<Boolean>> addQuestion(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object> body){
+        return ResponseEntity.ok(
+                service.addQuestion(sessionHandler.getUsernameByToken(token).getResult(), surveyDTO)
+        );
+    }
+
+    @PostMapping(value = "/removeQuestion")
+    public ResponseEntity<Response<Boolean>> removeQuestion(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object> body){
+        return ResponseEntity.ok(
+                service.removeQuestion(sessionHandler.getUsernameByToken(token).getResult(), (String)body.get("surveyID"), (Integer)body.get("QuestionID"))
+        );
+    }
+
     @PostMapping(value = "/submitAnswers")
     public ResponseEntity<Response<Boolean>> addAnswers(@RequestBody SurveyAnswersDTO answers){
 
