@@ -6,6 +6,7 @@ import Domain.CommonClasses.Response;
 import Domain.UsersManagment.UserController;
 import Persistence.DbDtos.SchoolDBDTO;
 import Persistence.SchoolQueries;
+import Persistence.UserQueries;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -32,14 +33,16 @@ public class DataController {
 
     public Response<List<String>> getCoordinatorsEmails(String workField){
         //todo change to one query
-        schoolDAO.getCoordinatorEmails(workField);
-       /* List<String> emails = new Vector<>();
+        return UserQueries.getInstance().getCoordinatorEmails(workField);
+
+/*        public Response<List<String>> getCoordinatorsEmails(String workField){
+        List<String> emails = new Vector<>();
         for (String symbol: schools.keySet()) {
             if(schools.get(symbol).getCoordinators().containsKey(workField)){//todo check that there is actually an email assigned
                 emails.add(schools.get(symbol).getCoordinators().get(workField).getEmail());
             }
-        }
-        return new Response<>(emails, false, "successfully acquired emails");*/
+        }*/
+        //return new Response<>(emails, false, "successfully acquired emails");
     }
 
     public Response<Boolean> assignCoordinator(String currUser, String workField, String firstName, String lastName, String email, String phoneNumber, String school) {

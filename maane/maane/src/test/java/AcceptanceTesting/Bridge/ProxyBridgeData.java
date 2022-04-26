@@ -2,6 +2,7 @@ package AcceptanceTesting.Bridge;
 
 import Communication.Service.Interfaces.DataService;
 import Domain.CommonClasses.Response;
+import Persistence.DbDtos.SchoolDBDTO;
 
 public class ProxyBridgeData implements DataService {//todo tests for this class
     private DataService real;
@@ -33,4 +34,28 @@ public class ProxyBridgeData implements DataService {//todo tests for this class
 
         return new Response<>(null, true, "not implemented");
     }
+
+    @Override
+    public Response<Boolean> insertSchool(SchoolDBDTO school) {
+        if (real != null){
+            return real.insertSchool(school);
+        }
+
+        return new Response<>(null, true, "not implemented");    }
+
+    @Override
+    public Response<Boolean> removeSchool(String symbol) {
+        if (real != null){
+            return real.removeSchool(symbol);
+        }
+
+        return new Response<>(null, true, "not implemented");    }
+
+    @Override
+    public Response<Boolean> updateSchool(String symbol, SchoolDBDTO school) {
+        if (real != null){
+            return real.updateSchool(symbol, school);
+        }
+
+        return new Response<>(null, true, "not implemented");    }
 }

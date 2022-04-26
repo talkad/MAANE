@@ -11,12 +11,16 @@ import Domain.EmailManagement.EmailController;
 import Domain.WorkPlan.GoalsManagement;
 import Persistence.UserDBDTO;
 import Persistence.UserQueries;
+import com.google.i18n.phonenumbers.NumberParseException;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import com.google.i18n.phonenumbers.Phonenumber;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
 import java.security.SecureRandom;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 
 public class UserController {
     private Map<String, User> connectedUsers;
@@ -59,11 +63,11 @@ public class UserController {
         new User(userDAO.getFullUser(instructor).getResult()).assignWorkPlan(workPlan, instructor);
     }
 
-    public Response<Boolean> sendCoordinatorEmails(String currUser, String surveyLink, String surveyToken) {
+    public Response<Boolean> sendCoordinatorEmails(String currUser, String surveyLink) {
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             if(user.isSupervisor().getResult()){
-                return emailController.sendEmail(user.getWorkField(),  surveyLink,  surveyToken);//todo verify existence of the link and survey token
+                return emailController.sendEmail(user.getWorkField(),  surveyLink);//todo verify existence of the link and survey token
             }
             else{
                 return new Response<>(null, true, "user isn't supervisor");
@@ -151,6 +155,12 @@ public class UserController {
      * @return User object of the new user upon success
      */
     public Response<String> registerUser(String currUser, String userToRegister, String password, UserStateEnum userStateEnum, String firstName, String lastName, String email, String phoneNumber, String city){
+        if(isValidEmailAddress(email))
+            return new Response<>("", true, "invalid email address");
+
+        if(isValidPhoneNumber(phoneNumber))
+            return new Response<>("", true, "invalid phone number");
+
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             if (!userDAO.userExists(userToRegister)){
@@ -171,7 +181,52 @@ public class UserController {
         }
     }
 
+    /**
+     * validate email address at user registration
+     * @param email the email address
+     * @return true if the email address is valid, false otherwise.
+     */
+    private boolean isValidEmailAddress(String email) {
+        boolean result = true;
+
+        try {
+            InternetAddress emailAddr = new InternetAddress(email);
+            emailAddr.validate();
+        } catch (AddressException ex) {
+            result = false;
+        }
+
+        return result;
+    }
+
+    /**
+     * validate phone number at user registration
+     * @param phoneNumber the phone number
+     * @return true if the phone number is valid, false otherwise.
+     */
+    private boolean isValidPhoneNumber(String phoneNumber) {
+        PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
+        Phonenumber.PhoneNumber israeliNumberProto = null;
+
+        try {
+             israeliNumberProto = phoneUtil.parse(phoneNumber, "IL");
+        } catch (NumberParseException e) {
+            return false;
+        }
+
+        if(israeliNumberProto == null)
+            return false;
+
+        return phoneUtil.isValidNumber(israeliNumberProto);
+    }
+
     public Response<String> registerUserBySystemManager(String currUser, String userToRegister, String password, UserStateEnum userStateEnum, String optionalSupervisor, String workField, String firstName, String lastName, String email, String phoneNumber, String city){
+        if(isValidEmailAddress(email))
+            return new Response<>("", true, "invalid email address");
+
+        if(isValidPhoneNumber(phoneNumber))
+            return new Response<>("", true, "invalid phone number");
+
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             if (!userDAO.userExists(userToRegister)){
@@ -276,6 +331,13 @@ public class UserController {
     }
 
     public Response<Boolean> updateInfo(String currUser, String firstName, String lastName, String email, String phoneNumber, String city){
+
+        if(isValidEmailAddress(email))
+            return new Response<>(false, true, "invalid email address");
+
+        if(isValidPhoneNumber(phoneNumber))
+            return new Response<>(false, true, "invalid phone number");
+
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             Response<User> response = user.updateInfo(firstName, lastName, email, phoneNumber, city);
@@ -724,8 +786,16 @@ public class UserController {
     }
 
     public void notifySurveyCreation(String username, String surveyToken) {
-        // todo - talk to tal see if we still need this
-
+        if(connectedUsers.containsKey(username)) {
+            User user = connectedUsers.get(username);
+            Response<String> response = user.publishSurvey();
+            if(!response.isFailure()){
+                emailController.sendEmail(response.getResult(), "http://localhot:8080/survey/getSurvey/surveyID={" + surveyToken + "}");
+            }
+        }
+        else {
+            //return new Response<>(null, true, "User not connected");
+        }
         // Yes we need it,
         // the username is the name of the supervisor created a survey,
         // so you need to email all relevant coordinator and send them this link (for now):

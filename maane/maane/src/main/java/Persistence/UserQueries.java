@@ -601,4 +601,28 @@ public class UserQueries {
                 new Response<>(false, true, "bad Db writing");
     }
 
+    public Response<List<String>> getCoordinatorEmails(String workField) {
+        Connect.createConnection();
+        int rows = 0;//todo add cascade to all tables with foreign keys
+        String sql = "SELECT email FROM \"Users\" WHERE workfield = ? AND userstateenum = ?";
+        PreparedStatement statement;
+        try {
+            statement = Connect.conn.prepareStatement(sql);
+
+            statement.setString(1, workField);
+            statement.setString(2, UserStateEnum.COORDINATOR.getState());
+
+            ResultSet result = statement.executeQuery();
+            List<String> emails = new Vector<>();
+            while(result.next()) {
+                emails.add(result.getString("email"));
+            }
+            Connect.closeConnection();
+            return new Response<>(emails, false, "successfully acquired emails");
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return new Response<>(null, true, "failed to acquire emails");
+    }
+
 }
