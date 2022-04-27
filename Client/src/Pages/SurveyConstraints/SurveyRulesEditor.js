@@ -5,12 +5,12 @@ import {Button} from "@mui/material";
 import SurveyRule from "./SurveyRule";
 
 const offline_data_rules = [{id: 1, goalSelection: 1, children: [{id: 4, questionSelection: '',
-        children: [{id: 5, questionSelection: '', children: []}]}]},
+        children: [{id: 5, questionSelection: '', children: [], constraint: {type: '', value: ''}}], constraint: {type: '', value: ''}}]},
     {id: 2, goalSelection: 2, children: []}];
 const offline_goals_data = [{value: 1, description: "hello there"}, {value: 2, description: "general kenobi"}];
-const offline_questions_data = [{id: 0, question: "sup", type: "MULTIPLE_CHOICE", answer: ['dunno', 'have no idea', 'idk']},
-    {id: 1, question: 'up dawg', type: 'NUMERIC_ANSWER', answer: ''},
-    {id: 2, question: 'how are you', type: 'MULTIPLE_CHOICE', answer: ['good', 'fine', 'bad']}]
+const offline_questions_data = [{id: 0, question: "sup", type: "MULTIPLE_CHOICE", answers: ['dunno', 'have no idea', 'idk']},
+    {id: 1, question: 'up dawg', type: 'NUMERIC_ANSWER', answers: ''},
+    {id: 2, question: 'how are you', type: 'MULTIPLE_CHOICE', answers: ['good', 'fine', 'bad']}]
 // NUMERIC_ANSWER, MULTIPLE_CHOICE
 
 //const color_stack = ['#ffffff', '#d89af5', '#93b6fa']; // todo: add more colors
@@ -61,7 +61,7 @@ export default function SurveyRulesEditor(){
             if(temp_trace.length  === 0 && cell.id === id){
 
                 const temp_cell = {...cell};
-                temp_cell.children.push({id: ruleID, questionSelection: '', children: []});
+                temp_cell.children.push({id: ruleID, questionSelection: '', children: [], constraint: {type: '', value: ''}});
                 setRuleID(ruleID + 1);
 
                 return temp_cell;
@@ -153,6 +153,19 @@ export default function SurveyRulesEditor(){
     const handleQuestionSelectionChange = (id, trace, value) => {
         let temp_trace = [...trace];
 
+        const getQuestionType = (id) => {
+            if(id === undefined){
+                return '';
+            }
+
+            if(id === '' || id === 'AND' || id === 'OR'){
+                return '';
+            }
+
+            const question = questions.find(element => element.id === id);
+            return question.type;
+        }
+
         const find_and_edit = function(cell) {
 
             if(temp_trace.length  === 0 && cell.id === id){
@@ -163,18 +176,116 @@ export default function SurveyRulesEditor(){
                 // TOOD: should we do it? and if so, should we raise an error?
                 if((value !== "AND" && value !== "OR") &&
                     (temp_cell.questionSelection === "AND" || temp_cell.questionSelection === "OR" || temp_cell.questionSelection === "")){
+
+                    if(getQuestionType(value) === "MULTIPLE_CHOICE"){
+                        temp_cell.constraint.type = "MULTIPLE_CHOICE";
+                        temp_cell.constraint.value = [];
+                    }
+
+
                     temp_cell.children = [];
                 }
 
                 if((value === "AND" || value === "OR") &&
                     (temp_cell.questionSelection !== "AND" && temp_cell.questionSelection !== "OR")){
-                    temp_cell.children = [{id: ruleID, questionSelection: '', children: []}];
-                    setRuleID(ruleID + 1);
+
+                    if (temp_cell.children.length === 0){
+                        temp_cell.children = [{id: ruleID, questionSelection: '', children: [], constraint: {type: '', value: ''}}];
+                        setRuleID(ruleID + 1);
+                    }
                 }
 
                 temp_cell.questionSelection = value;
 
 
+
+                return temp_cell;
+
+            }
+
+            if(temp_trace.length === 0 && cell.id !== id){
+                return cell;
+            }
+
+            if(!temp_trace.includes(cell.id)){
+                return cell;
+            }
+
+            // else the current one is included in the list
+            const temp_cell = {...cell};
+            temp_trace.shift();
+            temp_cell.children = cell.children.map(find_and_edit)
+
+            return temp_cell;
+        }
+
+        setRules(rules.map(find_and_edit))
+    }
+
+    /**
+     * handler for the change in the checkboxes of a cell
+     * @param id the id of the cell
+     * @param trace the trace of the cell
+     * @param value the checkbox which got checked
+     */
+    const handleConstraintValueChoiceChange = (id, trace, value) => {
+        let temp_trace = [...trace];
+
+        const find_and_edit = function(cell) {
+
+            if(temp_trace.length  === 0 && cell.id === id){
+
+                const temp_cell = {...cell};
+
+                if(temp_cell.constraint.value.includes(value)){
+                    temp_cell.constraint.value = temp_cell.constraint.value.filter(ele => ele !== value)
+                }
+                else{
+
+                    temp_cell.constraint.value.push(value);
+                }
+
+                return temp_cell;
+
+            }
+
+            if(temp_trace.length === 0 && cell.id !== id){
+                return cell;
+            }
+
+            if(!temp_trace.includes(cell.id)){
+                return cell;
+            }
+
+            // else the current one is included in the list
+            const temp_cell = {...cell};
+            temp_trace.shift();
+            temp_cell.children = cell.children.map(find_and_edit)
+
+            return temp_cell;
+        }
+
+        setRules(rules.map(find_and_edit))
+    }
+
+    /**
+     * handler for the change of a numerical question constraint
+     * @param id the id of the cell the question is in
+     * @param trace the trace of the cell the question is in
+     * @param type the new type of constraint for the question (new inequality)
+     * @param value the new constraint value (numerical)
+     */
+    const handleNumericalConstraintChange = (id, trace, type, value) => {
+        let temp_trace = [...trace];
+
+        const find_and_edit = function(cell) {
+
+            if(temp_trace.length  === 0 && cell.id === id){
+
+                const temp_cell = {...cell};
+
+                temp_cell.constraint.type = type;
+                temp_cell.constraint.value = value;
 
                 return temp_cell;
 
@@ -216,7 +327,9 @@ export default function SurveyRulesEditor(){
                     <SurveyRule id={rule.id} depth={0} colors={color_stack} goalSelection={rule.goalSelection}
                                 children={rule.children} trace={[]} goals={goals} questions={questions}
                                 addCell={addCell} removeCell={removeCell} goalSelectionChange={handleGoalSelectionChange}
-                                questionSelectionChange={handleQuestionSelectionChange}/>)}
+                                handleConstraintValueChoiceChange={handleConstraintValueChoiceChange}
+                                questionSelectionChange={handleQuestionSelectionChange}
+                                handleNumericalConstraintChange={handleNumericalConstraintChange}/>)}
 
                 {/*add rule button*/}
                 <Button onClick={() => addRule()} variant={'contained'}>{add_rules_button_string}</Button>

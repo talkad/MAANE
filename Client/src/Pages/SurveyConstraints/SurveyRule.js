@@ -1,4 +1,16 @@
-import {Box, Button, Grid, IconButton, InputLabel, MenuItem, Paper, Select, Tooltip} from "@mui/material";
+import {
+    Box,
+    Button, Checkbox,
+    FormControlLabel,
+    FormGroup,
+    Grid,
+    IconButton,
+    InputLabel,
+    MenuItem,
+    Paper,
+    Select, Stack, TextField,
+    Tooltip
+} from "@mui/material";
 import './SurveyRule.css'
 import {useEffect, useState} from "react";
 import FormControl from "@mui/material/FormControl";
@@ -14,9 +26,12 @@ export default function SurveyRule(props){
 
     const goal_select_label_string = 'יעד';
     const question_select_label_string = 'שאלה או תנאי';
+    const inequality_select_label_string = 'אי-שוויון'
 
     const and_string = "וגם (כל תתי התנאים צריכים להתקיים)";
     const or_string = "או (אחד מתתי התנאים צריכים להתקיים)";
+
+    const user_answer_place_holder_string = "תשובות העונים";
 
     const add_condition_button_string = "הוספת תא";
     const remove_tooltip_string = "מחיקה";
@@ -53,8 +68,36 @@ export default function SurveyRule(props){
     }
 
     /**
+     * handler for an on check event
+     * @param event the affected element
+     */
+    const handleAnswerCheckChange = (event) => {
+        props.handleConstraintValueChoiceChange(props.id, props.trace, event.target.name)
+    }
+
+    /**
+     * handler for an onChange event for the numerical field of the numerical question constraint
+     * @param event the affected element
+     */
+    const handleNumericalAnswerChange = (event) => {
+        // from https://stackoverflow.com/questions/57269224/reactjs-material-ui-accept-only-positive-unsigned-integer-values-in-textfield
+        let input = event.target.value ;
+        if( !input || ( input[input.length-1].match('[0-9]') && input[0].match('[1-9]')) )
+            props.handleNumericalConstraintChange(props.id, props.trace, props.constraintType, input);
+
+    }
+
+    /**
+     * handler for an onChange for the inqueality of a numerical question constraint
+     * @param event the affected element
+     */
+    const handleInequalityChange = (event) => {
+        props.handleNumericalConstraintChange(props.id, props.trace, event.target.value, props.value);
+    }
+
+    /**
      * gets the type of the selected question
-     * @returns {string|*}
+     * @returns {string|*} the type of the question
      */
     const selectedQuestionType = () => {
         if(props.questionSelection === undefined){
@@ -69,6 +112,18 @@ export default function SurveyRule(props){
         return question.type;
     }
 
+    /**
+     * gets the answers of the selected question
+     * @returns {[]|string[]|string|*} the list of answers
+     */
+    const selectedQuestionAnswers = () => {
+        const question = props.questions.find(element => element.id === props.questionSelection);
+        return question.answers;
+    }
+
+    /**
+     * handler for removing the current cell
+     */
     const handleRemove = () => {
         props.removeCell(props.id, props.trace);
     }
@@ -112,7 +167,7 @@ export default function SurveyRule(props){
                         {/*question or conditional selection for the sub cells*/}
                         {props.depth > 0 &&
                             <Grid item xs={11}>
-                                <FormControl fullWidth sx={{backgroundColor: 'white', marginLeft: '1%', marginBottom: '1%'}}>
+                                <FormControl fullWidth sx={{marginLeft: '1%', marginBottom: '1%'}}>
                                     <InputLabel id={`question-select-label-${props.id}`}>{question_select_label_string}</InputLabel>
                                     <Select
                                         labelId={`question-select-label-${props.id}`}
@@ -144,18 +199,59 @@ export default function SurveyRule(props){
                     </Grid>
 
                     {/*constraint to fill for open numeric questions*/}
-                    {selectedQuestionType() === "NUMERIC_ANSWER" && <h1>open numeric</h1>}
+                    {selectedQuestionType() === "NUMERIC_ANSWER" &&
+                        <Stack m={1} direction="row" spacing={1}>
+                            {/*text field which the user fill*/}
+                            <TextField
+                                value={props.constraintValue}
+                                onChange={handleNumericalAnswerChange}
+                            />
 
-                    {selectedQuestionType() === "MULTIPLE_CHOICE" && <h1>multiple choice</h1>}
+                            {/*menu which the user chooses from*/}
+                            <FormControl sx={{width: "25%"}}>
+                                <InputLabel id={`inequality-select-label-${props.id}`}>{inequality_select_label_string}</InputLabel>
+                                <Select
+                                    labelId={`inequality-select-label-${props.id}`}
+                                    id={`inequality-select-${props.id}`}
+                                    value={props.constraintType}
+                                    label={inequality_select_label_string}
+                                    onChange={handleInequalityChange}
+                                >
+                                    <MenuItem value={'greaterThan'}> {">"} </MenuItem>
+                                    <MenuItem value={'lessThan'}> {"<"} </MenuItem>
+                                    <MenuItem value={'equal'}> {"="} </MenuItem>
+                                </Select>
+                            </FormControl>
+
+                            {/*static text field*/}
+                            <TextField value={user_answer_place_holder_string} disabled/>
+                        </Stack>}
+
+                    {/*constraints to check for multiple choice questions*/}
+                    {selectedQuestionType() === "MULTIPLE_CHOICE" &&
+                        <FormControl sx={{ m: 3 }} variant="standard">
+                        <FormGroup>
+                            {selectedQuestionAnswers().map((answer, index) => <FormControlLabel
+                                    control={
+                                        <Checkbox checked={props.constraintValue.includes(index.toString())} onChange={handleAnswerCheckChange} name={index} />
+                                    }
+                                    label={answer}
+                                />)}
+                        </FormGroup>
+                    </FormControl>}
 
                     {/*child cells*/}
                     {props.children.map(child => <SurveyRule id={child.id} depth={props.depth + 1} colors={props.colors}
                                                              questions={props.questions}
                                                              children={child.children} trace={trace}
                                                              questionSelection={child.questionSelection}
+                                                             constraintType={child.constraint.type}
+                                                             constraintValue={child.constraint.value}
                                                              addCell={props.addCell}
                                                              questionSelectionChange={props.questionSelectionChange}
-                                                             removeCell={props.removeCell}/>)}
+                                                             removeCell={props.removeCell}
+                                                             handleConstraintValueChoiceChange={props.handleConstraintValueChoiceChange}
+                                                             handleNumericalConstraintChange={props.handleNumericalConstraintChange}/>)}
 
                     {/*todo: figure out about the color of the button*/}
                     {isPresentAddButton() &&

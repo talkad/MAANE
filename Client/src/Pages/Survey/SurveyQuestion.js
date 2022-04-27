@@ -18,7 +18,12 @@ export default function SurveyQuestion(props){
      */
     const handleOpenAnswerChange = (event) => {
         //setOpenAnswer(event.target.value)
-        props.answerChange(props.id, event.target.value)
+
+        // from https://stackoverflow.com/questions/57269224/reactjs-material-ui-accept-only-positive-unsigned-integer-values-in-textfield
+        let input = event.target.value ;
+        if( !input || ( input[input.length-1].match('[0-9]') && input[0].match('[1-9]')) )
+            props.answerChange(props.id, input)
+
     }
 
     /**
@@ -88,7 +93,6 @@ export default function SurveyQuestion(props){
                             margin="normal"
                             variant="standard"
                             required
-                            type="number"
                             error={props.showError && props.answer.trim() === ''}
                             inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                             value={props.answer}
