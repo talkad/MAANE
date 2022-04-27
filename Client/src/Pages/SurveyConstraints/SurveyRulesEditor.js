@@ -13,7 +13,9 @@ const offline_questions_data = [{id: 0, question: "sup", type: "MULTIPLE_CHOICE"
     {id: 2, question: 'how are you', type: 'MULTIPLE_CHOICE', answer: ['good', 'fine', 'bad']}]
 // NUMERIC_ANSWER, MULTIPLE_CHOICE
 
-const color_stack = ['#ffffff', '#d89af5', '#93b6fa']; // todo: add more colors
+//const color_stack = ['#ffffff', '#d89af5', '#93b6fa']; // todo: add more colors
+
+const color_stack = ['#ffffff', '#E6B0AA', '#D7BDE2', '#A9CCE3', '#A3E4D7', '#A9DFBF', '#F9E79F', '#F5CBA7']; // todo: add more colors
 
 export default function SurveyRulesEditor(){
 
@@ -26,6 +28,7 @@ export default function SurveyRulesEditor(){
     const [questions, setQuestions] = useState(offline_questions_data);
 
     const add_rules_button_string = "הוספת חוק";
+    const submit_rules_button_string = "סיום ושמירה";
 
     useEffect(() => {
         var url = new URL(window.location.href);
@@ -49,61 +52,78 @@ export default function SurveyRulesEditor(){
      * @param id the id of the sub-rule to add the new condition to
      * @param trace the trace of parents of the sub-rule
      */
-    const addCondition = (id, trace) => {
+    const addCell = (id, trace) => {
         //console.log(`the trace of id ${id} is ${trace}`)
         let temp_trace = [...trace];
-        setRules(rules.map(function(rule) {
 
-            if(rule.id !== id && !temp_trace.includes(rule.id)){ // the id is not part of the trace or the current element
-                return rule;
-            }
+        const find_and_add = function(cell) {
 
-            if(rule.id === id){
-                const temp_rule = {...rule};
-                temp_rule.children.push({id: ruleID, questionSelection: '', children: []});
+            if(temp_trace.length  === 0 && cell.id === id){
+
+                const temp_cell = {...cell};
+                temp_cell.children.push({id: ruleID, questionSelection: '', children: []});
                 setRuleID(ruleID + 1);
 
-                return temp_rule
+                return temp_cell;
+
             }
 
+            if(temp_trace.length === 0 && cell.id !== id){
+                return cell;
+            }
 
-            // what's left is the condition where the current rule is in the trace
-            // finding the rule to add the condition to
+            if(!temp_trace.includes(cell.id)){
+                return cell;
+            }
+
+            // else the current one is included in the list
+            const temp_cell = {...cell};
             temp_trace.shift();
-            let current_rule = {...rule};
+            temp_cell.children = cell.children.map(find_and_add)
 
-            const find_and_add = function(child) {
+            return temp_cell;
+        }
 
-                if(temp_trace.length  === 0 && child.id === id){
+        setRules(rules.map(find_and_add))
+    }
 
-                    const temp_child = {...child};
-                    temp_child.children.push({id: ruleID, questionSelection: '', children: []});
-                    setRuleID(ruleID + 1);
+    /**
+     * removed a given cell
+     * @param id the id of the cell to remove
+     * @param trace the trace of the cell to remove
+     */
+    const removeCell = (id, trace) => {
+        // TODO: add a warning that it's going to delete everything in that cell
+        //console.log(`the trace of id ${id} is ${trace}`)
+        let temp_trace = [...trace];
 
-                    return temp_child;
+        const find_and_remove = function(cell) {
 
-                }
-
-                if(temp_trace.length === 0 && child.id !== id){
-                    return child;
-                }
-
-                if(!temp_trace.includes(child.id)){
-                    return child;
-                }
-
-                // else the current one is included in the list
-                const temp_child = {...child};
-                temp_trace.shift();
-                temp_child.children = child.children.map(find_and_add)
-
-                return temp_child;
+            if(!temp_trace.includes(cell.id)){
+                return cell;
             }
 
-            current_rule.children = current_rule.children.map(find_and_add);
+            // else the current one is included in the list
+            const temp_child = {...cell};
+            temp_trace.shift();
 
-            return current_rule;
-        }))
+            if(temp_trace.length === 0){
+                temp_child.children = cell.children.filter((sub_cell) => sub_cell.id !== id)
+            }
+            else{
+                temp_child.children = cell.children.map(find_and_remove)
+            }
+
+
+            return temp_child;
+        }
+
+        if(temp_trace.length === 0){
+            setRules(rules.filter((cell) => cell.id !== id))
+        }
+        else{
+            setRules(rules.map(find_and_remove))
+        }
     }
 
     /**
@@ -132,52 +152,58 @@ export default function SurveyRulesEditor(){
      */
     const handleQuestionSelectionChange = (id, trace, value) => {
         let temp_trace = [...trace];
-        setRules(rules.map(function(rule) {
 
-            if(rule.id !== id && !temp_trace.includes(rule.id)){ // the id is not part of the trace or the current element
-                return rule;
+        const find_and_edit = function(cell) {
+
+            if(temp_trace.length  === 0 && cell.id === id){
+
+                const temp_cell = {...cell};
+
+                // TODO: currently we are removing all the children if going from AND or OR to a question.
+                // TOOD: should we do it? and if so, should we raise an error?
+                if((value !== "AND" && value !== "OR") &&
+                    (temp_cell.questionSelection === "AND" || temp_cell.questionSelection === "OR" || temp_cell.questionSelection === "")){
+                    temp_cell.children = [];
+                }
+
+                if((value === "AND" || value === "OR") &&
+                    (temp_cell.questionSelection !== "AND" && temp_cell.questionSelection !== "OR")){
+                    temp_cell.children = [{id: ruleID, questionSelection: '', children: []}];
+                    setRuleID(ruleID + 1);
+                }
+
+                temp_cell.questionSelection = value;
+
+
+
+                return temp_cell;
+
             }
 
+            if(temp_trace.length === 0 && cell.id !== id){
+                return cell;
+            }
 
-            // what's left is the condition where the current rule is in the trace
-            // finding the rule to add the condition to
+            if(!temp_trace.includes(cell.id)){
+                return cell;
+            }
+
+            // else the current one is included in the list
+            const temp_cell = {...cell};
             temp_trace.shift();
-            let current_rule = {...rule};
+            temp_cell.children = cell.children.map(find_and_edit)
 
-            const find_and_edit = function(child) {
+            return temp_cell;
+        }
 
-                if(temp_trace.length  === 0 && child.id === id){
-
-                    const temp_child = {...child};
-                    temp_child.questionSelection = value;
-
-                    return temp_child;
-
-                }
-
-                if(temp_trace.length === 0 && child.id !== id){
-                    return child;
-                }
-
-                if(!temp_trace.includes(child.id)){
-                    return child;
-                }
-
-                // else the current one is included in the list
-                const temp_child = {...child};
-                temp_trace.shift();
-                temp_child.children = child.children.map(find_and_edit)
-
-                return temp_child;
-            }
-
-            current_rule.children = current_rule.children.map(find_and_edit);
-
-            return current_rule;
-        }))
+        setRules(rules.map(find_and_edit))
     }
 
+    const submitRules = () => {
+        // TODO: checking everything is correct
 
+        // TODO: send
+    }
 
     return (
         <Space.Fill scrollable>
@@ -189,11 +215,12 @@ export default function SurveyRulesEditor(){
                 {rules.map((rule) =>
                     <SurveyRule id={rule.id} depth={0} colors={color_stack} goalSelection={rule.goalSelection}
                                 children={rule.children} trace={[]} goals={goals} questions={questions}
-                                addCondition={addCondition} goalSelectionChange={handleGoalSelectionChange}
+                                addCell={addCell} removeCell={removeCell} goalSelectionChange={handleGoalSelectionChange}
                                 questionSelectionChange={handleQuestionSelectionChange}/>)}
 
                 {/*add rule button*/}
                 <Button onClick={() => addRule()} variant={'contained'}>{add_rules_button_string}</Button>
+                <Button onClick={() => submitRules()} variant={'contained'} color={'success'} sx={{marginTop: 1}}>{submit_rules_button_string}</Button>
             </div>
         </Space.Fill>
     )
