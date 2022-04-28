@@ -5,6 +5,9 @@ import Domain.CommonClasses.Response;
 import Domain.DataManagement.AnswerState.AnswerType;
 import Domain.DataManagement.SurveyAnswers;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static Domain.DataManagement.AnswerState.AnswerType.NUMERIC_ANSWER;
 import static Domain.DataManagement.FaultDetector.Rules.RuleType.NUMERIC;
 
@@ -52,7 +55,7 @@ public class NumericBaseRule implements Rule{
         RuleDTO dto = new RuleDTO();
         dto.setQuestionID(questionID);
         dto.setComparison(comparison);
-        dto.setAnswer(num);
+        dto.setAnswers(List.of(num));
         dto.setType(NUMERIC);
         dto.setSubRules(null);
 

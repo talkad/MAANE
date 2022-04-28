@@ -5,16 +5,18 @@ import Domain.CommonClasses.Response;
 import Domain.DataManagement.AnswerState.AnswerType;
 import Domain.DataManagement.SurveyAnswers;
 
+import java.util.List;
+
 import static Domain.DataManagement.AnswerState.AnswerType.MULTIPLE_CHOICE;
 
 public class MultipleChoiceBaseRule implements Rule{
 
     private final int questionID;
-    private final int answerID;
+    private final List<Integer> answersID;
 
-    public MultipleChoiceBaseRule(int questionID, int answerID) {
+    public MultipleChoiceBaseRule(int questionID, List<Integer> answersID) {
         this.questionID = questionID;
-        this.answerID = answerID;
+        this.answersID = answersID;
     }
 
     @Override
@@ -24,7 +26,13 @@ public class MultipleChoiceBaseRule implements Rule{
         if(type.isFailure() || type.getResult() != MULTIPLE_CHOICE)
             return false;
 
-        return Integer.parseInt(answers.getAnswer(questionID).getResult()) == answerID;
+        for(Integer answerID: this.answersID){
+            if(Integer.parseInt(answers.getAnswer(questionID).getResult()) == answerID){
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override
@@ -32,7 +40,7 @@ public class MultipleChoiceBaseRule implements Rule{
         RuleDTO dto = new RuleDTO();
         dto.setQuestionID(questionID);
         dto.setComparison(null);
-        dto.setAnswer(answerID);
+        dto.setAnswers(answersID);
         dto.setType(Domain.DataManagement.FaultDetector.Rules.RuleType.MULTIPLE_CHOICE);
         dto.setSubRules(null);
 

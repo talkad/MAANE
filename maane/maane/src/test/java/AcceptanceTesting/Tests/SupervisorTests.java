@@ -142,9 +142,9 @@ public class SupervisorTests extends AcceptanceTests{//todo reset the usercontro
         surveyBridge.addAnswers(answersDTO5);
         surveyBridge.addAnswers(answersDTO6);
 
-        surveyBridge.addRule(supervisorName1, res.getResult(), new MultipleChoiceBaseRule(0, 0), 0);
-        surveyBridge.addRule(supervisorName1, res.getResult(), new MultipleChoiceBaseRule(1, 0), 1);
-        surveyBridge.addRule(supervisorName1, res.getResult(), new MultipleChoiceBaseRule(2, 0), 2);
+        surveyBridge.addRule(supervisorName1, res.getResult(), new MultipleChoiceBaseRule(0, List.of(0)), 0);
+        surveyBridge.addRule(supervisorName1, res.getResult(), new MultipleChoiceBaseRule(1, List.of(0)), 1);
+        surveyBridge.addRule(supervisorName1, res.getResult(), new MultipleChoiceBaseRule(2, List.of(0)), 2);
 
         userBridge.login(instructorName1);
         userBridge.login(instructorName2);

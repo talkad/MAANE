@@ -172,9 +172,9 @@ public class SurveyControllerTests {
         List<SurveyAnswersDTO> answersDTOS = Arrays.asList(answersDTO1, answersDTO1);
 
         List<Pair<RuleDTO, Integer>> ruleDTOS = Arrays.asList(
-            new Pair<>(new RuleDTO(null, RuleType.NUMERIC, Comparison.GREATER_THEN, 0, 28), 0),
-                new Pair<>(new RuleDTO(null, RuleType.MULTIPLE_CHOICE, Comparison.GREATER_THEN, 1, 1), 1),
-                new Pair<>(new RuleDTO(null, RuleType.MULTIPLE_CHOICE, Comparison.GREATER_THEN, 2, 2), 2)
+            new Pair<>(new RuleDTO(null, RuleType.NUMERIC, Comparison.GREATER_THEN, 0, List.of(28)), 0),
+                new Pair<>(new RuleDTO(null, RuleType.MULTIPLE_CHOICE, Comparison.GREATER_THEN, 1, List.of(1)), 1),
+                new Pair<>(new RuleDTO(null, RuleType.MULTIPLE_CHOICE, Comparison.GREATER_THEN, 2, List.of(2)), 2)
 
         );
 

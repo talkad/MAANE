@@ -92,11 +92,16 @@ public class RuleConverter {
     }
 
     private MultipleChoiceBaseRule MultipleChoiceRuleConverter(RuleDTO rule) {
-        return new MultipleChoiceBaseRule(rule.getQuestionID(), rule.getAnswer());
+        return new MultipleChoiceBaseRule(rule.getQuestionID(), rule.getAnswers());
     }
 
     private NumericBaseRule NumericRuleConverter(RuleDTO rule) {
-        return new NumericBaseRule(rule.getQuestionID(), rule.getComparison(), rule.getAnswer());
+        List<Integer> answers = rule.getAnswers();
+
+        if(answers.size() != 1)
+            return null;
+
+        return new NumericBaseRule(rule.getQuestionID(), rule.getComparison(), answers.get(0));
     }
 
 

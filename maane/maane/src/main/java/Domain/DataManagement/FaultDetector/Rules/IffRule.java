@@ -29,7 +29,7 @@ public class IffRule implements Rule{
         RuleDTO dto = new RuleDTO();
         dto.setQuestionID(-1);
         dto.setComparison(null);
-        dto.setAnswer(-1);
+        dto.setAnswers(new LinkedList<>());
         dto.setType(IFF);
 
         ruleDTOs.add(firstSide.getDTO());

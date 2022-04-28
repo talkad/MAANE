@@ -25,13 +25,13 @@ public class RuleDbTests {
         surveyQueries = SurveyQueries.getInstance();
 
         List<RuleDTO> subRuleSubRules= new LinkedList<>();
-        subRuleDTO = new RuleDTO(subRuleSubRules, RuleType.IFF, Comparison.GREATER_THEN, 11, 22);
+        subRuleDTO = new RuleDTO(subRuleSubRules, RuleType.IFF, Comparison.GREATER_THEN, 11, List.of(22));
 
         List<RuleDTO> subRules= new LinkedList<>();
         subRules.add(subRuleDTO);
         int question_id = 1;
         int answer = 2;
-        ruleDTO = new RuleDTO(subRules, RuleType.AND, Comparison.EQUAL, question_id, answer);
+        ruleDTO = new RuleDTO(subRules, RuleType.AND, Comparison.EQUAL, question_id, List.of(answer));
     }
 
     @Test

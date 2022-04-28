@@ -218,7 +218,7 @@ public class SurveyQueries {
             preparedStatement.setString(3, dto.getType().getType());
             preparedStatement.setString(4, dto.getComparison().getComparison());
             preparedStatement.setInt(5, dto.getQuestionID());
-            preparedStatement.setInt(6, dto.getAnswer());
+            preparedStatement.setString(6, dto.getAnswers().toString());
             preparedStatement.execute();
 
             ResultSet last_updated_person = preparedStatement.getResultSet();
@@ -242,7 +242,7 @@ public class SurveyQueries {
             preparedStatement.setString(3, dto.getType().getType());
             preparedStatement.setString(4, dto.getComparison().getComparison());
             preparedStatement.setInt(5, dto.getQuestionID());
-            preparedStatement.setInt(6, dto.getAnswer());
+            preparedStatement.setString(6, dto.getAnswers().toString());
             preparedStatement.setInt(7, parent_id);
             preparedStatement.execute();
         } catch (SQLException e) { e.printStackTrace(); }
@@ -309,16 +309,25 @@ public class SurveyQueries {
                 String type = result.getString("type");
                 String comparison = result.getString("comparison");
                 int questionId = result.getInt("question_id");
-                int answer = result.getInt("answer");
+                String answer = result.getString("answer");
                 int id = result.getInt("id");
                 List<RuleDTO> subRules = getSubRules(id);
-                RuleDTO ruleDTO = new RuleDTO(subRules, RuleType.valueOf(type), Comparison.valueOf(comparison), questionId, answer);
+                RuleDTO ruleDTO = new RuleDTO(subRules, RuleType.valueOf(type), Comparison.valueOf(comparison), questionId, parseList(Arrays.asList(answer.substring(1, answer.length() - 1).split(", "))));
                 Pair <RuleDTO, Integer> toAdd = new Pair<>(ruleDTO, surveyId);
                 rules.add(toAdd);
             }
             Connect.closeConnection();
         } catch (SQLException e) {e.printStackTrace();}
         return rules;
+    }
+
+    private List<Integer> parseList(List<String> stringList) {
+        List<Integer> integerList = new LinkedList<>();
+
+        for(String s: stringList)
+            integerList.add(Integer.parseInt(s));
+
+        return integerList;
     }
 
     private List<RuleDTO> getSubRules (int parent_id) {
@@ -333,10 +342,10 @@ public class SurveyQueries {
                 String type = result.getString("type");
                 String comparison = result.getString("comparison");
                 int questionId = result.getInt("question_id");
-                int answer = result.getInt("answer");
+                String answer = result.getString("answer");
                 int id = result.getInt("id");
                 List<RuleDTO> subRules = getSubRules(id);
-                RuleDTO ruleDTO = new RuleDTO(subRules, RuleType.valueOf(type), Comparison.valueOf(comparison), questionId, answer);
+                RuleDTO ruleDTO = new RuleDTO(subRules, RuleType.valueOf(type), Comparison.valueOf(comparison), questionId, parseList(Arrays.asList(answer.substring(1, answer.length() - 1).split(", "))));
                 rules.add(ruleDTO);
             }
         } catch (SQLException e) {e.printStackTrace();}
