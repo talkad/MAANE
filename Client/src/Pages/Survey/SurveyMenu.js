@@ -8,94 +8,39 @@ import Connection from "../../Communication/Connection";
 // todo: option to delete a survey
 // todo: option to send the survey to the coordinators
 
-// data for testing offline
-// const data =
-//     [
-//         {
-//             id: 1,
-//             title: "סקר 2018",
-//             description: "רוית",
-//         },
-//         {
-//             id: 2,
-//             title: "סקר 2019",
-//             description: "רוית",
-//         },
-//         {
-//             id: 3,
-//             title: "סקר 2020",
-//             description: "רוית",
-//         },
-//         {
-//             id: 4,
-//             title: "סקר 2021",
-//             description: "רוית",
-//         }
-//         {
-//             id: 6,
-//             title: "hello there",
-//             description: "general kenobi",
-//         },
-//         {
-//             id: 7,
-//             title: "hello there",
-//             description: "general kenobi",
-//         },
-//         {
-//             id: 7,
-//             title: "hello there",
-//             description: "general kenobi",
-//         },
-//         {
-//             id: 7,
-//             title: "hello there",
-//             description: "general kenobi",
-//         },
-//         {
-//             id: 7,
-//             title: "hello there",
-//             description: "general kenobi",
-//         },
-//         {
-//             id: 7,
-//             title: "hello there",
-//             description: "general kenobi",
-//         },
-//         {
-//             id: 7,
-//             title: "hello there",
-//             description: "general kenobi",
-//         },
-//         {
-//             id: 7,
-//             title: "hello there",
-//             description: "general kenobi",
-//         },
-//         {
-//             id: 7,
-//             title: "hello there",
-//             description: "general kenobi",
-//         },
-//         {
-//             id: 7,
-//             title: "hello there",
-//             description: "general kenobi",
-//         },
-//         {
-//             id: 7,
-//             title: "hello there",
-//             description: "general kenobi",
-//         },
-//         {
-//             id: 7,
-//             title: "hello there",
-//             description: "general kenobi",
-//         },
-//
-//     ]
+//data for testing offline
+const offline_data =
+    [
+        {
+            id: 1,
+            title: "סקר 2018",
+            description: "רוית",
+        },
+        {
+            id: 2,
+            title: "סקר 2019",
+            description: "רוית",
+        },
+        {
+            id: 3,
+            title: "סקר 2020",
+            description: "רוית",
+        },
+        {
+            id: 4,
+            title: "סקר 2021",
+            description: "רוית",
+        },
+        {
+            id: 6,
+            title: "hello there",
+            description: "general kenobi",
+        },
+
+    ]
 
 export default function SurveyMenu(){
-    const [data, setData] = useState([]);
+    const [data, setData] = useState(offline_data);
     let navigate = useNavigate();
 
     const create_survey_button_string = "יצירת סקר";
@@ -170,6 +115,7 @@ export default function SurveyMenu(){
                                         <CardActions>
                                             {/*button to go to the survey represented by the card this button is in*/}
                                             <Button color="secondary" size="medium" onClick={() => navigate(`../getSurvey?surveyID=${y.id}`, {replace: true})}>מעבר לסקר</Button>
+                                            <Button color={'secondary'} size={'medium'} onClick={() => navigate(`../rules?surveyID=${y.id}`, {replace: false})}>חוקים</Button>
                                         </CardActions>
                                     </CardActionArea>
                                 </Card>
