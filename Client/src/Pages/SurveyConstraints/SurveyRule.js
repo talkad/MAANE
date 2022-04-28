@@ -142,7 +142,7 @@ export default function SurveyRule(props){
                 <Paper elevation={3} className={"Rule-paper"}
                        sx={{backgroundColor: props.colors[((props.depth % props.colors.length))]}}>
 
-                    {/*TODO: needed?*/}
+                    {/*TODO: better titles*/}
                     <h1>hello there {props.id}</h1>
 
                     <Grid container spacing={1}>

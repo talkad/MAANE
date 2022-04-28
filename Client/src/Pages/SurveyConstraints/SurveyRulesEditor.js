@@ -40,6 +40,22 @@ export default function SurveyRulesEditor(){
     }, []);
 
     /**
+     * arranges the data received from the server regarding the goals
+     * @param data the data from the server
+     */
+    const arrangeGoalsData = (data) => {
+
+    }
+
+    /**
+     * arranged the data received from the server regarding the question
+     * @param data the data from the server
+     */
+    const arrangeQuestionData = (data) => {
+
+    }
+
+    /**
      * adds a new rule
      */
     const addRule = () => {
