@@ -1,9 +1,6 @@
 package AcceptanceTesting.Bridge;
 
-import Communication.DTOs.QuestionDTO;
-import Communication.DTOs.SurveyAnswersDTO;
-import Communication.DTOs.SurveyDTO;
-import Communication.DTOs.SurveyDetailsDTO;
+import Communication.DTOs.*;
 import Communication.Service.Interfaces.SurveyService;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.FaultDetector.Rules.Rule;
@@ -52,9 +49,9 @@ public class ProxyBridgeSurvey implements SurveyService {
     }
 
     @Override
-    public Response<Boolean> addRule(String username, String surveyID, Rule rule, int goalID) {
+    public Response<Boolean> addRule(String username, String surveyID, List<RuleRequestDTO> rulesDTO) {
         if (real != null){
-            return real.addRule(username, surveyID, rule, goalID);
+            return real.addRule(username, surveyID, rulesDTO);
         }
 
         return new Response<>(null, true, "not implemented");

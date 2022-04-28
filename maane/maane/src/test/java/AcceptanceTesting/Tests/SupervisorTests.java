@@ -1,22 +1,23 @@
 package AcceptanceTesting.Tests;
 
-import Communication.DTOs.GoalDTO;
-import Communication.DTOs.SurveyAnswersDTO;
-import Communication.DTOs.SurveyDTO;
-import Communication.DTOs.UserDTO;
+import Communication.DTOs.*;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.AnswerState.AnswerType;
+import Domain.DataManagement.FaultDetector.Rules.Comparison;
 import Domain.DataManagement.FaultDetector.Rules.MultipleChoiceBaseRule;
+import Domain.DataManagement.FaultDetector.Rules.RuleType;
 import Domain.UsersManagment.UserStateEnum;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 
 import static Domain.DataManagement.AnswerState.AnswerType.MULTIPLE_CHOICE;
+import static Domain.DataManagement.AnswerState.AnswerType.NONE;
 
 
 public class SupervisorTests extends AcceptanceTests{//todo reset the usercontroller db and the surveys db
@@ -142,9 +143,13 @@ public class SupervisorTests extends AcceptanceTests{//todo reset the usercontro
         surveyBridge.addAnswers(answersDTO5);
         surveyBridge.addAnswers(answersDTO6);
 
-        surveyBridge.addRule(supervisorName1, res.getResult(), new MultipleChoiceBaseRule(0, List.of(0)), 0);
-        surveyBridge.addRule(supervisorName1, res.getResult(), new MultipleChoiceBaseRule(1, List.of(0)), 1);
-        surveyBridge.addRule(supervisorName1, res.getResult(), new MultipleChoiceBaseRule(2, List.of(0)), 2);
+        surveyBridge.addRule(supervisorName1, res.getResult(), List.of(new RuleRequestDTO(0,
+                new RuleDTO(new LinkedList<>(), RuleType.MULTIPLE_CHOICE, Comparison.EQUAL, 0, List.of(0)))));
+        surveyBridge.addRule(supervisorName1, res.getResult(), List.of(new RuleRequestDTO(1,
+                new RuleDTO(new LinkedList<>(), RuleType.MULTIPLE_CHOICE, Comparison.EQUAL, 1, List.of(0)))));
+        surveyBridge.addRule(supervisorName1, res.getResult(), List.of(new RuleRequestDTO(2,
+                new RuleDTO(new LinkedList<>(), RuleType.MULTIPLE_CHOICE, Comparison.EQUAL, 2, List.of(0)))));
+
 
         userBridge.login(instructorName1);
         userBridge.login(instructorName2);

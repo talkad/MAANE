@@ -1,14 +1,13 @@
 package Communication.Service;
 
-import Communication.DTOs.QuestionDTO;
-import Communication.DTOs.SurveyAnswersDTO;
-import Communication.DTOs.SurveyDTO;
-import Communication.DTOs.SurveyDetailsDTO;
+import Communication.DTOs.*;
 import Communication.Service.Interfaces.SurveyService;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.FaultDetector.Rules.Rule;
+import Domain.DataManagement.FaultDetector.Rules.RuleConverter;
 import Domain.DataManagement.SurveyController;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -65,8 +64,28 @@ public class SurveyServiceImpl implements SurveyService {
     }
 
     @Override
-    public Response<Boolean> addRule(String username, String surveyID, Rule rule, int goalID) {
-        Response<Boolean> res = SurveyController.getInstance().addRule(username, surveyID, rule, goalID);
+    public Response<Boolean> addRule(String username, String surveyID, List<RuleRequestDTO> rulesDTO) {
+        Response<Boolean> res = SurveyController.getInstance().removeRules(username, surveyID);
+
+        if(!res.isFailure()) {
+
+            for (RuleRequestDTO ruleRequestDTO : rulesDTO) {
+                Rule rule = RuleConverter.getInstance().convertRule(ruleRequestDTO.getRuleDTO());
+
+                if (rule == null) {
+                    res = new Response<>(false, true, "failed to parse rule");
+                    break;
+                }
+
+                res = SurveyController.getInstance().addRule(username, surveyID, rule, ruleRequestDTO.getGoalID());
+
+                if (res.isFailure()) {
+                    res = new Response<>(false, true, "failed to add rule associated with goal " + ruleRequestDTO.getGoalID());
+                    break;
+                }
+
+            }
+        }
 
         if(res.isFailure())
             log.error(res.getErrMsg());

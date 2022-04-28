@@ -19,7 +19,6 @@ import java.util.Map;
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class SurveyController {
 
-    private final Gson gson;
     private final SurveyService service;
     private final SessionHandler sessionHandler;
 
@@ -58,16 +57,10 @@ public class SurveyController {
     }
 
     @PostMapping(value ="/addRule")
-    public ResponseEntity<Response<Boolean>> addRule(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object> body){
-        RuleDTO ruleDTO = gson.fromJson((String)body.get("rule"), RuleDTO.class);
-        Rule rule = RuleConverter.getInstance().convertRule(ruleDTO);
-
-        if(rule == null)
-            return ResponseEntity.ok()
-                    .body(new Response<>(false, true, "rule converter failed"));
+    public ResponseEntity<Response<Boolean>> addRule(@RequestHeader(value = "Authorization") String token, @RequestBody RulesDTO rulesDTO){
 
         return ResponseEntity.ok()
-                .body( service.addRule(sessionHandler.getUsernameByToken(token).getResult(), (String)body.get("surveyID"), rule, (Integer)body.get("goalID")));
+                .body( service.addRule(sessionHandler.getUsernameByToken(token).getResult(), rulesDTO.getSurveyID(), rulesDTO.getRules()));
     }
 
     @PostMapping(value = "/removeRule")
@@ -96,11 +89,12 @@ public class SurveyController {
                 .body(service.getSurveys(sessionHandler.getUsernameByToken(token).getResult()));
     }
 
-    @GetMapping("/getRules/ruleID={ruleID}")
-    public ResponseEntity<Response<List<Rule>>> getRules(@PathVariable("ruleID") String ruleID){
+    @GetMapping("/getRules/surveyID={surveyID}")
+    public ResponseEntity<Response<List<Rule>>> getRules(@PathVariable("surveyID") String surveyID){
         return ResponseEntity.ok()
-                .body(service.getRules(ruleID));
+                .body(service.getRules(surveyID));
     }
+
 
 
 }
