@@ -24,7 +24,6 @@ import java.util.List;
 @Slf4j
 public class SurveyPersistence {
 
-
     private static class CreateSafeThreadSingleton {
         private static final SurveyPersistence INSTANCE = new SurveyPersistence();
     }
@@ -39,7 +38,7 @@ public class SurveyPersistence {
         Connect.createConnection();
         int rows = 0;
         String sql = "INSERT INTO \"Surveys\" (id, title, description) VALUES (?, ?, ?)";
-        PreparedStatement preparedStatement = null;
+        PreparedStatement preparedStatement;
         try {
             preparedStatement = Connect.conn.prepareStatement(sql);
             preparedStatement.setString(1, surveyDTO.getId());
@@ -51,7 +50,12 @@ public class SurveyPersistence {
 
             insertAnswers(surveyDTO.getId(), ListListToStringList(surveyDTO.getAnswers()), surveyDTO.getTypes());
             Connect.closeConnection();
-        } catch (SQLException e) {e.printStackTrace();}
+
+            log.info("DB: insert survey successfully");
+
+        } catch (SQLException e) {
+            log.error("DB: failed to insert survey: \n" + e.getMessage());
+        }
 
         return rows>0 ? new Response<>(true, false, "") :
                 new Response<>(false, true, "bad Db writing");
@@ -68,7 +72,12 @@ public class SurveyPersistence {
                 preparedStatement.setString(3, question);
                 preparedStatement.executeUpdate();
             }
-        } catch (SQLException e) {e.printStackTrace();}
+
+            log.info("DB: insert questions successfully");
+
+        } catch (SQLException e) {
+            log.error("DB: failed to questions: \n" + e.getMessage());
+        }
     }
 
     public Response<Boolean> addQuestion(QuestionDTO questionDTO, int question_index) {
@@ -80,12 +89,14 @@ public class SurveyPersistence {
             preparedStatement.setInt(2, question_index);
             preparedStatement.setString(3, questionDTO.getQuestion());
             preparedStatement.executeUpdate();
+
+            log.info("DB: insert question successfully");
+
         } catch (SQLException e) {
-            return new Response<>(false, true, "failed to add question");
+            log.error("DB: failed to add question \n" + e.getMessage());
         }
 
         String sql2 = "INSERT INTO \"MultiChoices\" (survey_id, question_index, answer_type, choices) VALUES (?, ?, ?, ?)";
-        preparedStatement = null;
         try{
             preparedStatement = Connect.conn.prepareStatement(sql2);
             preparedStatement.setString(1, questionDTO.getSurveyID());
@@ -94,7 +105,12 @@ public class SurveyPersistence {
             preparedStatement.setString(4, questionDTO.getAnswers().toString());
 
             preparedStatement.executeUpdate();
+
+            log.info("DB: insert question successfully");
+
         } catch (SQLException e) {
+            log.error("DB: failed to add question \n" + e.getMessage());
+
             return new Response<>(false, true, "failed to add answers");
         }
 
@@ -103,13 +119,18 @@ public class SurveyPersistence {
 
     public Response<Boolean> removeQuestions(String surveyID, int questionID) {
         String sql = "DELETE FROM  \"Questions\" WHERE survey_id=? and index=?";
-        PreparedStatement preparedStatement = null;
+        PreparedStatement preparedStatement;
         try {
             preparedStatement = Connect.conn.prepareStatement(sql);
             preparedStatement.setString(1, surveyID);
             preparedStatement.setInt(2, questionID);
             preparedStatement.executeUpdate();
+
+            log.info("DB: removed question successfully");
+
         } catch (SQLException e) {
+            log.error("DB: failed to remove question \n" + e.getMessage());
+
             return new Response<>(false, true, "question deletion failed");
         }
 
@@ -129,7 +150,12 @@ public class SurveyPersistence {
                 preparedStatement.setString(4, answer);
                 preparedStatement.executeUpdate();
             }
-        } catch (SQLException e) {e.printStackTrace();}
+
+            log.info("DB: added answers successfully");
+
+        } catch (SQLException e) {
+            log.error("DB: failed to add answers \n" + e.getMessage());
+        }
     }
 
     private List<String> ListListToStringList(List<List<String>> l){
@@ -210,7 +236,7 @@ public class SurveyPersistence {
     public void insertRule(String survey_id, int goalID, RuleDTO dto) {
         Connect.createConnection();
         String sql = "INSERT INTO \"Rules\" (survey_id, goal_id, type, comparison, question_id, answer) VALUES (?, ?, ?, ?, ?, ?) RETURNING id";
-        PreparedStatement preparedStatement = null;
+        PreparedStatement preparedStatement;
         try {
             preparedStatement = Connect.conn.prepareStatement(sql);
             preparedStatement.setString(1, survey_id);
@@ -229,12 +255,16 @@ public class SurveyPersistence {
             }
 
             Connect.closeConnection();
-        } catch (SQLException e) { e.printStackTrace(); }
+            log.info("DB: added rules successfully");
+
+        } catch (SQLException e) {
+            log.error("DB: failed to add rules \n" + e.getMessage());
+        }
     }
 
     private void insertSubRule(String survey_id, int goalID, RuleDTO dto, int parent_id) {
         String sql = "INSERT INTO \"Rules\" (survey_id, goal_id, type, comparison, question_id, answer, parent_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        PreparedStatement preparedStatement = null;
+        PreparedStatement preparedStatement;
         try {
             preparedStatement = Connect.conn.prepareStatement(sql);
             preparedStatement.setString(1, survey_id);
@@ -245,7 +275,12 @@ public class SurveyPersistence {
             preparedStatement.setString(6, dto.getAnswers().toString());
             preparedStatement.setInt(7, parent_id);
             preparedStatement.execute();
-        } catch (SQLException e) { e.printStackTrace(); }
+
+            log.info("DB: added  sub rules successfully");
+
+        } catch (SQLException e) {
+            log.error("DB: failed to add sub rules \n" + e.getMessage());
+        }
     }
 
     public Response<Boolean> removeRule (int ruleID) {
@@ -259,9 +294,12 @@ public class SurveyPersistence {
 
             Connect.closeConnection();
 
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+            log.info("DB: removed rules successfully");
+
+        } catch (SQLException e) {
+            log.error("DB: failed to remove rules \n" + e.getMessage());
         }
+
         return rows>0 ? new Response<>(true, false, "") :
                 new Response<>(false, true, "bad Db writing");
     }
@@ -276,8 +314,10 @@ public class SurveyPersistence {
 
             Connect.closeConnection();
 
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+            log.info("DB: removed rules successfully");
+
+        } catch (SQLException e) {
+            log.error("DB: failed to remove rules \n" + e.getMessage());
         }
 
         return rows>0 ? new Response<>(true, false, "") :
@@ -290,15 +330,17 @@ public class SurveyPersistence {
             pstmt.setInt(1, parentId);
             pstmt.executeUpdate();
 
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+            log.info("DB: removed sub rules successfully");
+
+        } catch (SQLException e) {
+            log.error("DB: failed to remove sub rules \n" + e.getMessage());
         }
     }
 
     public List<Pair<RuleDTO, Integer>> getRules(String surveyID) {
         Connect.createConnection();
         String query = "SELECT * FROM \"Rules\" WHERE survey_id = ?";
-        PreparedStatement statement = null;
+        PreparedStatement statement;
         List<Pair<RuleDTO, Integer>> rules = new LinkedList<>();;
         try {
             statement = Connect.conn.prepareStatement(query);
@@ -317,7 +359,13 @@ public class SurveyPersistence {
                 rules.add(toAdd);
             }
             Connect.closeConnection();
-        } catch (SQLException e) {e.printStackTrace();}
+
+            log.info("DB: get rules successfully");
+
+        } catch (SQLException e) {
+            log.error("DB: failed to get rules \n" + e.getMessage());
+        }
+
         return rules;
     }
 
@@ -332,7 +380,7 @@ public class SurveyPersistence {
 
     private List<RuleDTO> getSubRules (int parent_id) {
         String query = "SELECT * FROM \"Rules\" WHERE parent_id = ?";
-        PreparedStatement statement = null;
+        PreparedStatement statement;
         List<RuleDTO> rules = new LinkedList<>();;
         try {
             statement = Connect.conn.prepareStatement(query);
@@ -406,21 +454,23 @@ public class SurveyPersistence {
                 List<String> typesStrings = new LinkedList<>(parsedTypes);
                 List<AnswerType> types = new LinkedList<>();
                 for (String s : typesStrings) { types.add(AnswerType.valueOf(s)); };
-                //todo: symbol
+
+                types.add(0, AnswerType.OPEN_ANSWER);
+                answers.add(0, symbol);
+
                 surveyAnswersDTO = new SurveyAnswersDTO(surveyId, answers, types);
                 output.add(surveyAnswersDTO);
             }
 
             Connect.closeConnection();
-        } catch (SQLException e) {e.printStackTrace();}
+
+            log.info("DB: got answers successfully");
+
+        } catch (SQLException e) {
+            log.error("DB: failed to get answers \n" + e.getMessage());
+        }
 
         return output;
-    }
-
-
-    //todo drop it later
-    public List<SurveyAnswersDTO> getAnswerForSurvey(String surveyId) {
-        return getAnswers(surveyId);
     }
 
     public void insertCoordinatorAnswers(String id, String symbol, List<String> answers, List<AnswerType> types) {
@@ -436,7 +486,12 @@ public class SurveyPersistence {
             preparedStatement.executeUpdate();
 
             Connect.closeConnection();
-        } catch (SQLException e) { e.printStackTrace(); }
+
+            log.info("DB: added answers successfully");
+
+        } catch (SQLException e) {
+            log.error("DB: failed to add answers \n" + e.getMessage());
+        }
     }
 
     private String ListToString (List<String> list){ //output seperated by ,
