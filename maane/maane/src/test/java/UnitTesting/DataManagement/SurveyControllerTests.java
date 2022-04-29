@@ -4,6 +4,7 @@ import Communication.DTOs.GoalDTO;
 import Communication.DTOs.RuleDTO;
 import Communication.DTOs.SurveyAnswersDTO;
 import Communication.DTOs.SurveyDTO;
+import Communication.Initializer.ServerContextInitializer;
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.AnswerState.AnswerType;
@@ -20,6 +21,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import javax.naming.InitialContext;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -41,6 +43,7 @@ public class SurveyControllerTests {
 
     @Before
     public void setUp(){
+        ServerContextInitializer.getInstance().setMockMode();
         MockitoAnnotations.openMocks(this);
 
         surveyDTO = new SurveyDTO();
@@ -81,16 +84,16 @@ public class SurveyControllerTests {
     @Test
     public void surveyCreationSuccess(){
         UserController.getInstance().clearUsers();
-//
-//        UserController userController = UserController.getInstance();
-//
-//        String adminName = userController.login("admin").getResult();
-//        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
-//
-//        userController.logout(adminName);
-//        userController.login("Dvorit");
-//
-//        Assert.assertFalse(surveyController.createSurvey("Dvorit", surveyDTO).isFailure());
+
+        UserController userController = UserController.getInstance();
+
+        String adminName = userController.login("admin").getResult();
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "dvorit@gmail.com", "055-555-5555", "");
+
+        userController.logout(adminName);
+        userController.login("Dvorit");
+
+        Assert.assertFalse(surveyController.createSurvey("Dvorit", surveyDTO).isFailure());
     }
 
     @Test
@@ -100,7 +103,7 @@ public class SurveyControllerTests {
         UserController userController = UserController.getInstance();
 
         String adminName = userController.login("admin").getResult();
-        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.COORDINATOR, "", "tech", "", "", "", "", "");
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.COORDINATOR, "", "tech", "", "", "dvorit@gmail.com", "055-555-5555", "");
 
         userController.logout(adminName);
         userController.login("Dvorit");
@@ -113,7 +116,7 @@ public class SurveyControllerTests {
         UserController userController = UserController.getInstance();
 
         String adminName = userController.login("admin").getResult();
-        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "dvorit@gmail.com", "055-555-5555", "");
 
         userController.login("Dvorit");
 
@@ -127,7 +130,7 @@ public class SurveyControllerTests {
         UserController userController = UserController.getInstance();
 
         String adminName = userController.login("admin").getResult();
-        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "dvorit@gmail.com", "055-555-5555", "");
 
         userController.logout(adminName);
 
@@ -160,7 +163,7 @@ public class SurveyControllerTests {
         UserController userController = UserController.getInstance();
 
         String adminName = userController.login("admin").getResult();
-        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "dvorit@gmail.com", "055-555-5555", "");
 
         userController.logout(adminName);
 

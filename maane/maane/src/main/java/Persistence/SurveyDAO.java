@@ -59,7 +59,7 @@ public class SurveyDAO {
         this.surveys = new ConcurrentHashMap<>();
         this.answers = new ConcurrentHashMap<>();
         this.persistence = SurveyPersistence.getInstance();
-        this.executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(5);
+        this.executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
         this.cacheSize = 50;
     }
 

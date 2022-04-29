@@ -3,6 +3,7 @@ package Domain.DataManagement;
 import Communication.DTOs.*;
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
+import Domain.DataManagement.AnswerState.AnswerType;
 import Domain.DataManagement.FaultDetector.FaultDetector;
 import Domain.DataManagement.FaultDetector.Rules.Rule;
 import Domain.DataManagement.FaultDetector.Rules.RuleConverter;
@@ -139,9 +140,13 @@ public class SurveyController {
             return new Response<>(false, true, "School symbol cannot be empty string");
 
         answer.setSymbol(symbol);
-        answersDTO.getAnswers().remove(0);
+        List<String> answers = answersDTO.getAnswers();
+        answers.remove(0);
 
-        surveyDAO.insertCoordinatorAnswers(answersDTO.getId(), symbol, answersDTO.getAnswers(), answersDTO.getTypes());
+        List<AnswerType> types = answersDTO.getTypes();
+        types.remove(0);
+
+        surveyDAO.insertCoordinatorAnswers(answersDTO.getId(), symbol, answers, types);
 
         return new Response<>(true, false, "the answer added successfully");
     }

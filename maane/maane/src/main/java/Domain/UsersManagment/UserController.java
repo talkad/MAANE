@@ -157,10 +157,10 @@ public class UserController {
      * @return User object of the new user upon success
      */
     public Response<String> registerUser(String currUser, String userToRegister, String password, UserStateEnum userStateEnum, String firstName, String lastName, String email, String phoneNumber, String city){
-        if(isValidEmailAddress(email))
+        if(!isValidEmailAddress(email))
             return new Response<>("", true, "invalid email address");
 
-        if(isValidPhoneNumber(phoneNumber))
+        if(!isValidPhoneNumber(phoneNumber))
             return new Response<>("", true, "invalid phone number");
 
         if(connectedUsers.containsKey(currUser)) {
@@ -223,10 +223,10 @@ public class UserController {
     }
 
     public Response<String> registerUserBySystemManager(String currUser, String userToRegister, String password, UserStateEnum userStateEnum, String optionalSupervisor, String workField, String firstName, String lastName, String email, String phoneNumber, String city){
-        if(isValidEmailAddress(email))
+        if(!isValidEmailAddress(email))
             return new Response<>("", true, "invalid email address");
 
-        if(isValidPhoneNumber(phoneNumber))
+        if(!isValidPhoneNumber(phoneNumber))
             return new Response<>("", true, "invalid phone number");
 
         if(connectedUsers.containsKey(currUser)) {
@@ -334,10 +334,10 @@ public class UserController {
 
     public Response<Boolean> updateInfo(String currUser, String firstName, String lastName, String email, String phoneNumber, String city){
 
-        if(isValidEmailAddress(email))
+        if(!isValidEmailAddress(email))
             return new Response<>(false, true, "invalid email address");
 
-        if(isValidPhoneNumber(phoneNumber))
+        if(!isValidPhoneNumber(phoneNumber))
             return new Response<>(false, true, "invalid phone number");
 
         if(connectedUsers.containsKey(currUser)) {

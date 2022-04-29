@@ -35,6 +35,7 @@ public class SurveyPersistence {
     //========================== Survey ==========================
 
     public Response<Boolean> insertSurvey(SurveyDTO surveyDTO) {
+        System.out.println("insert \n" + surveyDTO);
         Connect.createConnection();
         int rows = 0;
         String sql = "INSERT INTO \"Surveys\" (id, title, description) VALUES (?, ?, ?)";
@@ -487,7 +488,7 @@ public class SurveyPersistence {
 
             Connect.closeConnection();
 
-            log.info("DB: added answers successfully");
+            log.info("DB: added coordinator answers successfully");
 
         } catch (SQLException e) {
             log.error("DB: failed to add answers \n" + e.getMessage());
