@@ -3,7 +3,6 @@ package Domain.DataManagement;
 import Communication.DTOs.*;
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
-import Domain.DataManagement.AnswerState.AnswerType;
 import Domain.DataManagement.FaultDetector.FaultDetector;
 import Domain.DataManagement.FaultDetector.Rules.Rule;
 import Domain.DataManagement.FaultDetector.Rules.RuleConverter;
@@ -11,7 +10,6 @@ import Domain.UsersManagment.UserController;
 import Persistence.SurveyQueries;
 
 import java.security.SecureRandom;
-import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,22 +18,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class SurveyController {
 
-    /**
-     * The cache will be implemented as LRU
-     */
-//    private final Map<String, Pair<LocalDateTime, Pair<Survey, FaultDetector>>> surveys; //todo - the cache need to be implemented in persistence
-    private final Map<String, Pair<LocalDateTime, Survey>> surveys; //todo - the cache need to be implemented in persistence
-
-    //private Map<String, List<SurveyAnswers>> answers;
     private final SecureRandom secureRandom;
     private final Base64.Encoder base64Encoder;
 
-    private SurveyQueries surveyDAO;
+    private final SurveyQueries surveyDAO;
 
-    /**
-     * maximal size of surveys cache
-     */
-    private final int cacheSize = 50;
 
 
     private static class CreateSafeThreadSingleton {
@@ -47,14 +34,9 @@ public class SurveyController {
     }
 
     public SurveyController(){
-        surveys = new ConcurrentHashMap<>();
         secureRandom = new SecureRandom();
         base64Encoder = Base64.getUrlEncoder();
         surveyDAO = SurveyQueries.getInstance();
-    }
-
-    public String check(){
-        return surveyDAO.check();
     }
 
     /**
@@ -85,9 +67,7 @@ public class SurveyController {
             return new Response<>("", true, surveyRes.getErrMsg());
         }
 
-        addSurveyToCache(indexer, surveyRes.getResult());
         surveyDAO.insertSurvey(surveyDTO);
-
 
         UserController.getInstance().notifySurveyCreation(username, indexer);
 
@@ -174,33 +154,7 @@ public class SurveyController {
      * @return the survey with the given ID if exists, failure response otherwise
      */
     public Response<SurveyDTO> getSurvey(String id){
-        Survey survey;
-        SurveyDTO surveyDTO = new SurveyDTO();
-        List<String> questions = new LinkedList<>();
-        List<List<String>> ans = new LinkedList<>();
-        List<AnswerType> types = new LinkedList<>();
-
-        if(!surveys.containsKey(id)) {
             return surveyDAO.getSurvey(id);
-        }
-
-        survey = surveys.get(id).getSecond();
-
-        surveyDTO.setId(id);
-        surveyDTO.setTitle(survey.getTitle());
-        surveyDTO.setDescription(survey.getDescription());
-
-        for(Question question: survey.getQuestions()){
-            questions.add(question.getQuestion());
-            types.add(question.getType().getResult());
-            ans.add(question.getAnswers().getResult());
-        }
-
-        surveyDTO.setAnswers(ans);
-        surveyDTO.setTypes(types);
-        surveyDTO.setQuestions(questions);
-
-        return new Response<>(surveyDTO, false, "OK");
     }
 
     /**
@@ -212,22 +166,12 @@ public class SurveyController {
      * @return success response if the arguments are legal. failure otherwise
      */
     public Response<Boolean> addRule(String username, String id, Rule rule, int goalID){
-//        Pair<Survey, FaultDetector> surveyPair;
-//        FaultDetector faultDetector;
         Response<Boolean> legalAdd = UserController.getInstance().hasCreatedSurvey(username, id);
 
         if(!legalAdd.getResult())
             return new Response<>(false, true, username + " does not created survey " + id);
 
-//        if(!surveys.containsKey(id))
-//            return new Response<>(false, true, "id is out of bound");
-//        surveyPair =surveys.get(id).getSecond();
-//        faultDetector = surveyPair.getSecond();
-//        faultDetector.addRule(rule, goalID);
-
         surveyDAO.insertRule(id, goalID, rule.getDTO());
-
-//        surveys.put(id, new Pair<>(surveyPair.getFirst(), faultDetector));
 
         return new Response<>(true, false, "OK");
     }
@@ -287,9 +231,6 @@ public class SurveyController {
         faultDetector = new FaultDetector(rulesConverter(surveyDAO.getRules(id)));
         List<SurveyAnswers> answers = answerConverter(surveyDAO.getAnswers(id));
 
-        if(answers == null)
-            return new Response<>(new LinkedList<>(), false, "no answers");
-
         for(SurveyAnswers ans: answers){
             currentFaults = new LinkedList<>();
 
@@ -313,21 +254,12 @@ public class SurveyController {
     }
 
     public Response<List<SurveyAnswers>> getAnswersForSurvey(String surveyId) {
-        List<SurveyAnswers> answers= answerConverter(surveyDAO.getAnswerForSurvey(surveyId));
-        if(surveys.containsKey(surveyId)) {
-            return new Response<>(answers, false, "");
-        }
-        else{
-            return new Response<>(null, true, "survey doesn't exist");
-        }
+        return new Response<>(answerConverter(surveyDAO.getAnswerForSurvey(surveyId)), false, "OK");
     }
 
     public Response<List<Rule>> getRules(String surveyID){
         FaultDetector fd;
         List<Rule> rules = new LinkedList<>();
-
-        if(!surveys.containsKey(surveyID))
-            return new Response<>(null, true, "Survey " + surveyID + " does not exists");
 
         fd = new FaultDetector(rulesConverter(surveyDAO.getRules(surveyID)));
         for(Pair<Rule, Integer> p: fd.getRules()){
@@ -340,7 +272,8 @@ public class SurveyController {
     public Response<List<SurveyDetailsDTO>> getSurveys(String username){
         Response<List<String>> res = UserController.getInstance().getSurveys(username);
         List<SurveyDetailsDTO> surveyInfo = new LinkedList<>();
-        Survey survey;
+        Response<SurveyDTO> survey;
+        StringBuilder errMsg = new StringBuilder("couldn't load surveys: \n");
 
         if(res.isFailure())
             return new Response<>(new LinkedList<>(), true, res.getErrMsg());
@@ -349,16 +282,17 @@ public class SurveyController {
             return new Response<>(new LinkedList<>(), false, "There are no surveys");
 
         for(String surveyID: res.getResult()) {
-            survey = surveys.get(surveyID).getSecond();
-            surveyInfo.add(new SurveyDetailsDTO(survey.getTitle(), survey.getDescription(), surveyID));
+            survey = surveyDAO.getSurvey(surveyID);
+
+            if(!survey.isFailure())
+                surveyInfo.add(new SurveyDetailsDTO(survey.getResult().getTitle(), survey.getResult().getDescription(), surveyID));
+            else
+                errMsg.append(surveyID).append("\n");
         }
 
-        return new Response<>(surveyInfo, false, "success");
+        return new Response<>(surveyInfo, false, errMsg.toString());
     }
 
-//    public void setAnswers(Map<String, List<SurveyAnswers>> answers) {
-//        this.answers = answers;
-//    }
 
     /**
      * detect all irregularities in certain school
@@ -377,14 +311,8 @@ public class SurveyController {
         if(!legalAdd.getResult())
             return new Response<>(null, true, username + " did not create survey " + id);
 
-//        if(!surveys.containsKey(id))
-//            return new Response<>(null, true, "The survey doesn't exists");
-
         faultDetector = new FaultDetector(rulesConverter(surveyDAO.getRules(id)));
         List<SurveyAnswers> answers = answerConverter(surveyDAO.getAnswerForSurvey(id));
-
-        if(answers == null)
-            return new Response<>(new LinkedList<>(), false, "no faults");
 
         for(SurveyAnswers ans: answers){
 
@@ -414,34 +342,7 @@ public class SurveyController {
         return base64Encoder.encodeToString(randomBytes);
     }
 
-    private void addSurveyToCache(String indexer, Survey survey){
-        if(surveys.size() > cacheSize)
-            removeLRU();
 
-        surveys.put(indexer, new Pair<>(LocalDateTime.now() ,survey));
-    }
-
-    private void removeLRU(){
-        LocalDateTime lastDate = LocalDateTime.now();
-        String lastIndex = "";
-
-        for(String index: surveys.keySet()){
-            if(surveys.get(index).getFirst().isBefore(lastDate)){
-                lastDate = surveys.get(index).getFirst();
-                lastIndex = index;
-            }
-        }
-
-        removeSurveyFromCache(lastIndex);
-    }
-
-    private Response<Boolean> removeSurveyFromCache(String index){
-        if(!surveys.containsKey(index))
-            return new Response<>(false, true, "survey with id " + index + " is not in cache");
-
-        surveys.remove(index);
-        return new Response<>(true, false, "survey with id " + index + " removed successfully");
-    }
 
     private List<Pair<Rule, Integer>> rulesConverter(List<Pair<RuleDTO, Integer>> ruleDTOs){
         List<Pair<Rule, Integer>> rules = new LinkedList<>();
@@ -465,34 +366,23 @@ public class SurveyController {
 
     private Response<Survey> loadSurvey(String id){
 
-        Survey survey = null;
+        Survey survey;
         Response<SurveyDTO> surveyRes;
-        Pair<LocalDateTime, Survey> surveyPair = surveys.get(id);
 
-        if(surveyPair == null){
-            surveyRes = surveyDAO.getSurvey(id);
+        surveyRes = surveyDAO.getSurvey(id);
 
+        if(surveyRes.isFailure())
+            return new Response<>(null, true, surveyRes.getErrMsg());
 
-            if(surveyRes.isFailure())
-                return new Response<>(null, true, surveyRes.getErrMsg());
+        Response<Survey> surveyCreation = Survey.createSurvey(surveyRes.getResult().getId(), surveyRes.getResult());
 
-            Response<Survey> surveyCreation = Survey.createSurvey(surveyRes.getResult().getId(), surveyRes.getResult());
+        if(surveyCreation.isFailure())
+            return new Response<>(null, true, surveyCreation.getErrMsg());
 
-            if(surveyCreation.isFailure())
-                return new Response<>(null, true, surveyCreation.getErrMsg());
+        survey = surveyCreation.getResult();
 
-            survey = surveyCreation.getResult();
-        }
-        else{
-            survey = surveyPair.getSecond();
-        }
 
         return new Response<>(survey, false, "OK");
     }
 
-    // for testing purpose only
-    public void clearCache(){
-        surveys.clear();
-//        answers.clear();
-    }
 }

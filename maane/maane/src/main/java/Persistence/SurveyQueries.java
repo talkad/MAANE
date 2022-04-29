@@ -14,14 +14,28 @@ import org.springframework.stereotype.Repository;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 @Repository
 public class SurveyQueries {
+
+    /**
+     * The cache will be implemented as LRU
+     */
+
+    private final Map<String, Pair<LocalDateTime, SurveyDTO>> surveys;
+
+    /**
+     * maximal size of cache
+     */
+    private final int cacheSize = 50;
+
 
     private static class CreateSafeThreadSingleton {
         private static final SurveyQueries INSTANCE = new SurveyQueries();
@@ -31,7 +45,9 @@ public class SurveyQueries {
         return SurveyQueries.CreateSafeThreadSingleton.INSTANCE;
     }
 
-    public String check(){return "hello";}
+    public SurveyQueries() {
+        this.surveys = new ConcurrentHashMap<>();
+    }
 
     //========================== Survey ==========================
 
@@ -457,6 +473,42 @@ public class SurveyQueries {
             output.append(s).append(",");
         }
         return output.substring(0,output.length()-1); //drop last ,
+    }
+
+    // ==================== Cache Management =======================
+    private void addSurveyToCache(String indexer, SurveyDTO survey){
+        if(surveys.size() > cacheSize)
+            removeLRU();
+
+        surveys.put(indexer, new Pair<>(LocalDateTime.now() ,survey));
+    }
+
+    private void removeLRU(){
+        LocalDateTime lastDate = LocalDateTime.now();
+        String lastIndex = "";
+
+        for(String index: surveys.keySet()){
+            if(surveys.get(index).getFirst().isBefore(lastDate)){
+                lastDate = surveys.get(index).getFirst();
+                lastIndex = index;
+            }
+        }
+
+        removeSurveyFromCache(lastIndex);
+    }
+
+    private Response<Boolean> removeSurveyFromCache(String index){
+        if(!surveys.containsKey(index))
+            return new Response<>(false, true, "survey with id " + index + " is not in cache");
+
+        surveys.remove(index);
+        return new Response<>(true, false, "survey with id " + index + " removed successfully");
+    }
+
+    // for testing purpose only
+    public void clearCache(){
+        surveys.clear();
+//        answers.clear();
     }
 }
 

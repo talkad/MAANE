@@ -7,7 +7,6 @@ import Domain.DataManagement.FaultDetector.Rules.Rule;
 import Domain.DataManagement.FaultDetector.Rules.RuleConverter;
 import Domain.DataManagement.SurveyController;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

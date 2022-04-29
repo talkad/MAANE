@@ -9,6 +9,7 @@ import Domain.CommonClasses.Response;
 import Domain.DataManagement.SurveyController;
 import Domain.EmailManagement.EmailController;
 import Domain.WorkPlan.GoalsManagement;
+import Persistence.SurveyQueries;
 import Persistence.UserDBDTO;
 import Persistence.UserQueries;
 import com.google.i18n.phonenumbers.NumberParseException;
@@ -576,7 +577,7 @@ public class UserController {
         this.connectedUsers = new ConcurrentHashMap<>();
         this.userDAO.deleteUsers();
         this.goalsManagement = GoalsManagement.getInstance();
-        surveyController.clearCache();
+        SurveyQueries.getInstance().clearCache();
         adminBoot("admin", "admin");
     }
 

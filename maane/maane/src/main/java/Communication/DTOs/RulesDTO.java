@@ -1,7 +1,5 @@
 package Communication.DTOs;
 
-import Domain.DataManagement.FaultDetector.Rules.Comparison;
-import Domain.DataManagement.FaultDetector.Rules.RuleType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

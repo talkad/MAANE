@@ -5,7 +5,6 @@ import Domain.CommonClasses.Response;
 import Domain.DataManagement.AnswerState.AnswerType;
 import Domain.DataManagement.SurveyAnswers;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static Domain.DataManagement.AnswerState.AnswerType.NUMERIC_ANSWER;

@@ -44,7 +44,7 @@ public class SurveyControllerTests {
         MockitoAnnotations.openMocks(this);
 
         surveyDTO = new SurveyDTO();
-        surveyController.clearCache();
+        surveyDAO.clearCache();
         UserController.getInstance().clearUsers();//todo probably set ock mode on users
 
         List<String> questions1 = Arrays.asList("que1", "que2", "que3");
@@ -135,7 +135,7 @@ public class SurveyControllerTests {
 
         Response<String> res = surveyController.createSurvey("Dvorit", surveyDTO);
         answersDTO1.setId(res.getResult());
-        surveyController.clearCache();
+        surveyDAO.clearCache();
 
         when(surveyDAO.getSurvey(res.getResult())).thenReturn(new Response<>(surveyDTO, false, "OK"));
 

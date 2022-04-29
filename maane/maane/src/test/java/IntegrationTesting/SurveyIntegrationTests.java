@@ -41,7 +41,7 @@ public class SurveyIntegrationTests {
         MockitoAnnotations.openMocks(this);
 
         surveyDTO = new SurveyDTO();
-        surveyController.clearCache();
+        surveyDAO.clearCache();
         UserController.getInstance().clearUsers();
 
         List<String> questions1 = Arrays.asList("que1", "que2", "que3");

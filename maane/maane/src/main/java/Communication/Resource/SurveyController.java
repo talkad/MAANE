@@ -4,8 +4,6 @@ import Communication.DTOs.*;
 import Communication.Service.Interfaces.SurveyService;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.FaultDetector.Rules.Rule;
-import Domain.DataManagement.FaultDetector.Rules.RuleConverter;
-import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

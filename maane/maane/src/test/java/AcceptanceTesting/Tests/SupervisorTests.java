@@ -4,7 +4,6 @@ import Communication.DTOs.*;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.AnswerState.AnswerType;
 import Domain.DataManagement.FaultDetector.Rules.Comparison;
-import Domain.DataManagement.FaultDetector.Rules.MultipleChoiceBaseRule;
 import Domain.DataManagement.FaultDetector.Rules.RuleType;
 import Domain.UsersManagment.UserStateEnum;
 import org.junit.Assert;
@@ -17,7 +16,6 @@ import java.util.List;
 import java.util.Vector;
 
 import static Domain.DataManagement.AnswerState.AnswerType.MULTIPLE_CHOICE;
-import static Domain.DataManagement.AnswerState.AnswerType.NONE;
 
 
 public class SupervisorTests extends AcceptanceTests{//todo reset the usercontroller db and the surveys db
