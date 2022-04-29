@@ -2,6 +2,7 @@ package Persistence;
 
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.UserStateEnum;
+import Persistence.DbDtos.UserDBDTO;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -227,7 +228,7 @@ public class UserQueries {
             preparedStatement.setString(8, userDBDTO.getCity());
             preparedStatement.setString(9, userDBDTO.getPassword());
             rows = preparedStatement.executeUpdate();
-            if(userDBDTO.userStateEnum.equals(UserStateEnum.SUPERVISOR)){
+            if(userDBDTO.getStateEnum().equals(UserStateEnum.SUPERVISOR)){
                 for(String survey : userDBDTO.getSurveys()){
                     insertUserSurveys(userDBDTO.getUsername(), survey);
                 }

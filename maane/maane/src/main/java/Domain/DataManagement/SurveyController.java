@@ -7,21 +7,19 @@ import Domain.DataManagement.FaultDetector.FaultDetector;
 import Domain.DataManagement.FaultDetector.Rules.Rule;
 import Domain.DataManagement.FaultDetector.Rules.RuleConverter;
 import Domain.UsersManagment.UserController;
-import Persistence.SurveyQueries;
+import Persistence.SurveyDAO;
 
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class SurveyController {
 
     private final SecureRandom secureRandom;
     private final Base64.Encoder base64Encoder;
 
-    private final SurveyQueries surveyDAO;
+    private final SurveyDAO surveyDAO;
 
 
 
@@ -36,7 +34,7 @@ public class SurveyController {
     public SurveyController(){
         secureRandom = new SecureRandom();
         base64Encoder = Base64.getUrlEncoder();
-        surveyDAO = SurveyQueries.getInstance();
+        surveyDAO = SurveyDAO.getInstance();
     }
 
     /**
@@ -243,18 +241,18 @@ public class SurveyController {
         return new Response<>(faults, false, "faults detected");
     }
 
-    public Map<String, List<SurveyAnswers>> getAnswers() {
-        Map<String, List<SurveyAnswers>> answers = new ConcurrentHashMap<>();
-        Map<String, List<SurveyAnswersDTO>> answersDB = surveyDAO.getAllAnswers();
-
-        for(String key: answersDB.keySet())
-            answers.put(key, answerConverter(answersDB.get(key)));
-
-        return answers;
-    }
+//    public Map<String, List<SurveyAnswers>> getAnswers() {
+//        Map<String, List<SurveyAnswers>> answers = new ConcurrentHashMap<>();
+//        Map<String, List<SurveyAnswersDTO>> answersDB = surveyDAO.getAllAnswers();
+//
+//        for(String key: answersDB.keySet())
+//            answers.put(key, answerConverter(answersDB.get(key)));
+//
+//        return answers;
+//    }
 
     public Response<List<SurveyAnswers>> getAnswersForSurvey(String surveyId) {
-        return new Response<>(answerConverter(surveyDAO.getAnswerForSurvey(surveyId)), false, "OK");
+        return new Response<>(answerConverter(surveyDAO.getAnswers(surveyId)), false, "OK");
     }
 
     public Response<List<Rule>> getRules(String surveyID){
@@ -312,7 +310,7 @@ public class SurveyController {
             return new Response<>(null, true, username + " did not create survey " + id);
 
         faultDetector = new FaultDetector(rulesConverter(surveyDAO.getRules(id)));
-        List<SurveyAnswers> answers = answerConverter(surveyDAO.getAnswerForSurvey(id));
+        List<SurveyAnswers> answers = answerConverter(surveyDAO.getAnswers(id));
 
         for(SurveyAnswers ans: answers){
 

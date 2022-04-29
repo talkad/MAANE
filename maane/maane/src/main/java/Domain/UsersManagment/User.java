@@ -2,7 +2,7 @@ package Domain.UsersManagment;
 
 import Communication.DTOs.UserDTO;
 import Domain.CommonClasses.Response;
-import Persistence.UserDBDTO;
+import Persistence.DbDtos.UserDBDTO;
 
 import java.util.LinkedList;
 import java.util.List;

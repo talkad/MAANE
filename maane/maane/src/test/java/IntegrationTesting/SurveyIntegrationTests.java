@@ -9,7 +9,7 @@ import Domain.DataManagement.FaultDetector.Rules.NumericBaseRule;
 import Domain.DataManagement.SurveyController;
 import Domain.UsersManagment.UserController;
 import Domain.UsersManagment.UserStateEnum;
-import Persistence.SurveyQueries;
+import Persistence.SurveyDAO;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +34,7 @@ public class SurveyIntegrationTests {
     private SurveyController surveyController;
 
     @Mock
-    private SurveyQueries surveyDAO;
+    private SurveyDAO surveyDAO;
 
     @Before
     public void setUp(){

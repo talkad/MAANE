@@ -1,4 +1,4 @@
-package Persistence;
+package Persistence.DbDtos;
 
 import Domain.UsersManagment.User;
 import Domain.UsersManagment.UserStateEnum;

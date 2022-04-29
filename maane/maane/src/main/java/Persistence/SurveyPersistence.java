@@ -9,44 +9,28 @@ import Domain.CommonClasses.Response;
 import Domain.DataManagement.AnswerState.AnswerType;
 import Domain.DataManagement.FaultDetector.Rules.Comparison;
 import Domain.DataManagement.FaultDetector.Rules.RuleType;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 
 @Repository
-public class SurveyQueries {
-
-    /**
-     * The cache will be implemented as LRU
-     */
-
-    private final Map<String, Pair<LocalDateTime, SurveyDTO>> surveys;
-
-    /**
-     * maximal size of cache
-     */
-    private final int cacheSize = 50;
+@Slf4j
+public class SurveyPersistence {
 
 
     private static class CreateSafeThreadSingleton {
-        private static final SurveyQueries INSTANCE = new SurveyQueries();
+        private static final SurveyPersistence INSTANCE = new SurveyPersistence();
     }
 
-    public static SurveyQueries getInstance() {
-        return SurveyQueries.CreateSafeThreadSingleton.INSTANCE;
-    }
-
-    public SurveyQueries() {
-        this.surveys = new ConcurrentHashMap<>();
+    public static SurveyPersistence getInstance() {
+        return SurveyPersistence.CreateSafeThreadSingleton.INSTANCE;
     }
 
     //========================== Survey ==========================
@@ -107,11 +91,11 @@ public class SurveyQueries {
             preparedStatement.setString(1, questionDTO.getSurveyID());
             preparedStatement.setInt(2, question_index);
             preparedStatement.setString(3, questionDTO.getType().getType());
-            preparedStatement.setString(4, questionDTO.getQuestion());
+            preparedStatement.setString(4, questionDTO.getAnswers().toString());
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            return new Response<>(false, true, "failed to add question");
+            return new Response<>(false, true, "failed to add answers");
         }
 
         return new Response<>(false, true, "inserted question successfully");
@@ -422,7 +406,7 @@ public class SurveyQueries {
                 List<String> typesStrings = new LinkedList<>(parsedTypes);
                 List<AnswerType> types = new LinkedList<>();
                 for (String s : typesStrings) { types.add(AnswerType.valueOf(s)); };
-
+                //todo: symbol
                 surveyAnswersDTO = new SurveyAnswersDTO(surveyId, answers, types);
                 output.add(surveyAnswersDTO);
             }
@@ -433,10 +417,6 @@ public class SurveyQueries {
         return output;
     }
 
-    public Map<String, List<SurveyAnswersDTO>> getAllAnswers() {
-        //todo - almog
-        return null;
-    }
 
     //todo drop it later
     public List<SurveyAnswersDTO> getAnswerForSurvey(String surveyId) {
@@ -475,41 +455,6 @@ public class SurveyQueries {
         return output.substring(0,output.length()-1); //drop last ,
     }
 
-    // ==================== Cache Management =======================
-    private void addSurveyToCache(String indexer, SurveyDTO survey){
-        if(surveys.size() > cacheSize)
-            removeLRU();
-
-        surveys.put(indexer, new Pair<>(LocalDateTime.now() ,survey));
-    }
-
-    private void removeLRU(){
-        LocalDateTime lastDate = LocalDateTime.now();
-        String lastIndex = "";
-
-        for(String index: surveys.keySet()){
-            if(surveys.get(index).getFirst().isBefore(lastDate)){
-                lastDate = surveys.get(index).getFirst();
-                lastIndex = index;
-            }
-        }
-
-        removeSurveyFromCache(lastIndex);
-    }
-
-    private Response<Boolean> removeSurveyFromCache(String index){
-        if(!surveys.containsKey(index))
-            return new Response<>(false, true, "survey with id " + index + " is not in cache");
-
-        surveys.remove(index);
-        return new Response<>(true, false, "survey with id " + index + " removed successfully");
-    }
-
-    // for testing purpose only
-    public void clearCache(){
-        surveys.clear();
-//        answers.clear();
-    }
 }
 
 //===========================================================

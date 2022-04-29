@@ -5,7 +5,7 @@ import Communication.Initializer.ServerContextInitializer;
 import Domain.CommonClasses.Pair;
 import Domain.DataManagement.FaultDetector.Rules.Comparison;
 import Domain.DataManagement.FaultDetector.Rules.RuleType;
-import Persistence.SurveyQueries;
+import Persistence.SurveyDAO;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -15,14 +15,14 @@ import java.util.List;
 
 
 public class RuleDbTests {
-    SurveyQueries surveyQueries;
+    SurveyDAO surveyQueries;
     RuleDTO ruleDTO;
     RuleDTO subRuleDTO;
 
     @Before
     public void setUp(){
         ServerContextInitializer.getInstance().setMockMode();
-        surveyQueries = SurveyQueries.getInstance();
+        surveyQueries = SurveyDAO.getInstance();
 
         List<RuleDTO> subRuleSubRules= new LinkedList<>();
         subRuleDTO = new RuleDTO(subRuleSubRules, RuleType.IFF, Comparison.GREATER_THEN, 11, List.of(22));
@@ -36,7 +36,7 @@ public class RuleDbTests {
 
     @Test
     public void insertRule() throws SQLException {
-        SurveyQueries surveyQueries = SurveyQueries.getInstance();
+        SurveyDAO surveyQueries = SurveyDAO.getInstance();
         surveyQueries.insertRule("1", 2 ,ruleDTO);
     }
 

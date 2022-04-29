@@ -4,7 +4,7 @@ import Communication.DTOs.SurveyAnswersDTO;
 import Communication.DTOs.SurveyDTO;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.AnswerState.AnswerType;
-import Persistence.SurveyQueries;
+import Persistence.SurveyDAO;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,12 +14,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class SurveyDbTests {
-    SurveyQueries surveyQueries;
+    SurveyDAO surveyQueries;
     SurveyDTO surveyDTO;
 
     @Before
     public void setUp(){
-        surveyQueries = SurveyQueries.getInstance();
+        surveyQueries = SurveyDAO.getInstance();
 
         List<String> questions = new LinkedList<>();
         questions.add("q1"); questions.add("q2");
