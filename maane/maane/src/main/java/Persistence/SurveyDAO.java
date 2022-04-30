@@ -8,6 +8,9 @@ import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.AnswerState.AnswerType;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -87,6 +90,18 @@ public class SurveyDAO {
         return res;
     }
 
+    public Response<Boolean> surveySubmission(String surveyID) {
+        Response<Boolean> res;
+
+        removeSurveyFromCache(surveyID);
+        res = persistence.surveySubmission(surveyID);
+        loadSurveyToCache(surveyID);
+
+//        executor.execute(() -> loadSurveyToCache(questionDTO.getSurveyID()));
+
+        return res;
+    }
+
     public Response<Boolean> removeQuestions(String surveyID, int questionID, int questionsNum) {
         Response<Boolean> res;
 
@@ -112,6 +127,10 @@ public class SurveyDAO {
 //            executor.execute(() -> addSurveyToCache(id, res.getResult()));
 
         return res;
+    }
+
+    public Response<Boolean> getSurveySubmission(String id)  {
+        return persistence.getSurveySubmission(id);
     }
 
     //===========================================================

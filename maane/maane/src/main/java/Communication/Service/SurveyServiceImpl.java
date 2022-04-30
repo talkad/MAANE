@@ -154,6 +154,18 @@ public class SurveyServiceImpl implements SurveyService {
         return res;
     }
 
+    @Override
+    public Response<Boolean> submitSurvey(String username, String surveyID) {
+        Response<Boolean> res = SurveyController.getInstance().submitSurvey(username, surveyID);
+
+        if(res.isFailure())
+            log.error(res.getErrMsg());
+        else
+            log.info(res.getErrMsg());
+
+        return res;
+    }
+
     public Response<List<SurveyDetailsDTO>> getSurveys(String username) {
         Response<List<SurveyDetailsDTO>> res = SurveyController.getInstance().getSurveys(username);
 

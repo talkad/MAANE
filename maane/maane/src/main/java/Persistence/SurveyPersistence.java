@@ -24,6 +24,7 @@ import java.util.List;
 @Slf4j
 public class SurveyPersistence {
 
+
     private static class CreateSafeThreadSingleton {
         private static final SurveyPersistence INSTANCE = new SurveyPersistence();
     }
@@ -37,13 +38,15 @@ public class SurveyPersistence {
     public Response<Boolean> insertSurvey(SurveyDTO surveyDTO) {
         Connect.createConnection();
         int rows = 0;
-        String sql = "INSERT INTO \"Surveys\" (id, title, description) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO \"Surveys\" (id, title, description, submit) VALUES (?, ?, ?, ?)";
         PreparedStatement preparedStatement;
         try {
             preparedStatement = Connect.conn.prepareStatement(sql);
             preparedStatement.setString(1, surveyDTO.getId());
             preparedStatement.setString(2, surveyDTO.getTitle());
             preparedStatement.setString(3, surveyDTO.getDescription());
+            preparedStatement.setBoolean(4, false);
+
             rows = preparedStatement.executeUpdate();
 
             insertQuestions(surveyDTO.getId(), surveyDTO.getQuestions());
@@ -78,6 +81,28 @@ public class SurveyPersistence {
         } catch (SQLException e) {
             log.error("DB: failed to questions: \n" + e.getMessage());
         }
+    }
+
+    public Response<Boolean> surveySubmission(String surveyID) {
+        Connect.createConnection();
+        String sql = "UPDATE \"Surveys\" SET submit=TRUE  WHERE id=?;\n";
+        PreparedStatement preparedStatement;
+        try {
+            preparedStatement = Connect.conn.prepareStatement(sql);
+
+            preparedStatement.setString(1, surveyID);
+            preparedStatement.executeUpdate();
+            Connect.closeConnection();
+
+            log.info("DB: survey submitted successfully");
+
+        } catch (SQLException e) {
+            log.error("DB: failed to submit survey \n" + e.getMessage());
+
+            return new Response<>(false, true, "failed to submit survey ");
+        }
+
+        return new Response<>(true, false, "survey submitted successfully");
     }
 
     public Response<Boolean> addQuestion(QuestionDTO questionDTO, int question_index) {
@@ -232,6 +257,32 @@ public class SurveyPersistence {
         } catch(SQLException e) {
             return new Response<>(null, true, "Failed to get survey");
         }
+    }
+
+    public Response<Boolean> getSurveySubmission(String id)  {
+        boolean submit;
+
+        Connect.createConnection();
+        String sqlSurvey = "SELECT submit FROM \"Surveys\" WHERE id = ?";
+        try {
+            PreparedStatement statement = Connect.conn.prepareStatement(sqlSurvey);
+            statement.setString(1, id);
+            ResultSet resultSurvey = statement.executeQuery();
+
+            if (resultSurvey.next()) {
+                submit = resultSurvey.getBoolean("submit");
+
+                Connect.closeConnection();
+            } else {
+                Connect.closeConnection();
+                return new Response<>(false, true, "failed to get survey");
+            }
+
+        } catch(SQLException e) {
+            return new Response<>(false, true, "Failed to get survey");
+        }
+
+        return new Response<>(submit, false, "survey loaded successfully");
     }
 
     private List<String> getSurveyQuestions (String survey_id) throws SQLException {

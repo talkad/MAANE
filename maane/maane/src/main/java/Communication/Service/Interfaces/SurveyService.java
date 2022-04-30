@@ -45,7 +45,9 @@ public interface SurveyService {
 
     Response<Boolean> removeRules(String username, String surveyID);
 
-    Response<Boolean> addQuestion(String result, QuestionDTO questionDTO);
+    Response<Boolean> addQuestion(String username, QuestionDTO questionDTO);
 
-    Response<Boolean> removeQuestion(String result, String surveyID, Integer questionID);
+    Response<Boolean> removeQuestion(String username, String surveyID, Integer questionID);
+
+    Response<Boolean> submitSurvey(String username, String surveyID);
 }

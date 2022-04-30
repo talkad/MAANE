@@ -27,6 +27,13 @@ public class SurveyController {
         );
     }
 
+    @PostMapping(value = "/submitSurvey")
+    public ResponseEntity<Response<Boolean>> submitSurvey(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, String> body){
+        return ResponseEntity.ok(
+                service.submitSurvey(sessionHandler.getUsernameByToken(token).getResult(), body.get("surveyID"))
+        );
+    }
+
     @PostMapping(value = "/addQuestion")
     public ResponseEntity<Response<Boolean>> addQuestion(@RequestHeader(value = "Authorization") String token, @RequestBody QuestionDTO questionDTO){
         return ResponseEntity.ok(

@@ -68,9 +68,18 @@ public class SurveyController {
 
         surveyDAO.insertSurvey(surveyDTO);
 
-        UserController.getInstance().notifySurveyCreation(username, indexer);
-
         return new Response<>(indexer, false, "new survey created successfully");
+    }
+
+    public Response<Boolean> submitSurvey(String username, String surveyID){
+        Response<Boolean> legalAdd = UserController.getInstance().hasCreatedSurvey(username, surveyID);
+
+        if(!legalAdd.getResult())
+            return new Response<>(false, true, username + " does not create survey " + surveyID);
+
+        UserController.getInstance().notifySurveyCreation(username, surveyID);
+
+        return surveyDAO.surveySubmission(surveyID);
     }
 
     public Response<Boolean> addQuestion(String username, QuestionDTO questionDTO) {
@@ -78,8 +87,11 @@ public class SurveyController {
         Response<SurveyDTO> resSurvey;
         Response<Boolean> legalAdd = UserController.getInstance().hasCreatedSurvey(username, questionDTO.getSurveyID());
 
+        if(surveyDAO.getSurveySubmission(questionDTO.getSurveyID()).getResult())
+            return new Response<>(false, true, "cannot add question to an already submitted survey");
+
         if(!legalAdd.getResult())
-            return new Response<>(false, true, username + " does not created survey " + questionDTO.getSurveyID());
+            return new Response<>(false, true, username + " does not create survey " + questionDTO.getSurveyID());
 
         resSurvey = surveyDAO.getSurvey(questionDTO.getSurveyID());
 
@@ -98,6 +110,9 @@ public class SurveyController {
         Response<Boolean> resDB;
         Response<SurveyDTO> resSurvey;
         Response<Boolean> legalAdd = UserController.getInstance().hasCreatedSurvey(username, surveyID);
+
+        if(surveyDAO.getSurveySubmission(surveyID).getResult())
+            return new Response<>(false, true, "cannot remove question of an already submitted survey");
 
         if(!legalAdd.getResult())
             return new Response<>(false, true, username + " does not created survey " + surveyID);

@@ -89,7 +89,17 @@ public class ProxyBridgeSurvey implements SurveyService {
             return real.removeQuestion(result, surveyID, questionID);
         }
 
-        return new Response<>(null, true, "not implemented");    }
+        return new Response<>(null, true, "not implemented");
+    }
+
+    @Override
+    public Response<Boolean> submitSurvey(String username, String surveyID) {
+        if (real != null){
+            return real.submitSurvey(username, surveyID);
+        }
+
+        return new Response<>(null, true, "not implemented");
+    }
 
     @Override
     public Response<List<SurveyDetailsDTO>> getSurveys(String username) {
