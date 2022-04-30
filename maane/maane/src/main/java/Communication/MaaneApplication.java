@@ -38,18 +38,19 @@ public class MaaneApplication {
 	@Bean
 	CommandLineRunner run(UserServiceImpl service){
 		return args -> {
-			UserQueries.getInstance().deleteUsers();
-			UserController userController = UserController.getInstance();
-			userController.login("admin");
-
-			service.registerUserBySystemManager("admin", new UserDTO("admin", "tech", "tal", "1234", UserStateEnum.SUPERVISOR,
-					"tal", "kad", "", "", "", null), "");
-
-			userController.logout("admin");
 
 			if(ServerContextInitializer.getInstance().isMockMode()){
-				UserQueries.getInstance().clearDB();
 				System.out.println("Mock Mode is Activated!");
+
+				UserQueries.getInstance().clearDB();
+
+				UserController userController = UserController.getInstance();
+				userController.login("admin");
+
+				service.registerUserBySystemManager("admin", new UserDTO("admin", "tech", "tal", "1234", UserStateEnum.SUPERVISOR,
+						"tal", "kad", "tal@gmail.com", "055-555-5555", "", null), "");
+
+				userController.logout("admin");
 			}
 
 		};

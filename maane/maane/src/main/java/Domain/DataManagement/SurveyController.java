@@ -96,12 +96,14 @@ public class SurveyController {
 
     public Response<Boolean> removeQuestion(String username, String surveyID, Integer questionID) {
         Response<Boolean> resDB;
+        Response<SurveyDTO> resSurvey;
         Response<Boolean> legalAdd = UserController.getInstance().hasCreatedSurvey(username, surveyID);
 
         if(!legalAdd.getResult())
             return new Response<>(false, true, username + " does not created survey " + surveyID);
 
-        resDB = surveyDAO.removeQuestions(surveyID, questionID);
+        resSurvey = surveyDAO.getSurvey(surveyID);
+        resDB = surveyDAO.removeQuestions(surveyID, questionID, resSurvey.getResult().getQuestions().size());
 
         if(resDB.isFailure())
             return new Response<>(false, true, resDB.getErrMsg());
@@ -140,10 +142,10 @@ public class SurveyController {
             return new Response<>(false, true, "School symbol cannot be empty string");
 
         answer.setSymbol(symbol);
-        List<String> answers = answersDTO.getAnswers();
+        List<String> answers = new LinkedList<>(answersDTO.getAnswers());
         answers.remove(0);
 
-        List<AnswerType> types = answersDTO.getTypes();
+        List<AnswerType> types = new LinkedList<>(answersDTO.getTypes());
         types.remove(0);
 
         surveyDAO.insertCoordinatorAnswers(answersDTO.getId(), symbol, answers, types);

@@ -35,7 +35,6 @@ public class SurveyPersistence {
     //========================== Survey ==========================
 
     public Response<Boolean> insertSurvey(SurveyDTO surveyDTO) {
-        System.out.println("insert \n" + surveyDTO);
         Connect.createConnection();
         int rows = 0;
         String sql = "INSERT INTO \"Surveys\" (id, title, description) VALUES (?, ?, ?)";
@@ -82,6 +81,8 @@ public class SurveyPersistence {
     }
 
     public Response<Boolean> addQuestion(QuestionDTO questionDTO, int question_index) {
+        Connect.createConnection();
+
         String sql = "INSERT INTO \"Questions\" (survey_id, index, question) VALUES (?, ?, ?)";
         PreparedStatement preparedStatement = null;
         try {
@@ -106,6 +107,7 @@ public class SurveyPersistence {
             preparedStatement.setString(4, questionDTO.getAnswers().toString());
 
             preparedStatement.executeUpdate();
+            Connect.closeConnection();
 
             log.info("DB: insert question successfully");
 
@@ -115,17 +117,48 @@ public class SurveyPersistence {
             return new Response<>(false, true, "failed to add answers");
         }
 
-        return new Response<>(false, true, "inserted question successfully");
+        return new Response<>(true, false, "inserted question successfully");
     }
 
-    public Response<Boolean> removeQuestions(String surveyID, int questionID) {
-        String sql = "DELETE FROM  \"Questions\" WHERE survey_id=? and index=?";
+    public Response<Boolean> removeQuestions(String surveyID, int questionID, int questionsNum) {
+        int indexer = 5;
+
+        Connect.createConnection();
+        String sql = "BEGIN;\n";
+        sql += "DELETE FROM  \"Questions\" WHERE survey_id=? and index=?;\n";
+        sql += "DELETE FROM  \"MultiChoices\" WHERE survey_id=? and question_index=?;\n";
+
+        for(int i = questionID + 1; i < questionsNum; i++){
+            sql += "UPDATE \"Questions\" SET index=index-1  WHERE survey_id=? and index=?;\n";
+            sql += "UPDATE \"MultiChoices\" SET question_index=question_index-1  WHERE survey_id=? and question_index=?;\n";
+        }
+
+        sql += "COMMIT;\n";
+
         PreparedStatement preparedStatement;
         try {
             preparedStatement = Connect.conn.prepareStatement(sql);
+
+            // remove question by id
             preparedStatement.setString(1, surveyID);
             preparedStatement.setInt(2, questionID);
+
+            preparedStatement.setString(3, surveyID);
+            preparedStatement.setInt(4, questionID);
+
+            // update question indexes
+            for(int i = questionID + 1; i < questionsNum; i++){
+                preparedStatement.setString(indexer, surveyID);
+                preparedStatement.setInt(indexer+1, i);
+
+                preparedStatement.setString(indexer+2, surveyID);
+                preparedStatement.setInt(indexer+3, i);
+
+                indexer += 4;
+            }
+
             preparedStatement.executeUpdate();
+            Connect.closeConnection();
 
             log.info("DB: removed question successfully");
 
@@ -139,23 +172,26 @@ public class SurveyPersistence {
     }
 
     public void insertAnswers (String surveyId, List<String> answers, List<AnswerType> answerTypes) {
+        int indexer = 0;
 
         String sql = "INSERT INTO \"MultiChoices\" (survey_id, question_index, answer_type, choices) VALUES (?, ?, ?, ?)";
-        PreparedStatement preparedStatement = null;
+        PreparedStatement preparedStatement;
         try {
             preparedStatement = Connect.conn.prepareStatement(sql);
             for (String answer: answers) {
                 preparedStatement.setString(1, surveyId);
-                preparedStatement.setInt(2, answers.indexOf(answer));
-                preparedStatement.setString(3, answerTypes.get(answers.indexOf(answer)).toString());
+                preparedStatement.setInt(2, indexer);
+                preparedStatement.setString(3, answerTypes.get(indexer).toString());
                 preparedStatement.setString(4, answer);
                 preparedStatement.executeUpdate();
+
+                indexer++;
             }
 
-            log.info("DB: added answers successfully");
+            log.info("DB: added MultiChoices answers successfully");
 
         } catch (SQLException e) {
-            log.error("DB: failed to add answers \n" + e.getMessage());
+            log.error("DB: failed to add MultiChoices answers \n" + e.getMessage());
         }
     }
 
@@ -477,7 +513,7 @@ public class SurveyPersistence {
     public void insertCoordinatorAnswers(String id, String symbol, List<String> answers, List<AnswerType> types) {
         Connect.createConnection();
         String sql = "INSERT INTO \"Answers\" (survey_id, school_symbol, answer, answer_type) VALUES (?, ?, ?, ?)";
-        PreparedStatement preparedStatement = null;
+        PreparedStatement preparedStatement;
         try {
             preparedStatement = Connect.conn.prepareStatement(sql);
             preparedStatement.setString(1, id);
@@ -491,7 +527,7 @@ public class SurveyPersistence {
             log.info("DB: added coordinator answers successfully");
 
         } catch (SQLException e) {
-            log.error("DB: failed to add answers \n" + e.getMessage());
+            log.error("DB: failed to add coordinator answers \n" + e.getMessage());
         }
     }
 

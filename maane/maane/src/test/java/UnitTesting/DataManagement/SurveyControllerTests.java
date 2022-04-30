@@ -147,7 +147,7 @@ public class SurveyControllerTests {
 
     @Test
     public void addAnswerFailure(){
-        Response<String> res = surveyController.createSurvey("Dvorit", surveyDTO);
+        surveyController.createSurvey("Dvorit", surveyDTO);
 
         when(surveyDAO.getSurvey(answersDTO2.getId())).thenReturn(new Response<>(surveyDTO, false, "OK"));
 

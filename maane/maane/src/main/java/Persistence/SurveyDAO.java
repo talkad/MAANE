@@ -38,7 +38,7 @@ public class SurveyDAO {
     /**
      * Threads for executing DB functions
      */
-    private final ThreadPoolExecutor executor;
+    //private final ThreadPoolExecutor executor;
 
 
     /**
@@ -59,7 +59,7 @@ public class SurveyDAO {
         this.surveys = new ConcurrentHashMap<>();
         this.answers = new ConcurrentHashMap<>();
         this.persistence = SurveyPersistence.getInstance();
-        this.executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
+        //this.executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(5);
         this.cacheSize = 50;
     }
 
@@ -68,9 +68,11 @@ public class SurveyDAO {
     public Response<Boolean> insertSurvey(SurveyDTO surveyDTO) {
         addSurveyToCache(surveyDTO.getId(), surveyDTO);
 
-        executor.execute(() -> persistence.insertSurvey(surveyDTO));
+//        executor.execute(() -> persistence.insertSurvey(surveyDTO));
+//
+//        return new Response<>(true, false, "survey inserted to cache");
 
-        return new Response<>(true, false, "survey inserted to cache");
+        return persistence.insertSurvey(surveyDTO);
     }
 
     public Response<Boolean> addQuestion(QuestionDTO questionDTO, int question_index) {
@@ -78,17 +80,21 @@ public class SurveyDAO {
 
         removeSurveyFromCache(questionDTO.getSurveyID());
         res = persistence.addQuestion(questionDTO, question_index);
-        executor.execute(() -> loadSurveyToCache(questionDTO.getSurveyID()));
+        loadSurveyToCache(questionDTO.getSurveyID());
+
+//        executor.execute(() -> loadSurveyToCache(questionDTO.getSurveyID()));
 
         return res;
     }
 
-    public Response<Boolean> removeQuestions(String surveyID, int questionID) {
+    public Response<Boolean> removeQuestions(String surveyID, int questionID, int questionsNum) {
         Response<Boolean> res;
 
         removeSurveyFromCache(surveyID);
-        res = persistence.removeQuestions(surveyID, questionID);
-        executor.execute(() -> loadSurveyToCache(surveyID));
+        res = persistence.removeQuestions(surveyID, questionID, questionsNum);
+        loadSurveyToCache(surveyID);
+
+//        executor.execute(() -> loadSurveyToCache(surveyID));
 
         return res;
     }
@@ -102,7 +108,8 @@ public class SurveyDAO {
         res = persistence.getSurvey(id);
 
         if(!res.isFailure())
-            executor.execute(() -> addSurveyToCache(id, res.getResult()));
+            addSurveyToCache(id, res.getResult());
+//            executor.execute(() -> addSurveyToCache(id, res.getResult()));
 
         return res;
     }
@@ -138,7 +145,9 @@ public class SurveyDAO {
             return answers.get(surveyId).getSecond();
 
         surveyAnswers = persistence.getAnswers(surveyId);
-        executor.execute(() -> addAnswersToCache(surveyId, surveyAnswers));
+        addAnswersToCache(surveyId, surveyAnswers);
+
+//        executor.execute(() -> addAnswersToCache(surveyId, surveyAnswers));
 
         return surveyAnswers;
     }
@@ -154,7 +163,8 @@ public class SurveyDAO {
 
         addAnswerToCache(id, answersDTO);
 
-        executor.execute(() -> persistence.insertCoordinatorAnswers(id, symbol, answers, types));
+//        executor.execute(() -> persistence.insertCoordinatorAnswers(id, symbol, answers, types));
+        persistence.insertCoordinatorAnswers(id, symbol, answers, types);
     }
 
     // ==================== Cache Management =======================
