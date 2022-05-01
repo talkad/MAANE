@@ -451,6 +451,21 @@ class Connection{
     }
 
     /**
+     * sends a POST request to the server for submitting rules for a survey
+     * @param surveyID the id of the survey for which the rules are for
+     * @param rules the ruels
+     * @param callback a callback function to call once there's a response
+     */
+    submitSurveyRules(surveyID, rules, callback){
+        this.sendPOST('/survey/submitRules',
+            {
+                surveyID: surveyID,
+                rules: rules,
+            },
+            callback)
+    }
+
+    /**
      * sends a GET request to get all the surveys created by the current active user
      * @param callback a callback function to call once there's a response
      */
