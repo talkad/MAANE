@@ -270,6 +270,7 @@ public class SurveyPersistence {
             SurveyDTO surveyDTO = new SurveyDTO();
 
             if (resultSurvey.next()) {
+                surveyDTO.setPublished(resultSurvey.getBoolean("submit"));
                 surveyDTO.setId(resultSurvey.getString("id"));
                 surveyDTO.setTitle(resultSurvey.getString("title"));
                 surveyDTO.setDescription(resultSurvey.getString("description"));

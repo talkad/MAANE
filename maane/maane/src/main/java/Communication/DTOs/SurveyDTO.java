@@ -10,6 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 public class SurveyDTO {
 
+    private boolean isPublished;
     private String id;
     private String title;
     private String description;
@@ -59,6 +60,14 @@ public class SurveyDTO {
 
     public void setAnswers(List<List<String>> answers) {
         this.answers = answers;
+    }
+
+    public boolean isPublished() {
+        return isPublished;
+    }
+
+    public void setPublished(boolean published) {
+        isPublished = published;
     }
 
     public void setTypes(List<AnswerType> types) {

@@ -61,7 +61,7 @@ public class SurveyController {
                 .body(service.getSurvey(surveyID));
     }
 
-    @PostMapping(value ="/addRule")
+    @PostMapping(value ="/submitRules")
     public ResponseEntity<Response<Boolean>> addRule(@RequestHeader(value = "Authorization") String token, @RequestBody RulesDTO rulesDTO){
 
         return ResponseEntity.ok()

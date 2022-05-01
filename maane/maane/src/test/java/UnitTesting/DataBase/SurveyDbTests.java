@@ -34,7 +34,7 @@ public class SurveyDbTests {
         answers2.add("keep my wife's name, out your f* mouth");
         answers.add(answers1); answers.add(answers2);
 
-        surveyDTO = new SurveyDTO("1","survey1", "some desc", questions, answers, answerTypes);
+        surveyDTO = new SurveyDTO(false, "1","survey1", "some desc", questions, answers, answerTypes);
     }
 
     @Test
