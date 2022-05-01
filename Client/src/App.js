@@ -315,7 +315,7 @@ function App(){
 
                         {type === "SUPERVISOR" &&
                             <Route path="survey">
-                                <Route path="menu" element={<SurveyMenu />}/>
+                                <Route path="menu" element={<SurveyMenu setAuthAvailability={setAuthAvailability} setAuthCallBack={setAuthCallback} setAuthCalleePage={setAuthCalleePage} setAuthGoToPage={setAuthGoToPage} setHideBars={setHideBars}/>}/>
                                 <Route path="createSurvey" element={<SurveyBuilder/>}/>
                                 <Route path="getSurvey" element={<Survey/>}/>
                                 <Route path="rules" element={<SurveyRulesEditor/>}/>
