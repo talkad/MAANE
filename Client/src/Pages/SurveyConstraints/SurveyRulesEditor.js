@@ -15,9 +15,10 @@ const offline_questions_data = [{id: 0, question: "sup", type: "MULTIPLE_CHOICE"
     {id: 2, question: 'how are you', type: 'MULTIPLE_CHOICE', answers: ['good', 'fine', 'bad']}]
 // NUMERIC_ANSWER, MULTIPLE_CHOICE
 
-//const color_stack = ['#ffffff', '#d89af5', '#93b6fa']; // todo: add more colors
 
-const color_stack = ['#ffffff', '#E6B0AA', '#D7BDE2', '#A9CCE3', '#A3E4D7', '#A9DFBF', '#F9E79F', '#F5CBA7']; // todo: add more colors
+// TODO: add the option to get already existing rules and present them
+
+const color_stack = ['#ffffff', '#E6B0AA', '#D7BDE2', '#A9CCE3', '#A3E4D7', '#A9DFBF', '#F9E79F', '#F5CBA7'];
 
 export default function SurveyRulesEditor(){
 

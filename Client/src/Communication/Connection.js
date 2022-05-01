@@ -2,7 +2,8 @@ import axios from "axios";
 
 // TODO: secure store the JWT keys
 // TODO: deal with expired tokens
-// TODO for tal: if a user doesn't have a permission don't send back 403, send back 404
+// TODO: for tal: if a user doesn't have a permission don't send back 403, send back 404
+// TODO: what to do in the case when a GET request fails?
 
 class Connection{
 
@@ -475,6 +476,7 @@ class Connection{
 
     /**
      * sends a POST request to create a new survey
+     * @param id in the case of editing an already existing survey passing its id. else pass -1
      * @param title the title of the survey
      * @param description the description of the survey
      * @param questions the questions of the survey
@@ -482,10 +484,10 @@ class Connection{
      * @param types the type of answer of each question
      * @param callback a callback function to call once there's a response
      */
-    createSurvey(title, description, questions, answers, types, callback){
+    createSurvey(id, title, description, questions, answers, types, callback){
         this.sendPOST('/survey/createSurvey',
             {
-                id: "-1",
+                id: id,
                 title: title,
                 description: description,
                 questions: questions,

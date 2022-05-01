@@ -10,6 +10,7 @@ import NotificationSnackbar from "../../CommonComponents/NotificationSnackbar";
 import {useNavigate} from "react-router-dom";
 
 export default function SurveyBuilder(){
+    const [surveyID, setSurveyID] = useState("-1")
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [questions, setQuestions] = useState([{id: -1, question: 'סמל בית ספר', type: 'NUMERIC_ANSWER', answers: []}]);
@@ -37,6 +38,15 @@ export default function SurveyBuilder(){
     let navigate = useNavigate();
 
     useEffect(() => {
+        var url = new URL(window.location.href);
+        var surveyID = url.searchParams.get("surveyID");
+
+        if(surveyID !== undefined) { // in the case of editing an already existing survey, a survey id will be passed in the url
+            setSurveyID(surveyID)
+            new Connection().getSurvey(surveyID, arrangeSurvey);
+        }
+
+
         function onCloseMessage(e) {
 
             if(!surveyComplete){
@@ -54,6 +64,33 @@ export default function SurveyBuilder(){
             window.removeEventListener('beforeunload', onCloseMessage);
         }
     }, []);
+
+    /**
+     * arranges a given survey from the server for viewing
+     * @param data the survey data
+     */
+    const arrangeSurvey = (data) => {
+        if(!data.failure){
+            setQuestions([])
+
+            function zip(arrays) {
+                return arrays[0].map(function(_,i){
+                    return arrays.map(function(array){return array[i]})
+                });
+            }
+
+            const survey = data.result;
+
+            setTitle(survey.title);
+            setDescription(survey.description);
+
+            const zippedQuestionsList = zip([survey.questions, survey.types, survey.answers]);
+
+            let questionIndexer = 0;
+            zippedQuestionsList.forEach(([question, type, answers]) => setQuestions(questions =>
+                [...questions, {id: questionIndexer++, question: question, type: type, choices: answers, answer: '',}]));
+        }
+    }
 
     /**
      * adds a new question to the survey
@@ -159,7 +196,7 @@ export default function SurveyBuilder(){
         else{
             setShowError(false);
 
-            new Connection().createSurvey(title, description, questions.map((x) => x["question"]),
+            new Connection().createSurvey(surveyID, title, description, questions.map((x) => x["question"]),
                 questions.map((x) => x["answers"].map((y) => y.value)), questions.map((x) => x["type"]), submitSurveyCallback);
         }
     }
