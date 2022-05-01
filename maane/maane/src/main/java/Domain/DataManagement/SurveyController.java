@@ -368,6 +368,7 @@ public class SurveyController {
         return new Response<>(currentFaults, false, "faults detected");
     }
 
+
     public Response<List<Integer>> detectSchoolFaultsMock(List<Pair<String, List<Integer>>> schoolsAndFaults, String schoolId){
         for (Pair<String, List<Integer>> schoolAndFaults: schoolsAndFaults)
         {
@@ -400,6 +401,36 @@ public class SurveyController {
         List<SurveyAnswers> answers = answerConverter(surveyDAO.getAnswers(surveyID));
 
         return buildSurveyStats(answers, surveyRes.getResult());
+    }
+
+    /**
+     *
+     * @param username
+     * @param surveyID
+     * @return
+     */
+    public Response<AnswersDTO> getAnswers(String username, String surveyID) {
+        FaultDetector faultDetector;
+        List<String> actualAnswers;
+        Response<Boolean> legalGet = UserController.getInstance().hasCreatedSurvey(username, surveyID);
+        List<Pair<List<String>, List<Integer>>> answersPair = new LinkedList<>();
+
+        if(!legalGet.getResult())
+            return new Response<>(null, true, username + " did not create survey " + surveyID);
+
+        faultDetector = new FaultDetector(rulesConverter(surveyDAO.getRules(surveyID)));
+        List<SurveyAnswers> answers = answerConverter(surveyDAO.getAnswers(surveyID));
+
+        for(SurveyAnswers ans: answers){
+            actualAnswers = new LinkedList<>();
+
+            for(Integer questionIndex: ans.getAnswers().keySet())
+                actualAnswers.add(ans.getAnswers().get(questionIndex).getSecond());
+
+            answersPair.add(new Pair<>(actualAnswers, faultDetector.detectFault(ans).getResult()));
+        }
+
+        return new Response<>(new AnswersDTO(answersPair), false, "Got answers successfully");
     }
 
     private Response<SurveyStatsDTO> buildSurveyStats(List<SurveyAnswers> answers, SurveyDTO survey) {

@@ -52,4 +52,6 @@ public interface SurveyService {
     Response<Boolean> submitSurvey(String username, String surveyID);
 
     Response<SurveyStatsDTO> getSurveyStats(String username, String surveyID);
+
+    Response<AnswersDTO> getAnswers(String username, String surveyID);
 }
