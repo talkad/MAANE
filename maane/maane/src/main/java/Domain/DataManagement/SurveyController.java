@@ -8,12 +8,13 @@ import Domain.DataManagement.FaultDetector.FaultDetector;
 import Domain.DataManagement.FaultDetector.Rules.Rule;
 import Domain.DataManagement.FaultDetector.Rules.RuleConverter;
 import Domain.UsersManagment.UserController;
+import Persistence.DbDtos.SchoolDBDTO;
 import Persistence.SurveyDAO;
 
+import javax.xml.crypto.Data;
 import java.security.SecureRandom;
-import java.util.Base64;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class SurveyController {
 
@@ -21,7 +22,6 @@ public class SurveyController {
     private final Base64.Encoder base64Encoder;
 
     private final SurveyDAO surveyDAO;
-
 
 
     private static class CreateSafeThreadSingleton {
@@ -175,6 +175,9 @@ public class SurveyController {
 
         if(symbol.length() == 0)
             return new Response<>(false, true, "School symbol cannot be empty string");
+
+        if(parseInteger(symbol) == -1)
+            return new Response<>(false, true, "School symbol must be a number");
 
         answer.setSymbol(symbol);
         List<String> answers = new LinkedList<>(answersDTO.getAnswers());
@@ -374,6 +377,89 @@ public class SurveyController {
             }
         }
         return new Response<>(null, false, "faults detected");
+    }
+
+    /**
+     * Get the survey stats (according to answers) for a given survey
+     * @param username belong to the request
+     * @param surveyID the id of the survey
+     * @return Stats of a survey
+     */
+    public Response<SurveyStatsDTO> getSurveyStats(String username, String surveyID) {
+        Response<SurveyDTO> surveyRes;
+        Response<Boolean> legalAdd = UserController.getInstance().hasCreatedSurvey(username, surveyID);
+
+        if(!legalAdd.getResult())
+            return new Response<>(null, true, username + " did not create survey " + surveyID);
+
+        surveyRes = surveyDAO.getSurvey(surveyID);
+
+        if(surveyRes.isFailure())
+            return new Response<>(null, true, surveyRes.getErrMsg());
+
+        List<SurveyAnswers> answers = answerConverter(surveyDAO.getAnswers(surveyID));
+
+        return buildSurveyStats(answers, surveyRes.getResult());
+    }
+
+    private Response<SurveyStatsDTO> buildSurveyStats(List<SurveyAnswers> answers, SurveyDTO survey) {
+        int numOfAnswers = answers.size();
+        SchoolDBDTO school;
+        Map<Integer, Pair<AnswerType, String>> answerMap;
+
+        List<String> symbols = new LinkedList<>();
+        List<String> schoolNames = new LinkedList<>();
+        Map<Integer, Integer> numericAverage = new ConcurrentHashMap<>();
+        Map<Integer, List<Integer>> multipleHistogram = new ConcurrentHashMap<>();
+
+        // traverse over answers
+        for(SurveyAnswers answer: answers){
+
+            symbols.add(answer.getSymbol());
+            school = DataController.getInstance().getSchool(answer.getSymbol());
+
+            schoolNames.add(school==null? "Do Not Exists": school.getName());
+
+            answerMap = answer.getAnswers();
+
+            for(Integer questionIndex: answerMap.keySet()){
+                switch (answerMap.get(questionIndex).getFirst()){
+                    case MULTIPLE_CHOICE:
+                        if(!multipleHistogram.containsKey(questionIndex))
+                            multipleHistogram.put(questionIndex, new LinkedList<>((Collections.nCopies(survey.getAnswers().get(questionIndex).size(), 0))));
+
+                        List<Integer> currentHist = multipleHistogram.get(questionIndex);
+                        int answerIndex = parseInteger(answerMap.get(questionIndex).getSecond());
+
+                        currentHist.set(answerIndex, currentHist.get(answerIndex) + 1);
+                        multipleHistogram.put(questionIndex, currentHist);
+
+                        break;
+                    case NUMERIC_ANSWER:
+                        if(!numericAverage.containsKey(questionIndex))
+                            numericAverage.put(questionIndex, 0);
+
+                        numericAverage.put(questionIndex, numericAverage.get(questionIndex) + parseInteger(answerMap.get(questionIndex).getSecond()) / numOfAnswers);
+
+                        break;
+                }
+            }
+
+        }
+
+        return new Response<>(new SurveyStatsDTO(symbols, schoolNames, numericAverage, multipleHistogram), false, "stats for survey: " + survey.getId());
+    }
+
+    private int parseInteger(String numStr){
+        int num = -1;
+        try {
+            num = Integer.parseInt(numStr);
+        }
+        catch(NumberFormatException e){
+            System.out.println(numStr + " is not a number");
+        }
+
+        return num;
     }
 
     private String createToken(){

@@ -100,6 +100,14 @@ public class SurveyController {
                 .body(service.getRules(surveyID));
     }
 
+    @GetMapping("/getSurveyStats/surveyID={surveyID}")
+    public ResponseEntity<Response<SurveyStatsDTO>> getSurveyStats(@RequestHeader(value = "Authorization") String token, @PathVariable("surveyID") String surveyID){
+        return ResponseEntity.ok()
+                .body(service.getSurveyStats(sessionHandler.getUsernameByToken(token).getResult(), surveyID));
+    }
+
+
+
 
 
 }

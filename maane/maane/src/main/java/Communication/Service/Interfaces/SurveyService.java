@@ -50,4 +50,6 @@ public interface SurveyService {
     Response<Boolean> removeQuestion(String username, String surveyID, Integer questionID);
 
     Response<Boolean> submitSurvey(String username, String surveyID);
+
+    Response<SurveyStatsDTO> getSurveyStats(String username, String surveyID);
 }

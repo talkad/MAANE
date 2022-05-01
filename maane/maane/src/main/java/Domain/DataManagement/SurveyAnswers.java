@@ -69,6 +69,7 @@ public class SurveyAnswers {
 
                 answers.put(indexer++, new Pair<>(type, answer));
                 return new Response<>(true, false, "OK");
+
             case OPEN_ANSWER:
                 answers.put(indexer++, new Pair<>(type, answer));
                 return new Response<>(true, false, "OK");
@@ -87,6 +88,10 @@ public class SurveyAnswers {
         {
             return false;
         }
+    }
+
+    public Map<Integer, Pair<AnswerType, String>> getAnswers() {
+        return answers;
     }
 
     public String getSymbol() {

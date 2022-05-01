@@ -81,7 +81,6 @@ public class DataController {
     }
 
 
-    //for tests purposes
     public SchoolDBDTO getSchool(String symbol){
         return schoolDAO.getSchool(symbol);
         //return this.schools.get(symbol);

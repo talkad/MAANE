@@ -153,12 +153,12 @@ public class SchoolQueries {
 
     public SchoolDBDTO getSchool (String symbol) {
         Connect.createConnection();
-        String sql = "SELECT * FROM \"School\" WHERE symbol = ?";
+        String sql = "SELECT * FROM \"Schools\" WHERE symbol = ?";
         PreparedStatement statement = null;
         SchoolDBDTO schoolDBDTO = null;
         try {
             statement = Connect.conn.prepareStatement(sql);
-            statement.setInt(1, Integer.getInteger(symbol));
+            statement.setInt(1, Integer.parseInt(symbol));
             ResultSet resultSchool = statement.executeQuery();
 
             if (resultSchool.next()) {
