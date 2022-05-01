@@ -78,6 +78,12 @@ public class SurveyDAO {
         return persistence.insertSurvey(surveyDTO);
     }
 
+    public Response<Boolean> removeSurvey(String surveyID) {
+
+        removeSurveyFromCache(surveyID);
+        return persistence.removeSurvey(surveyID);
+    }
+
     public Response<Boolean> addQuestion(QuestionDTO questionDTO, int question_index) {
         Response<Boolean> res;
 

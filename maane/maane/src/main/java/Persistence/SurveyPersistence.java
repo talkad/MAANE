@@ -64,6 +64,37 @@ public class SurveyPersistence {
                 new Response<>(false, true, "bad Db writing");
     }
 
+    public Response<Boolean> removeSurvey(String surveyID) {
+        Connect.createConnection();
+        String sql = "BEGIN;\n";
+        sql += "DELETE FROM  \"Surveys\" WHERE id=?;\n";
+        sql += "DELETE FROM  \"Questions\" WHERE survey_id=?;\n";
+        sql += "DELETE FROM  \"MultiChoices\" WHERE survey_id=?;\n";
+        sql += "COMMIT;\n";
+
+        PreparedStatement preparedStatement;
+        try {
+            preparedStatement = Connect.conn.prepareStatement(sql);
+
+            // remove survey
+            preparedStatement.setString(1, surveyID);
+            preparedStatement.setString(2, surveyID);
+            preparedStatement.setString(3, surveyID);
+
+            preparedStatement.executeUpdate();
+            Connect.closeConnection();
+
+            log.info("DB: removed survey successfully");
+
+        } catch (SQLException e) {
+            log.error("DB: failed to remove survey \n" + e.getMessage());
+
+            return new Response<>(false, true, "survey deletion failed");
+        }
+
+        return new Response<>(true, false, "survey removed successfully");
+    }
+
     public void insertQuestions (String surveyId, List<String> questions) {
         String sql = "INSERT INTO \"Questions\" (survey_id, index, question) VALUES (?, ?, ?)";
         PreparedStatement preparedStatement = null;

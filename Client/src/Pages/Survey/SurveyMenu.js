@@ -83,6 +83,19 @@ export default function SurveyMenu(){
         return toReturn;
     }
 
+    const publicSurveyCallback = (data) => {
+        // todo: implement
+    }
+
+    /**
+     * handler for publishing a survey (sending it too all the registered coordinators to fill)
+     * @param surveyId the id of the survey to publish
+     */
+    const handlePublishSurvey = (surveyId) => {
+
+        new Connection().publishSurvey(surveyId, publicSurveyCallback)
+    }
+
     return (
         <Space.Fill>
             <Space.Top size="20%">
@@ -116,6 +129,7 @@ export default function SurveyMenu(){
                                             {/*button to go to the survey represented by the card this button is in*/}
                                             <Button color="secondary" size="medium" onClick={() => navigate(`../getSurvey?surveyID=${y.id}`, {replace: true})}>מעבר לסקר</Button>
                                             <Button color={'secondary'} size={'medium'} onClick={() => navigate(`../rules?surveyID=${y.id}`, {replace: false})}>חוקים</Button>
+                                            <Button color={'secondary'} size={'medium'} onClick={() => handlePublishSurvey(y.id)}>פרסום סקר</Button>
                                         </CardActions>
                                     </CardActionArea>
                                 </Card>

@@ -48,6 +48,9 @@ public class SurveyController {
         Response<String> permissionRes;
         Response<Survey> surveyRes;
 
+        if(surveyDTO.getId().length() > 0 && !surveyDTO.getId().equals("-1")) // todo: remove second cond
+            return updateSurvey(username, surveyDTO);
+
         String indexer = createToken();
 
         surveyDTO.setId(indexer);
@@ -69,6 +72,23 @@ public class SurveyController {
         surveyDAO.insertSurvey(surveyDTO);
 
         return new Response<>(indexer, false, "new survey created successfully");
+    }
+
+    private Response<String> updateSurvey(String username, SurveyDTO surveyDTO) {
+        Response<Boolean> removalRes;
+        Response<Boolean> legalAdd = UserController.getInstance().hasCreatedSurvey(username, surveyDTO.getId());
+
+        if(!legalAdd.getResult())
+            return new Response<>("", true, username + " does not create survey " + surveyDTO.getId());
+
+        removalRes = surveyDAO.removeSurvey(surveyDTO.getId());
+
+        if(removalRes.isFailure())
+            return new Response<>("", true, "survey removal failed");
+
+        surveyDAO.insertSurvey(surveyDTO);
+
+        return new Response<>(surveyDTO.getId(), false, "updated survey successfully");
     }
 
     public Response<Boolean> submitSurvey(String username, String surveyID){

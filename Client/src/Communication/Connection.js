@@ -480,6 +480,19 @@ class Connection{
             callback);
     }
 
+    /**
+     * sends a POST request to publish a survey
+     * @param surveyId the id of the survey to publish
+     * @param callback
+     */
+    publishSurvey(surveyId, callback){
+        this.sendPOST('/survey/submitSurvey',
+            {
+                surveyID: surveyId
+            },
+            callback)
+    }
+
     // GOALS
 
     /**
