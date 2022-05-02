@@ -79,6 +79,7 @@ export default function SurveyQuestionBuilder(props) {
                             color="secondary"
                             margin="normal"
                             variant="filled"
+                            disabled={props.id === -1}
                             required
                             value={props.question}
                             label={question_label_string}
