@@ -275,9 +275,11 @@ public class SurveyPersistence {
                 surveyDTO.setTitle(resultSurvey.getString("title"));
                 surveyDTO.setDescription(resultSurvey.getString("description"));
                 List<String> questions = getSurveyQuestions(id);
-                List<List<String>> answers = getSurveyAnswers(id, questions);
+                List<List<String>> answers = getSurveyAnswers(id);
+                List<AnswerType> types = getSurveyTypes(id);
                 surveyDTO.setQuestions(questions);
                 surveyDTO.setAnswers(answers);
+                surveyDTO.setTypes(types);
 
                 Connect.closeConnection();
             } else {
@@ -332,7 +334,7 @@ public class SurveyPersistence {
         return questions;
     }
 
-    private List<List<String>> getSurveyAnswers (String survey_id, List<String> questions) throws SQLException {
+    private List<List<String>> getSurveyAnswers (String survey_id) throws SQLException {
         String query = "SELECT * FROM \"MultiChoices\" WHERE survey_id = ?";
         PreparedStatement statement = Connect.conn.prepareStatement(query);
         statement.setString(1, survey_id);
@@ -345,6 +347,20 @@ public class SurveyPersistence {
             String [] optionsArr = answer.split(",");
             List<String> optionsList = new LinkedList<>(Arrays.asList(optionsArr));
             answers.add(optionsList);
+        }
+        return answers;
+    }
+
+    private List<AnswerType> getSurveyTypes (String survey_id) throws SQLException {
+        String query = "SELECT * FROM \"MultiChoices\" WHERE survey_id = ?";
+        PreparedStatement statement = Connect.conn.prepareStatement(query);
+        statement.setString(1, survey_id);
+        ResultSet result = statement.executeQuery();
+        List<AnswerType> answers = new LinkedList<>();
+
+        while (result.next()) {
+            String answer = result.getString("answer_type");
+            answers.add(AnswerType.valueOf(answer));
         }
         return answers;
     }

@@ -79,11 +79,11 @@ function App(){
     // TODO: the greetings currently doesn't work well. but perhaps once TAL implements what i asked then it will (return the username with the response for the request)
     const greetings_string = "שלום " + name;
 
-    // useEffect(() => {
-    //     window.addEventListener('beforeunload', () => {
-    //         handleLogout(); // TODO: refreshing causes it to trigger too
-    //     });
-    // }, [])
+    useEffect(() => {
+        if(type === null){
+            setHideBars(true);
+        }
+    }, [])
 
     /**
      * a callback to call when the result of the logout request got back
@@ -299,7 +299,7 @@ function App(){
                                 <Route path="registerUsers" element={<RegisterUsers type={type}/>}/>}
 
                             {(type === "SUPERVISOR" || type === "SYSTEM_MANAGER") &&
-                                <Route path="goalsManagement" element={<GoalsManagement/>}/>}}}
+                                <Route path="goalsManagement" element={<GoalsManagement/>}/>}
 
                             {(type === "SUPERVISOR" || type === "SYSTEM_MANAGER") &&
                                 <Route path="home" element={<UsersManagement userType={type} setAuthAvailability={setAuthAvailability} setAuthCallBack={setAuthCallback} setAuthCalleePage={setAuthCalleePage} setAuthGoToPage={setAuthGoToPage} setHideBars={setHideBars}/>}/>}
@@ -314,12 +314,19 @@ function App(){
                         </Route>
 
                         {type === "SUPERVISOR" &&
-                            <Route path="survey">
-                                <Route path="menu" element={<SurveyMenu setAuthAvailability={setAuthAvailability} setAuthCallBack={setAuthCallback} setAuthCalleePage={setAuthCalleePage} setAuthGoToPage={setAuthGoToPage} setHideBars={setHideBars}/>}/>
-                                <Route path="createSurvey" element={<SurveyBuilder/>}/>
-                                <Route path="getSurvey" element={<Survey/>}/>
-                                <Route path="rules" element={<SurveyRulesEditor/>}/>
-                            </Route>}
+                                <Route path="survey">
+                                    <Route path="menu" element={<SurveyMenu setAuthAvailability={setAuthAvailability} setAuthCallBack={setAuthCallback} setAuthCalleePage={setAuthCalleePage} setAuthGoToPage={setAuthGoToPage} setHideBars={setHideBars}/>}/>
+                                    <Route path="createSurvey" element={<SurveyBuilder/>}/>
+                                    <Route path="rules" element={<SurveyRulesEditor/>}/>
+                                </Route>   
+                            }
+
+                        
+                        <Route path="survey">
+                            <Route path="getSurvey" element={<Survey setHideBars={setHideBars}/>}/>
+
+                            
+                        </Route>
 
                         <Route
                             path="*"
