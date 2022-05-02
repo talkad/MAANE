@@ -48,7 +48,7 @@ public class SurveyController {
         Response<String> permissionRes;
         Response<Survey> surveyRes;
 
-        if(surveyDTO.getId().length() > 0 && !surveyDTO.getId().equals("-1")) // todo: remove second cond
+        if(surveyDTO.getId() != null && surveyDTO.getId().length() > 0)
             return updateSurvey(username, surveyDTO);
 
         String indexer = createToken();
@@ -328,7 +328,7 @@ public class SurveyController {
             survey = surveyDAO.getSurvey(surveyID);
 
             if(!survey.isFailure())
-                surveyInfo.add(new SurveyDetailsDTO(survey.getResult().getTitle(), survey.getResult().getDescription(), surveyID));
+                surveyInfo.add(new SurveyDetailsDTO(survey.getResult().isPublished(), survey.getResult().getTitle(), survey.getResult().getDescription(), surveyID));
             else
                 errMsg.append(surveyID).append("\n");
         }

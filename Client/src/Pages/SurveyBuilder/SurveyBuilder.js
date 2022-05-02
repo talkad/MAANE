@@ -10,7 +10,7 @@ import NotificationSnackbar from "../../CommonComponents/NotificationSnackbar";
 import {useNavigate} from "react-router-dom";
 
 export default function SurveyBuilder(){
-    const [surveyID, setSurveyID] = useState("-1")
+    const [surveyID, setSurveyID] = useState("")
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [questions, setQuestions] = useState([{id: -1, question: 'סמל בית ספר', type: 'NUMERIC_ANSWER', answers: []}]);
@@ -86,9 +86,16 @@ export default function SurveyBuilder(){
 
             const zippedQuestionsList = zip([survey.questions, survey.types, survey.answers]);
 
-            let questionIndexer = 0;
+            let questionIndexer = -1;
+            let answerIndexer = 1000;
+            const answerFunc = (ele) => {
+                return {id: answerIndexer++, value: ele}
+            };
+
             zippedQuestionsList.forEach(([question, type, answers]) => setQuestions(questions =>
-                [...questions, {id: questionIndexer++, question: question, type: type, choices: answers, answer: '',}]));
+                [...questions, {id: questionIndexer++, question: question, type: type, answers: answers.map(answerFunc)}]));
+
+            setQuestionID(questionIndexer);
         }
     }
 
@@ -181,6 +188,8 @@ export default function SurveyBuilder(){
      * sends the structure of the built survey to the sever
      */
     const submit_survey = () => {
+        console.log('hello there')
+        console.log(questions)
 
         // checking for an empty required field
         if(title.trim() === '' || description.trim() === '' ||
@@ -188,16 +197,20 @@ export default function SurveyBuilder(){
                 curr.question.trim() === '' ||
                 curr.answers.reduce((prev, curr) => prev || curr.value.trim() === '', false), false)){
 
+            console.log('general')
+
             setShowError(true);
             setOpenSnackbar(true);
             setErrorMessage("נא למלא את כל השדות");
             setErrorSeverity("error");
         }
         else{
+            console.log('kenobi')
             setShowError(false);
 
             new Connection().createSurvey(surveyID, title, description, questions.map((x) => x["question"]),
                 questions.map((x) => x["answers"].map((y) => y.value)), questions.map((x) => x["type"]), submitSurveyCallback);
+            console.log("you're a bold one")
         }
     }
 

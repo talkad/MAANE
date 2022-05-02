@@ -147,9 +147,9 @@ public class UserController {
     }
 
     @PostMapping(value = "/authenticatePassword")
-    public ResponseEntity<Response<Boolean>> verifyUser(@RequestHeader(value = "Authorization") String token, @RequestBody String  password){
+    public ResponseEntity<Response<Boolean>> verifyUser(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, String>  body){
         return ResponseEntity.ok()
-                .body(service.verifyUser(sessionHandler.getUsernameByToken(token).getResult(), password));
+                .body(service.verifyUser(sessionHandler.getUsernameByToken(token).getResult(), body.get("password")));
     }
 
 ///*    @GetMapping("/getAppointedUsers/username={currUser}")

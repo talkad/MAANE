@@ -57,7 +57,7 @@ export default function PasswordAuthentication(props){
         event.preventDefault();
         const data = new FormData(event.currentTarget);
 
-        if (password){
+        if (password.trim() === ''){
             setError(true);
             setAlertMessage('נא להכניס סיסמה');
         }
@@ -84,6 +84,7 @@ export default function PasswordAuthentication(props){
                         <TextField
                             id={"auth_password"}
                             value={password}
+                            onChange={(event) => setPassword(event.target.value)}
                             sx={{paddingBottom: 1, width: "50%"}}
                             label={password_string}
                             variant="outlined"

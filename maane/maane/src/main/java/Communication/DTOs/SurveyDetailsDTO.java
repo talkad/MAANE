@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class SurveyDetailsDTO {
 
+        private boolean isPublished;
         private String title;
         private String description;
         private String id;

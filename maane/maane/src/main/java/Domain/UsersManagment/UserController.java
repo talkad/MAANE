@@ -769,6 +769,7 @@ public class UserController {
 
     public Response<Boolean> verifyUser(String currUser, String password){
          if(connectedUsers.containsKey(currUser)) {
+
              boolean verify = passwordEncoder.matches(password, userDAO.getPassword(currUser).getResult());
              return new Response<>(verify, !verify, "");
          }

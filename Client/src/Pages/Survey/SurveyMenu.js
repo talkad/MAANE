@@ -117,7 +117,9 @@ export default function SurveyMenu(props){
     const arrangeSurveys = (data) => {
         console.log(data);
         if (!data.failure){
-            data.result.forEach(survey => setData(data => [...data, {id: survey.id, title: survey.title, description: survey.description}]));
+            setData([]);
+            data.result.forEach(survey => setData(data =>
+                [...data, {id: survey.id, title: survey.title, description: survey.description, isPublished: survey.published}]));
         }
     }
 
@@ -126,7 +128,7 @@ export default function SurveyMenu(props){
     /**
      * returns a list of lists where in each sub-list there is at most amountInList elements
      * @param list list of elements
-     * @param amountInList amout for each sublist
+     * @param amountInList amount for each sublist
      * @returns {*[]} list of sub-lists of the param list
      */
     const listOfLists = (list, amountInList) => {
@@ -171,7 +173,7 @@ export default function SurveyMenu(props){
     const handlePublishSurvey = (surveyID) => {
         setOpenPublishSurveyDialog(false);
 
-        props.setAuthCallBack(() => () => alert(surveyID));
+        props.setAuthCallBack(() => () => new Connection().publishSurvey(surveyID, publicSurveyCallback));
         props.setAuthAvailability(true);
         props.setAuthCalleePage('../../survey/menu');
         props.setAuthGoToPage('../../survey/menu');
@@ -210,11 +212,10 @@ export default function SurveyMenu(props){
                                         </CardContent>
                                         <CardActions>
                                             {/*button to go to the survey represented by the card this button is in*/}
-                                            <Button color={'secondary'} size={"medium"} onClick={() => navigate(`../createSurvey?surveyID=${y.id}`, {replace: true})}>עריכת סקר</Button>
-                                            <Button color="secondary" size="medium" onClick={() => navigate(`../getSurvey?surveyID=${y.id}`, {replace: true})}>מעבר לסקר</Button>
-
-                                            <Button color={'secondary'} size={'medium'} onClick={() => navigate(`../rules?surveyID=${y.id}`, {replace: false})}>חוקים</Button>
-                                            <Button color={'secondary'} size={'medium'} onClick={() => handlePublishSurvey(y.id)}>פרסום סקר</Button>
+                                            <Button color={'secondary'} size={"medium"} disabled={y.isPublished} onClick={() => navigate(`../createSurvey?surveyID=${y.id}`, {replace: true})}>עריכת סקר</Button>
+                                            <Button color={'secondary'} size={'medium'} disabled={y.isPublished} onClick={() => navigate(`../rules?surveyID=${y.id}`, {replace: false})}>עריכת חוקים</Button>
+                                            <Button color="secondary" size="medium" onClick={() => navigate(`../getSurvey?surveyID=${y.id}`, {replace: true})}>צפייה בתשובות</Button>
+                                            {!y.isPublished && <Button color={'secondary'} size={'medium'} onClick={() => handlePublishSurvey(y.id)}>פרסום סקר</Button>}
 
                                         </CardActions>
                                     </CardActionArea>
