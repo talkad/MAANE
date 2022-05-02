@@ -4,6 +4,8 @@ import Connection from "../../Communication/Connection";
 import {Button} from "@mui/material";
 import SurveyRule from "./SurveyRule";
 
+import gematriya from "gematriya";
+
 const offline_data_rules = [{id: 1, goalSelection: 1, children: [{id: 4, questionSelection: '',
         children: [{id: 5, questionSelection: '', children: [], constraint: {type: '', value: ''}}], constraint: {type: '', value: ''}}]},
     {id: 2, goalSelection: 2, children: []}];
@@ -13,16 +15,17 @@ const offline_questions_data = [{id: 0, question: "sup", type: "MULTIPLE_CHOICE"
     {id: 2, question: 'how are you', type: 'MULTIPLE_CHOICE', answers: ['good', 'fine', 'bad']}]
 // NUMERIC_ANSWER, MULTIPLE_CHOICE
 
-//const color_stack = ['#ffffff', '#d89af5', '#93b6fa']; // todo: add more colors
 
-const color_stack = ['#ffffff', '#E6B0AA', '#D7BDE2', '#A9CCE3', '#A3E4D7', '#A9DFBF', '#F9E79F', '#F5CBA7']; // todo: add more colors
+// TODO: add the option to get already existing rules and present them
+
+const color_stack = ['#ffffff', '#E6B0AA', '#D7BDE2', '#A9CCE3', '#A3E4D7', '#A9DFBF', '#F9E79F', '#F5CBA7'];
 
 export default function SurveyRulesEditor(){
 
     const [id, setId] = useState('');
 
-    const [rules, setRules] = useState(offline_data_rules)
-    const [ruleID, setRuleID] = useState(10);
+    const [rules, setRules] = useState([]);
+    const [ruleID, setRuleID] = useState(0);
 
     const [goals, setGoals] = useState(offline_goals_data);
     const [questions, setQuestions] = useState(offline_questions_data);
@@ -35,7 +38,12 @@ export default function SurveyRulesEditor(){
         var surveyID = url.searchParams.get("surveyID");
         setId(surveyID)
 
-        // TODO: send for the data
+        new Connection().getSurvey(surveyID, arrangeQuestionData) // getting the questions
+
+        // calculating the current hewbrew year
+
+        let currentYear = new Date().getFullYear();
+        new Connection().getGoals(gematriya(currentYear + 3760, {punctuate: true, limit: 3}), arrangeGoalsData) // getting the goals
 
     }, []);
 
@@ -44,7 +52,12 @@ export default function SurveyRulesEditor(){
      * @param data the data from the server
      */
     const arrangeGoalsData = (data) => {
+        if(!data.failure){
 
+            for (const row of data.result){
+                setGoals([...goals, {value: row.goalId, description: row.title}]);
+            }
+        }
     }
 
     /**
@@ -52,7 +65,21 @@ export default function SurveyRulesEditor(){
      * @param data the data from the server
      */
     const arrangeQuestionData = (data) => {
+        if(!data.failure) {
+            function zip(arrays) {
+                return arrays[0].map(function(_,i){
+                    return arrays.map(function(array){return array[i]})
+                });
+            }
 
+            const survey = data.result;
+
+            const zippedQuestionsList = zip([survey.questions, survey.types, survey.answers]);
+
+            let questionIndexer = 0;
+            zippedQuestionsList.forEach(([question, type, answers]) => setQuestions(questions =>
+                [...questions, {id: questionIndexer++, question: question, type: type, answers: answers}]));
+        }
     }
 
     /**
@@ -326,10 +353,44 @@ export default function SurveyRulesEditor(){
         setRules(rules.map(find_and_edit))
     }
 
+    const submitRulesCallback = (data) => {
+        // TODO: implement
+    }
+
+    const offline_data_rules = [{id: 1, goalSelection: 1, children: [{id: 4, questionSelection: '',
+            children: [{id: 5, questionSelection: '', children: [], constraint: {type: '', value: ''}}], constraint: {type: '', value: ''}}]},
+        {id: 2, goalSelection: 2, children: []}];
+
     const submitRules = () => {
         // TODO: checking everything is correct
 
-        // TODO: send
+
+        const generateRules = function(rule) {
+
+            const generateSubRules = function(subRule){
+                if(subRule.children.length === 0){
+                    if(subRule.constraint.type === 'MULTIPLE_CHOICE'){
+                        return {subRules: [], type: 'MULTIPLE_CHOICE',
+                            comparison: '', questionID: subRule.questionSelection, answers: subRule.constraint.value}
+                    }
+
+                    if(['greaterThan', 'lessThan', 'equal'].includes(subRule.constraint.type)){
+                        return {subRules: [], type: 'NUMERIC_ANSWER',
+                            comparison: subRule.constraint.type, questionID: subRule.questionSelection, answers: [subRule.constraint.value]}
+                    }
+                }
+
+
+                return {subRules: subRule.children.map(child => generateSubRules(child)), type: subRule.questionSelection,
+                comparison: '', questionID: '', answers: ''}
+            }
+
+            return {goalID: rule.goalSelection, ruleDTO: generateSubRules(rule.children)}
+
+        }
+
+
+        new Connection().submitSurveyRules(id, rules.map(rule => generateRules), submitRulesCallback)
     }
 
     return (
