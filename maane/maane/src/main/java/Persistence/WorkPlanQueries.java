@@ -62,7 +62,7 @@ public class WorkPlanQueries {
         for (ActivityDTO activity : activities){
             output.append(activity.getSchoolId()).append(" ^ ").append(activity.getTitle()).append(" | ");
         }
-        return output.toString();
+        return output.substring(0, output.length()-3);
     }
 
 
