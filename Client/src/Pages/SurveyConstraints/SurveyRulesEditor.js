@@ -23,6 +23,7 @@ const color_stack = ['#ffffff', '#E6B0AA', '#D7BDE2', '#A9CCE3', '#A3E4D7', '#A9
 export default function SurveyRulesEditor(){
 
     const [id, setId] = useState('');
+    const [surveyTitle, setSurveyTitle] = useState('');
 
     const [rules, setRules] = useState([]);
     const [ruleID, setRuleID] = useState(0);
@@ -73,6 +74,8 @@ export default function SurveyRulesEditor(){
             }
 
             const survey = data.result;
+
+            setSurveyTitle(survey.title)
 
             const zippedQuestionsList = zip([survey.questions, survey.types, survey.answers]);
 
@@ -397,7 +400,7 @@ export default function SurveyRulesEditor(){
         <Space.Fill scrollable>
             <div className="Survey">
                 {/*title*/}
-                <h1>rules {id}</h1>
+                <h1>חוקים עבור {surveyTitle}</h1>
 
                 {/*the rules*/}
                 {rules.map((rule) =>
