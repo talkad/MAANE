@@ -37,8 +37,8 @@ public class WorkPlanQueries {
 
                     preparedStatement.setString(1, username);
                     preparedStatement.setString(2, year);
-                    preparedStatement.setString(2, date);
-                    preparedStatement.setString(2, activities);
+                    preparedStatement.setString(3, date);
+                    preparedStatement.setString(4, activities);
                 }
             }
 
