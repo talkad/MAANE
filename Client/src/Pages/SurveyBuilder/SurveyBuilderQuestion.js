@@ -88,7 +88,7 @@ export default function SurveyQuestionBuilder(props) {
                             onChange={handleQuestionChange}
                         />
                     </Grid>
-                    {props.id !== -1 && <Grid item xs={2}>
+                    {props.id !== -1 && <Grid item xs={2} sx={{margin: "1%"}}>
                         {/*selection of which type of question the question is*/}
                         <FormControl  sx={{ m: 1, minWidth: 80 }}>
                             <Select
@@ -112,7 +112,7 @@ export default function SurveyQuestionBuilder(props) {
                     </Grid>}
                     {/*element for the case where the question is multiple-choice*/}
                     {props.type === 'MULTIPLE_CHOICE' &&
-                        <Grid item xs={12}>
+                        <Grid item xs={12} sx={{margin: "1%"}}>
                                 <RadioGroup column>
                                         {/*viewing the options the user added*/}
                                         {props.answers.map((element) =>
@@ -147,7 +147,7 @@ export default function SurveyQuestionBuilder(props) {
                     }
                     {/*element for the case where the question is open or open-numeric*/}
                     {(props.type === 'OPEN_ANSWER' || props.type === 'NUMERIC_ANSWER')  &&
-                    <Grid sx={{alignItems: 'center'}} item xs={12}>
+                    <Grid sx={{alignItems: 'center', margin: "1%"}} item xs={12}>
                         <TextField
                             color="secondary"
                             sx={{width: "90%"}}

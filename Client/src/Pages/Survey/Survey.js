@@ -61,9 +61,6 @@ const mock = [
 
 const questionsPerPage = 5;
 
-// TODO: make is so the supervisor who created it can't submit
-// TODO: if the supervisor who craeted the survey is viewing it then show her its current stats
-
 export default function Survey(){
 
     const [surveyTitle, setSurveyTitle] = useState('');
