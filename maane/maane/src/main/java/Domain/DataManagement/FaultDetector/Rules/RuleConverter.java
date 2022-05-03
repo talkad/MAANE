@@ -48,13 +48,14 @@ public class RuleConverter {
         List<Rule> rules = new LinkedList<>();
         Rule currentRule;
 
-        for(RuleDTO dto: rule.getSubRules())
-        {
-            currentRule = convertRule(dto);
+        if(rule.getSubRules() != null) {
+            for (RuleDTO dto : rule.getSubRules()) {
+                currentRule = convertRule(dto);
 
-            if(currentRule == null)
-                return null;
-            rules.add(currentRule);
+                if (currentRule == null)
+                    return null;
+                rules.add(currentRule);
+            }
         }
 
         return new AndRule(rules);
@@ -64,13 +65,14 @@ public class RuleConverter {
         List<Rule> rules = new LinkedList<>();
         Rule currentRule;
 
-        for(RuleDTO dto: rule.getSubRules())
-        {
-            currentRule = convertRule(dto);
+        if(rule.getSubRules() != null) {
+            for (RuleDTO dto : rule.getSubRules()) {
+                currentRule = convertRule(dto);
 
-            if(currentRule == null)
-                return null;
-            rules.add(currentRule);
+                if (currentRule == null)
+                    return null;
+                rules.add(currentRule);
+            }
         }
 
 

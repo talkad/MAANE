@@ -14,11 +14,10 @@ import {
 import './SurveyRule.css'
 import {useEffect, useState} from "react";
 import FormControl from "@mui/material/FormControl";
+import Typography from "@mui/material/Typography";
 
 import AddIcon from '@mui/icons-material/Add';
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
-
-// TODO: make this page look better
 
 export default function SurveyRule(props){
 
@@ -217,9 +216,10 @@ export default function SurveyRule(props){
                                     label={inequality_select_label_string}
                                     onChange={handleInequalityChange}
                                 >
-                                    <MenuItem value={'greaterThan'}> {">"} </MenuItem>
-                                    <MenuItem value={'lessThan'}> {"<"} </MenuItem>
-                                    <MenuItem value={'equal'}> {"="} </MenuItem>
+                                    {/* todo: the icon flips when chosen. fix this */}
+                                    <MenuItem value={'LESS_THAN'}> <Typography>{"<"}</Typography> </MenuItem>
+                                    <MenuItem value={'GREATER_THAN'}> {">"} </MenuItem>
+                                    <MenuItem value={'EQUAL'}> {"="} </MenuItem>
                                 </Select>
                             </FormControl>
 

@@ -15,8 +15,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static Domain.DataManagement.AnswerState.AnswerType.*;
-import static Domain.DataManagement.FaultDetector.Rules.Comparison.GREATER_THEN;
-import static Domain.DataManagement.FaultDetector.Rules.Comparison.LESS_THEN;
+import static Domain.DataManagement.FaultDetector.Rules.Comparison.GREATER_THAN;
+import static Domain.DataManagement.FaultDetector.Rules.Comparison.LESS_THAN;
 
 
 public class FaultDetectorTest {
@@ -65,9 +65,9 @@ public class FaultDetectorTest {
     @Test
     public void baseNumericRule(){
         answers.addAnswers(answersDTO1);
-        detector.addRule(new NumericBaseRule(0, GREATER_THEN, 28), 0);
-        detector.addRule(new NumericBaseRule(0, GREATER_THEN, 32), 1);
-        detector.addRule(new NumericBaseRule(0, LESS_THEN, 32), 2);
+        detector.addRule(new NumericBaseRule(0, GREATER_THAN, 28), 0);
+        detector.addRule(new NumericBaseRule(0, GREATER_THAN, 32), 1);
+        detector.addRule(new NumericBaseRule(0, LESS_THAN, 32), 2);
 
         Assert.assertEquals(2, detector.detectFault(answers).getResult().size());
     }
@@ -90,10 +90,10 @@ public class FaultDetectorTest {
         answers.addAnswers(answersDTO1);
 
         rules1.add(new MultipleChoiceBaseRule(1, List.of(1)));
-        rules1.add(new NumericBaseRule(0, GREATER_THEN, 28));
+        rules1.add(new NumericBaseRule(0, GREATER_THAN, 28));
 
         rules2.add(new MultipleChoiceBaseRule(1, List.of(1)));
-        rules2.add(new NumericBaseRule(0, GREATER_THEN, 32));
+        rules2.add(new NumericBaseRule(0, GREATER_THAN, 32));
 
         detector.addRule(new AndRule(rules1),  0);
         detector.addRule(new AndRule(rules2),  0);
@@ -108,10 +108,10 @@ public class FaultDetectorTest {
         answers.addAnswers(answersDTO1);
 
         rules1.add(new MultipleChoiceBaseRule(1, List.of(2)));
-        rules1.add(new NumericBaseRule(0, LESS_THEN, 28));
+        rules1.add(new NumericBaseRule(0, LESS_THAN, 28));
 
         rules2.add(new MultipleChoiceBaseRule(1, List.of(1)));
-        rules2.add(new NumericBaseRule(0, GREATER_THEN, 32));
+        rules2.add(new NumericBaseRule(0, GREATER_THAN, 32));
 
         detector.addRule(new OrRule(rules1),  0);
         detector.addRule(new OrRule(rules2),  0);
@@ -122,8 +122,8 @@ public class FaultDetectorTest {
     @Test
     public void illegalSurveyWithRulesImply(){
         answers.addAnswers(answersDTO1);
-        detector.addRule(new ImplyRule(new NumericBaseRule(0, GREATER_THEN, 28), new MultipleChoiceBaseRule(1, List.of(1))), 0);
-        detector.addRule(new ImplyRule(new NumericBaseRule(0, GREATER_THEN, 28), new MultipleChoiceBaseRule(1, List.of(2))), 1);
+        detector.addRule(new ImplyRule(new NumericBaseRule(0, GREATER_THAN, 28), new MultipleChoiceBaseRule(1, List.of(1))), 0);
+        detector.addRule(new ImplyRule(new NumericBaseRule(0, GREATER_THAN, 28), new MultipleChoiceBaseRule(1, List.of(2))), 1);
 
         Assert.assertEquals(1, detector.detectFault(answers).getResult().size());
     }
@@ -131,8 +131,8 @@ public class FaultDetectorTest {
     @Test
     public void illegalSurveyWithRulesIff(){
         answers.addAnswers(answersDTO1);
-        detector.addRule(new IffRule(new NumericBaseRule(0, GREATER_THEN, 28), new MultipleChoiceBaseRule(1, List.of(1))), 0);
-        detector.addRule(new IffRule(new NumericBaseRule(0, GREATER_THEN, 28), new MultipleChoiceBaseRule(1, List.of(2))), 1);
+        detector.addRule(new IffRule(new NumericBaseRule(0, GREATER_THAN, 28), new MultipleChoiceBaseRule(1, List.of(1))), 0);
+        detector.addRule(new IffRule(new NumericBaseRule(0, GREATER_THAN, 28), new MultipleChoiceBaseRule(1, List.of(2))), 1);
 
         Assert.assertEquals(1, detector.detectFault(answers).getResult().size());
     }
@@ -140,8 +140,8 @@ public class FaultDetectorTest {
     @Test
     public void illegalSurveyWithRulesComplex(){
         answers.addAnswers(answersDTO1);
-        detector.addRule(new ImplyRule(new NumericBaseRule(0, GREATER_THEN, 28), new MultipleChoiceBaseRule(1, List.of(1))), 0);
-        detector.addRule(new IffRule(new NumericBaseRule(0, GREATER_THEN, 28), new MultipleChoiceBaseRule(1, List.of(1))), 0);
+        detector.addRule(new ImplyRule(new NumericBaseRule(0, GREATER_THAN, 28), new MultipleChoiceBaseRule(1, List.of(1))), 0);
+        detector.addRule(new IffRule(new NumericBaseRule(0, GREATER_THAN, 28), new MultipleChoiceBaseRule(1, List.of(1))), 0);
 
         Assert.assertEquals(2, detector.detectFault(answers).getResult().size());
 

@@ -137,7 +137,7 @@ public class SurveyIntegrationTests {
         userController.login("Dvorit");
 
         Response<String> res2 = surveyController.createSurvey("Dvorit", surveyDTO);
-        Response<Boolean> res = surveyController.addRule("Dvorit", res2.getResult(), new NumericBaseRule(0, Comparison.GREATER_THEN, 28), 0);
+        Response<Boolean> res = surveyController.addRule("Dvorit", res2.getResult(), new NumericBaseRule(0, Comparison.GREATER_THAN, 28), 0);
 
         Assert.assertFalse(res.isFailure());
     }
@@ -152,7 +152,7 @@ public class SurveyIntegrationTests {
         userController.login("Dvorit");
 
         Response<String> res2 = surveyController.createSurvey("Dvorit", surveyDTO);
-        Response<Boolean> res = surveyController.addRule("Levana", res2.getResult(), new NumericBaseRule(0, Comparison.GREATER_THEN, 28), 0);
+        Response<Boolean> res = surveyController.addRule("Levana", res2.getResult(), new NumericBaseRule(0, Comparison.GREATER_THAN, 28), 0);
 
         Assert.assertTrue(res.isFailure());
     }
@@ -165,7 +165,7 @@ public class SurveyIntegrationTests {
         userController.login("Dvorit");
 
         Response<String> res2 = surveyController.createSurvey("Dvorit", surveyDTO);
-        surveyController.addRule("Dvorit", res2.getResult(), new NumericBaseRule(0, Comparison.GREATER_THEN, 28), 0);
+        surveyController.addRule("Dvorit", res2.getResult(), new NumericBaseRule(0, Comparison.GREATER_THAN, 28), 0);
 
         when(surveyDAO.removeRule(0)).thenReturn(new Response<>(true, false, "OK"));
 
@@ -200,7 +200,7 @@ public class SurveyIntegrationTests {
         userController.login("Dvorit");
 
         Response<String> res2 = surveyController.createSurvey("Dvorit", surveyDTO);
-        surveyController.addRule("Dvorit", res2.getResult(), new NumericBaseRule(0, Comparison.GREATER_THEN, 28), 0);
+        surveyController.addRule("Dvorit", res2.getResult(), new NumericBaseRule(0, Comparison.GREATER_THAN, 28), 0);
 
         when(surveyDAO.removeRule(0)).thenReturn(new Response<>(false, true, "fail"));
 

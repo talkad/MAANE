@@ -69,6 +69,7 @@ public class SurveyServiceImpl implements SurveyService {
         if(!res.isFailure()) {
 
             for (RuleRequestDTO ruleRequestDTO : rulesDTO) {
+                //System.out.println(rulesDTO);
                 Rule rule = RuleConverter.getInstance().convertRule(ruleRequestDTO.getRuleDTO());
 
                 if (rule == null) {

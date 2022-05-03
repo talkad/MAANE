@@ -25,7 +25,7 @@ public class RuleDbTests {
         surveyQueries = SurveyDAO.getInstance();
 
         List<RuleDTO> subRuleSubRules= new LinkedList<>();
-        subRuleDTO = new RuleDTO(subRuleSubRules, RuleType.IFF, Comparison.GREATER_THEN, 11, List.of(22));
+        subRuleDTO = new RuleDTO(subRuleSubRules, RuleType.IFF, Comparison.GREATER_THAN, 11, List.of(22));
 
         List<RuleDTO> subRules= new LinkedList<>();
         subRules.add(subRuleDTO);

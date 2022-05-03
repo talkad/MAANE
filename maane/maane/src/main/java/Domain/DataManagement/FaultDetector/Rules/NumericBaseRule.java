@@ -32,11 +32,11 @@ public class NumericBaseRule implements Rule{
         int answer = Integer.parseInt(answers.getAnswer(questionID).getResult());
 
         switch (comparison){
-            case GREATER_THEN:
+            case GREATER_THAN:
                 if(answer > num)
                     return true;
                 break;
-            case LESS_THEN:
+            case LESS_THAN:
                 if(answer < num)
                     return true;
                 break;

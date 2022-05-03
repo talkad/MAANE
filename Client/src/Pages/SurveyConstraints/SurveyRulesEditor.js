@@ -28,8 +28,8 @@ export default function SurveyRulesEditor(){
     const [rules, setRules] = useState([]);
     const [ruleID, setRuleID] = useState(0);
 
-    const [goals, setGoals] = useState(offline_goals_data);
-    const [questions, setQuestions] = useState(offline_questions_data);
+    const [goals, setGoals] = useState([]);
+    const [questions, setQuestions] = useState([]);
 
     const add_rules_button_string = "הוספת חוק";
     const submit_rules_button_string = "סיום ושמירה";
@@ -80,7 +80,7 @@ export default function SurveyRulesEditor(){
             const zippedQuestionsList = zip([survey.questions, survey.types, survey.answers]);
 
             let questionIndexer = 0;
-            zippedQuestionsList.forEach(([question, type, answers]) => setQuestions(questions =>
+            zippedQuestionsList.slice(1).forEach(([question, type, answers]) => setQuestions(questions => // slicing the first question cause it's unnecessary
                 [...questions, {id: questionIndexer++, question: question, type: type, answers: answers}]));
         }
     }
@@ -368,7 +368,7 @@ export default function SurveyRulesEditor(){
         // TODO: checking everything is correct
 
 
-        const generateRules = function(rule) {
+        const generateRules = function(rule){
 
             const generateSubRules = function(subRule){
                 if(subRule.children.length === 0){
@@ -377,23 +377,33 @@ export default function SurveyRulesEditor(){
                             comparison: '', questionID: subRule.questionSelection, answers: subRule.constraint.value}
                     }
 
-                    if(['greaterThan', 'lessThan', 'equal'].includes(subRule.constraint.type)){
-                        return {subRules: [], type: 'NUMERIC_ANSWER',
+                    if(['GREATER_THAN', 'LESS_THAN', 'EQUAL'].includes(subRule.constraint.type)){
+                        return {subRules: [], type: 'NUMERIC',
                             comparison: subRule.constraint.type, questionID: subRule.questionSelection, answers: [subRule.constraint.value]}
                     }
                 }
 
+                if(rule.children.length === 0) {
+                    if(subRule.constraint.type === 'MULTIPLE_CHOICE'){
+                        return {subRules: [], type: 'MULTIPLE_CHOICE',
+                            comparison: '', questionID: subRule.questionSelection, answers: subRule.constraint.value}
+                    }
+
+                    if(['GREATER_THAN', 'LESS_THAN', 'EQUAL'].includes(subRule.constraint.type)){
+                        return {subRules: [], type: 'NUMERIC',
+                            comparison: subRule.constraint.type, questionID: subRule.questionSelection, answers: [subRule.constraint.value]}
+                    }
+                }
 
                 return {subRules: subRule.children.map(child => generateSubRules(child)), type: subRule.questionSelection,
                 comparison: '', questionID: '', answers: ''}
             }
 
-            return {goalID: rule.goalSelection, ruleDTO: generateSubRules(rule.children)}
-
+            return {goalID: rule.goalSelection, ruleDTO: rule.children.map(generateSubRules)[0]}
         }
 
 
-        new Connection().submitSurveyRules(id, rules.map(rule => generateRules), submitRulesCallback)
+        new Connection().submitSurveyRules(id, rules.map(generateRules), submitRulesCallback)
     }
 
     return (

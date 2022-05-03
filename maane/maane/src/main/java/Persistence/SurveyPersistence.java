@@ -386,8 +386,11 @@ public class SurveyPersistence {
             ResultSet last_updated_person = preparedStatement.getResultSet();
             last_updated_person.next();
             int last_updated_person_id = last_updated_person.getInt(1);
-            for (RuleDTO rule : dto.getSubRules()) {
-                insertSubRule(survey_id, goalID, rule, last_updated_person_id);
+
+            if(dto.getSubRules() != null) {
+                for (RuleDTO rule : dto.getSubRules()) {
+                    insertSubRule(survey_id, goalID, rule, last_updated_person_id);
+                }
             }
 
             Connect.closeConnection();
