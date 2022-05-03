@@ -12,12 +12,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class GoalsManagement {
     //private Map<String, Map<String, List<Goal>>> goals;
     private GoalsQueries goalsDAO;
-    private AtomicInteger goalId;
+//    private AtomicInteger goalId;
 
     private GoalsManagement() {
         this.goalsDAO = GoalsQueries.getInstance();
         //this.goals = new ConcurrentHashMap<>();
-        this.goalId = new AtomicInteger(0);
+//        this.goalId = new AtomicInteger(0);
     }
 
     private static class CreateSafeThreadSingleton {
@@ -36,7 +36,7 @@ public class GoalsManagement {
 
     public Response<Boolean> addGoalToField(String workField, GoalDTO goalDTO, String year){
 
-        goalDTO.setGoalId(this.goalId.getAndIncrement());
+//        goalDTO.setGoalId(this.goalId.getAndIncrement());
         return goalsDAO.insertGoal(goalDTO);
         //return new Response<>(true, false, "successfully added goals to the work field: " + workField);
 

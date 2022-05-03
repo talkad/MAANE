@@ -137,7 +137,7 @@ public class GoalsQueries {
         try {
             preparedStatement = Connect.conn.prepareStatement(sql);
 
-            preparedStatement.setInt(1, goalDTO.getGoalId());
+            preparedStatement.setInt(1, getNextGoalID());
             preparedStatement.setString(2, goalDTO.getTitle());
             preparedStatement.setString(3, goalDTO.getDescription());
             preparedStatement.setInt(4, goalDTO.getQuarterly());
@@ -152,6 +152,28 @@ public class GoalsQueries {
         }
         return rows > 0 ? new Response<>(true, false, "successfully added goals to the work field: " + goalDTO.getWorkField()) :
                 new Response<>(false, true, "bad Db writing");
+    }
+
+    private int getNextGoalID(){
+        int maxID = 0;
+
+        Connect.createConnection();
+        String sql = "SELECT MAX(goalid) FROM \"Goals\"";
+        PreparedStatement statement;
+        try {
+            statement = Connect.conn.prepareStatement(sql);
+
+            ResultSet result = statement.executeQuery();
+            if(result.next())
+                maxID = result.getInt(1);
+
+            Connect.closeConnection();
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        System.out.println(maxID + 1);
+        return maxID + 1;
     }
 
     public Response<Boolean> removeGoal(int goalId){

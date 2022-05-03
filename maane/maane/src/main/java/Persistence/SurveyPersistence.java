@@ -451,13 +451,13 @@ public class SurveyPersistence {
             Connect.closeConnection();
 
             log.info("DB: removed rules successfully");
+            return new Response<>(true, false, "");
 
         } catch (SQLException e) {
             log.error("DB: failed to remove rules \n" + e.getMessage());
         }
 
-        return rows>0 ? new Response<>(true, false, "") :
-                new Response<>(false, true, "bad Db writing");
+        return new Response<>(false, true, "bad Db writing");
     }
 
     private void removeSubRules (int parentId){
