@@ -1,72 +1,39 @@
 import React, {useEffect, useState} from "react";
-import '../SurveyBuilder/SurveyBuilder.css';
-import {Alert, AlertTitle, Box, Grid, Pagination, Paper, TextField} from "@mui/material";
-import Button from "@mui/material/Button";
-import SurveyQuestion from "./SurveyQuestion";
-import * as Space from 'react-spaces';
-import NotificationSnackbar from "../../CommonComponents/NotificationSnackbar";
 import Connection from "../../Communication/Connection";
+import * as Space from "react-spaces";
+import {Alert, AlertTitle, Box, Grid, Pagination, Paper, TextField} from "@mui/material";
+import SurveyQuestion from "../Survey/SurveyQuestion";
+import Button from "@mui/material/Button";
+import NotificationSnackbar from "../../CommonComponents/NotificationSnackbar";
+import SurveyGeneralResultsQuestion from "./SurveyGeneralResultsQuestion";
+import {navigate} from "react-big-calendar/lib/utils/constants";
+import {useNavigate} from "react-router-dom";
+
 
 const mock = [
-    {
-        id: 0,
-        question: 'a',
-        type: 'OPEN_ANSWER',
-        answer: '',
-    },
     {
         id: 1,
         question: 'b',
         type: 'NUMERIC_ANSWER',
-        answer: '',
+        statistics: 12,
     },
     {
         id: 2,
         choices: ['אנקין', 'פדמה',],
         question: 'c',
         type: 'MULTIPLE_CHOICE',
-        answer: '',
-    },
-    {
-        id: 3,
-        question: 'e',
-        type: 'NUMERIC_ANSWER',
-        answer: '',
-    },
-    {
-        id: 4,
-        question: 't',
-        type: 'NUMERIC_ANSWER',
-        answer: '',
-    },
-    {
-        id: 5,
-        question: 'u',
-        type: 'NUMERIC_ANSWER',
-        answer: '',
-    },
-    {
-        id: 6,
-        question: 'q',
-        type: 'NUMERIC_ANSWER',
-        answer: '',
-    },
-    {
-        id: 7,
-        question: 'z',
-        type: 'NUMERIC_ANSWER',
-        answer: '',
+        statistics: [24, 12],
     },
 ];
 
 const questionsPerPage = 5;
 
-export default function Survey(){
+export default function SurveyGeneralResults(){
 
     const [surveyTitle, setSurveyTitle] = useState('');
     const [surveyDescription, setSurveyDescription] = useState('');
     // initializing with dummy data for offline testing
-    const [questions, setQuestions] = useState([]);
+    const [questions, setQuestions] = useState(mock);
     const [page, setPage] = React.useState(1);
 
     // error states
@@ -75,34 +42,34 @@ export default function Survey(){
     const [errorSeverity, setErrorSeverity] = useState('error');
     const [openSnackbar, setOpenSnackbar] = useState(false);
 
-    const [surveyComplete, setSurveyComplete] = useState(false);
-
     // STRINGS
-    const submit_survey_string = 'סיום מענה';
+    const finish_view_button_string = "סיום צפייה וחזרה לתפריט";
 
-    const survey_success_title_string = "תשובות הסקר נשמרו בהצלחה!"
-    const survey_success_message_string = "ניתן לסגור את החלון";
+    let navigate = useNavigate();
+
 
     useEffect(() => {
         var url = new URL(window.location.href);
         var surveyID = url.searchParams.get("surveyID");
         new Connection().getSurvey(surveyID, arrangeSurvey);
 
-        function onCloseMessage(e) {
+        // TODO: ask for the stats
 
-            if(!surveyComplete){
-                var dialogText = 'temp';
-                e.preventDefault();
-                e.returnValue = dialogText;
-            }
-        }
-
-
-        window.addEventListener('beforeunload', onCloseMessage); // todo: make this work
-
-        return () => {
-            window.removeEventListener('beforeunload', onCloseMessage);
-        }
+        // function onCloseMessage(e) {
+        //
+        //     if(!surveyComplete){
+        //         var dialogText = 'temp';
+        //         e.preventDefault();
+        //         e.returnValue = dialogText;
+        //     }
+        // }
+        //
+        //
+        // window.addEventListener('beforeunload', onCloseMessage); // todo: make this work
+        //
+        // return () => {
+        //     window.removeEventListener('beforeunload', onCloseMessage);
+        // }
     }, []);
 
     /**
@@ -126,30 +93,12 @@ export default function Survey(){
 
             let questionIndexer = 0;
             zippedQuestionsList.forEach(([question, type, answers]) => setQuestions(questions =>
-                [...questions, {id: questionIndexer++, question: question, type: type, choices: answers, answer: '',}]));
+                [...questions, {id: questionIndexer++, question: question, type: type, choices: answers, statics: '',}]));
         }
         else {
             // TODO: have a page for when showing the survey fails
         }
     }
-
-    /**
-     * handler for changing the answer of a question
-     * @param id the id of the question to which update the answer
-     * @param value the answer to the question
-     */
-    const handleAnswerChange = (id, value) => {
-        setQuestions(questions.map(function (element) {
-            if (element.id !== id) {
-                return element;
-            }
-
-            const temp_element = {...element};
-            temp_element["answer"] = value;
-
-            return temp_element;
-        }));
-    };
 
     /**
      * handler for changing a page in the survey
@@ -160,45 +109,9 @@ export default function Survey(){
         setPage(value);
     };
 
-    /**
-     * a call back function which handles the response from the server regarding the request to submit a fill survey
-     * @param data the response from the server
-     */
-    const submitCallback = (data) =>{
-        if (data.failure){
-            setOpenSnackbar(true);
-            setErrorMessage("הפעולה נכשלה. אנא נסה/י שנית");
-            setSurveyComplete(false);
-        }
-        else{
-            setSurveyComplete(true);
-        }
-    }
-
-    /**
-     * sends the answers to the survey to the server
-     */
-    const handleSubmit = () => {
-        // checking for an empty required field
-        if(questions.reduce((prev, curr) => prev ||
-                curr.answer.trim() === '', false)){
-            setShowError(true);
-            setOpenSnackbar(true);
-            setErrorMessage("נא למלא את כל השדות");
-            setErrorSeverity("error");
-        }
-        else{
-            setShowError(false);
-
-            var url = new URL(window.location.href);
-            var surveyID = url.searchParams.get("surveyID");
-            new Connection().submitSurvey(surveyID, questions.map(element => element.answer), questions.map(element => element.type), submitCallback);
-        }
-    }
-
     return (
         <Space.Fill scrollable>
-            {!surveyComplete && <div style={{margin: '5vh'}} className="Survey">
+            <div style={{margin: '5vh'}} className="Survey">
                 {/*alert*/}
                 <Box sx={{width: "70%", marginBottom: "1%"}}>
                     {showError && <Alert severity={errorSeverity}> {errorMessage} </Alert>}
@@ -233,19 +146,17 @@ export default function Survey(){
 
                 {/*the question to the survey*/}
                 {questions.slice((page-1) * questionsPerPage, Math.min(page * questionsPerPage, questions.length)).map(question =>
-                    <SurveyQuestion id={question.id}
+                    <SurveyGeneralResultsQuestion id={question.id}
                                     questionString={question.question}
                                     choices={question.type === "MULTIPLE_CHOICE" ? question.choices : []}
                                     type={question.type}
-                                    answer={question.answer}
-                                    showError={showError}
-                                    answerChange={handleAnswerChange} />)}
+                                    statistics={question.statistics} />)}
 
                 {/*paging component*/}
                 <Pagination count={Math.ceil(questions.length/questionsPerPage)} page={page} onChange={handlePageChange} />
                 <br/>
                 {/*submitting the survey*/}
-                {page === Math.ceil(questions.length/questionsPerPage) && <Button color="secondary" variant="contained" onClick={handleSubmit}>{submit_survey_string}</Button>}
+                <Button color="secondary" variant="contained" onClick={() => navigate('../menu')}>{finish_view_button_string}</Button>
 
                 {/*pop up notification*/}
                 <NotificationSnackbar
@@ -253,22 +164,7 @@ export default function Survey(){
                     setOpen={setOpenSnackbar}
                     severity={errorSeverity}
                     message={errorMessage}/>
-            </div>}
-
-            {surveyComplete &&
-                <Grid container
-                      direction="column"
-                      alignItems="center"
-                      justifyContent="center"
-                      spacing={1}>
-                    <Grid item xs={12}>
-                        <Alert severity="success">
-                            <AlertTitle>{survey_success_title_string}</AlertTitle>
-                            {survey_success_message_string}
-                        </Alert>
-                    </Grid>
-                </Grid>}
-
+            </div>
         </Space.Fill>
     )
 }

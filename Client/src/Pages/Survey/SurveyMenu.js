@@ -212,10 +212,21 @@ export default function SurveyMenu(props){
                                         </CardContent>
                                         <CardActions>
                                             {/*button to go to the survey represented by the card this button is in*/}
+
                                             <Button color={'secondary'} size={"medium"} disabled={y.isPublished} onClick={() => navigate(`../createSurvey?surveyID=${y.id}`, {replace: true})}>עריכת סקר</Button>
                                             <Button color={'secondary'} size={'medium'} disabled={y.isPublished} onClick={() => navigate(`../rules?surveyID=${y.id}`, {replace: false})}>עריכת חוקים</Button>
                                             <Button color="secondary" size="medium" onClick={() => navigate(`../getSurvey?surveyID=${y.id}`, {replace: true})}>צפייה בתשובות</Button>
                                             {!y.isPublished && <Button color={'secondary'} size={'medium'} onClick={() => handlePublishSurvey(y.id)}>פרסום סקר</Button>}
+
+                                            <Button color={'secondary'} size={"medium"} onClick={() => navigate(`../createSurvey?surveyID=${y.id}`, {replace: true})}>עריכת סקר</Button>
+                                            <Button color="secondary" size="medium" onClick={() => navigate(`../getSurvey?surveyID=${y.id}`, {replace: true})}>מעבר לסקר</Button>
+
+                                            {/*todo: conditional view this*/}
+                                            <Button color="secondary" size="medium" onClick={() => navigate(`../surveyResults?surveyID=${y.id}`, {replace: true})}>צפייה בנתונים</Button>
+
+                                            <Button color={'secondary'} size={'medium'} onClick={() => navigate(`../rules?surveyID=${y.id}`, {replace: false})}>חוקים</Button>
+                                            <Button color={'secondary'} size={'medium'} onClick={() => handlePublishSurvey(y.id)}>פרסום סקר</Button>
+
 
                                         </CardActions>
                                     </CardActionArea>

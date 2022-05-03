@@ -45,6 +45,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import SchoolIcon from '@mui/icons-material/School';
 import SurveyRulesEditor from "./Pages/SurveyConstraints/SurveyRulesEditor";
+import SurveyGeneralResults from "./Pages/SurveyResults/SurveyGeneralResults";
 
 // TODO: what to do if the request for info from the server to show fails?
 // TODO: prevent users from going through the site by entering paths in the url
@@ -318,15 +319,15 @@ function App(){
                                     <Route path="menu" element={<SurveyMenu setAuthAvailability={setAuthAvailability} setAuthCallBack={setAuthCallback} setAuthCalleePage={setAuthCalleePage} setAuthGoToPage={setAuthGoToPage} setHideBars={setHideBars}/>}/>
                                     <Route path="createSurvey" element={<SurveyBuilder/>}/>
                                     <Route path="rules" element={<SurveyRulesEditor/>}/>
+                                    <Route path={'surveyResults'} element={<SurveyGeneralResults/>}/>
                                 </Route>   
-                            }
+                        }
 
                         
                         <Route path="survey">
                             <Route path="getSurvey" element={<Survey setHideBars={setHideBars}/>}/>
-
-                            
                         </Route>
+
 
                         <Route
                             path="*"

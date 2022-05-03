@@ -56,7 +56,7 @@ export default function SurveyQuestion(props){
                     </Grid>
                     {/*multiple-choice view for question of this kind*/}
                     {props.type === 'MULTIPLE_CHOICE' &&
-                        <Grid item xs={12}>
+                        <Grid item xs={12} sx={{margin: "1%"}}>
                             <FormControl error={props.showError && props.answer.trim() === ''} variant="standard">
                                 <FormLabel>{multiple_choice_label_string}</FormLabel>
                                 <RadioGroup
@@ -72,7 +72,7 @@ export default function SurveyQuestion(props){
 
                     }
                     {/*open view for question of this kind*/}
-                    {props.type === 'OPEN_ANSWER' && <Grid sx={{alignItems: 'center'}} item xs={12}>
+                    {props.type === 'OPEN_ANSWER' && <Grid sx={{alignItems: 'center', margin: "1%"}} item xs={12}>
                         <TextField
                             color="secondary"
                             sx={{width: "90%"}}
@@ -86,7 +86,7 @@ export default function SurveyQuestion(props){
                         />
                     </Grid>}
                     {/*open-numerical view for question of this kind*/}
-                    {props.type === 'NUMERIC_ANSWER'  && <Grid sx={{alignItems: 'center'}} item xs={12}>
+                    {props.type === 'NUMERIC_ANSWER'  && <Grid sx={{alignItems: 'center', margin: "1%"}} item xs={12}>
                         <TextField
                             color="secondary"
                             sx={{width: "90%"}}
