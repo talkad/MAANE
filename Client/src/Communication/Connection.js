@@ -500,7 +500,7 @@ class Connection{
     /**
      * sends a POST request to publish a survey
      * @param surveyId the id of the survey to publish
-     * @param callback
+     * @param callback a callback function to call once there's a response
      */
     publishSurvey(surveyId, callback){
         this.sendPOST('/survey/submitSurvey',
@@ -508,6 +508,19 @@ class Connection{
                 surveyID: surveyId
             },
             callback)
+    }
+
+    /**
+     * sends a POST request to get the statistics of a given survey
+     * @param surveyID the id of the survey
+     * @param callback a callback function to call once there's a response
+     */
+    getSurveyStats(surveyID, callback){
+        this.sendPOST('survey/something',
+            {
+                surveyID: surveyID,
+            },
+            callback);
     }
 
     // GOALS

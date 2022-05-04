@@ -26,6 +26,14 @@ const mock = [
     },
 ];
 
+const mock_stats_avg = {
+    1: 123
+}
+
+const mock_stats_histo = {
+    2: [123, 12]
+}
+
 const questionsPerPage = 5;
 
 export default function SurveyGeneralResults(){
@@ -34,6 +42,8 @@ export default function SurveyGeneralResults(){
     const [surveyDescription, setSurveyDescription] = useState('');
     // initializing with dummy data for offline testing
     const [questions, setQuestions] = useState(mock);
+    const [averageMap, setAverageMap] = useState(mock_stats_avg);
+    const [histogramMap, setHistogramMap] = useState(mock_stats_histo);
     const [page, setPage] = React.useState(1);
 
     // error states
@@ -53,23 +63,8 @@ export default function SurveyGeneralResults(){
         var surveyID = url.searchParams.get("surveyID");
         new Connection().getSurvey(surveyID, arrangeSurvey);
 
-        // TODO: ask for the stats
+        new Connection().getSurveyStats(surveyID, arrangeStats)
 
-        // function onCloseMessage(e) {
-        //
-        //     if(!surveyComplete){
-        //         var dialogText = 'temp';
-        //         e.preventDefault();
-        //         e.returnValue = dialogText;
-        //     }
-        // }
-        //
-        //
-        // window.addEventListener('beforeunload', onCloseMessage); // todo: make this work
-        //
-        // return () => {
-        //     window.removeEventListener('beforeunload', onCloseMessage);
-        // }
     }, []);
 
     /**
@@ -92,11 +87,28 @@ export default function SurveyGeneralResults(){
             const zippedQuestionsList = zip([survey.questions, survey.types, survey.answers]);
 
             let questionIndexer = 0;
-            zippedQuestionsList.forEach(([question, type, answers]) => setQuestions(questions =>
+            zippedQuestionsList.slice(1).forEach(([question, type, answers]) => setQuestions(questions => // don't need the first question
                 [...questions, {id: questionIndexer++, question: question, type: type, choices: answers, statics: '',}]));
+
+            // filtering all the open answer questions
+            setQuestions(questions => questions.filter((question) => question.type !== "OPEN_ANSWER"))
         }
         else {
             // TODO: have a page for when showing the survey fails
+        }
+    }
+
+    /**
+     * arrange the statistics data the just received from the server
+     * @param data the data from the server
+     */
+    const arrangeStats = (data) => {
+        if (!data.failure){
+
+            let stats = data.result
+
+            setAverageMap(stats.numericAverage)
+            setHistogramMap(stats.multipleHistogram)
         }
     }
 
@@ -144,16 +156,24 @@ export default function SurveyGeneralResults(){
                     />
                 </Paper>
 
-                {/*the question to the survey*/}
-                {questions.slice((page-1) * questionsPerPage, Math.min(page * questionsPerPage, questions.length)).map(question =>
+                {/*/!*the question of the survey*!/*/}
+                {/*{questions.slice((page-1) * questionsPerPage, Math.min(page * questionsPerPage, questions.length)).map(question =>*/}
+                {/*    <SurveyGeneralResultsQuestion id={question.id}*/}
+                {/*                    questionString={question.question}*/}
+                {/*                    choices={question.type === "MULTIPLE_CHOICE" ? question.choices : []}*/}
+                {/*                    type={question.type}*/}
+                {/*                    statistics={question.type === "MULTIPLE_CHOICE" ? histogramMap[question.id] : averageMap[question.id]} />)}*/}
+
+                {/*the question of the survey*/}
+                {questions.map(question =>
                     <SurveyGeneralResultsQuestion id={question.id}
-                                    questionString={question.question}
-                                    choices={question.type === "MULTIPLE_CHOICE" ? question.choices : []}
-                                    type={question.type}
-                                    statistics={question.statistics} />)}
+                                                  questionString={question.question}
+                                                  choices={question.type === "MULTIPLE_CHOICE" ? question.choices : []}
+                                                  type={question.type}
+                                                  statistics={question.type === "MULTIPLE_CHOICE" ? histogramMap[question.id] : averageMap[question.id]} />)}
 
                 {/*paging component*/}
-                <Pagination count={Math.ceil(questions.length/questionsPerPage)} page={page} onChange={handlePageChange} />
+                {/*<Pagination count={Math.ceil(questions.length/questionsPerPage)} page={page} onChange={handlePageChange} />*/}
                 <br/>
                 {/*submitting the survey*/}
                 <Button color="secondary" variant="contained" onClick={() => navigate('../menu')}>{finish_view_button_string}</Button>
