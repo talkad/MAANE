@@ -686,6 +686,28 @@ public class SurveyPersistence {
         }
     }
 
+    public void removeCoordinatorAnswers(String surveyID, String symbol) {
+        Connect.createConnection();
+        String sql = "DELETE FROM  \"Answers\" WHERE survey_id = ? AND school_symbol = ?";
+
+        PreparedStatement preparedStatement;
+        try {
+            preparedStatement = Connect.conn.prepareStatement(sql);
+
+            // remove survey
+            preparedStatement.setString(1, surveyID);
+            preparedStatement.setString(2, symbol);
+
+            preparedStatement.executeUpdate();
+            Connect.closeConnection();
+
+            log.info("DB: removed answers successfully");
+
+        } catch (SQLException e) {
+            log.error("DB: failed to remove answers \n" + e.getMessage());
+        }
+    }
+
     private String ListToString (List<String> list){ //output seperated by ,
         StringBuilder output = new StringBuilder();
         for (String s : list){

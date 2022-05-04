@@ -179,6 +179,10 @@ public class SurveyController {
         if(parseInteger(symbol) == -1)
             return new Response<>(false, true, "School symbol must be a number");
 
+        // remove from db if exists
+        surveyDAO.removeCoordinatorAnswers(answersDTO.getId(), symbol);
+
+        // add to DB
         answer.setSymbol(symbol);
         List<String> answers = new LinkedList<>(answersDTO.getAnswers());
         answers.remove(0);

@@ -12,6 +12,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -215,6 +216,13 @@ public class SurveyDAO {
         persistence.insertCoordinatorAnswers(id, symbol, answers, types);
     }
 
+    public void removeCoordinatorAnswers(String surveyID, String symbol) {
+
+        removeAnswersFromCache(surveyID);
+        persistence.removeCoordinatorAnswers(surveyID, symbol);
+
+    }
+
     // ==================== Cache Management =======================
     private void addSurveyToCache(String surveyID, SurveyDTO survey){
         if(surveys.size() > cacheSize)
@@ -240,7 +248,7 @@ public class SurveyDAO {
             answers.put(surveyID, new Pair<>(LocalDateTime.now(), List.of(answersDTO)));
         }
         else{
-            answersList = answers.get(surveyID).getSecond();
+            answersList = new LinkedList<>(answers.get(surveyID).getSecond());
             answersList.add(answersDTO);
 
             answers.put(surveyID, new Pair<>(LocalDateTime.now(), answersList));
