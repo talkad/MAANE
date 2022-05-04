@@ -11,7 +11,7 @@ import {
     Table, TableBody, TableCell,
     TableContainer,
     TableHead, TableRow,
-    TextField
+    TextField, Typography
 } from "@mui/material";
 import SurveyQuestion from "../Survey/SurveyQuestion";
 import Button from "@mui/material/Button";
@@ -52,11 +52,12 @@ function Row(props) {
         <React.Fragment>
             <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
                 {/* main goal's info */}
+                <TableCell/>
                 <TableCell>{row.id}</TableCell>
                 <TableCell>{row.name}</TableCell>
                 {/*view survey answers button*/}
                 <TableCell>
-                    <Button onClick={() => navigate(`survey/schoolSurveyAnswers?surveyID=${props.surveyID}&schoolID=${row.id}`, {replace: false})}>{view_survey_answers_button_string}</Button>
+                    <Button onClick={() => navigate(`../schoolSurveyAnswers?surveyID=${props.surveyID}&schoolID=${row.id}`, {replace: false})}>{view_survey_answers_button_string}</Button>
                 </TableCell>
             </TableRow>
         </React.Fragment>
@@ -94,7 +95,7 @@ const questionsPerPage = 5;
 
 export default function SurveyGeneralResults(){
 
-    const [surveyTitle, setSurveyTitle] = useState('');
+    const [surveyTitle, setSurveyTitle] = useState("hello there");
     const [surveyDescription, setSurveyDescription] = useState('');
     const [surveyID, setSurveyID] = useState('')
 
@@ -116,6 +117,10 @@ export default function SurveyGeneralResults(){
     const school_symbol_cell_head_string = "סמל";
     const school_name_cell_head_string = "שם";
     const school_view_answers_head_string = "צפייה בתשובות";
+
+    const page_title_string = "נתוני העונים עבור הסקר";
+    const schools_who_submitted_an_answer_string = "בתי ספר שענו על הסקר:";
+    const survey_general_info_string = "נתונים כלליים על הסקר:";
 
     const finish_view_button_string = "סיום צפייה וחזרה לתפריט";
 
@@ -175,6 +180,18 @@ export default function SurveyGeneralResults(){
 
             setAverageMap(stats.numericAverage)
             setHistogramMap(stats.multipleHistogram)
+
+            function zip(arrays) {
+                return arrays[0].map(function(_,i){
+                    return arrays.map(function(array){return array[i]})
+                });
+            }
+
+            const zippedSchoolsList = zip([stats.symbols, stats.schoolNames]);
+
+            zippedSchoolsList.map(([symbol, name]) => setSchoolTableRows(row => [
+                ...row, createData(symbol, name)
+            ]))
         }
     }
 
@@ -190,12 +207,20 @@ export default function SurveyGeneralResults(){
     return (
         <Space.Fill scrollable>
             <div style={{margin: '5vh'}} className="Survey">
+                {/*page title*/}
+                <Typography variant={"h3"} display={"inline"}>{page_title_string} <Typography variant={"h3"} color={"blue"} display={"inline"}>{surveyTitle}</Typography></Typography>
 
+                <br/>
+                <br/>
                 {/*table for the school who answered the survey*/}
+                <Box sx={{width: '80%'}}>
+                    <Typography variant={"h5"}>{schools_who_submitted_an_answer_string}</Typography>
+                </Box>
                 <TableContainer sx={{width: '80%'}} component={Paper}>
                     <Table aria-label={"collapsible table"}>
                         <TableHead>
                             <TableRow>
+                                <TableCell/>
                                 <TableCell>{school_symbol_cell_head_string}</TableCell>
                                 <TableCell>{school_name_cell_head_string}</TableCell>
                                 <TableCell>{school_view_answers_head_string}</TableCell>
@@ -210,7 +235,11 @@ export default function SurveyGeneralResults(){
                 </TableContainer>
 
                 <br/>
+                <br/>
 
+                <Box sx={{width: '80%'}}>
+                    <Typography variant={"h5"}>{survey_general_info_string}</Typography>
+                </Box>
                 <Paper className="Survey-paper" elevation={3}>
                     {/*TODO: have this big and in bold*/}
                     {/*title of the survey*/}
