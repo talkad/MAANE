@@ -482,7 +482,7 @@ public class SurveyController {
                 switch (answerMap.get(questionIndex).getFirst()){
                     case MULTIPLE_CHOICE:
                         if(!multipleHistogram.containsKey(questionIndex))
-                            multipleHistogram.put(questionIndex, new LinkedList<>((Collections.nCopies(survey.getAnswers().get(questionIndex).size(), 0))));
+                            multipleHistogram.put(questionIndex, new LinkedList<>((Collections.nCopies(survey.getAnswers().get(questionIndex - 1).size(), 0))));
 
                         List<Integer> currentHist = multipleHistogram.get(questionIndex);
                         int answerIndex = parseInteger(answerMap.get(questionIndex).getSecond());
