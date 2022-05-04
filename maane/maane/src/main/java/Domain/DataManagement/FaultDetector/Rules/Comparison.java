@@ -3,7 +3,8 @@ package Domain.DataManagement.FaultDetector.Rules;
 public enum Comparison {
     GREATER_THAN("GREATER_THAN"),
     LESS_THAN("LESS_THAN"),
-    EQUAL("EQUAL");
+    EQUAL("EQUAL"),
+    NONE("NONE");
 
     private final String compare;
 

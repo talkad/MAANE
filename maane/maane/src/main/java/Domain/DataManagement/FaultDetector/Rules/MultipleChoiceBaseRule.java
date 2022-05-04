@@ -44,7 +44,7 @@ public class MultipleChoiceBaseRule implements Rule{
     public RuleDTO getDTO() {
         RuleDTO dto = new RuleDTO();
         dto.setQuestionID(questionID);
-        dto.setComparison(null);
+        dto.setComparison(Comparison.NONE);
         dto.setAnswers(answersID);
         dto.setType(Domain.DataManagement.FaultDetector.Rules.RuleType.MULTIPLE_CHOICE);
         dto.setSubRules(null);

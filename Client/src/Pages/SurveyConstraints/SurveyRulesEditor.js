@@ -31,6 +31,10 @@ export default function SurveyRulesEditor(){
     const [goals, setGoals] = useState([]);
     const [questions, setQuestions] = useState([]);
 
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackbarSeverity, setSnackbarSeverity] = useState('');
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+
     const add_rules_button_string = "הוספת חוק";
     const submit_rules_button_string = "סיום ושמירה";
 
@@ -228,16 +232,31 @@ export default function SurveyRulesEditor(){
                         temp_cell.constraint.value = [];
                     }
 
+                    if(getQuestionType(value) === "NUMERIC_ANSWER"){
+                        temp_cell.constraint.type = "NUMERIC_ANSWER";
+                        temp_cell.constraint.value = '';
+                    }
+
 
                     temp_cell.children = [];
-                }
-
-                if((value === "AND" || value === "OR") &&
+                } 
+                else if((value === "AND" || value === "OR") &&
                     (temp_cell.questionSelection !== "AND" && temp_cell.questionSelection !== "OR")){
 
                     if (temp_cell.children.length === 0){
                         temp_cell.children = [{id: ruleID, questionSelection: '', children: [], constraint: {type: '', value: ''}}];
                         setRuleID(ruleID + 1);
+                    }
+                }
+                else{
+                    if(getQuestionType(value) === "MULTIPLE_CHOICE"){
+                        temp_cell.constraint.type = "MULTIPLE_CHOICE";
+                        temp_cell.constraint.value = [];
+                    }
+
+                    if(getQuestionType(value) === "NUMERIC_ANSWER"){
+                        temp_cell.constraint.type = "NUMERIC_ANSWER";
+                        temp_cell.constraint.value = '';
                     }
                 }
 
@@ -287,7 +306,7 @@ export default function SurveyRulesEditor(){
                     temp_cell.constraint.value = temp_cell.constraint.value.filter(ele => ele !== value)
                 }
                 else{
-
+                    console.log(temp_cell.constraint.value);
                     temp_cell.constraint.value.push(value);
                 }
 
@@ -374,7 +393,7 @@ export default function SurveyRulesEditor(){
                 if(subRule.children.length === 0){
                     if(subRule.constraint.type === 'MULTIPLE_CHOICE'){
                         return {subRules: [], type: 'MULTIPLE_CHOICE',
-                            comparison: '', questionID: subRule.questionSelection, answers: subRule.constraint.value}
+                            comparison: 'NONE', questionID: subRule.questionSelection, answers: subRule.constraint.value}
                     }
 
                     if(['GREATER_THAN', 'LESS_THAN', 'EQUAL'].includes(subRule.constraint.type)){
@@ -386,7 +405,7 @@ export default function SurveyRulesEditor(){
                 if(rule.children.length === 0) {
                     if(subRule.constraint.type === 'MULTIPLE_CHOICE'){
                         return {subRules: [], type: 'MULTIPLE_CHOICE',
-                            comparison: '', questionID: subRule.questionSelection, answers: subRule.constraint.value}
+                            comparison: 'NONE', questionID: subRule.questionSelection, answers: subRule.constraint.value}
                     }
 
                     if(['GREATER_THAN', 'LESS_THAN', 'EQUAL'].includes(subRule.constraint.type)){
@@ -424,6 +443,13 @@ export default function SurveyRulesEditor(){
                 {/*add rule button*/}
                 <Button onClick={() => addRule()} variant={'contained'}>{add_rules_button_string}</Button>
                 <Button onClick={() => submitRules()} variant={'contained'} color={'success'} sx={{marginTop: 1}}>{submit_rules_button_string}</Button>
+                
+                {/* notification alert */}
+                <NotificationSnackbar
+                    open={openSnackbar}
+                    setOpen={setOpenSnackbar}
+                    severity={snackbarSeverity}
+                    message={snackbarMessage}/>
             </div>
         </Space.Fill>
     )

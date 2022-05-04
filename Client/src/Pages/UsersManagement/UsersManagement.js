@@ -611,7 +611,7 @@ const rows_system_manager = [
 ]
 
 export default function UsersManagement(props){
-    const [tableRows, setTableRows] = useState(props.userType === "SUPERVISOR" ? rows_supervisor : rows_system_manager);
+    const [tableRows, setTableRows] = useState([]); // props.userType === "SUPERVISOR" ? rows_supervisor : rows_system_manager
 
     // dialogs states
     const [openCPDialog, setOpenCPDialog] = useState(false);

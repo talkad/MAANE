@@ -43,7 +43,7 @@ public class OrRule implements Rule{
 
         RuleDTO dto = new RuleDTO();
         dto.setQuestionID(-1);
-        dto.setComparison(null);
+        dto.setComparison(Comparison.NONE);
         dto.setAnswers(new LinkedList<>());
         dto.setType(OR);
 

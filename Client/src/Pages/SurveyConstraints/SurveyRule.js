@@ -35,6 +35,9 @@ export default function SurveyRule(props){
     const add_condition_button_string = "הוספת תא";
     const remove_tooltip_string = "מחיקה";
 
+    const chosen_goal_string = "היעד שנבחר:";
+    const chosen_rule_string = "הכלל שנבחר:";
+
     useEffect(() => {
 
         // TODO: send for the data
@@ -112,6 +115,33 @@ export default function SurveyRule(props){
     }
 
     /**
+     * gets the title of the selected question
+     * @returns {string|*} the title of the question
+     */
+    const selectedQuestionTitle = () => {
+        if(props.questionSelection === undefined){
+            return '';
+        }
+
+        else if(props.questionSelection === ''){
+            return '';
+        }
+
+        else if (props.questionSelection === 'AND'){
+            return "וגם";
+        }
+
+        else if (props.questionSelection === 'OR'){
+            return "או";
+        }
+
+        
+
+        const question = props.questions.find(element => element.id === props.questionSelection);
+        return question.question;
+    }
+
+    /**
      * gets the answers of the selected question
      * @returns {[]|string[]|string|*} the list of answers
      */
@@ -142,7 +172,8 @@ export default function SurveyRule(props){
                        sx={{backgroundColor: props.colors[((props.depth % props.colors.length))]}}>
 
                     {/*TODO: better titles*/}
-                    <h1>hello there {props.id}</h1>
+                    {props.depth === 0 && <h1>{chosen_goal_string} {props.goalSelection}</h1>}
+                    {props.depth > 0 && <h1>{chosen_rule_string} {selectedQuestionTitle()}</h1>}
 
                     <Grid container spacing={1}>
 

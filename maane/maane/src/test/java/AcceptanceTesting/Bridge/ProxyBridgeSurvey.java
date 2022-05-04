@@ -110,10 +110,11 @@ public class ProxyBridgeSurvey implements SurveyService {
         return new Response<>(null, true, "not implemented");
     }
 
+
     @Override
-    public Response<AnswersDTO> getAnswers(String username, String surveyID) {
+    public Response<AnswersDTO> getAnswers(String username, String surveyID, int symbol) {
         if (real != null){
-            return real.getAnswers(username, surveyID);
+            return real.getAnswers(username, surveyID, symbol);
         }
 
         return new Response<>(null, true, "not implemented");
