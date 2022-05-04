@@ -1,8 +1,18 @@
 import React, { useState } from "react";
-import {FormControl, FormControlLabel, FormHelperText, FormLabel, Grid, Paper, Radio, RadioGroup} from "@mui/material";
+import {
+    FormControl,
+    FormControlLabel,
+    FormHelperText,
+    FormLabel,
+    Grid,
+    Paper,
+    Radio,
+    RadioGroup,
+    Typography
+} from "@mui/material";
 import TextField from "@mui/material/TextField";
 
-export default function SurveyQuestion(props){
+export default function surveySchoolResultsQuestion(props){
 
     // STRINGS
     const answer_label_string = 'תשובה';
@@ -12,19 +22,7 @@ export default function SurveyQuestion(props){
     const multiple_choice_label_string = "נא לבחור תשובה אחת:";
     const multiple_choice_helper_text_string = "יש לבחור תשובה";
 
-    /**
-     * onChange callback when there a change to the answer text-field
-     * @param event the changed element
-     */
-    const handleOpenAnswerChange = (event) => {
-        //setOpenAnswer(event.target.value)
-
-        // from https://stackoverflow.com/questions/57269224/reactjs-material-ui-accept-only-positive-unsigned-integer-values-in-textfield
-        let input = event.target.value ;
-        if( !input || ( input[input.length-1].match('[0-9]') && input[0].match('[1-9]')) )
-            props.answerChange(props.id, input)
-
-    }
+    const violation_of_goals_string = 'תשובה זו מפרה את היעדים הבאים שהוצבו';
 
     /**
      * onChange callback when a there a new selection for multiple-choice question's answer
@@ -57,17 +55,16 @@ export default function SurveyQuestion(props){
                     {/*multiple-choice view for question of this kind*/}
                     {props.type === 'MULTIPLE_CHOICE' &&
                         <Grid item xs={12} sx={{margin: "1%"}}>
-                            <FormControl error={props.showError && props.answer.trim() === ''} variant="standard">
+                            <FormControl error={!props.isLegal} variant="standard">
                                 <FormLabel>{multiple_choice_label_string}</FormLabel>
                                 <RadioGroup
                                     value={props.answer}
                                     onChange={handleMultipleChoiceAnswerChange}
-                                    id={`multi_choice_${props.id}`}
                                 >
                                     {props.choices.map((element, index) =>
                                         <FormControlLabel value={index.toString()} control={<Radio color="secondary"/>} label={element}/>)}
                                 </RadioGroup>
-                                {props.showError && props.answer.trim() === '' && <FormHelperText>{multiple_choice_helper_text_string}</FormHelperText>}
+                                {!props.isLegal && <FormHelperText><Typography display={'inline'}><Typography display={'inline'}>props.goalsID</Typography> {violation_of_goals_string}</Typography></FormHelperText>}
                             </FormControl>
                         </Grid>
 
@@ -75,33 +72,28 @@ export default function SurveyQuestion(props){
                     {/*open view for question of this kind*/}
                     {props.type === 'OPEN_ANSWER' && <Grid sx={{alignItems: 'center', margin: "1%"}} item xs={12}>
                         <TextField
-                            id={`open_answer_${props.id}`}
                             color="secondary"
                             sx={{width: "90%"}}
                             margin="normal"
                             variant="standard"
-                            required
                             value={props.answer}
-                            error={props.showError && props.answer.trim() === ''}
-                            label={answer_label_string}
-                            onChange={handleOpenAnswerChange}
+                            error={!props.isLegal}
+                            helperText={!props.isLegal ? <Typography display={'inline'}><Typography display={'inline'}>props.goalsID</Typography> {violation_of_goals_string}</Typography> : ''}
+                            disabled
                         />
                     </Grid>}
                     {/*open-numerical view for question of this kind*/}
                     {props.type === 'NUMERIC_ANSWER'  && <Grid sx={{alignItems: 'center', margin: "1%"}} item xs={12}>
                         <TextField
-                            id={`numeric_answer_${props.id}`}
                             color="secondary"
                             sx={{width: "90%"}}
                             margin="normal"
                             variant="standard"
-                            required
-                            error={props.showError && props.answer.trim() === ''}
+                            disabled
+                            error={!props.isLegal}
+                            helperText={!props.isLegal ? <Typography display={'inline'}><Typography display={'inline'}>props.goalsID</Typography> {violation_of_goals_string}</Typography> : ''}
                             inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                             value={props.answer}
-                            helperText={open_answer_helper_text_string}
-                            label={numeral_answer_label_string}
-                            onChange={handleOpenAnswerChange}
                         />
                     </Grid>}
                 </Grid>

@@ -44,14 +44,17 @@ function LinearProgressWithLabel(props) {
 export default function SurveyGeneralResultsQuestion(props){
 
     // STRINGS
-    const answer_label_string = 'תשובה';
-    const numeral_answer_label_string = 'תשובה מספרית'
-    const open_answer_helper_text_string = 'נא להזין תשובה מספרית בלבד'
+    const total_answers_string = "ענו תשובה זו";
 
     const answer_average_text_string = "ממוצע התשובות לשאלה זו הוא:";
 
 
-
+    /**
+     * sums the answers in the histogram stats
+     */
+    const getHistogramSum = () => {
+        return props.statistics.reduce((pv, cv) => pv + cv, 0);
+    }
 
     return (
         <div className="SurveyQuestion">
@@ -80,10 +83,17 @@ export default function SurveyGeneralResultsQuestion(props){
                                 >
                                     {props.choices.map((element, index) =>
                                         <Grid container spacing={1}>
-                                            <Grid item sx={{alignItems: 'center'}} xs={2}><FormControlLabel value={index.toString()} control={<Radio color="secondary"/>}
+                                            {/*the answer*/}
+                                            <Grid item sx={{alignItems: 'center'}} xs={1.5}><FormControlLabel value={index.toString()} control={<Radio disabled color="secondary"/>}
                                                                                 label={<Typography>{element}</Typography>}/></Grid>
+                                            {/*percentage bar*/}
                                             <Grid item xs={5}>
-                                                <LinearProgressWithLabel variant="determinate" value={64} />
+                                                <LinearProgressWithLabel variant="determinate" value={(props.statistics[index]/getHistogramSum())*100} />
+                                            </Grid>
+
+                                            {/*number of answers*/}
+                                            <Grid item xs={2}>
+                                                <Typography display={"inline"}><Typography color={'blue'} display={"inline"}>{props.statistics[index]}</Typography> {total_answers_string} </Typography>
                                             </Grid>
                                         </Grid>
                                         )}

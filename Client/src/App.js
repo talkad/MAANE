@@ -46,6 +46,7 @@ import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import SchoolIcon from '@mui/icons-material/School';
 import SurveyRulesEditor from "./Pages/SurveyConstraints/SurveyRulesEditor";
 import SurveyGeneralResults from "./Pages/SurveyResults/SurveyGeneralResults";
+import SurveySchoolResults from "./Pages/SurveyResults/SurveySchoolResults";
 
 // TODO: what to do if the request for info from the server to show fails?
 // TODO: prevent users from going through the site by entering paths in the url
@@ -58,7 +59,7 @@ import SurveyGeneralResults from "./Pages/SurveyResults/SurveyGeneralResults";
 
 function App(){
     // general state data
-    const [type, setType] = useState(window.sessionStorage.getItem('permission')); //TODO: change back to window.sessionStorage.getItem('permission') when not developing
+    const [type, setType] = useState('SUPERVISOR'); //TODO: change back to window.sessionStorage.getItem('permission') when not developing
     const [openSidebar, setOpenSidebar] = useState(false);
     const [hideBars, setHideBars] = useState(false);
     const [openBackdrop, setOpenBackdrop] = useState(false);
@@ -320,6 +321,7 @@ function App(){
                                     <Route path="createSurvey" element={<SurveyBuilder/>}/>
                                     <Route path="rules" element={<SurveyRulesEditor/>}/>
                                     <Route path={'surveyResults'} element={<SurveyGeneralResults/>}/>
+                                    <Route path={"schoolSurveyAnswers"} element={<SurveySchoolResults/>}/>
                                 </Route>   
                         }
 
