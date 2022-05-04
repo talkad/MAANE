@@ -9,6 +9,7 @@ import Domain.CommonClasses.Response;
 import Domain.DataManagement.SurveyController;
 import Domain.EmailManagement.EmailController;
 import Domain.WorkPlan.GoalsManagement;
+import Domain.WorkPlan.WorkPlan;
 import Persistence.DbDtos.UserDBDTO;
 import Persistence.SurveyDAO;
 import Persistence.UserQueries;

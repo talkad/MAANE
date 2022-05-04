@@ -3,7 +3,7 @@ package UnitTesting.UserManagement;
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.Activity;
-import Domain.UsersManagment.WorkPlan;
+import Domain.WorkPlan.WorkPlan;
 import Domain.WorkPlan.Goal;
 import org.junit.Assert;
 import org.junit.Before;

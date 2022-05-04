@@ -2,7 +2,7 @@ package Persistence.DbDtos;
 
 import Domain.UsersManagment.User;
 import Domain.UsersManagment.UserStateEnum;
-import Domain.UsersManagment.WorkPlan;
+import Domain.WorkPlan.WorkPlan;
 
 import java.util.List;
 import java.util.Map;

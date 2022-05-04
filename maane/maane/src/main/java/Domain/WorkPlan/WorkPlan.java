@@ -1,7 +1,8 @@
-package Domain.UsersManagment;
+package Domain.WorkPlan;
 
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
+import Domain.UsersManagment.Activity;
 import Domain.WorkPlan.Goal;
 
 import java.time.LocalDate;
