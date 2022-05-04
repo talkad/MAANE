@@ -85,7 +85,7 @@ export default function SurveyRule(props){
         // from https://stackoverflow.com/questions/57269224/reactjs-material-ui-accept-only-positive-unsigned-integer-values-in-textfield
         let input = event.target.value ;
         if( !input || ( input[input.length-1].match('[0-9]') && input[0].match('[1-9]')) )
-            props.handleNumericalConstraintChange(props.id, props.trace, props.constraintType, input);
+            props.handleNumericalConstraintChange(props.id, props.Ntrace, props.constraintType, input);
 
     }
 

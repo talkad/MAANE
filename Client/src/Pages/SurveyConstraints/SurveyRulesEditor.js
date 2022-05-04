@@ -5,6 +5,7 @@ import {Button} from "@mui/material";
 import SurveyRule from "./SurveyRule";
 
 import gematriya from "gematriya";
+import NotificationSnackbar from "../../CommonComponents/NotificationSnackbar";
 
 const offline_data_rules = [{id: 1, goalSelection: 1, children: [{id: 4, questionSelection: '',
         children: [{id: 5, questionSelection: '', children: [], constraint: {type: '', value: ''}}], constraint: {type: '', value: ''}}]},
@@ -43,7 +44,8 @@ export default function SurveyRulesEditor(){
         var surveyID = url.searchParams.get("surveyID");
         setId(surveyID)
 
-        new Connection().getSurvey(surveyID, arrangeQuestionData) // getting the questions
+        new Connection().getSurvey(surveyID, arrangeQuestionData); // getting the questions
+        new Connection().getSurveyRules(surveyID, arrangeRulesData);
 
         // calculating the current hewbrew year
 
@@ -51,6 +53,62 @@ export default function SurveyRulesEditor(){
         new Connection().getGoals(gematriya(currentYear + 3760, {punctuate: true, limit: 3}), arrangeGoalsData) // getting the goals
 
     }, []);
+
+    /**
+     * arranges the rules data received from the server
+     * @param data the data from the server
+     */
+    const arrangeRulesData = (data) => {
+        if(!data.failure){
+            let rulesIndexer = 1;
+            let rulesData = data.result
+
+        //     {id: 4, questionSelection: '',
+        // children: [{id: 5, questionSelection: '', children: [], constraint: {type: '', value: ''}}], constraint: {type: '', value: ''}}
+
+            const generateRules = function(rule){
+
+                if(rule.ruleDTO.subRules === null) {
+                    if(rule.constraint.type === 'MULTIPLE_CHOICE'){
+                        if(rule.type === 'MULTIPLE_CHOICE'){
+                            return {id: rulesIndexer++, goalSelection: rule.goalID, children: [{id: rulesIndexer++, questionSelection: rule.questionID, children: [],
+                                constraint: {type: 'MULTIPLE_CHOICE', value: rule.answers}}]}
+                        }
+                    }
+
+                    if(rule.type === "NUMERIC"){
+                        
+                        return {id: rulesIndexer++, goalSelection: rule.goalID, children: [{id: rulesIndexer++, questionSelection: rule.questionID, children: [],
+                            constraint: {type: rule.comparison, value: rule.answers[0]}}]}
+
+                    }
+                }
+
+                const generateSubRules = function(subRule){
+                    if(subRule.subRules === null){
+                        if(subRule.type === 'MULTIPLE_CHOICE'){
+                            return {id: rulesIndexer++, questionSelection: subRule.questionID, children: [],
+                                constraint: {type: 'MULTIPLE_CHOICE', value: subRule.answers.map(ele => ele.toString())}}
+                        }
+
+                        if(subRule.type === "NUMERIC"){
+                            return {id: rulesIndexer++, questionSelection: subRule.questionID, children: [],
+                            constraint: {type: subRule.comparison, value: subRule.answers[0]}}
+                        }
+                    }
+
+                    return {id: rulesIndexer++, questionSelection: subRule.type, children: subRule.subRules.map(generateSubRules), constraint: {type: '', value: ''}}
+                }
+                
+            
+                return {id: rulesIndexer++, goalSelection: rule.goalID, children: [{id: rulesIndexer++, questionSelection: rule.ruleDTO.type, children: rule.ruleDTO.subRules.map(generateSubRules),
+                    constraint: {type: '', value: ''}}]}
+            }
+            
+            setRules(rulesData.rules.map(generateRules))
+            setRuleID(rulesIndexer);
+        }
+    }
 
     /**
      * arranges the data received from the server regarding the goals
@@ -63,6 +121,7 @@ export default function SurveyRulesEditor(){
                 setGoals([...goals, {value: row.goalId, description: row.title}]);
             }
         }
+
     }
 
     /**
@@ -306,7 +365,6 @@ export default function SurveyRulesEditor(){
                     temp_cell.constraint.value = temp_cell.constraint.value.filter(ele => ele !== value)
                 }
                 else{
-                    console.log(temp_cell.constraint.value);
                     temp_cell.constraint.value.push(value);
                 }
 
@@ -376,7 +434,16 @@ export default function SurveyRulesEditor(){
     }
 
     const submitRulesCallback = (data) => {
-        // TODO: implement
+        if(data.failure){
+            setOpenSnackbar(true);
+            setSnackbarSeverity('error');
+            setSnackbarMessage('אראה שגיאה. נא לנסות שוב');
+        }
+        else{
+            setOpenSnackbar(true);
+            setSnackbarSeverity('success');
+            setSnackbarMessage('החוקים נשמרו בהצלחה');
+        }
     }
 
     const offline_data_rules = [{id: 1, goalSelection: 1, children: [{id: 4, questionSelection: '',
@@ -388,6 +455,18 @@ export default function SurveyRulesEditor(){
 
 
         const generateRules = function(rule){
+
+            if(rule.children.length === 0) {
+                if(rule.constraint.type === 'MULTIPLE_CHOICE'){
+                    return {subRules: [], type: 'MULTIPLE_CHOICE',
+                        comparison: 'NONE', questionID: rule.questionSelection, answers: rule.constraint.value}
+                }
+
+                if(['GREATER_THAN', 'LESS_THAN', 'EQUAL'].includes(rule.constraint.type)){
+                    return {subRules: [], type: 'NUMERIC',
+                        comparison: rule.constraint.type, questionID: rule.questionSelection, answers: [rule.constraint.value]}
+                }
+            }
 
             const generateSubRules = function(subRule){
                 if(subRule.children.length === 0){
@@ -402,20 +481,10 @@ export default function SurveyRulesEditor(){
                     }
                 }
 
-                if(rule.children.length === 0) {
-                    if(subRule.constraint.type === 'MULTIPLE_CHOICE'){
-                        return {subRules: [], type: 'MULTIPLE_CHOICE',
-                            comparison: 'NONE', questionID: subRule.questionSelection, answers: subRule.constraint.value}
-                    }
-
-                    if(['GREATER_THAN', 'LESS_THAN', 'EQUAL'].includes(subRule.constraint.type)){
-                        return {subRules: [], type: 'NUMERIC',
-                            comparison: subRule.constraint.type, questionID: subRule.questionSelection, answers: [subRule.constraint.value]}
-                    }
-                }
+                
 
                 return {subRules: subRule.children.map(child => generateSubRules(child)), type: subRule.questionSelection,
-                comparison: '', questionID: '', answers: ''}
+                comparison: 'NONE', questionID: '-1', answers: []}
             }
 
             return {goalID: rule.goalSelection, ruleDTO: rule.children.map(generateSubRules)[0]}

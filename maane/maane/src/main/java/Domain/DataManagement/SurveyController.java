@@ -300,17 +300,37 @@ public class SurveyController {
         return new Response<>(answerConverter(surveyDAO.getAnswers(surveyId)), false, "OK");
     }
 
-    public Response<List<Rule>> getRules(String surveyID){
+    public Response<RulesDTO> getRules(String surveyID){
         FaultDetector fd;
-        List<Rule> rules = new LinkedList<>();
+        RulesDTO rulesDTO = new RulesDTO();
+        List<RuleRequestDTO> ruleRequests = new LinkedList<>();
+        rulesDTO.setSurveyID(surveyID);
 
         fd = new FaultDetector(rulesConverter(surveyDAO.getRules(surveyID)));
         for(Pair<Rule, Integer> p: fd.getRules()){
-            rules.add(p.getFirst());
+            ruleRequests.add(rulesDTOConverter(p));
         }
 
-        return new Response<>(rules, false, "success");
+        rulesDTO.setRules(ruleRequests);
+
+        return new Response<>(rulesDTO, false, "success");
     }
+
+    /**
+     * convert rule to RuleRequest form
+     * @param rulePair pair of rule and the goal id it's associated with
+     * @return the converted new form of the rule
+     */
+    private RuleRequestDTO rulesDTOConverter(Pair<Rule, Integer> rulePair) {
+        RuleRequestDTO ruleRequest = new RuleRequestDTO();
+        RuleDTO ruleDTO = rulePair.getFirst().getDTO();
+
+        ruleRequest.setGoalID(rulePair.getSecond());
+        ruleRequest.setRuleDTO(ruleDTO);
+
+        return ruleRequest;
+    }
+
 
     public Response<List<SurveyDetailsDTO>> getSurveys(String username){
         Response<List<String>> res = UserController.getInstance().getSurveys(username);

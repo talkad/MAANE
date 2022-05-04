@@ -130,7 +130,7 @@ public class ProxyBridgeSurvey implements SurveyService {
     }
 
     @Override
-    public Response<List<Rule>> getRules(String surveyID) {
+    public Response<RulesDTO> getRules(String surveyID) {
         if (real != null){
             return real.getRules(surveyID);
         }

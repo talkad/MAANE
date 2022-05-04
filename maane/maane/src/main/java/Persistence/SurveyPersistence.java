@@ -486,16 +486,22 @@ public class SurveyPersistence {
             statement.setString(1, surveyID);
             ResultSet result = statement.executeQuery();
             while (result.next()) {
-                int surveyId = result.getInt("survey_id");
-                String type = result.getString("type");
-                String comparison = result.getString("comparison");
-                int questionId = result.getInt("question_id");
-                String answer = result.getString("answer");
-                int id = result.getInt("id");
-                List<RuleDTO> subRules = getSubRules(id);
-                RuleDTO ruleDTO = new RuleDTO(subRules, RuleType.valueOf(type), Comparison.valueOf(comparison), questionId, parseList(Arrays.asList(answer.substring(1, answer.length() - 1).split(", "))));
-                Pair <RuleDTO, Integer> toAdd = new Pair<>(ruleDTO, surveyId);
-                rules.add(toAdd);
+
+                if (result.getInt("parent_id") == 0) {
+
+                    String type = result.getString("type");
+                    String comparison = result.getString("comparison");
+                    int questionId = result.getInt("question_id");
+                    String answer = result.getString("answer");
+                    int id = result.getInt("id");
+                    int goalID = result.getInt("goal_id");
+
+                    List<RuleDTO> subRules = getSubRules(id);
+
+                    RuleDTO ruleDTO = new RuleDTO(subRules, RuleType.valueOf(type), Comparison.valueOf(comparison), questionId, parseList(Arrays.asList(answer.substring(1, answer.length() - 1).split(", "))));
+                    Pair<RuleDTO, Integer> toAdd = new Pair<>(ruleDTO, goalID);
+                    rules.add(toAdd);
+                }
             }
             Connect.closeConnection();
 
@@ -512,7 +518,11 @@ public class SurveyPersistence {
         List<Integer> integerList = new LinkedList<>();
 
         for(String s: stringList)
-            integerList.add(Integer.parseInt(s));
+            try {
+                integerList.add(Integer.parseInt(s));
+            } catch(Exception e){
+                integerList.add(-1);
+            }
 
         return integerList;
     }

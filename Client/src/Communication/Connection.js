@@ -467,6 +467,15 @@ class Connection{
     }
 
     /**
+     * sends a GET request to get the rules of a given survey
+     * @param surveyID the id of the survey
+     * @param callback a callback function to call once there's a response
+     */
+    getSurveyRules(surveyID, callback){
+        this.sendGET(`/survey/getRules/surveyID=${surveyID}`, callback)
+    }
+
+    /**
      * sends a GET request to get all the surveys created by the current active user
      * @param callback a callback function to call once there's a response
      */

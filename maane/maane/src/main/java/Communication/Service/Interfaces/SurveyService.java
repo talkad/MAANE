@@ -21,7 +21,7 @@ public interface SurveyService {
 
     Response<List<SurveyDetailsDTO>> getSurveys(String username);
 
-    Response<List<Rule>> getRules(String surveyID);
+    Response<RulesDTO> getRules(String surveyID);
 
 //    Response<Boolean> removeSurvey(String username, int id);
 //

@@ -95,7 +95,7 @@ public class SurveyController {
     }
 
     @GetMapping("/getRules/surveyID={surveyID}")
-    public ResponseEntity<Response<List<Rule>>> getRules(@PathVariable("surveyID") String surveyID){
+    public ResponseEntity<Response<RulesDTO>> getRules(@PathVariable("surveyID") String surveyID){
         return ResponseEntity.ok()
                 .body(service.getRules(surveyID));
     }

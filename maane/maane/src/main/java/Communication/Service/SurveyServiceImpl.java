@@ -204,8 +204,8 @@ public class SurveyServiceImpl implements SurveyService {
     }
 
     @Override
-    public Response<List<Rule>> getRules(String surveyID) {
-        Response<List<Rule>> res = SurveyController.getInstance().getRules(surveyID);
+    public Response<RulesDTO> getRules(String surveyID) {
+        Response<RulesDTO> res = SurveyController.getInstance().getRules(surveyID);
 
         if(res.isFailure())
             log.error(res.getErrMsg());
