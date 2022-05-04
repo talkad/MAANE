@@ -511,16 +511,26 @@ class Connection{
     }
 
     /**
-     * sends a POST request to get the statistics of a given survey
+     * sends a GET request to get the statistics of a given survey
      * @param surveyID the id of the survey
      * @param callback a callback function to call once there's a response
      */
     getSurveyStats(surveyID, callback){
-        this.sendPOST('survey/something',
+        this.sendGET('survey/something',
             {
                 surveyID: surveyID,
             },
             callback);
+    }
+
+    /**
+     * sends a GET request to get the answers of a school to a given survey
+     * @param surveyID the id of the survey
+     * @param schoolID the id of the school
+     * @param callback a callback function to call once there's a response
+     */
+    getSchoolSurveyAnswers(surveyID, schoolID, callback){
+        // TODO: implement
     }
 
     // GOALS
