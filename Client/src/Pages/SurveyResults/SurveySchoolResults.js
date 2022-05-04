@@ -71,6 +71,7 @@ export default function SurveySchoolResults(){
 
     // initializing with dummy data for offline testing
     const [questions, setQuestions] = useState([]);
+    const [answers, setAnswers] = useState([]);
 
     // STRINGS
     const finish_view_survey_string = 'סיום צפייה וחזרה לנתוני הסקר';
@@ -111,7 +112,7 @@ export default function SurveySchoolResults(){
 
             let questionIndexer = 0;
             zippedQuestionsList.forEach(([question, type, answers]) => setQuestions(questions =>
-                [...questions, {id: questionIndexer++, question: question, type: type, choices: answers, answer: '',}]));
+                [...questions, {id: questionIndexer++, question: question, type: type, choices: answers}]));
         }
         else {
             // TODO: have a page for when showing the survey fails
@@ -124,7 +125,18 @@ export default function SurveySchoolResults(){
      */
     const arrangeSurveyAnswers= (data) => {
         if(!data.failure){
-            // todo: implement
+            function zip(arrays) {
+                return arrays[0].map(function(_,i){
+                    return arrays.map(function(array){return array[i]})
+                });
+            }
+
+            let answers_data = data.result;
+
+            let zippedAnswersData = zip([answers_data.answers, answers_data.isLegal, answers_data.goalIDs])
+
+            zippedAnswersData.forEach(([answer, legality, goalIDs]) => setAnswers(answers =>
+                [...answers, {answer: answer, isLegal: legality, goalIDs: goalIDs}]));
         }
     }
 
@@ -163,11 +175,14 @@ export default function SurveySchoolResults(){
                 </Paper>
 
                 {/*the question of the survey*/}
-                {questions.map(question => <SurveyGeneralResultsQuestion id={question.id}
-                                                                         questionString={question.question}
-                                                                         choices={question.type === "MULTIPLE_CHOICE" ? question.choices : []}
-                                                                         type={question.type}
-                                                                         answer={question.answer}/>)}
+                {questions.map((question, index) =>
+                    <SurveyGeneralResultsQuestion id={question.id}
+                                                  questionString={question.question}
+                                                  choices={question.type === "MULTIPLE_CHOICE" ? question.choices : []}
+                                                  type={question.type}
+                                                  answer={answers[index].answer}
+                                                  isLegal={answers[index].isLegal}
+                                                  goalIDs={answers[index].goalIDs}/>)}
 
 
                 <br/>
