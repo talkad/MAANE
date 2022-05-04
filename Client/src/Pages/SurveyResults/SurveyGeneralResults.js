@@ -1,13 +1,67 @@
 import React, {useEffect, useState} from "react";
 import Connection from "../../Communication/Connection";
 import * as Space from "react-spaces";
-import {Alert, AlertTitle, Box, Grid, Pagination, Paper, TextField} from "@mui/material";
+import {
+    Alert,
+    AlertTitle,
+    Box, Collapse,
+    Grid, IconButton, List, ListItem, ListItemText,
+    Pagination,
+    Paper,
+    Table, TableBody, TableCell,
+    TableContainer,
+    TableHead, TableRow,
+    TextField
+} from "@mui/material";
 import SurveyQuestion from "../Survey/SurveyQuestion";
 import Button from "@mui/material/Button";
 import NotificationSnackbar from "../../CommonComponents/NotificationSnackbar";
 import SurveyGeneralResultsQuestion from "./SurveyGeneralResultsQuestion";
 import {navigate} from "react-big-calendar/lib/utils/constants";
 import {useNavigate} from "react-router-dom";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import DeleteIcon from "@mui/icons-material/Delete";
+
+/**
+ * a function that returns an object containing the data for a row in the table
+ * @param id the id of the school
+ * @param name the name of the shcool
+ * @returns {{name, id}}
+ */
+function createData(id, name){
+    return {
+        id,
+        name
+    }
+}
+
+/**
+ * this function is a hook of a row in the table
+ * @param props data for a row
+ * @returns {JSX.Element} JSX element of the row
+ */
+function Row(props) {
+    const { row } = props;
+
+    const view_survey_answers_button_string = "צפייה";
+
+    let navigate = useNavigate();
+
+    return (
+        <React.Fragment>
+            <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
+                {/* main goal's info */}
+                <TableCell>{row.id}</TableCell>
+                <TableCell>{row.name}</TableCell>
+                {/*view survey answers button*/}
+                <TableCell>
+                    <Button onClick={() => navigate(`survey/schoolSurveyAnswers?surveyID=${props.surveyID}&schoolID=${row.id}`, {replace: false})}>{view_survey_answers_button_string}</Button>
+                </TableCell>
+            </TableRow>
+        </React.Fragment>
+    )
+}
 
 
 const mock = [
@@ -34,12 +88,18 @@ const mock_stats_histo = {
     2: [123, 12]
 }
 
+const table_rows_mock = [createData(12, "jedi academy"), createData(66, "sith academy")];
+
 const questionsPerPage = 5;
 
 export default function SurveyGeneralResults(){
 
     const [surveyTitle, setSurveyTitle] = useState('');
     const [surveyDescription, setSurveyDescription] = useState('');
+    const [surveyID, setSurveyID] = useState('')
+
+    const [schoolTableRows, setSchoolTableRows] = useState(table_rows_mock)
+
     // initializing with dummy data for offline testing
     const [questions, setQuestions] = useState(mock);
     const [averageMap, setAverageMap] = useState(mock_stats_avg);
@@ -53,6 +113,10 @@ export default function SurveyGeneralResults(){
     const [openSnackbar, setOpenSnackbar] = useState(false);
 
     // STRINGS
+    const school_symbol_cell_head_string = "סמל";
+    const school_name_cell_head_string = "שם";
+    const school_view_answers_head_string = "צפייה בתשובות";
+
     const finish_view_button_string = "סיום צפייה וחזרה לתפריט";
 
     let navigate = useNavigate();
@@ -60,10 +124,12 @@ export default function SurveyGeneralResults(){
 
     useEffect(() => {
         var url = new URL(window.location.href);
-        var surveyID = url.searchParams.get("surveyID");
-        new Connection().getSurvey(surveyID, arrangeSurvey);
+        var urlSurveyID = url.searchParams.get("surveyID");
+        setSurveyID(urlSurveyID)
 
-        new Connection().getSurveyStats(surveyID, arrangeStats)
+        new Connection().getSurvey(urlSurveyID, arrangeSurvey);
+
+        new Connection().getSurveyStats(urlSurveyID, arrangeStats)
 
     }, []);
 
@@ -124,10 +190,26 @@ export default function SurveyGeneralResults(){
     return (
         <Space.Fill scrollable>
             <div style={{margin: '5vh'}} className="Survey">
-                {/*alert*/}
-                <Box sx={{width: "70%", marginBottom: "1%"}}>
-                    {showError && <Alert severity={errorSeverity}> {errorMessage} </Alert>}
-                </Box>
+
+                {/*table for the school who answered the survey*/}
+                <TableContainer sx={{width: '80%'}} component={Paper}>
+                    <Table aria-label={"collapsible table"}>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>{school_symbol_cell_head_string}</TableCell>
+                                <TableCell>{school_name_cell_head_string}</TableCell>
+                                <TableCell>{school_view_answers_head_string}</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {schoolTableRows.map((tableRow) => (
+                                <Row key={tableRow.id} row={tableRow} surveyID={surveyID}/>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+
+                <br/>
 
                 <Paper className="Survey-paper" elevation={3}>
                     {/*TODO: have this big and in bold*/}
