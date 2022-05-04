@@ -28,6 +28,17 @@ public class AndRule implements Rule{
     }
 
     @Override
+    public List<Integer> getQuestionIndex() {
+        List<Integer> res = new LinkedList<>();
+
+        for(Rule rule: rules){
+            res.addAll(rule.getQuestionIndex());
+        }
+
+        return res;
+    }
+
+    @Override
     public RuleDTO getDTO() {
         List<RuleDTO> ruleDTOs = new LinkedList<>();
 

@@ -177,6 +177,29 @@ public class SurveyDAO {
         return surveyAnswers;
     }
 
+    public SurveyAnswersDTO getAnswersPerSchool(String surveyID, int symbol) {
+        SurveyAnswersDTO surveyAnswers;
+
+        if(answers.containsKey(surveyID))
+            return findSchoolAnswers(answers.get(surveyID).getSecond(), symbol);
+
+        surveyAnswers = persistence.getAnswersPerSchool(surveyID, symbol);
+
+//        executor.execute(() -> addAnswersToCache(surveyId, surveyAnswers));
+
+        return surveyAnswers;
+    }
+
+    private SurveyAnswersDTO findSchoolAnswers(List<SurveyAnswersDTO> answers, int symbol) {
+
+        for(SurveyAnswersDTO surveyAnswersDTO: answers){
+            if(surveyAnswersDTO.getId().equals(symbol+""))
+                return surveyAnswersDTO;
+        }
+
+        return null;
+    }
+
 
     public void insertCoordinatorAnswers(String id, String symbol, List<String> answers, List<AnswerType> types) {
         SurveyAnswersDTO answersDTO;

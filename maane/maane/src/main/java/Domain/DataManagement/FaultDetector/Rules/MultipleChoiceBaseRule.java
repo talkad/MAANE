@@ -36,6 +36,11 @@ public class MultipleChoiceBaseRule implements Rule{
     }
 
     @Override
+    public List<Integer> getQuestionIndex() {
+        return List.of(questionID);
+    }
+
+    @Override
     public RuleDTO getDTO() {
         RuleDTO dto = new RuleDTO();
         dto.setQuestionID(questionID);

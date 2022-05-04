@@ -53,5 +53,5 @@ public interface SurveyService {
 
     Response<SurveyStatsDTO> getSurveyStats(String username, String surveyID);
 
-    Response<AnswersDTO> getAnswers(String username, String surveyID);
+    Response<AnswersDTO> getAnswers(String username, String surveyID, int symbol);
 }

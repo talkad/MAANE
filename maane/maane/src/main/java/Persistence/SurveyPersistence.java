@@ -612,6 +612,49 @@ public class SurveyPersistence {
         return output;
     }
 
+    public SurveyAnswersDTO getAnswersPerSchool(String surveyID, int symbol) {
+        Connect.createConnection();
+        String query = "SELECT * FROM \"Answers\" WHERE survey_id = ? AND school_symbol = ?";
+        PreparedStatement statement;
+
+        SurveyAnswersDTO surveyAnswersDTO = null;
+        try {
+
+            statement = Connect.conn.prepareStatement(query);
+            statement.setString(1, surveyID);
+            statement.setInt(2, symbol);
+            ResultSet result = statement.executeQuery();
+
+            if (result.next()) {
+                symbol = result.getInt("school_symbol");
+                String answer = result.getString("answer");
+                String answerType = result.getString("answer_type");
+
+                List<String> parsedAnswers = Arrays.asList(answer.split(","));
+                List<String> answers = new LinkedList<>(parsedAnswers);
+
+                List<String> parsedTypes = Arrays.asList(answerType.split(","));
+                List<String> typesStrings = new LinkedList<>(parsedTypes);
+                List<AnswerType> types = new LinkedList<>();
+                for (String s : typesStrings) { types.add(AnswerType.valueOf(s)); };
+
+                types.add(0, AnswerType.OPEN_ANSWER);
+                answers.add(0, symbol+"");
+
+                surveyAnswersDTO = new SurveyAnswersDTO(surveyID, answers, types);
+            }
+
+            Connect.closeConnection();
+
+            log.info("DB: got answers successfully");
+
+        } catch (SQLException e) {
+            log.error("DB: failed to get answers \n" + e.getMessage());
+        }
+
+        return surveyAnswersDTO;
+    }
+
     public void insertCoordinatorAnswers(String id, String symbol, List<String> answers, List<AnswerType> types) {
         Connect.createConnection();
         String sql = "INSERT INTO \"Answers\" (survey_id, school_symbol, answer, answer_type) VALUES (?, ?, ?, ?)";

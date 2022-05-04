@@ -5,6 +5,8 @@ import Domain.CommonClasses.Response;
 import Domain.DataManagement.FaultDetector.Rules.Rule;
 import Domain.DataManagement.SurveyAnswers;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -61,6 +63,25 @@ public class FaultDetector {
         }
 
         return new Response<>(faults, false, "details");
+    }
+
+    /**
+     * get the illegal answers IDs
+     * @param answers answers on certain survey
+     * @return list of booleans indicates the legality of answers
+     */
+    public Response<List<Boolean>> getIllegalQuestionID(SurveyAnswers answers){
+        List<Boolean> ids = new ArrayList<>(Collections.nCopies(answers.getAnswers().keySet().size(), false));
+
+        for(Pair<Rule, Integer> rule: rules){
+            if(rule.getFirst().apply(answers)) {
+
+                for(Integer questionIndex: rule.getFirst().getQuestionIndex())
+                    ids.set(questionIndex, true);
+            }
+        }
+
+        return new Response<>(ids, false, "details");
     }
 
     public List<Pair<Rule, Integer>> getRules() {

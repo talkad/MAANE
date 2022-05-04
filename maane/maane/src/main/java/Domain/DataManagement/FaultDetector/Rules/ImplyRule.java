@@ -22,6 +22,16 @@ public class ImplyRule implements Rule{
     }
 
     @Override
+    public List<Integer> getQuestionIndex() {
+        List<Integer> res = new LinkedList<>();
+
+        res.addAll(firstSide.getQuestionIndex());
+        res.addAll(secondSide.getQuestionIndex());
+
+        return res;
+    }
+
+    @Override
     public RuleDTO getDTO() {
         List<RuleDTO> ruleDTOs = new LinkedList<>();
 

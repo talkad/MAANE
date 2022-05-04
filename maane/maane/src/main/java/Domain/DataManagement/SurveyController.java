@@ -404,33 +404,34 @@ public class SurveyController {
     }
 
     /**
-     *
-     * @param username
-     * @param surveyID
-     * @return
+     * get answers of given school
+     * @param username the username of the request
+     * @param surveyID survey identifier
+     * @param symbol identifier of school
+     * @return answers
      */
-    public Response<AnswersDTO> getAnswers(String username, String surveyID) {
+    public Response<AnswersDTO> getAnswers(String username, String surveyID, int symbol) {
         FaultDetector faultDetector;
         List<String> actualAnswers;
         Response<Boolean> legalGet = UserController.getInstance().hasCreatedSurvey(username, surveyID);
-        List<Pair<List<String>, List<Integer>>> answersPair = new LinkedList<>();
 
         if(!legalGet.getResult())
             return new Response<>(null, true, username + " did not create survey " + surveyID);
 
         faultDetector = new FaultDetector(rulesConverter(surveyDAO.getRules(surveyID)));
-        List<SurveyAnswers> answers = answerConverter(surveyDAO.getAnswers(surveyID));
 
-        for(SurveyAnswers ans: answers){
-            actualAnswers = new LinkedList<>();
+        SurveyAnswersDTO surveyAnswersDTO = surveyDAO.getAnswersPerSchool(surveyID, symbol);
+        if(surveyAnswersDTO == null)
+            return new Response<>(null, true, "answers was not found with symbol: " + symbol);
 
-            for(Integer questionIndex: ans.getAnswers().keySet())
-                actualAnswers.add(ans.getAnswers().get(questionIndex).getSecond());
+        SurveyAnswers answers = new SurveyAnswers(surveyAnswersDTO);
 
-            answersPair.add(new Pair<>(actualAnswers, faultDetector.detectFault(ans).getResult()));
-        }
+        actualAnswers = new LinkedList<>();
 
-        return new Response<>(new AnswersDTO(answersPair), false, "Got answers successfully");
+        for(Integer questionIndex: answers.getAnswers().keySet())
+            actualAnswers.add(answers.getAnswers().get(questionIndex).getSecond());
+
+        return new Response<>(new AnswersDTO(actualAnswers, faultDetector.getIllegalQuestionID(answers).getResult(), faultDetector.detectFault(answers).getResult()), false, "Got answers successfully");
     }
 
     private Response<SurveyStatsDTO> buildSurveyStats(List<SurveyAnswers> answers, SurveyDTO survey) {
