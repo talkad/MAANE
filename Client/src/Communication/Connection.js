@@ -525,11 +525,7 @@ class Connection{
      * @param callback a callback function to call once there's a response
      */
     getSurveyStats(surveyID, callback){
-        this.sendGET('survey/something',
-            {
-                surveyID: surveyID,
-            },
-            callback);
+        this.sendGET(`survey/getSurveyStats/surveyID=${surveyID}`, callback);
     }
 
     /**
@@ -539,7 +535,7 @@ class Connection{
      * @param callback a callback function to call once there's a response
      */
     getSchoolSurveyAnswers(surveyID, schoolID, callback){
-        // TODO: implement
+        this.sendGET(`survey/getAnswers/surveyID=${surveyID}&symbol=${schoolID}`, callback);
     }
 
     // GOALS

@@ -85,7 +85,7 @@ export default function SurveyRule(props){
         // from https://stackoverflow.com/questions/57269224/reactjs-material-ui-accept-only-positive-unsigned-integer-values-in-textfield
         let input = event.target.value ;
         if( !input || ( input[input.length-1].match('[0-9]') && input[0].match('[1-9]')) )
-            props.handleNumericalConstraintChange(props.id, props.Ntrace, props.constraintType, input);
+            props.handleNumericalConstraintChange(props.id, props.trace, props.constraintType, input);
 
     }
 
@@ -151,6 +151,19 @@ export default function SurveyRule(props){
     }
 
     /**
+     * gets the title of the selected goal
+     * @returns {[]|string[]|string|*} the list of answers
+     */
+    const selectedGoalTitle = () => {
+        const goal = props.goals.find(element => element.value === props.goalSelection);
+
+        if (goal === undefined){
+            return ''
+        }
+        return goal.description;
+    }
+
+    /**
      * handler for removing the current cell
      */
     const handleRemove = () => {
@@ -172,7 +185,7 @@ export default function SurveyRule(props){
                        sx={{backgroundColor: props.colors[((props.depth % props.colors.length))]}}>
 
                     {/*TODO: better titles*/}
-                    {props.depth === 0 && <h1>{chosen_goal_string} {props.goalSelection}</h1>}
+                    {props.depth === 0 && <h1>{chosen_goal_string} {selectedGoalTitle()}</h1>}
                     {props.depth > 0 && <h1>{chosen_rule_string} {selectedQuestionTitle()}</h1>}
 
                     <Grid container spacing={1}>

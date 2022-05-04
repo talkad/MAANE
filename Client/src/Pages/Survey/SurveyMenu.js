@@ -93,7 +93,7 @@ const offline_data =
     ]
 
 export default function SurveyMenu(props){
-    const [data, setData] = useState(offline_data);
+    const [data, setData] = useState([]);
 
     // publish survey data
     const [openPublishSurveyDialog, setOpenPublishSurveyDialog] = useState(false);
@@ -214,7 +214,7 @@ export default function SurveyMenu(props){
                                             {/*button to go to the survey represented by the card this button is in*/}
                                             <Button color={'secondary'} size={"medium"} disabled={y.isPublished} onClick={() => navigate(`../createSurvey?surveyID=${y.id}`, {replace: true})}>עריכת סקר</Button>
                                             <Button color={'secondary'} size={'medium'} disabled={y.isPublished} onClick={() => navigate(`../rules?surveyID=${y.id}`, {replace: false})}>עריכת חוקים</Button>
-                                            {y.isPublished && <Button color="secondary" size="medium" onClick={() => navigate(`../getSurvey?surveyID=${y.id}`, {replace: true})}>צפייה בתשובות</Button>}
+                                            {y.isPublished && <Button color="secondary" size="medium" onClick={() => navigate(`../surveyResults?surveyID=${y.id}`, {replace: true})}>צפייה בתשובות</Button>}
                                             {!y.isPublished && <Button color={'secondary'} size={'medium'} onClick={() => handleOpenPublishSurveyDialog(y.id, y.title)}>פרסום סקר</Button>}
                                         </CardActions>
                                     </CardActionArea>

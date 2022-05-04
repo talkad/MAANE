@@ -69,17 +69,16 @@ export default function SurveyRulesEditor(){
             const generateRules = function(rule){
 
                 if(rule.ruleDTO.subRules === null) {
-                    if(rule.constraint.type === 'MULTIPLE_CHOICE'){
-                        if(rule.type === 'MULTIPLE_CHOICE'){
-                            return {id: rulesIndexer++, goalSelection: rule.goalID, children: [{id: rulesIndexer++, questionSelection: rule.questionID, children: [],
-                                constraint: {type: 'MULTIPLE_CHOICE', value: rule.answers}}]}
-                        }
+                    if(rule.ruleDTO.type === 'MULTIPLE_CHOICE'){
+                        return {id: rulesIndexer++, goalSelection: rule.goalID, children: [{id: rulesIndexer++, questionSelection: rule.ruleDTO.questionID, children: [],
+                            constraint: {type: 'MULTIPLE_CHOICE', value: rule.ruleDTO.answers.map(ele => ele.toString())}}]}
+                        
                     }
 
-                    if(rule.type === "NUMERIC"){
+                    if(rule.ruleDTO.type === "NUMERIC"){
                         
-                        return {id: rulesIndexer++, goalSelection: rule.goalID, children: [{id: rulesIndexer++, questionSelection: rule.questionID, children: [],
-                            constraint: {type: rule.comparison, value: rule.answers[0]}}]}
+                        return {id: rulesIndexer++, goalSelection: rule.goalID, children: [{id: rulesIndexer++, questionSelection: rule.ruleDTO.questionID, children: [],
+                            constraint: {type: rule.ruleDTO.comparison, value: rule.ruleDTO.answers[0]}}]}
 
                     }
                 }
@@ -118,7 +117,7 @@ export default function SurveyRulesEditor(){
         if(!data.failure){
 
             for (const row of data.result){
-                setGoals([...goals, {value: row.goalId, description: row.title}]);
+                setGoals(goals => [...goals, {value: row.goalId, description: row.title}]);
             }
         }
 
@@ -152,7 +151,7 @@ export default function SurveyRulesEditor(){
      * adds a new rule
      */
     const addRule = () => {
-        setRules([...rules, {id: ruleID, goalSelection: 1, children: []}])
+        setRules([...rules, {id: ruleID, goalSelection: '', children: []}])
         setRuleID(ruleID + 1)
     }
 

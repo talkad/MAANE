@@ -13,17 +13,26 @@ export default function SurveyQuestion(props){
     const multiple_choice_helper_text_string = "יש לבחור תשובה";
 
     /**
-     * onChange callback when there a change to the answer text-field
+     * onChange callback when there a change to an open textfield
      * @param event the changed element
      */
     const handleOpenAnswerChange = (event) => {
         //setOpenAnswer(event.target.value)
 
+        props.answerChange(props.id, event.target.value)
+    }
+
+    /**
+     * onChange callback when there a change to a numeric textfield
+     * @param event the changed element
+     */
+    const handleNumericAnswerChange = (event) => {
         // from https://stackoverflow.com/questions/57269224/reactjs-material-ui-accept-only-positive-unsigned-integer-values-in-textfield
         let input = event.target.value ;
-        if( !input || ( input[input.length-1].match('[0-9]') && input[0].match('[1-9]')) )
+        if( !input || ( input[input.length-1].match('[0-9]') && input[0].match('[1-9]')) ){
             props.answerChange(props.id, input)
-
+        }
+            
     }
 
     /**
@@ -101,7 +110,7 @@ export default function SurveyQuestion(props){
                             value={props.answer}
                             helperText={open_answer_helper_text_string}
                             label={numeral_answer_label_string}
-                            onChange={handleOpenAnswerChange}
+                            onChange={handleNumericAnswerChange}
                         />
                     </Grid>}
                 </Grid>
