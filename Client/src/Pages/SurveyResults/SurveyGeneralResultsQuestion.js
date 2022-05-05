@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     Box,
     FormControl,
@@ -48,6 +48,12 @@ export default function SurveyGeneralResultsQuestion(props){
 
     const answer_average_text_string = "ממוצע התשובות לשאלה זו הוא:";
 
+    useEffect(() => {
+        console.log("for question id " + props.id)
+        console.log(props.statistics)
+
+    }, []);
+
 
     /**
      * sums the answers in the histogram stats
@@ -88,11 +94,13 @@ export default function SurveyGeneralResultsQuestion(props){
                                                                                 label={<Typography>{element}</Typography>}/></Grid>
                                             {/*percentage bar*/}
                                             <Grid item xs={5}>
-                                                <LinearProgressWithLabel variant="determinate" value={(props.statistics[index]/getHistogramSum())*100} />
+                                            {/* (props.statistics[index]/getHistogramSum())*100 */}
+                                                <LinearProgressWithLabel variant="determinate" value={(props.statistics[index]/getHistogramSum())*100} /> 
                                             </Grid>
 
                                             {/*number of answers*/}
                                             <Grid item xs={2}>
+                                                {/* props.statistics[index] */}
                                                 <Typography display={"inline"}><Typography color={'blue'} display={"inline"}>{props.statistics[index]}</Typography> {total_answers_string} </Typography>
                                             </Grid>
                                         </Grid>
@@ -106,6 +114,7 @@ export default function SurveyGeneralResultsQuestion(props){
                     {/*open-numerical view for question of this kind*/}
                     {props.type === 'NUMERIC_ANSWER'  && <Grid sx={{alignItems: 'center', margin: "1%"}} item xs={12}>
                         <Typography display={"inline"}>{answer_average_text_string} </Typography>
+                        {/* props.statistics */}
                         <Typography display={"inline"} color={'blue'}>{props.statistics}</Typography>
                     </Grid>}
                 </Grid>

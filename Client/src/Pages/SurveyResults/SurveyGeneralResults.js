@@ -95,16 +95,17 @@ const questionsPerPage = 5;
 
 export default function SurveyGeneralResults(){
 
-    const [surveyTitle, setSurveyTitle] = useState("hello there");
+    const [surveyTitle, setSurveyTitle] = useState("");
     const [surveyDescription, setSurveyDescription] = useState('');
     const [surveyID, setSurveyID] = useState('')
 
-    const [schoolTableRows, setSchoolTableRows] = useState(table_rows_mock)
+    const [schoolTableRows, setSchoolTableRows] = useState([])
 
     // initializing with dummy data for offline testing
-    const [questions, setQuestions] = useState(mock);
-    const [averageMap, setAverageMap] = useState(mock_stats_avg);
-    const [histogramMap, setHistogramMap] = useState(mock_stats_histo);
+    const [questions, setQuestions] = useState([]);
+    const [averageMap, setAverageMap] = useState({});
+    const [histogramMap, setHistogramMap] = useState({});
+    const [statsLoaded, setStatsLoaded] = useState(false);
     const [page, setPage] = React.useState(1);
 
     // error states
@@ -156,13 +157,10 @@ export default function SurveyGeneralResults(){
             setSurveyDescription(survey.description);
 
             const zippedQuestionsList = zip([survey.questions, survey.types, survey.answers]);
-
+            console.log(zippedQuestionsList.slice(1))
             let questionIndexer = 0;
-            zippedQuestionsList.slice(1).forEach(([question, type, answers]) => setQuestions(questions => // don't need the first question
-                [...questions, {id: questionIndexer++, question: question, type: type, choices: answers, statics: '',}]));
-
-            // filtering all the open answer questions
-            setQuestions(questions => questions.filter((question) => question.type !== "OPEN_ANSWER"))
+            zippedQuestionsList.slice(1).forEach(([question, type, answers], index) => setQuestions(questions => // don't need the first question
+                [...questions, {id: index, question: question, type: type, choices: answers}]));
         }
         else {
             // TODO: have a page for when showing the survey fails
@@ -178,8 +176,8 @@ export default function SurveyGeneralResults(){
 
             let stats = data.result
 
-            setAverageMap(stats.numericAverage)
             setHistogramMap(stats.multipleHistogram)
+            setAverageMap(stats.numericAverage)
 
             function zip(arrays) {
                 return arrays[0].map(function(_,i){
@@ -192,6 +190,8 @@ export default function SurveyGeneralResults(){
             zippedSchoolsList.map(([symbol, name]) => setSchoolTableRows(row => [
                 ...row, createData(symbol, name)
             ]))
+
+            setStatsLoaded(true);
         }
     }
 
@@ -276,12 +276,12 @@ export default function SurveyGeneralResults(){
                 {/*                    statistics={question.type === "MULTIPLE_CHOICE" ? histogramMap[question.id] : averageMap[question.id]} />)}*/}
 
                 {/*the question of the survey*/}
-                {questions.map(question =>
+                {statsLoaded && questions.filter((question) => question.type !== 'OPEN_ANSWER').map(question =>
                     <SurveyGeneralResultsQuestion id={question.id}
                                                   questionString={question.question}
                                                   choices={question.type === "MULTIPLE_CHOICE" ? question.choices : []}
                                                   type={question.type}
-                                                  statistics={question.type === "MULTIPLE_CHOICE" ? histogramMap[question.id] : averageMap[question.id]} />)}
+                                                  statistics={question.type === "MULTIPLE_CHOICE" ? histogramMap[question.id+2] : averageMap[question.id+2]} />)}
 
                 {/*paging component*/}
                 {/*<Pagination count={Math.ceil(questions.length/questionsPerPage)} page={page} onChange={handlePageChange} />*/}
