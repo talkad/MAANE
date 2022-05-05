@@ -71,13 +71,13 @@ public class FaultDetector {
      * @return list of booleans indicates the legality of answers
      */
     public Response<List<Boolean>> getIllegalQuestionID(SurveyAnswers answers){
-        List<Boolean> ids = new ArrayList<>(Collections.nCopies(answers.getAnswers().keySet().size(), false));
+        List<Boolean> ids = new ArrayList<>(Collections.nCopies(answers.getAnswers().keySet().size(), true));
 
         for(Pair<Rule, Integer> rule: rules){
             if(rule.getFirst().apply(answers)) {
 
                 for(Integer questionIndex: rule.getFirst().getQuestionIndex())
-                    ids.set(questionIndex, true);
+                    ids.set(questionIndex, false);
             }
         }
 

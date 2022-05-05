@@ -7,7 +7,7 @@ import NotificationSnackbar from "../../CommonComponents/NotificationSnackbar";
 import Connection from "../../Communication/Connection";
 import {navigate} from "react-big-calendar/lib/utils/constants";
 import {useNavigate} from "react-router-dom";
-import SurveyGeneralResultsQuestion from "./SurveyGeneralResultsQuestion";
+import SurveySchoolResultsQuestion from './SurveySchoolResultsQuestion';
 
 const mock = [
     {
@@ -72,6 +72,7 @@ export default function SurveySchoolResults(){
     // initializing with dummy data for offline testing
     const [questions, setQuestions] = useState([]);
     const [answers, setAnswers] = useState([]);
+    const [loadedAnswers, setLoadedAnswers] = useState(false)
 
     // STRINGS
     const finish_view_survey_string = 'סיום צפייה וחזרה לנתוני הסקר';
@@ -111,8 +112,8 @@ export default function SurveySchoolResults(){
             const zippedQuestionsList = zip([survey.questions, survey.types, survey.answers]);
 
             let questionIndexer = 0;
-            zippedQuestionsList.forEach(([question, type, answers]) => setQuestions(questions =>
-                [...questions, {id: questionIndexer++, question: question, type: type, choices: answers}]));
+            zippedQuestionsList.forEach(([question, type, answers], index) => setQuestions(questions =>
+                [...questions, {id: index, question: question, type: type, choices: answers}]));
         }
         else {
             // TODO: have a page for when showing the survey fails
@@ -137,6 +138,8 @@ export default function SurveySchoolResults(){
 
             zippedAnswersData.forEach(([answer, legality, goalIDs]) => setAnswers(answers =>
                 [...answers, {answer: answer, isLegal: legality, goalIDs: goalIDs}]));
+
+            setLoadedAnswers(true);
         }
     }
 
@@ -175,8 +178,8 @@ export default function SurveySchoolResults(){
                 </Paper>
 
                 {/*the question of the survey*/}
-                {questions.map((question, index) =>
-                    <SurveyGeneralResultsQuestion id={question.id}
+                {loadedAnswers && questions.map((question, index) =>
+                    <SurveySchoolResultsQuestion id={question.id}
                                                   questionString={question.question}
                                                   choices={question.type === "MULTIPLE_CHOICE" ? question.choices : []}
                                                   type={question.type}

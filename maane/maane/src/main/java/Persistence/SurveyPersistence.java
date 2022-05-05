@@ -632,7 +632,7 @@ public class SurveyPersistence {
 
             statement = Connect.conn.prepareStatement(query);
             statement.setString(1, surveyID);
-            statement.setInt(2, symbol);
+            statement.setString(2, symbol+"");
             ResultSet result = statement.executeQuery();
 
             if (result.next()) {
@@ -648,8 +648,8 @@ public class SurveyPersistence {
                 List<AnswerType> types = new LinkedList<>();
                 for (String s : typesStrings) { types.add(AnswerType.valueOf(s)); };
 
-                types.add(0, AnswerType.OPEN_ANSWER);
-                answers.add(0, symbol+"");
+//                types.add(0, AnswerType.OPEN_ANSWER);
+//                answers.add(0, symbol+"");
 
                 surveyAnswersDTO = new SurveyAnswersDTO(surveyID, answers, types);
             }
