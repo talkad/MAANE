@@ -305,7 +305,7 @@ describe('Register users tests as admin', () => {
 
         let role_choice = "מדריכ/ה"
         cy.find(user_to_register.firstName)
-        cy.get(`#td_td_role_${user_to_register.username}`).contains(role_choice)
+        cy.get(`#td_role_${user_to_register.username}`).contains(role_choice)
         // todo: check how many parents i need to go up to make sure he's under the right supervisor
     })
 
@@ -340,7 +340,7 @@ describe('Register users tests as admin', () => {
 
         let role_choice = "מפקח/ת כללי/ת"
         cy.find(user_to_register.firstName)
-        cy.get(`#td_td_role_${user_to_register.username}`).contains(role_choice)
+        cy.get(`#td_role_${user_to_register.username}`).contains(role_choice)
         // todo: check how many parents i need to go up to make sure he's under the right supervisor
     })
 

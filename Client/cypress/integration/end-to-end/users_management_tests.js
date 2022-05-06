@@ -173,11 +173,60 @@ describe('User management test as a supervisor', () => {
         // but the user should still not appear anymore
         cy.get(`#user_collapse_button_${selected_user_as_supervisor.username}`).should('not.exist') // the row for the user should not exist
     })
+
+    // todo: tests for assigning a school to an instructor
 })
+
+let selected_supervisor_as_system_manager = {
+    username: "Vasher",
+}
+
+let selected_instructor_as_system_manager = {
+    username: "Denth lol"
+}
 
 describe('User management test as a system manager', () => {
     beforeEach(() => {
         //TODO: format the db and log in as a system manager
         cy.visit('/user/home')
+
+        // opening the info of the selected supervisor
+        cy.get(`#user_collapse_button_${selected_supervisor_as_system_manager.username}`).click()
+    })
+
+    it('Making an instructor of a field the supervisor of the field', () => {
+        //  opening the info of the selected instructor
+        cy.get(`#user_collapse_button_${selected_instructor_as_system_manager.username}`).click()
+
+        // opening the dialog of transferring the supervision
+        cy.get(`#transfer_supervision_to_${selected_instructor_as_system_manager.username}`).click()
+
+        cy.get('transfer_supervision_accept_button').click()
+
+        // filling auth page form
+        cy.get('#auth_password').type(current_user_password)
+        cy.get('#auth_submit_button').click() // submitting
+
+        // the user we switched from should not be present in the table
+        cy.contains(selected_supervisor_as_system_manager.username).should('not.exist')
+
+        // the user we switched from should be present as a supervisor
+        cy.get(`td_supervisor_username_${selected_instructor_as_system_manager.username}`).contains(selected_instructor_as_system_manager.username)
+    })
+
+    it('Making an instructor of a field the supervisor of the field but pressing cancel', () => {
+        //  opening the info of the selected instructor
+        cy.get(`#user_collapse_button_${selected_instructor_as_system_manager.username}`).click()
+
+        // opening the dialog of transferring the supervision
+        cy.get(`#transfer_supervision_to_${selected_instructor_as_system_manager.username}`).click()
+
+        cy.get('transfer_supervision_decline_button').click()
+
+        // the user we switched from should still be a supervisor
+        cy.get(`td_supervisor_username_${selected_supervisor_as_system_manager.username}`).contains(selected_supervisor_as_system_manager.username)
+
+        // the user we switched from should still be an instructor
+        cy.get(`td_non_supervisor_username_${selected_instructor_as_system_manager.username}`).contains(selected_instructor_as_system_manager.username)
     })
 })
