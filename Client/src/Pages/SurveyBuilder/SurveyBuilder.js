@@ -29,7 +29,7 @@ export default function SurveyBuilder(){
     const survey_title_label_string = 'כותרת הסקר'
     const survey_description_label_string = 'תיאור הסקר'
     const add_question_string = 'הוספ/י שאלה'
-    const submit_survey_string = 'סיום'
+    const submit_survey_string = 'סיום ושמירת הסקר'
 
     const survey_success_title_string = "הסקר נוצר בהצלחה"
     const survey_success_message_string = "לחזרה לתפריט הסקרים נא ללחוץ על הכפתור למטה";
@@ -220,13 +220,14 @@ export default function SurveyBuilder(){
                 <h1>{header_string}</h1>
                 {/*alert*/}
                 <Box sx={{width: "70%", marginBottom: "1%"}}>
-                    {showError && <Alert severity={errorSeverity}> {errorMessage} </Alert>}
+                    {showError && <Alert id={'create_survey_error_alert'} severity={errorSeverity}> {errorMessage} </Alert>}
                 </Box>
 
                 <Paper className="Survey-paper" elevation={3}>
                     {/*TODO: make the margin work */}
                     {/*the title of the survey*/}
                     <TextField
+                        id={'create_survey_title'}
                         value={title}
                         onChange={handleTitleChange}
                         color="secondary"
@@ -240,6 +241,7 @@ export default function SurveyBuilder(){
                     />
                     {/*the description of the survey*/}
                     <TextField
+                        id={'create_survey_description'}
                         value={description}
                         onChange={handleDescriptionChange}
                         color="secondary"
@@ -263,10 +265,10 @@ export default function SurveyBuilder(){
                                                             showError={showError}/>)}
 
                 {/*add question button*/}
-                <Button onClick={add_question} color="secondary" variant="contained">{add_question_string}</Button>
+                <Button id={'create_survey_add_question_button'} onClick={add_question} color="secondary" variant="contained">{add_question_string}</Button>
                 <br/>
                 {/*submit question button*/}
-                <Button onClick={submit_survey} color="secondary" variant="contained">{submit_survey_string}</Button>
+                <Button id={'create_survey_submit_survey_button'} onClick={submit_survey} color="secondary" variant="contained">{submit_survey_string}</Button>
                 {/*pop up notification*/}
                 <NotificationSnackbar
                     open={openSnackbar}
@@ -281,13 +283,13 @@ export default function SurveyBuilder(){
                      justifyContent="center"
                 spacing={1}>
                     <Grid item xs={12}>
-                        <Alert severity="success">
+                        <Alert id={'create_survey_success_alert'} severity="success">
                             <AlertTitle>{survey_success_title_string}</AlertTitle>
                             {survey_success_message_string}
                         </Alert>
                     </Grid>
                     <Grid item xs={12}>
-                        <Button onClick={() => navigate('../menu', true)} variant="outlined">{survey_success_button_string}</Button>
+                        <Button id={'create_survey_go_back_button'} onClick={() => navigate('../menu', true)} variant="outlined">{survey_success_button_string}</Button>
                     </Grid>
                 </Grid>}
         </Space.Fill>
