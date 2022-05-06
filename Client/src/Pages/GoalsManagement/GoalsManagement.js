@@ -394,6 +394,7 @@ export default function GoalsManagement(props){
     const add_goal_button_string = "הוספת יעד";
 
     useEffect(() => {
+        // todo: i have a funny feeling this conversion is not right
         let year = new Date().getFullYear();
 
         let years_range = [];

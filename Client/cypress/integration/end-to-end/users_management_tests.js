@@ -6,7 +6,7 @@ let selected_user_as_supervisor = {
 
 let current_user_password = 'kaladsphantoms'
 
-describe('User management test as a supervisor', () => {
+describe('User management tests as a supervisor', () => {
     beforeEach(() => {
         //TODO: format the db and log in as a supervisor
         cy.visit('/user/home')
@@ -185,7 +185,7 @@ let selected_instructor_as_system_manager = {
     username: "Denth lol"
 }
 
-describe('User management test as a system manager', () => {
+describe('User management tests as a system manager', () => {
     beforeEach(() => {
         //TODO: format the db and log in as a system manager
         cy.visit('/user/home')
