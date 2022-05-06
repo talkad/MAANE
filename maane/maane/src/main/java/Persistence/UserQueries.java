@@ -584,7 +584,8 @@ public class UserQueries {
     public Response<Boolean> removeCoordinator(String workField, String school) {
         Connect.createConnection();
         int rows = 0;//todo add cascade to all tables with foreign keys
-        String sql = "DELETE FROM \"Users\", \"UsersSchools\" WHERE userame = (SELECT username FROM \"Users\" JOIN \"UsersSchools\" ON username WHERE workfield = ? AND symbol = ? AND userstateenum = COORDINATOR)";
+        String sql = "DELETE FROM \"Users\", \"UsersSchools\" WHERE userame = (SELECT username FROM \"Users\" JOIN \"UsersSchools\" ON username WHERE workfield = ? AND symbol = ? AND userstateenum = COORDINATOR)";//todo fix it with cascade
+
         PreparedStatement preparedStatement;
         try {
             preparedStatement = Connect.conn.prepareStatement(sql);

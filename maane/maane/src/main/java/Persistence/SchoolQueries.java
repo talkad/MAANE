@@ -28,7 +28,7 @@ public class SchoolQueries {
         PreparedStatement preparedStatement = null;
         try {
             preparedStatement = Connect.conn.prepareStatement(sql);
-            preparedStatement.setInt(1, Integer.getInteger(school.getSymbol()));
+            preparedStatement.setString(1, school.getSymbol());
             preparedStatement.setString(2, school.getName());
             preparedStatement.setString(3, school.getCity());
             preparedStatement.setString(4, school.getCity_mail());
@@ -59,7 +59,7 @@ public class SchoolQueries {
         Connect.createConnection();
         String sql = "DELETE FROM \"Schools\" WHERE symbol = ?";
         try (PreparedStatement pstmt = Connect.conn.prepareStatement(sql)) {
-            pstmt.setInt(1, Integer.getInteger(symbol));
+            pstmt.setString(1, symbol);
             pstmt.executeUpdate();
             Connect.closeConnection();
             return new Response<>(true, false, "removed school successfully");
@@ -79,7 +79,7 @@ public class SchoolQueries {
         PreparedStatement preparedStatement;
         try {
             preparedStatement = Connect.conn.prepareStatement(sql);
-            preparedStatement.setInt(1, Integer.getInteger(school.getSymbol()));
+            preparedStatement.setString(1, school.getSymbol());
             preparedStatement.setString(2, school.getName());
             preparedStatement.setString(3, school.getCity());
             preparedStatement.setString(4, school.getCity_mail());
@@ -116,7 +116,7 @@ public class SchoolQueries {
         try {
             statement = Connect.conn.prepareStatement(sql);
 
-            statement.setInt(1, Integer.getInteger(symbol));
+            statement.setString(1, symbol);
             ResultSet result = statement.executeQuery();
             if(result.next()) {
                 boolean found = result.getBoolean(1);
@@ -154,11 +154,11 @@ public class SchoolQueries {
     public SchoolDBDTO getSchool (String symbol) {
         Connect.createConnection();
         String sql = "SELECT * FROM \"Schools\" WHERE symbol = ?";
-        PreparedStatement statement = null;
+        PreparedStatement statement;
         SchoolDBDTO schoolDBDTO = null;
         try {
             statement = Connect.conn.prepareStatement(sql);
-            statement.setInt(1, Integer.parseInt(symbol));
+            statement.setString(1, symbol);
             ResultSet resultSchool = statement.executeQuery();
 
             if (resultSchool.next()) {
