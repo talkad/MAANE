@@ -13,6 +13,6 @@ public class AnswersDTO {
 
     private List<String> answers;
     private List<Boolean> isLegal;
-    private List<Integer> goalIDs;
+    private List<String> goals;
 
 }

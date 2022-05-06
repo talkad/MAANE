@@ -141,6 +141,25 @@ public class GoalsManagement {
         return new Response<>(null, true, "no such goal exists");*/
     }
 
+    public Response<Goal> getGoalTById(int goalID){
+        List<Goal> goalsList;
+
+        Response<List<GoalDTO>> goalDTOListRes = goalsDAO.getGoalsById(List.of(goalID));
+
+        if(!goalDTOListRes.isFailure()){
+            goalsList = goalsDTOToGoals(goalDTOListRes.getResult());
+
+            if(goalsList.size() == 1)
+                return new Response<>(goalsList.get(0), false, "goal found");
+
+            return new Response<>(null, true, "more then one goal found");
+        }
+        else{
+            return new Response<>(null, true, "no such goal exists");
+        }
+
+    }
+
     public Response<Boolean> removeGoal(String workField, String year, int goalId){
         return goalsDAO.removeGoal(goalId);
 /*        Response<List<GoalDTO>> goalListRes = goalsDAO.getGoals(workField, year);

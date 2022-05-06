@@ -287,4 +287,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             log.info("successfully transferred supervision from {} to {} by {}", currSupervisor,  newSupervisor, currUser);
         return res;
     }
+
+    @Override
+    public Response<WorkPlanDTO> getWorkPlan(String username, int month) {
+        return null;
+    }
+
+
 }

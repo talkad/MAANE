@@ -64,7 +64,7 @@ export default function surveySchoolResultsQuestion(props){
                                     {props.choices.map((element, index) =>
                                         <FormControlLabel value={index.toString()} control={<Radio color="secondary"/>} label={element}/>)}
                                 </RadioGroup>
-                                {!props.isLegal && <FormHelperText><Typography display={'inline'}><Typography display={'inline'}>props.goalsID</Typography> {violation_of_goals_string}</Typography></FormHelperText>}
+                                {!props.isLegal && <FormHelperText><Typography display={'inline'}><Typography display={'inline'}>props.violatedGoals.reduce((pv, cv) => `${pv}, ${cv}`, '')</Typography> {violation_of_goals_string}</Typography></FormHelperText>}
                             </FormControl>
                         </Grid>
 
@@ -78,7 +78,7 @@ export default function surveySchoolResultsQuestion(props){
                             variant="standard"
                             value={props.answer}
                             error={!props.isLegal}
-                            helperText={!props.isLegal ? <Typography display={'inline'}><Typography display={'inline'}>props.goalsID</Typography> {violation_of_goals_string}</Typography> : ''}
+                            helperText={!props.isLegal ? <Typography display={'inline'}><Typography display={'inline'}>props.violatedGoals.reduce((pv, cv) => `${pv}, ${cv}`, '')</Typography> {violation_of_goals_string}</Typography> : ''}
                             disabled
                         />
                     </Grid>}
@@ -91,7 +91,7 @@ export default function surveySchoolResultsQuestion(props){
                             variant="standard"
                             disabled
                             error={!props.isLegal}
-                            helperText={!props.isLegal ? <Typography display={'inline'}><Typography display={'inline'}>props.goalsID</Typography> {violation_of_goals_string}</Typography> : ''}
+                            helperText={!props.isLegal ? <Typography display={'inline'}><Typography display={'inline'}>props.violatedGoals.reduce((pv, cv) => `${pv}, ${cv}`, '')</Typography> {violation_of_goals_string}</Typography> : ''}
                             inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                             value={props.answer}
                         />

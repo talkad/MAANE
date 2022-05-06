@@ -134,10 +134,10 @@ export default function SurveySchoolResults(){
 
             let answers_data = data.result;
 
-            let zippedAnswersData = zip([answers_data.answers, answers_data.isLegal, answers_data.goalIDs])
+            let zippedAnswersData = zip([answers_data.answers, answers_data.isLegal, answers_data.goals])
 
-            zippedAnswersData.forEach(([answer, legality, goalIDs]) => setAnswers(answers =>
-                [...answers, {answer: answer, isLegal: legality, goalIDs: goalIDs}]));
+            zippedAnswersData.forEach(([answer, legality, goals]) => setAnswers(answers =>
+                [...answers, {answer: answer, isLegal: legality, violatedGoals: goals}]));
 
             setLoadedAnswers(true);
         }
@@ -185,7 +185,7 @@ export default function SurveySchoolResults(){
                                                   type={question.type}
                                                   answer={answers[index].answer}
                                                   isLegal={answers[index].isLegal}
-                                                  goalIDs={answers[index].goalIDs}/>)}
+                                                  violatedGoals={answers[index].violatedGoals}/>)}
 
 
                 <br/>
