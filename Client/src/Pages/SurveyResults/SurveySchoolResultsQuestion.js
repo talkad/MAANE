@@ -14,6 +14,8 @@ import TextField from "@mui/material/TextField";
 
 export default function surveySchoolResultsQuestion(props){
 
+    const [violatedGoalsString, setViolatedGoalsString] = useState('');
+
     // STRINGS
     const answer_label_string = 'תשובה';
     const numeral_answer_label_string = 'תשובה מספרית'
@@ -23,6 +25,11 @@ export default function surveySchoolResultsQuestion(props){
     const multiple_choice_helper_text_string = "יש לבחור תשובה";
 
     const violation_of_goals_string = 'תשובה זו מפרה את היעדים הבאים שהוצבו';
+
+    useEffect(() => {
+        setVioldatedGoalsString(props.violatedGoals.slice(1).reduce((pv, cv) => `${pv}, ${cv}`, props.violatedGoals[0]))
+
+    }, []);
 
     /**
      * onChange callback when a there a new selection for multiple-choice question's answer
@@ -64,7 +71,7 @@ export default function surveySchoolResultsQuestion(props){
                                     {props.choices.map((element, index) =>
                                         <FormControlLabel value={index.toString()} control={<Radio color="secondary"/>} label={element}/>)}
                                 </RadioGroup>
-                                {!props.isLegal && <FormHelperText><Typography display={'inline'}><Typography display={'inline'}>props.violatedGoals.reduce((pv, cv) => `${pv}, ${cv}`, '')</Typography> {violation_of_goals_string}</Typography></FormHelperText>}
+                                {!props.isLegal && <FormHelperText><Typography display={'inline'}><Typography display={'inline'}>{violatedGoalsString}</Typography> {violation_of_goals_string}</Typography></FormHelperText>}
                             </FormControl>
                         </Grid>
 
@@ -78,7 +85,7 @@ export default function surveySchoolResultsQuestion(props){
                             variant="standard"
                             value={props.answer}
                             error={!props.isLegal}
-                            helperText={!props.isLegal ? <Typography display={'inline'}><Typography display={'inline'}>props.violatedGoals.reduce((pv, cv) => `${pv}, ${cv}`, '')</Typography> {violation_of_goals_string}</Typography> : ''}
+                            helperText={!props.isLegal ? <Typography display={'inline'}><Typography display={'inline'}>{violatedGoalsString}</Typography> {violation_of_goals_string}</Typography> : ''}
                             disabled
                         />
                     </Grid>}
@@ -91,7 +98,7 @@ export default function surveySchoolResultsQuestion(props){
                             variant="standard"
                             disabled
                             error={!props.isLegal}
-                            helperText={!props.isLegal ? <Typography display={'inline'}><Typography display={'inline'}>props.violatedGoals.reduce((pv, cv) => `${pv}, ${cv}`, '')</Typography> {violation_of_goals_string}</Typography> : ''}
+                            helperText={!props.isLegal ? <Typography display={'inline'}><Typography display={'inline'}>{violatedGoalsString}</Typography> {violation_of_goals_string}</Typography> : ''}
                             inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                             value={props.answer}
                         />
