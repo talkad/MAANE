@@ -71,7 +71,7 @@ public class SurveyDAO {
 
     public Response<Boolean> insertSurvey(SurveyDTO surveyDTO) {
         addSurveyToCache(surveyDTO.getId(), surveyDTO);
-        System.out.println(surveyDTO.getTypes());
+
 //        executor.execute(() -> persistence.insertSurvey(surveyDTO));
 //
 //        return new Response<>(true, false, "survey inserted to cache");

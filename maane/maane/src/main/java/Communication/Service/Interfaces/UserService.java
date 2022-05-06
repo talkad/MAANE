@@ -52,4 +52,5 @@ public interface UserService {
 
     Response<Boolean> transferSupervisionToExistingUser(String currUser, String currSupervisor, String newSupervisor);
 
+    Response<WorkPlanDTO> getWorkPlan(String username, int month);
 }

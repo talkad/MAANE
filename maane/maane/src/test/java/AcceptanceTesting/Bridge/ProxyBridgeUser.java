@@ -217,6 +217,15 @@ public class ProxyBridgeUser implements UserService {
         return new Response<>(null, true, "not implemented");
     }
 
+    @Override
+    public Response<WorkPlanDTO> getWorkPlan(String username, int month) {
+        if (real != null) {
+            return real.getWorkPlan(username, month);
+        }
+
+        return new Response<>(null, true, "not implemented");
+    }
+
     public void setMockDB() { //for tests purposes only
         if (real != null) {
             ServerContextInitializer.getInstance().setMockMode();

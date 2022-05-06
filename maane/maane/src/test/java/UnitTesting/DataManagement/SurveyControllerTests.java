@@ -54,7 +54,7 @@ public class SurveyControllerTests {
         List<List<String>> answers1 = Arrays.asList(new LinkedList<>(), Arrays.asList("1", "2"), Arrays.asList("1", "2"));
         List<AnswerType> types1 = Arrays.asList(NUMERIC_ANSWER, MULTIPLE_CHOICE, MULTIPLE_CHOICE);;
 
-        surveyDTO.setId("0");
+        surveyDTO.setId("");
         surveyDTO.setTitle("title");
         surveyDTO.setDescription("description");
         surveyDTO.setQuestions(questions1);
@@ -66,13 +66,13 @@ public class SurveyControllerTests {
 
         List<String> answers2 = Arrays.asList("30", "1", "2");
         List<AnswerType> types2 = Arrays.asList(NUMERIC_ANSWER, MULTIPLE_CHOICE, MULTIPLE_CHOICE);
-        answersDTO1.setId("0");
+        answersDTO1.setId("");
         answersDTO1.setAnswers(answers2);
         answersDTO1.setTypes(types2);
 
         // illegal answer
         answersDTO2 = new SurveyAnswersDTO();
-        answersDTO2.setId("0");
+        answersDTO2.setId("");
         List<String> answers3 = Arrays.asList("30", "1");
         List<AnswerType> types3 = Arrays.asList(NUMERIC_ANSWER, MULTIPLE_CHOICE);
 

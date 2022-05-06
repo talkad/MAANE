@@ -261,4 +261,10 @@ public class UserController {
         return ResponseEntity.ok()
                 .body(service.transferSupervisionToExistingUser(sessionHandler.getUsernameByToken(token).getResult(), (String)body.get("currSupervisor"), (String)body.get("newSupervisor")));
     }
+
+    @GetMapping(value="/getWorkPlan/month={month}")
+    public ResponseEntity<Response<WorkPlanDTO>> getWorkPlan(@RequestHeader(value = "Authorization") String token, @PathVariable("month") Integer month){
+        return ResponseEntity.ok()
+                .body(service.getWorkPlan(sessionHandler.getUsernameByToken(token).getResult(), month));
+    }
 }
