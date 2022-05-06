@@ -141,9 +141,8 @@ export default function SurveyRulesEditor(){
 
             const zippedQuestionsList = zip([survey.questions, survey.types, survey.answers]);
 
-            let questionIndexer = 0;
-            zippedQuestionsList.slice(1).forEach(([question, type, answers]) => setQuestions(questions => // slicing the first question cause it's unnecessary
-                [...questions, {id: questionIndexer++, question: question, type: type, answers: answers}]));
+            zippedQuestionsList.slice(1).forEach(([question, type, answers], indexer) => setQuestions(questions => // slicing the first question cause it's unnecessary
+                [...questions, {id: indexer+1, question: question, type: type, answers: answers}]));
         }
     }
 

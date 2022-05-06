@@ -4,6 +4,8 @@ import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.FaultDetector.Rules.Rule;
 import Domain.DataManagement.SurveyAnswers;
+import Domain.WorkPlan.Goal;
+import Domain.WorkPlan.GoalsManagement;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,6 +51,7 @@ public class FaultDetector {
         return new Response<>(true, false, "rule removed successfully");
     }
 
+
     /**
      * detect all faults in a given answers
      * @param answers on certain survey
@@ -58,8 +61,27 @@ public class FaultDetector {
         List<Integer> faults = new LinkedList<>();
 
         for(Pair<Rule, Integer> rule: rules){
-            if(rule.getFirst().apply(answers))
                 faults.add(rule.getSecond());
+        }
+
+        return new Response<>(faults, false, "details");
+    }
+
+    /**
+     * detect all faults in a given answers
+     * @param answers on certain survey
+     * @return list of all goals that were not consistent with the given rules
+     */
+    public Response<List<String>> detectFaultTitles(SurveyAnswers answers){
+        List<String> faults = new LinkedList<>();
+        Goal goal = null;
+
+        for(Pair<Rule, Integer> rule: rules){
+            if(rule.getFirst().apply(answers))
+                goal = GoalsManagement.getInstance().getGoalTById(rule.getSecond()).getResult();
+
+                if(goal != null)
+                    faults.add(goal.getTitle());
         }
 
         return new Response<>(faults, false, "details");

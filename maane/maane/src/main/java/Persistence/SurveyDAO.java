@@ -167,8 +167,8 @@ public class SurveyDAO {
     public List<SurveyAnswersDTO> getAnswers(String surveyId) {
         List<SurveyAnswersDTO> surveyAnswers;
 
-        if(answers.containsKey(surveyId))
-            return answers.get(surveyId).getSecond();
+//        if(answers.containsKey(surveyId))
+//            return answers.get(surveyId).getSecond();
 
         surveyAnswers = persistence.getAnswers(surveyId);
         addAnswersToCache(surveyId, surveyAnswers);

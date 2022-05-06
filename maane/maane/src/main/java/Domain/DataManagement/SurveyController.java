@@ -158,6 +158,9 @@ public class SurveyController {
         Response<Boolean> answerRes = answer.addAnswers(answersDTO);
         String symbol;
 
+        if(!surveyDAO.getSurveySubmission(answersDTO.getId()).getResult())
+            return new Response<>(false, true, "The survey doesn't published yet");
+
         if(answerRes.isFailure())
             return new Response<>(false, true, answerRes.getErrMsg());
 
@@ -455,7 +458,7 @@ public class SurveyController {
         for(Integer questionIndex: answers.getAnswers().keySet())
             actualAnswers.add(answers.getAnswers().get(questionIndex).getSecond());
 
-        return new Response<>(new AnswersDTO(actualAnswers, faultDetector.getIllegalQuestionID(answers).getResult(), faultDetector.detectFault(answers).getResult()), false, "Got answers successfully");
+        return new Response<>(new AnswersDTO(actualAnswers, faultDetector.getIllegalQuestionID(answers).getResult(), faultDetector.detectFaultTitles(answers).getResult()), false, "Got answers successfully");
     }
 
     private Response<SurveyStatsDTO> buildSurveyStats(List<SurveyAnswers> answers, SurveyDTO survey) {
