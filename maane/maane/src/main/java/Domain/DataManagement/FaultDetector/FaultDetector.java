@@ -7,10 +7,8 @@ import Domain.DataManagement.SurveyAnswers;
 import Domain.WorkPlan.Goal;
 import Domain.WorkPlan.GoalsManagement;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class FaultDetector {
 
@@ -72,16 +70,28 @@ public class FaultDetector {
      * @param answers on certain survey
      * @return list of all goals that were not consistent with the given rules
      */
-    public Response<List<String>> detectFaultTitles(SurveyAnswers answers){
-        List<String> faults = new LinkedList<>();
+    public Response<Map<Integer, List<String>>> detectFaultTitles(SurveyAnswers answers){
+        Map<Integer, List<String>> faults = new ConcurrentHashMap<>();
+        List<Integer> queIDs = null;
+
         Goal goal = null;
 
         for(Pair<Rule, Integer> rule: rules){
             if(rule.getFirst().apply(answers))
+                queIDs = rule.getFirst().getQuestionIndex();
                 goal = GoalsManagement.getInstance().getGoalTById(rule.getSecond()).getResult();
 
-                if(goal != null)
-                    faults.add(goal.getTitle());
+                if(goal != null && queIDs != null){
+                    for(Integer queID: queIDs){
+
+                        if(!faults.containsKey(queID))
+                            faults.put(queID, new LinkedList<>());
+
+                        List<String> goals = faults.get(queID);
+                        goals.add(goal.getTitle());
+                        faults.put(queID, goals);
+                    }
+                }
         }
 
         return new Response<>(faults, false, "details");

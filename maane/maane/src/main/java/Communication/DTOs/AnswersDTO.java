@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.util.List;
+import java.util.Map;
 
 
 @NoArgsConstructor
@@ -13,6 +14,6 @@ public class AnswersDTO {
 
     private List<String> answers;
     private List<Boolean> isLegal;
-    private List<String> goals;
+    private Map<Integer, List<String>> goals;
 
 }

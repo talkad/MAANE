@@ -136,6 +136,9 @@ export default function SurveySchoolResults(){
 
             let zippedAnswersData = zip([answers_data.answers, answers_data.isLegal, answers_data.goals])
 
+            console.log("eeeeeeeeeeeee")
+            console.log(zippedAnswersData)
+
             zippedAnswersData.forEach(([answer, legality, goals]) => setAnswers(answers =>
                 [...answers, {answer: answer, isLegal: legality, violatedGoals: goals}]));
 
@@ -185,7 +188,7 @@ export default function SurveySchoolResults(){
                                                   type={question.type}
                                                   answer={answers[index].answer}
                                                   isLegal={answers[index].isLegal}
-                                                  violatedGoals={answers[index].violatedGoals}/>)}
+                                                  violatedGoals={answers[index].violatedGoals === undefined ? [] : answers[index].violatedGoals}/>)}
 
 
                 <br/>
