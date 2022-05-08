@@ -71,7 +71,7 @@ export default function SurveyQuestion(props){
                                 <RadioGroup
                                     value={props.answer}
                                     onChange={handleMultipleChoiceAnswerChange}
-                                    id={`multi_choice_${props.id}`}
+                                    id={`submit_survey_multi_choice_${props.id}`}
                                 >
                                     {props.choices.map((element, index) =>
                                         <FormControlLabel value={index.toString()} control={<Radio color="secondary"/>} label={element}/>)}
@@ -84,7 +84,7 @@ export default function SurveyQuestion(props){
                     {/*open view for question of this kind*/}
                     {props.type === 'OPEN_ANSWER' && <Grid sx={{alignItems: 'center', margin: "1%"}} item xs={12}>
                         <TextField
-                            id={`open_answer_${props.id}`}
+                            id={`submit_survey_open_answer_${props.id}`}
                             color="secondary"
                             sx={{width: "90%"}}
                             margin="normal"
@@ -99,7 +99,7 @@ export default function SurveyQuestion(props){
                     {/*open-numerical view for question of this kind*/}
                     {props.type === 'NUMERIC_ANSWER'  && <Grid sx={{alignItems: 'center', margin: "1%"}} item xs={12}>
                         <TextField
-                            id={`numeric_answer_${props.id}`}
+                            id={`submit_survey_numeric_answer_${props.id}`}
                             color="secondary"
                             sx={{width: "90%"}}
                             margin="normal"
