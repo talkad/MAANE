@@ -525,8 +525,8 @@ public class UserQueries {
     public void clearDB() {
         Connect.createConnection();
         String sql = "TRUNCATE \"Answers\", \"Appointments\", \"MultiChoices\"" +
-                ", \"Questions\", \"Surveys\", \"Users\"" +
-                ", \"UsersSchools\", \"UsersSurveys\"";
+                ", \"Questions\", \"Surveys\", \"Rules\", \"Users\"" +
+                ", \"UsersSchools\", \"UsersSurveys\", \"Goals\"";
         PreparedStatement preparedStatement;
         try {
             preparedStatement = Connect.conn.prepareStatement(sql);

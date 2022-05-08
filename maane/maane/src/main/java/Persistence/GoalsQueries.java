@@ -154,6 +154,32 @@ public class GoalsQueries {
                 new Response<>(false, true, "bad Db writing");
     }
 
+    // for testing purposes only
+    public Response<Boolean> insertGoalMock(GoalDTO goalDTO){
+        Connect.createConnection();
+        int rows = 0;
+        String sql = "INSERT INTO \"Goals\"(goalId, title, description , quarterly, weight, workField, goalyear) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        PreparedStatement preparedStatement;
+        try {
+            preparedStatement = Connect.conn.prepareStatement(sql);
+
+            preparedStatement.setInt(1, goalDTO.getGoalId());
+            preparedStatement.setString(2, goalDTO.getTitle());
+            preparedStatement.setString(3, goalDTO.getDescription());
+            preparedStatement.setInt(4, goalDTO.getQuarterly());
+            preparedStatement.setInt(5, goalDTO.getWeight());
+            preparedStatement.setString(6, goalDTO.getWorkField());
+            preparedStatement.setString(7, goalDTO.getYear());
+            rows = preparedStatement.executeUpdate();
+            Connect.closeConnection();
+        }
+        catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return rows > 0 ? new Response<>(true, false, "successfully added goals to the work field: " + goalDTO.getWorkField()) :
+                new Response<>(false, true, "bad Db writing");
+    }
+
     private int getNextGoalID(){
         int maxID = 0;
 
