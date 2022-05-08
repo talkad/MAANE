@@ -72,6 +72,7 @@ export default function SurveySchoolResults(){
     // initializing with dummy data for offline testing
     const [questions, setQuestions] = useState([]);
     const [answers, setAnswers] = useState([]);
+    const [violatedGoalsMap, setViolatedGoalsMap] = useState({});
     const [loadedAnswers, setLoadedAnswers] = useState(false)
 
     // STRINGS
@@ -134,13 +135,13 @@ export default function SurveySchoolResults(){
 
             let answers_data = data.result;
 
-            let zippedAnswersData = zip([answers_data.answers, answers_data.isLegal, answers_data.goals])
-
-            console.log("eeeeeeeeeeeee")
-            console.log(zippedAnswersData)
+            let zippedAnswersData = zip([answers_data.answers, answers_data.isLegal])
 
             zippedAnswersData.forEach(([answer, legality, goals]) => setAnswers(answers =>
-                [...answers, {answer: answer, isLegal: legality, violatedGoals: goals}]));
+                [...answers, {answer: answer, isLegal: legality}]));
+            
+            console.log(answers_data.goals)
+            setViolatedGoalsMap(answers_data.goals);
 
             setLoadedAnswers(true);
         }
@@ -188,7 +189,7 @@ export default function SurveySchoolResults(){
                                                   type={question.type}
                                                   answer={answers[index].answer}
                                                   isLegal={answers[index].isLegal}
-                                                  violatedGoals={answers[index].violatedGoals === undefined ? [] : answers[index].violatedGoals}/>)}
+                                                  violatedGoals={violatedGoalsMap[question.id] === undefined ? [] : violatedGoalsMap[question.id]}/>)}
 
 
                 <br/>

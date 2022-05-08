@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     FormControl,
     FormControlLabel,
@@ -12,9 +12,9 @@ import {
 } from "@mui/material";
 import TextField from "@mui/material/TextField";
 
-export default function surveySchoolResultsQuestion(props){
+export default function SurveySchoolResultsQuestion(props){
 
-    const [violatedGoalsString, setViolatedGoalsString] = useState('');
+    const [violatedGoalsString, setVioldatedGoalsString] = useState('');
 
     // STRINGS
     const answer_label_string = 'תשובה';
@@ -30,15 +30,6 @@ export default function surveySchoolResultsQuestion(props){
         setVioldatedGoalsString(props.violatedGoals.slice(1).reduce((pv, cv) => `${pv}, ${cv}`, props.violatedGoals[0]))
 
     }, []);
-
-    /**
-     * onChange callback when a there a new selection for multiple-choice question's answer
-     * @param event
-     */
-    const handleMultipleChoiceAnswerChange = (event) => {
-        //setMultipleChoiceAnswer(event.target.value);
-        props.answerChange(props.id, event.target.value)
-    }
 
 
     return (
@@ -63,15 +54,13 @@ export default function surveySchoolResultsQuestion(props){
                     {props.type === 'MULTIPLE_CHOICE' &&
                         <Grid item xs={12} sx={{margin: "1%"}}>
                             <FormControl error={!props.isLegal} variant="standard">
-                                <FormLabel>{multiple_choice_label_string}</FormLabel>
                                 <RadioGroup
                                     value={props.answer}
-                                    onChange={handleMultipleChoiceAnswerChange}
                                 >
                                     {props.choices.map((element, index) =>
                                         <FormControlLabel value={index.toString()} control={<Radio color="secondary"/>} label={element}/>)}
                                 </RadioGroup>
-                                {!props.isLegal && <FormHelperText><Typography display={'inline'}><Typography display={'inline'}>{violatedGoalsString}</Typography> {violation_of_goals_string}</Typography></FormHelperText>}
+                                {!props.isLegal && <FormHelperText><Typography display={'inline'}>{violation_of_goals_string}: <Typography display={'inline'}>{violatedGoalsString}</Typography> </Typography></FormHelperText>}
                             </FormControl>
                         </Grid>
 
@@ -85,7 +74,7 @@ export default function surveySchoolResultsQuestion(props){
                             variant="standard"
                             value={props.answer}
                             error={!props.isLegal}
-                            helperText={!props.isLegal ? <Typography display={'inline'}><Typography display={'inline'}>{violatedGoalsString}</Typography> {violation_of_goals_string}</Typography> : ''}
+                            helperText={!props.isLegal ? <Typography display={'inline'}>{violation_of_goals_string}: <Typography display={'inline'}>{violatedGoalsString}</Typography> </Typography> : ''}
                             disabled
                         />
                     </Grid>}
@@ -98,7 +87,7 @@ export default function surveySchoolResultsQuestion(props){
                             variant="standard"
                             disabled
                             error={!props.isLegal}
-                            helperText={!props.isLegal ? <Typography display={'inline'}><Typography display={'inline'}>{violatedGoalsString}</Typography> {violation_of_goals_string}</Typography> : ''}
+                            helperText={!props.isLegal ? <Typography display={'inline'}>{violation_of_goals_string}: <Typography display={'inline'}>{violatedGoalsString}</Typography> </Typography> : ''}
                             inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                             value={props.answer}
                         />
