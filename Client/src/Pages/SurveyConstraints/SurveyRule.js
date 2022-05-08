@@ -232,7 +232,7 @@ export default function SurveyRule(props){
                         <Grid item xs={1} style={{textAlign: "center"}}>
                             {/*remove cell button*/}
                             <Tooltip title={remove_tooltip_string}>
-                                <IconButton onClick={handleRemove}>
+                                <IconButton id={`remove_cell_${props.id}`} onClick={handleRemove}>
                                     <RemoveCircleIcon/>
                                 </IconButton>
                             </Tooltip>
@@ -246,6 +246,7 @@ export default function SurveyRule(props){
                         <Stack m={1} direction="row" spacing={1}>
                             {/*text field which the user fill*/}
                             <TextField
+                                id={`inequality-number-input-${props.id}`}
                                 value={props.constraintValue}
                                 onChange={handleNumericalAnswerChange}
                             />
@@ -277,7 +278,7 @@ export default function SurveyRule(props){
                         <FormGroup>
                             {selectedQuestionAnswers().map((answer, index) => <FormControlLabel
                                     control={
-                                        <Checkbox checked={props.constraintValue.includes(index.toString())} onChange={handleAnswerCheckChange} name={index} />
+                                        <Checkbox id={`constraint-checkbox-${props.id}-${index}`} checked={props.constraintValue.includes(index.toString())} onChange={handleAnswerCheckChange} name={index} />
                                     }
                                     label={answer}
                                 />)}
@@ -297,9 +298,8 @@ export default function SurveyRule(props){
                                                              handleConstraintValueChoiceChange={props.handleConstraintValueChoiceChange}
                                                              handleNumericalConstraintChange={props.handleNumericalConstraintChange}/>)}
 
-                    {/*todo: figure out about the color of the button*/}
                     {isPresentAddButton() &&
-                        <Button onClick={() => addCondition()} sx={{margin: '1%'}} variant={"contained"}>{add_condition_button_string}</Button>}
+                        <Button id={`add-inner-cell-${props.id}`} onClick={() => addCondition()} sx={{margin: '1%'}} variant={"contained"}>{add_condition_button_string}</Button>}
 
                 </Paper>
             </Box>
