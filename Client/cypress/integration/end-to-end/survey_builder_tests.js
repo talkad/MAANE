@@ -100,6 +100,48 @@ describe('Survey builder tests', () => {
         cy.contains(survey_data.title).should('not.exist')
     })
 
+    it('Creating a survey with an empty description', () => {
+        // title and description of the survey
+        cy.get('#create_survey_title').type(survey_data.title);
+
+        for (const question of survey_data.questions){
+            // adding question
+            cy.get('#create_survey_add_question_button').click()
+
+            cy.get(`#create_question_title_${question.index}`).type(question.question_title)
+
+            cy.get(`#create_question_type_selection_${question.index}`) // selecting type from the menu
+                .parent()
+                .click()
+                .get(`ul > li[data-value="${question.type}"]`)
+                .click()
+
+            // in the case of multiple, adding answers
+            if(question.type === 'MULTIPLE_CHOICE'){
+
+                let answer_index = 0
+                for(const answer of question.answers){
+                    cy.get(`#create_question_multiple_add_answer_button_${question.index}`).click()
+                    cy.get(`#question-${question.index}-answer-${answer_index}`).type(answer)
+                    answer_index++;
+                }
+            }
+
+        }
+
+        // submitting the survey
+        cy.get('#create_survey_submit_survey_button').click()
+
+        // an error alert should appear
+        cy.get('#create_survey_error_alert')
+
+        // going back to the menu
+        cy.visit('/survey/menu')
+
+        // should not find the title of the new survey in the menu
+        cy.contains(survey_data.title).should('not.exist')
+    })
+
     it('Creating a survey with an empty question title', () => {
         // title and description of the survey
         cy.get('#create_survey_title').type(survey_data.title);
