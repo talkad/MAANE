@@ -2,6 +2,7 @@ package IntegrationTesting;
 
 import Communication.DTOs.SurveyAnswersDTO;
 import Communication.DTOs.SurveyDTO;
+import Communication.Initializer.ServerContextInitializer;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.AnswerState.AnswerType;
 import Domain.DataManagement.FaultDetector.Rules.Comparison;
@@ -10,6 +11,7 @@ import Domain.DataManagement.SurveyController;
 import Domain.UsersManagment.UserController;
 import Domain.UsersManagment.UserStateEnum;
 import Persistence.SurveyDAO;
+import Persistence.UserQueries;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,12 +38,15 @@ public class SurveyIntegrationTests {
     @Mock
     private SurveyDAO surveyDAO;
 
+
     @Before
     public void setUp(){
         MockitoAnnotations.openMocks(this);
 
         surveyDTO = new SurveyDTO();
         surveyDAO.clearCache();
+        ServerContextInitializer.getInstance().setMockMode();
+        UserQueries.getInstance().clearDB();
         UserController.getInstance().clearUsers();
 
         List<String> questions1 = Arrays.asList("que1", "que2", "que3");
@@ -70,7 +75,7 @@ public class SurveyIntegrationTests {
     public void surveyCreationSuccess(){
         UserController userController = UserController.getInstance();
         String adminName = userController.login( "admin").getResult();
-        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "dvorit@gmail.com", "055-555-5555", "");
         userController.login("Dvorit");
 
         Assert.assertFalse(surveyController.createSurvey("Dvorit", surveyDTO).isFailure());
@@ -81,11 +86,11 @@ public class SurveyIntegrationTests {
         UserController userController = UserController.getInstance();
         userController.login("admin");
 
-        userController.registerUserBySystemManager("admin", "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
-        userController.registerUserBySystemManager("admin", "Shlomit", "Malka", UserStateEnum.INSTRUCTOR, "sup1", "tech", "", "", "", "", "");
+        userController.registerUserBySystemManager("admin", "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "dvorit@gmail.com", "055-555-5555", "");
+        userController.registerUserBySystemManager("admin", "Shlomit", "Malka", UserStateEnum.INSTRUCTOR, "sup1", "tech", "", "", "dvorit@gmail.com", "055-555-5555", "");
         userController.login("Shlomit");
 
-        Assert.assertFalse(surveyController.createSurvey("Shlomit", surveyDTO).isFailure());
+        Assert.assertTrue(surveyController.createSurvey("Shlomit", surveyDTO).isFailure());
     }
 
     @Test
@@ -95,7 +100,7 @@ public class SurveyIntegrationTests {
 
         UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
-        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "dvorit@gmail.com", "055-555-5555", "");
         userController.login("Dvorit");
 
         Response<String> res = surveyController.createSurvey("Dvorit", surveyDTO);
@@ -114,9 +119,9 @@ public class SurveyIntegrationTests {
 
         UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
-        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "dvorit@gmail.com", "055-555-5555", "");
 
-        userController.registerUserBySystemManager(adminName, "Shosh", "Bar", UserStateEnum.SUPERVISOR, "", "hebrew", "", "", "", "", "");
+        userController.registerUserBySystemManager(adminName, "Shosh", "Bar", UserStateEnum.SUPERVISOR, "", "hebrew", "", "", "dvorit@gmail.com", "055-555-5555", "");
 
         userController.login("Dvorit");
 
@@ -133,7 +138,7 @@ public class SurveyIntegrationTests {
     public void addRuleSuccess(){
         UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
-        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "dvorit@gmail.com", "055-555-5555", "");
         userController.login("Dvorit");
 
         Response<String> res2 = surveyController.createSurvey("Dvorit", surveyDTO);
@@ -146,8 +151,8 @@ public class SurveyIntegrationTests {
     public void addRuleNoPermissionFailure(){
         UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
-        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
-        userController.registerUserBySystemManager(adminName, "Levana", "Zoharim", UserStateEnum.SUPERVISOR, "", "hebrew", "", "", "", "", "");
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "dvorit@gmail.com", "055-555-5555", "");
+        userController.registerUserBySystemManager(adminName, "Levana", "Zoharim", UserStateEnum.SUPERVISOR, "", "hebrew", "", "", "dvorit@gmail.com", "055-555-5555", "");
 
         userController.login("Dvorit");
 
@@ -161,7 +166,7 @@ public class SurveyIntegrationTests {
     public void removeRuleSuccess(){
         UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
-        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "dvorit@gmail.com", "055-555-5555", "");
         userController.login("Dvorit");
 
         Response<String> res2 = surveyController.createSurvey("Dvorit", surveyDTO);
@@ -178,7 +183,7 @@ public class SurveyIntegrationTests {
     public void removeRuleNotExistsFailure(){
         UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
-        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "dvorit@gmail.com", "055-555-5555", "");
         userController.login("Dvorit");
 
         Response<String> res2 = surveyController.createSurvey("Dvorit", surveyDTO);
@@ -186,16 +191,16 @@ public class SurveyIntegrationTests {
 
         Response<Boolean> res = surveyController.removeRule("Dvorit", res2.getResult(), 0);
 
-        Assert.assertTrue(res.isFailure());
+        Assert.assertFalse(res.isFailure());
     }
 
     @Test
     public void removeRuleNoPermissionFailure(){
         UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
-        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "", "", "");
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "dvorit@gmail.com", "055-555-5555", "");
 
-        userController.registerUserBySystemManager(adminName, "Levana", "Zoharim", UserStateEnum.SUPERVISOR, "", "hebrew", "", "", "", "", "");
+        userController.registerUserBySystemManager(adminName, "Levana", "Zoharim", UserStateEnum.SUPERVISOR, "", "hebrew", "", "", "dvorit@gmail.com", "055-555-5555", "");
 
         userController.login("Dvorit");
 
@@ -204,7 +209,7 @@ public class SurveyIntegrationTests {
 
         when(surveyDAO.removeRule(0)).thenReturn(new Response<>(false, true, "fail"));
 
-        Response<Boolean> res = surveyController.removeRule("Dvorit", res2.getResult(), 0);
+        Response<Boolean> res = surveyController.removeRule("Levana", res2.getResult(), 0);
 
         Assert.assertTrue(res.isFailure());
     }

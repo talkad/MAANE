@@ -438,10 +438,11 @@ public class SurveyPersistence {
 
         } catch (SQLException e) {
             log.error("DB: failed to remove rules \n" + e.getMessage());
+
+            return new Response<>(false, true, "bad Db writing");
         }
 
-        return rows>0 ? new Response<>(true, false, "") :
-                new Response<>(false, true, "bad Db writing");
+        return new Response<>(true, false, "");
     }
 
     public Response<Boolean> removeRules(String surveyID) {

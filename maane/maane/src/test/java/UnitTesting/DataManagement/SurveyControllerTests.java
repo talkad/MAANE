@@ -14,6 +14,7 @@ import Domain.DataManagement.SurveyController;
 import Domain.UsersManagment.UserController;
 import Domain.UsersManagment.UserStateEnum;
 import Persistence.SurveyDAO;
+import Persistence.UserQueries;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,7 +49,9 @@ public class SurveyControllerTests {
 
         surveyDTO = new SurveyDTO();
         surveyDAO.clearCache();
-        UserController.getInstance().clearUsers();//todo probably set ock mode on users
+        ServerContextInitializer.getInstance().setMockMode();
+        UserQueries.getInstance().clearDB();
+        UserController.getInstance().clearUsers();
 
         List<String> questions1 = Arrays.asList("que1", "que2", "que3");
         List<List<String>> answers1 = Arrays.asList(new LinkedList<>(), Arrays.asList("1", "2"), Arrays.asList("1", "2"));
@@ -108,7 +111,21 @@ public class SurveyControllerTests {
         userController.logout(adminName);
         userController.login("Dvorit");
 
-        Assert.assertFalse(surveyController.createSurvey("Dvorit", surveyDTO).isFailure());
+        Assert.assertTrue(surveyController.createSurvey("Dvorit", surveyDTO).isFailure());
+    }
+
+    @Test
+    public void addAnswerNoSubmittedSurveyFailure(){
+        UserController userController = UserController.getInstance();
+
+        String adminName = userController.login("admin").getResult();
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "dvorit@gmail.com", "055-555-5555", "");
+
+        userController.login("Dvorit");
+
+        Response<String> res = surveyController.createSurvey("Dvorit", surveyDTO);
+        answersDTO1.setId(res.getResult());
+        Assert.assertTrue(surveyController.addAnswers(answersDTO1).isFailure());
     }
 
     @Test
@@ -122,6 +139,9 @@ public class SurveyControllerTests {
 
         Response<String> res = surveyController.createSurvey("Dvorit", surveyDTO);
         answersDTO1.setId(res.getResult());
+
+        surveyController.submitSurvey("Dvorit", res.getResult());
+
         Assert.assertFalse(surveyController.addAnswers(answersDTO1).isFailure());
     }
 
@@ -141,6 +161,7 @@ public class SurveyControllerTests {
         surveyDAO.clearCache();
 
         when(surveyDAO.getSurvey(res.getResult())).thenReturn(new Response<>(surveyDTO, false, "OK"));
+        surveyController.submitSurvey("Dvorit", res.getResult());
 
         Assert.assertFalse(surveyController.addAnswers(answersDTO1).isFailure());
     }
@@ -171,6 +192,7 @@ public class SurveyControllerTests {
 
         Response<String> res = surveyController.createSurvey("Dvorit", surveyDTO);
         answersDTO1.setId(res.getResult());
+        surveyController.submitSurvey("Dvorit", res.getResult());
 
         List<SurveyAnswersDTO> answersDTOS = Arrays.asList(answersDTO1, answersDTO1);
 

@@ -35,13 +35,10 @@ public class SearchEngine {
     public Response<List<GuidingBasketDTO>> search(String query, String[] labels){
         List<GuidingBasketDTO> toReturn = new LinkedList<>();
 
-        System.out.println("THE FUCK " + baskets.size());
         if(labels != null && query != null){
             for(GuidingBasket basket: baskets){
-                System.out.println("CURRENT: " + basket.getTitle());
                 for(String label: labels){
                     if (basket.getLabels().contains(label)){
-                        System.out.println("GOT IN WITH: " + label);
                         toReturn.add(new GuidingBasketDTO(basket));
                         break;
                     }

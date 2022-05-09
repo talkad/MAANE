@@ -48,7 +48,6 @@ public class RuleDbTests {
     @Test
     public void getRule() throws SQLException {
         List<Pair<RuleDTO, Integer>> dd = surveyQueries.getRules("1");
-        System.out.println(dd.size());
     }
 
 }

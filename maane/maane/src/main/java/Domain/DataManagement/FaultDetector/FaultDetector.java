@@ -59,6 +59,7 @@ public class FaultDetector {
         List<Integer> faults = new LinkedList<>();
 
         for(Pair<Rule, Integer> rule: rules){
+            if(rule.getFirst().apply(answers))
                 faults.add(rule.getSecond());
         }
 

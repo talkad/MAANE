@@ -1,6 +1,7 @@
 package Domain.DataManagement;
 
 import Communication.DTOs.*;
+import Communication.Initializer.ServerContextInitializer;
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.AnswerState.AnswerType;
@@ -10,6 +11,7 @@ import Domain.DataManagement.FaultDetector.Rules.RuleConverter;
 import Domain.UsersManagment.UserController;
 import Persistence.DbDtos.SchoolDBDTO;
 import Persistence.SurveyDAO;
+import ch.qos.logback.classic.util.ContextInitializer;
 
 import javax.xml.crypto.Data;
 import java.security.SecureRandom;
@@ -97,7 +99,8 @@ public class SurveyController {
         if(!legalAdd.getResult())
             return new Response<>(false, true, username + " does not create survey " + surveyID);
 
-        UserController.getInstance().notifySurveyCreation(username, surveyID);
+        if(!ServerContextInitializer.getInstance().isMockMode())
+            UserController.getInstance().notifySurveyCreation(username, surveyID);
 
         return surveyDAO.surveySubmission(surveyID);
     }

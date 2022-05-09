@@ -4,9 +4,12 @@ import Communication.DTOs.QuestionDTO;
 import Communication.DTOs.RuleDTO;
 import Communication.DTOs.SurveyAnswersDTO;
 import Communication.DTOs.SurveyDTO;
+import Communication.Initializer.ServerContextInitializer;
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.AnswerState.AnswerType;
+import Persistence.DbAdapter.SurveyDAOMockAdapter;
+import org.apache.catalina.Server;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -49,7 +52,6 @@ public class SurveyDAO {
      * maximal size of cache
      */
     private final int cacheSize;
-
 
     private static class CreateSafeThreadSingleton {
         private static final SurveyDAO INSTANCE = new SurveyDAO();
@@ -157,6 +159,9 @@ public class SurveyDAO {
     }
 
     public List<Pair<RuleDTO, Integer>> getRules(String surveyID) {
+        if(ServerContextInitializer.getInstance().isMockMode())
+            return SurveyDAOMockAdapter.getInstance().getRules(surveyID);
+
         return persistence.getRules(surveyID);
     }
 
@@ -166,6 +171,9 @@ public class SurveyDAO {
 
     public List<SurveyAnswersDTO> getAnswers(String surveyId) {
         List<SurveyAnswersDTO> surveyAnswers;
+
+        if(ServerContextInitializer.getInstance().isMockMode())
+            return SurveyDAOMockAdapter.getInstance().getAnswers(surveyId);
 
 //        if(answers.containsKey(surveyId))
 //            return answers.get(surveyId).getSecond();

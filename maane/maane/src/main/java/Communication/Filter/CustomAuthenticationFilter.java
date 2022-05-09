@@ -55,7 +55,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         User user = (User)authentication.getPrincipal();
         Algorithm algorithm = Algorithm.HMAC256(KeyLoader.getInstance().getEncryptionKey());
         log.info("user {} attempts authentication", user);
-        System.out.println(user);
+
         UserController.getInstance().login(user.getUsername());
 
         String accessToken = JWT.create()

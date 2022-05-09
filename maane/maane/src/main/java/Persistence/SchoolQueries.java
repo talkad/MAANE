@@ -28,7 +28,7 @@ public class SchoolQueries {
         PreparedStatement preparedStatement = null;
         try {
             preparedStatement = Connect.conn.prepareStatement(sql);
-            preparedStatement.setString(1, school.getSymbol());
+            preparedStatement.setInt(1, Integer.parseInt(school.getSymbol()));
             preparedStatement.setString(2, school.getName());
             preparedStatement.setString(3, school.getCity());
             preparedStatement.setString(4, school.getCity_mail());
@@ -110,24 +110,27 @@ public class SchoolQueries {
     }
 
     public boolean schoolSymbolExists (String symbol){
-        Connect.createConnection();
-        String sql = "SELECT exists (SELECT 1 FROM \"Schools\" WHERE symbol = ? LIMIT 1)";
-        PreparedStatement statement;
-        try {
-            statement = Connect.conn.prepareStatement(sql);
 
-            statement.setString(1, symbol);
-            ResultSet result = statement.executeQuery();
-            if(result.next()) {
-                boolean found = result.getBoolean(1);
+        Connect.createConnection();
+        String sqlSurvey = "SELECT symbol FROM \"Schools\" WHERE symbol = ?";
+        try {
+            PreparedStatement statement = Connect.conn.prepareStatement(sqlSurvey);
+            statement.setInt(1, Integer.parseInt(symbol));
+            ResultSet resultSurvey = statement.executeQuery();
+
+            if (resultSurvey.next()) {
                 Connect.closeConnection();
-                return found;
+
+                return true;
+            } else {
+                Connect.closeConnection();
+
+                return false;
             }
-            Connect.closeConnection();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+
+        } catch(SQLException e) {
+            return false;
         }
-        return false;
     }
 
     public boolean schoolNameExists (String name){

@@ -87,7 +87,7 @@ public class GoalsQueries {
         Connect.createConnection();
         String sql = "SELECT * FROM \"Goals\" WHERE goalid IN (" + "?, ".repeat(goalsIds.size());
         sql = sql.substring(0, sql.length() - 2) + ")";
-        System.out.println(sql);
+
         PreparedStatement statement;
         try {
             statement = Connect.conn.prepareStatement(sql);
@@ -198,7 +198,7 @@ public class GoalsQueries {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-        System.out.println(maxID + 1);
+
         return maxID + 1;
     }
 
