@@ -161,7 +161,7 @@ public class SchoolQueries {
         SchoolDBDTO schoolDBDTO = null;
         try {
             statement = Connect.conn.prepareStatement(sql);
-            statement.setString(1, symbol);
+            statement.setInt(1, Integer.parseInt(symbol));
             ResultSet resultSchool = statement.executeQuery();
 
             if (resultSchool.next()) {
