@@ -137,10 +137,7 @@ export default function RegisterUsers(props){
     }
 
     const arrangeSupervisorsCallback = (data) => {
-        if (data.failure){
-            // todo: needed?
-        }
-        else {
+        if (!data.failure){
             setSupervisors(data.result);
         }
     }
@@ -198,7 +195,8 @@ export default function RegisterUsers(props){
     const handleSubmit = (event) => {
         event.preventDefault();
 
-        if(values.username === '' || values.password === '' || roleChoiceEnum === undefined || roleChoiceEnum === '' ||
+        if(values.username === '' || values.password === '' || values.email === '' || values.phoneNumber === '' ||
+            (radioValue === '0' && (roleChoiceEnum === undefined || roleChoiceEnum === '')) ||
             (roleChoiceEnum === 'SUPERVISOR' && values.workField === '') ||
             (props.type === "SYSTEM_MANAGER" && (roleChoiceEnum === "INSTRUCTOR" || roleChoiceEnum === "GENERAL_SUPERVISOR" ||
                 radioValue === "1") && supervisorChoiceUsername === '')){
@@ -389,6 +387,7 @@ export default function RegisterUsers(props){
                                         value={values.email}
                                         onChange={handleTextFieldsChange('email')}
                                         fullWidth
+                                        required
                                     />
                                 </Grid>
 
@@ -403,6 +402,7 @@ export default function RegisterUsers(props){
                                         value={values.phoneNumber}
                                         onChange={handleTextFieldsChange('phoneNumber')}
                                         fullWidth
+                                        required
                                     />
                                 </Grid>
 
@@ -503,7 +503,7 @@ export default function RegisterUsers(props){
                                         label={select_supervisor_label_string}
                                         onChange={handleSupervisorChoiceChange}
                                     >
-                                        {supervisors.map(x => <MenuItem value={x['currUser']}>{x['firstName'] + " " + x['lastName'] + "בתחום " + x['workField']}</MenuItem>)}
+                                        {supervisors.map(x => <MenuItem value={x['username']}>{x['firstName'] + " " + x['lastName'] + "בתחום " + x['workField']}</MenuItem>)}
                                     </Select>
                                     <FormHelperText>{select_supervisor_helper_text_string}</FormHelperText>
                                 </FormControl>}

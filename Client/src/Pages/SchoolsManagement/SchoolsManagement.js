@@ -432,7 +432,7 @@ export default function SchoolsManagement(props){
     const school_city_cell_head_string = "עיר מוסד";
 
     useEffect(() => {
-        // todo: get the schools from the server
+
 
         },[]);
 

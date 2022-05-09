@@ -362,7 +362,7 @@ class Connection{
      * sends a GET request for getting all the supervisors of the system
      * @param callback a callback function to call once there's a response
      */
-    getSupervisors(callback){
+        getSupervisors(callback){
         this.sendGET('/user/getSupervisors', callback);
     }
 
@@ -578,6 +578,9 @@ class Connection{
             },
             callback)
     }
+
+    // SCHOOLS
+
 }
 
 Connection._instance = null;
