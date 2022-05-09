@@ -214,7 +214,7 @@ public class UserController {
                 .body(service.changePassword(sessionHandler.getUsernameByToken(token).getResult(), (String)body.get("currPassword"), (String)body.get("newPassword"), (String)body.get("confirmPassword")));
     }
 
-    @GetMapping(value = "/getAllUsers")//todo aviad
+    @GetMapping(value = "/getAllUsers")
     public ResponseEntity<Response<List<UserDTO>>> getAllUsers(@RequestHeader(value = "Authorization") String token){
         return ResponseEntity.ok()
                 .body(service.getAllUsers(sessionHandler.getUsernameByToken(token).getResult()));

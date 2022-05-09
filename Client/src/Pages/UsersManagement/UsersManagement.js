@@ -332,7 +332,7 @@ function TransferSupervisionDialog(props){
     const cancel_string = "ביטול";
 
     const handleSubmitDeletion = () => {
-        props.callback(props.selectedSupervisorUsername, props.selectUser);
+        props.callback(props.selectedSupervisorUsername, props.selectedUser);
     }
 
     return (
@@ -611,7 +611,7 @@ const rows_system_manager = [
 ]
 
 export default function UsersManagement(props){
-    const [tableRows, setTableRows] = useState(rows_system_manager); // props.userType === "SUPERVISOR" ? rows_supervisor : rows_system_manager
+    const [tableRows, setTableRows] = useState([]); // props.userType === "SUPERVISOR" ? rows_supervisor : rows_system_manager
 
     // dialogs states
     const [openCPDialog, setOpenCPDialog] = useState(false);
@@ -695,7 +695,10 @@ export default function UsersManagement(props){
                 }
             }
             else if(props.userType === "SYSTEM_MANAGER"){
-                // todo: test this once there's connection again
+
+                console.log('hello there')
+                console.log(data.result)
+
                 let workFieldsDict = {}
                 // first iteration to get all the work fields
                 for (const row of data.result) {
@@ -714,8 +717,8 @@ export default function UsersManagement(props){
                         } else if (row.userStateEnum === "GENERAL_SUPERVISOR") {
                             role = "מפקח/ת כללי/ת";
                         }
-
-                        workFieldsDict[row.workField] = workFieldsDict.push(createData(
+                        console.log(row.username)
+                        workFieldsDict[row.workField].push(createData(
                             row.username,
                             row.firstName + " " + row.lastName,
                             role,
@@ -746,9 +749,6 @@ export default function UsersManagement(props){
             }
 
             setTableRows(rows);
-        }
-        else {
-            //TODO: needed?
         }
     }
 
@@ -877,6 +877,9 @@ export default function UsersManagement(props){
      * @param supervisorUsername the username of the selected supervisor
      */
     const handleOpenSupervisionTransferDialog = (name, username, supervisorName, supervisorUsername) => {
+        console.log('general kenobi')
+        console.log(username)
+        console.log(supervisorUsername)
         setOpenSupervisionTransferDialog(true);
         setSelectedUser(username);
         setSelectedName(name);
