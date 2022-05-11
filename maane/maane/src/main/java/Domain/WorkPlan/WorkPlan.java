@@ -6,6 +6,7 @@ import Domain.UsersManagment.Activity;
 import Domain.WorkPlan.Goal;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.*;
 
 /**
@@ -161,6 +162,39 @@ public class WorkPlan {
     public String whatMonthIsIt (String date){
         String [] arr = date.split("-"); //[month,day,year]
         return ""+arr[1];
+    }
+
+    public TreeMap<LocalDate, List<Activity>> getCalendarAsDates(){
+        TreeMap<LocalDate, List<Activity>> output = new TreeMap<>();
+        for (Map.Entry<String, List<Activity>> oldEntry : calendar.entrySet()) {
+            String dateAsString = oldEntry.getKey();
+            LocalDate localDate = LocalDate.parse(dateAsString);
+            output.put(localDate, oldEntry.getValue());
+        }
+        return output;
+    }
+
+    public void printMeNew (){
+        for (LocalDate key: getCalendarAsDates().keySet()) {
+            System.out.println("Date: " + key);
+            for (Activity activity: getCalendarAsDates().get(key))
+                System.out.println("==> activity " + activity.getTitle() + " scheduled for school " + activity.getSchool());
+        }
+    }
+
+    public Response<Boolean> insertActivityEveryWeek (Pair<String, Goal> input, String date){
+        Activity activity = new Activity(input.getFirst(), input.getSecond().getTitle());
+        LocalDate localDate = LocalDate.parse(date);
+        if (dayIsFridayOrSaturday(date)) //no free date
+            return new Response<>(false, true, "no free days");
+        LocalDate endYear = LocalDate.of(2021, Month.JUNE,21);
+        while (localDate.isBefore(endYear)){
+//            String s = localDate.getYear()+"-"+addZeroIfNeeded(localDate.getMonthValue())+"-"+localDate.getDayOfMonth();
+//            insertActivity (s, activity);
+            localDate = localDate.plusDays(7);
+        }
+
+        return new Response<>(false, false, "Success");
     }
 }
 

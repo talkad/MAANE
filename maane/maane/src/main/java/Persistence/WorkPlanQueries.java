@@ -21,28 +21,27 @@ public class WorkPlanQueries {
         return WorkPlanQueries.CreateSafeThreadSingleton.INSTANCE;
     }
 
-    public Response<Boolean> insertUserWorkPlan(String username , Map<String, WorkPlanDTO> workPlan){
+    public Response<Boolean> insertUserWorkPlan(String username, WorkPlanDTO workPlan, String year){
         Connect.createConnection();
         int rows = 0;
         String sql = "INSERT INTO \"WorkPlans\" (username, year, date, activities) VALUES (?, ?, ?, ?)";
-        PreparedStatement preparedStatement = null;
+        PreparedStatement preparedStatement;
         try {
             preparedStatement = Connect.conn.prepareStatement(sql);
-            for (Map.Entry<String,WorkPlanDTO> entry : workPlan.entrySet()){
+/*            for (Map.Entry<String,WorkPlanDTO> entry : workPlan.entrySet()){
                 String year =  entry.getKey();
-                WorkPlanDTO workPlanDTO = entry.getValue();
-                for (Pair<String, List<ActivityDTO>> annualPlan : workPlanDTO.getCalendar()) {
+                WorkPlanDTO workPlanDTO = entry.getValue();*/
+                for (Pair<String, List<ActivityDTO>> annualPlan : workPlan.getCalendar()) {
                     String date = annualPlan.getFirst();
                     String activities = ActivitiesToString(annualPlan.getSecond());
-
                     preparedStatement.setString(1, username);
                     preparedStatement.setString(2, year);
                     preparedStatement.setString(3, date);
                     preparedStatement.setString(4, activities);
+                    rows = preparedStatement.executeUpdate();
                 }
-            }
+            //}
 
-            rows = preparedStatement.executeUpdate();
             Connect.closeConnection();
         } catch (SQLException e) {e.printStackTrace();}
 
@@ -58,15 +57,16 @@ public class WorkPlanQueries {
      * while ActivityDto in the shape of school_id ^ title
      */
     private String ActivitiesToString (List<ActivityDTO> activities){
+        if (activities==null || activities.isEmpty()) return "";
         StringBuilder output = new StringBuilder();
         for (ActivityDTO activity : activities){
-            output.append(activity.getSchoolId()).append(" ^ ").append(activity.getTitle()).append(" | ");
+            output.append(activity.getSchoolId()).append(" A ").append(activity.getTitle()).append(" B ");
         }
         return output.substring(0, output.length()-3);
     }
 
 
-    public Response<Map<String, WorkPlanDTO>> getUserWorkPlan(String username, String year)  {
+    /*public Response<Map<String, WorkPlanDTO>> getUserWorkPlan(String username)  {
         Connect.createConnection();
         String sql = "SELECT * FROM \"WorkPlans\" WHERE username = ? AND year = ?";
         PreparedStatement statement;
@@ -91,6 +91,33 @@ public class WorkPlanQueries {
             return new Response<>(output, false, "successfully got work plans");
         } catch (SQLException throwables) {throwables.printStackTrace();}
         return new Response<>(null, true, "failed to get work plans");
+    }*/
+
+    public Response<WorkPlanDTO> getUserWorkPlanByYear(String username, String year)  {
+        Connect.createConnection();
+        String sql = "SELECT * FROM \"WorkPlans\" WHERE username = ? AND year = ?";
+        PreparedStatement statement;
+        WorkPlanDTO output;
+        try {
+            statement = Connect.conn.prepareStatement(sql);
+            statement.setString(1, username);
+            statement.setString(2, year);
+            ResultSet result = statement.executeQuery();
+
+            List<Pair<String, List<ActivityDTO>>> calendar = new LinkedList<>();
+            while(result.next()) {
+                String date = result.getString("date");
+                String activities = result.getString("activities");
+                List<ActivityDTO> activityDTOS = StringToActivities(activities);
+                Pair<String, List<ActivityDTO>> toAdd = new Pair<>(date, activityDTOS);
+                calendar.add(toAdd);
+            }
+            output = new WorkPlanDTO(calendar);
+
+            Connect.closeConnection();
+            return new Response<>(output, false, "successfully got work plans");
+        } catch (SQLException throwables) {throwables.printStackTrace();}
+        return new Response<>(null, true, "failed to get work plans");
     }
 
     /***
@@ -99,10 +126,11 @@ public class WorkPlanQueries {
      * @return parse back
      */
     private List<ActivityDTO> StringToActivities (String activities){
+        if(activities==null || activities.equals("")) return new LinkedList<>();
         List<ActivityDTO> activityDTOS = new LinkedList<>();
-        String [] activitiesArray = activities.split(" | ");
+        String [] activitiesArray = activities.split(" B ");
         for (String activity : activitiesArray){
-            String [] details = activity.split(" ^ ");
+            String [] details = activity.split(" A ");
             String schoolId = details[0];
             String title = details[1];
             ActivityDTO activityDTO = new ActivityDTO(schoolId, title);

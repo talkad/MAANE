@@ -24,4 +24,8 @@ public class ActivityDTO {
     public void setTitle(String title) {
         this.title = title;
     }
+
+    public String toString (){
+        return "School: "+schoolId+" Title: "+title;
+    }
 }

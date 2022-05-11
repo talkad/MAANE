@@ -525,16 +525,20 @@ public class User {
 
     public void assignWorkPlan(WorkPlan workPlan, String year) {
         //this.workPlan = new ConcurrentHashMap<>();
-        this.workPlan.put(year, workPlan);//todo prevent errors initialize in db
+        this.workPlan.put(year, workPlan);//todo prevent errors initialize in db no need for now
     }
 
-    public Response<WorkPlan> getWorkPlan(String year) {
+    public Response<WorkPlan> getWorkPlanByYear(String year) {
         if (this.state.allowed(Permissions.VIEW_WORK_PLAN, this)) {
             return new Response<>(this.workPlan.get(year), false, "");
         }
         else {
             return new Response<>(null, true, "user not allowed to view work plan");
         }
+    }
+
+    public Map<String, WorkPlan> getWorkPlan() {
+        return this.workPlan;
     }
 
     public Response<Boolean> viewAllUsers() {

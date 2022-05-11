@@ -13,6 +13,7 @@ import Domain.WorkPlan.WorkPlan;
 import Persistence.DbDtos.UserDBDTO;
 import Persistence.SurveyDAO;
 import Persistence.UserQueries;
+import Persistence.WorkPlanQueries;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
@@ -32,6 +33,7 @@ public class UserController {
     private SurveyController surveyController;
     private EmailController emailController;
     private UserQueries userDAO;
+    private WorkPlanQueries workPlanDAO;
     private final SecureRandom secureRandom;
     private final Base64.Encoder base64Encoder;
 
@@ -43,6 +45,7 @@ public class UserController {
         this.surveyController = SurveyController.getInstance();
         this.emailController = EmailController.getInstance();
         this.userDAO = UserQueries.getInstance();
+        this.workPlanDAO = WorkPlanQueries.getInstance();
         secureRandom = new SecureRandom();
         base64Encoder = Base64.getUrlEncoder();
 
@@ -63,7 +66,10 @@ public class UserController {
 
     public void assignWorkPlan(String instructor, WorkPlan workPlan, String year) {
         //todo implement properly later validate and prevent errors
-        new User(userDAO.getFullUser(instructor).getResult()).assignWorkPlan(workPlan, instructor);
+        User user = new User(userDAO.getFullUser(instructor).getResult());
+        //user.assignWorkPlan(workPlan, instructor);//todo assign properly
+        //workPlanDAO.insertUserWorkPlan(instructor, workPlan, year);
+
     }
 
     public Response<Boolean> sendCoordinatorEmails(String currUser, String surveyLink) {
@@ -836,14 +842,16 @@ public class UserController {
     public Response<WorkPlanDTO> viewWorkPlan(String currUser, String year){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
-            Response<WorkPlan> workPlanResponse = user.getWorkPlan(year);
+            return new Response<>(workPlanDAO.getUserWorkPlanByYear(currUser, year).getResult(), false, "");
+/*
+            Response<WorkPlan> workPlanResponse = user.getWorkPlanByYear(year);
             if(!workPlanResponse.isFailure()){
                 WorkPlanDTO workPlanDTO = generateWpDTO(user, year);
                 return new Response<>(workPlanDTO, false, "successfully acquired work plan");
             }
             else{
                 return new Response<>(null, true, workPlanResponse.getErrMsg());
-            }
+            }*///todo bring back
         }
         else {
             return new Response<>(null, true, "User not connected");
@@ -852,7 +860,7 @@ public class UserController {
 
     private WorkPlanDTO generateWpDTO(User user, String year) {
         WorkPlanDTO workPlanDTO = new WorkPlanDTO();
-        WorkPlan workPlan = user.getWorkPlan(year).getResult();
+        WorkPlan workPlan = user.getWorkPlanByYear(year).getResult();
         for (String date: workPlan.getCalendar().descendingKeySet()) {
             List<Activity> fromHere = workPlan.getCalendar().get(date);
             List<ActivityDTO> toHere = new ArrayList<>();

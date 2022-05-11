@@ -39,6 +39,9 @@ public class UserDBDTO {
         this.city = user.getCity();
         this.password = password;
         this.surveys = user.getSurveys().getResult();
+        if(user.getState().getStateEnum() == UserStateEnum.INSTRUCTOR){
+            this.workPlan = user.getWorkPlan();
+        }
         //this.workPlan = new ConcurrentHashMap<>();
     }
 

@@ -1,10 +1,12 @@
 package Domain.WorkPlan;
 
+import Communication.DTOs.WorkPlanDTO;
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.SurveyAnswers;
 import Domain.DataManagement.SurveyController;
 import Domain.UsersManagment.UserController;
+import Persistence.WorkPlanQueries;
 
 import java.util.Comparator;
 import java.util.List;
@@ -192,6 +194,8 @@ public class AnnualScheduleGenerator {
                     }
                 }
                 userController.assignWorkPlan(instructor, workPlan, year);
+                WorkPlanDTO workPlanDTO = new WorkPlanDTO(workPlan);
+                WorkPlanQueries.getInstance().insertUserWorkPlan(instructor, workPlanDTO, year);//todo replace the line above with this
             }
         }
     }
@@ -308,6 +312,8 @@ public class AnnualScheduleGenerator {
                     }
                 }
                 userController.assignWorkPlan(instructor, workPlan, year);
+                WorkPlanDTO workPlanDTO = new WorkPlanDTO(workPlan);
+                WorkPlanQueries.getInstance().insertUserWorkPlan(instructor, workPlanDTO, year);//todo replace the line above with this
             }
         }
     }

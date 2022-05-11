@@ -156,8 +156,8 @@ public class SupervisorTests extends AcceptanceTests{//todo reset the usercontro
 
         scheduleBridge.generateSchedule(supervisorName1, res.getResult(), year);
 
-        userBridge.getUserRes(instructorName1).getResult().getWorkPlan(year).getResult().printMe();
-        userBridge.getUserRes(instructorName2).getResult().getWorkPlan(year).getResult().printMe();
+        userBridge.getUserRes(instructorName1).getResult().getWorkPlanByYear(year).getResult().printMe();
+        userBridge.getUserRes(instructorName2).getResult().getWorkPlanByYear(year).getResult().printMe();
 
     }
 }
