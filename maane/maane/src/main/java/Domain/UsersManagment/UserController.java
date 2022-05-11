@@ -49,6 +49,7 @@ public class UserController {
         adminBoot("admin", "admin");//todo need to hide password in db
     }
 
+
     private static class CreateSafeThreadSingleton {
         private static final UserController INSTANCE = new UserController();
     }
@@ -998,6 +999,15 @@ public class UserController {
         else {
             return new Response<>(null, true, "User not connected");
         }
+    }
+
+
+    public Response<Boolean> canGetSchoolInfo(String username, String symbol) {
+
+        //todo: implement
+        // idk if certain user needs a permission to get school data
+
+        return new Response<>(true, false, "OK");
     }
 
 }

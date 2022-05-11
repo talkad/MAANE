@@ -17,7 +17,7 @@ public interface DataService {
 
     Response<Boolean> updateSchool (String symbol, SchoolDBDTO school);
 
-    Response<SchoolDBDTO> getSchool(String username, int symbol);
+    Response<SchoolDBDTO> getSchool(String username, String symbol);
 
-    Response<List<Pair<String, Integer>>> getAllSchools(String username);
+    Response<List<Pair<String, Integer>>> getUserSchools(String username);
 }

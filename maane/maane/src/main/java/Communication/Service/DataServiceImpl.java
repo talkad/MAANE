@@ -83,8 +83,8 @@ public class DataServiceImpl implements DataService {
     }
 
     @Override
-    public Response<SchoolDBDTO> getSchool(String username, int symbol) {
-        Response<SchoolDBDTO> res = DataController.getInstance().getSchool(username, symbol);
+    public Response<SchoolDBDTO> getSchool(String username, String symbol) {
+        Response<SchoolDBDTO> res = DataController.getInstance().getSchoolPerSymbol(username, symbol);
 
         if (res.isFailure())
             log.error(res.getErrMsg());
@@ -95,8 +95,8 @@ public class DataServiceImpl implements DataService {
     }
 
     @Override
-    public Response<List<Pair<String, Integer>>> getAllSchools(String username) {
-        Response<List<Pair<String, Integer>>> res = DataController.getInstance().getAllSchools(username);
+    public Response<List<Pair<String, Integer>>> getUserSchools(String username) {
+        Response<List<Pair<String, Integer>>> res = DataController.getInstance().getUserSchools(username);
 
         if (res.isFailure())
             log.error(res.getErrMsg());
@@ -105,4 +105,5 @@ public class DataServiceImpl implements DataService {
 
         return res;
     }
+
 }

@@ -1,6 +1,7 @@
 package Domain.DataManagement;
 
 
+import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.UserController;
 import Persistence.DbDtos.SchoolDBDTO;
@@ -16,6 +17,7 @@ public class DataController {
     private DataController() {
         this.schoolDAO = SchoolQueries.getInstance();
     }
+
 
     private static class CreateSafeThreadSingleton {
         private static final DataController INSTANCE = new DataController();
@@ -82,8 +84,32 @@ public class DataController {
 
 
     public SchoolDBDTO getSchool(String symbol){
+
         return schoolDAO.getSchool(symbol);
+
         //return this.schools.get(symbol);
+    }
+
+    public Response<SchoolDBDTO> getSchoolPerSymbol(String username, String symbol){
+        Response<Boolean> legalPermission;
+
+        SchoolDBDTO schoolDTO= schoolDAO.getSchool(symbol);
+        legalPermission = UserController.getInstance().canGetSchoolInfo(username, symbol);
+
+        if(legalPermission.isFailure())
+            return new Response<>(null, true, legalPermission.getErrMsg());
+
+        if(schoolDTO == null)
+            return new Response<>(null, true, "school not found");
+
+        return new Response<>(schoolDTO, false, "school found");
+        //return this.schools.get(symbol);
+    }
+
+    public Response<List<Pair<String, Integer>>> getUserSchools(String username) {
+
+        //todo: implement
+        return null;
     }
 
     //for test purposes only
