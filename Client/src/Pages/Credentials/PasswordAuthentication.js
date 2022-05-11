@@ -47,8 +47,8 @@ export default function PasswordAuthentication(props){
         }
         else{
             setError(false);
-            navigate(props.goto, {replace: true});
             props.callback(); // sending the message after received positive authentication
+            navigate(props.goto, {replace: true});
         }
     }
 

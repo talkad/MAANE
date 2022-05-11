@@ -481,7 +481,6 @@ export default function GoalsManagement(props){
             refreshData();
         }
         else{
-            // todo: check that it works
             setOpenSnackbar(true);
             setSnackbarSeverity("error");
             setSnackbarMessage("הפעולה נכשלה. אנא נסה/י שנית");
