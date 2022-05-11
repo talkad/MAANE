@@ -6,10 +6,10 @@ import Domain.DataManagement.DataController;
 import Domain.UsersManagment.UserController;
 import Domain.UsersManagment.UserStateEnum;
 import Domain.WorkPlan.GoalsManagement;
+import Persistence.UserQueries;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import Persistence.UserQueries;
 
 public class DataControllerTests {
 

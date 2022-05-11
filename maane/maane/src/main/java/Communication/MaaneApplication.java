@@ -7,7 +7,6 @@ import Communication.Initializer.ServerContextInitializer;
 import Communication.Service.UserServiceImpl;
 import Domain.DataManagement.AnswerState.AnswerType;
 import Domain.DataManagement.FaultDetector.Rules.*;
-import Domain.DataManagement.SurveyController;
 import Domain.UsersManagment.UserController;
 import Domain.UsersManagment.UserStateEnum;
 import Persistence.GoalsQueries;

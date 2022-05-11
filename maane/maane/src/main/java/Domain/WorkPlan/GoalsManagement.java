@@ -7,7 +7,6 @@ import Persistence.GoalsQueries;
 
 import java.util.List;
 import java.util.Vector;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class GoalsManagement {
     //private Map<String, Map<String, List<Goal>>> goals;

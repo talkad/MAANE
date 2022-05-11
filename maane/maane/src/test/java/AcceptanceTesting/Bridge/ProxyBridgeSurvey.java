@@ -3,7 +3,6 @@ package AcceptanceTesting.Bridge;
 import Communication.DTOs.*;
 import Communication.Service.Interfaces.SurveyService;
 import Domain.CommonClasses.Response;
-import Domain.DataManagement.FaultDetector.Rules.Rule;
 
 import java.util.List;
 

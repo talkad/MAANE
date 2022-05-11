@@ -1,22 +1,14 @@
 package Persistence.DbAdapter;
 
-import Communication.DTOs.QuestionDTO;
 import Communication.DTOs.RuleDTO;
 import Communication.DTOs.SurveyAnswersDTO;
-import Communication.DTOs.SurveyDTO;
 import Domain.CommonClasses.Pair;
-import Domain.CommonClasses.Response;
 import Domain.DataManagement.AnswerState.AnswerType;
 import Domain.DataManagement.FaultDetector.Rules.Comparison;
 import Domain.DataManagement.FaultDetector.Rules.RuleType;
-import Persistence.SurveyPersistence;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static Domain.DataManagement.AnswerState.AnswerType.MULTIPLE_CHOICE;
 import static Domain.DataManagement.AnswerState.AnswerType.NUMERIC_ANSWER;

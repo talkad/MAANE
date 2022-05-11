@@ -22,7 +22,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import javax.naming.InitialContext;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;

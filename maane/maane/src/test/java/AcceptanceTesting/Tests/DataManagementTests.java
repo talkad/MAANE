@@ -1,13 +1,15 @@
 package AcceptanceTesting.Tests;
 
 import AcceptanceTesting.Bridge.ProxyBridgeSurvey;
-import Communication.DTOs.*;
+import Communication.DTOs.QuestionDTO;
+import Communication.DTOs.RuleRequestDTO;
+import Communication.DTOs.SurveyAnswersDTO;
+import Communication.DTOs.SurveyDTO;
 import Communication.Initializer.ServerContextInitializer;
 import Communication.Service.SurveyServiceImpl;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.AnswerState.AnswerType;
 import Domain.DataManagement.FaultDetector.Rules.*;
-import Domain.DataManagement.SurveyController;
 import Domain.UsersManagment.UserController;
 import Domain.UsersManagment.UserStateEnum;
 import Persistence.SurveyDAO;

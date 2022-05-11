@@ -2,7 +2,6 @@ package Communication.Service.Interfaces;
 
 import Communication.DTOs.*;
 import Domain.CommonClasses.Response;
-import Domain.DataManagement.FaultDetector.Rules.Rule;
 
 import java.util.List;
 

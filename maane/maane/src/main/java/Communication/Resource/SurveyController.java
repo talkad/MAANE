@@ -3,7 +3,6 @@ package Communication.Resource;
 import Communication.DTOs.*;
 import Communication.Service.Interfaces.SurveyService;
 import Domain.CommonClasses.Response;
-import Domain.DataManagement.FaultDetector.Rules.Rule;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

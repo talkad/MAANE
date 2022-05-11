@@ -11,9 +11,7 @@ import Domain.DataManagement.FaultDetector.Rules.RuleConverter;
 import Domain.UsersManagment.UserController;
 import Persistence.DbDtos.SchoolDBDTO;
 import Persistence.SurveyDAO;
-import ch.qos.logback.classic.util.ContextInitializer;
 
-import javax.xml.crypto.Data;
 import java.security.SecureRandom;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
