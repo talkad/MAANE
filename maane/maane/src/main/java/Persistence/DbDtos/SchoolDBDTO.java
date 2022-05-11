@@ -18,6 +18,10 @@ public class SchoolDBDTO {
     String supervisor_type;
     String spector;
     int num_of_students;
+    String coordinatorFirstName;
+    String coordinatorLastName;
+    String coordinatorPhone;
+    String coordinatorEmail;
 
     public SchoolDBDTO(String symbol, String name, String city, String city_mail, String address, String school_address, String principal, String manager, String supervisor, String phone, String mail, int zipcode, String education_stage, String education_type, String supervisor_type, String spector, int num_of_students) {
         this.symbol = symbol;
@@ -176,5 +180,37 @@ public class SchoolDBDTO {
 
     public void setNum_of_students(int num_of_students) {
         this.num_of_students = num_of_students;
+    }
+
+    public String getCoordinatorFirstName() {
+        return coordinatorFirstName;
+    }
+
+    public void setCoordinatorFirstName(String coordinatorFirstName) {
+        this.coordinatorFirstName = coordinatorFirstName;
+    }
+
+    public String getCoordinatorLastName() {
+        return coordinatorLastName;
+    }
+
+    public void setCoordinatorLastName(String coordinatorLastName) {
+        this.coordinatorLastName = coordinatorLastName;
+    }
+
+    public String getCoordinatorPhone() {
+        return coordinatorPhone;
+    }
+
+    public void setCoordinatorPhone(String coordinatorPhone) {
+        this.coordinatorPhone = coordinatorPhone;
+    }
+
+    public String getCoordinatorEmail() {
+        return coordinatorEmail;
+    }
+
+    public void setCoordinatorEmail(String coordinatorEmail) {
+        this.coordinatorEmail = coordinatorEmail;
     }
 }

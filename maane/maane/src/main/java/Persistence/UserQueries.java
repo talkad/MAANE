@@ -641,4 +641,32 @@ public class UserQueries {
         return new Response<>(null, true, "failed to acquire emails");
     }
 
+    public Response<UserDBDTO> getCoordinator(String symbol, String workField) {
+        Connect.createConnection();
+        String sql = "SELECT firstname, lastname, phonenumber, email FROM \"Users\" JOIN \"UsersSchools\" ON username WHERE workfield = ? AND symbol = ? AND userstateenum = COORDINATOR";
+        PreparedStatement statement;
+        try {
+            statement = Connect.conn.prepareStatement(sql);
+
+            statement.setString(1, workField);
+            statement.setString(2, symbol);
+
+            ResultSet result = statement.executeQuery();
+            if(result.next()) {
+                UserDBDTO userDBDTO = new UserDBDTO();
+                userDBDTO.setFirstName(result.getString("firstname"));
+                userDBDTO.setLastName(result.getString("lastname"));
+                userDBDTO.setPhoneNumber(result.getString("phonenumber"));
+                userDBDTO.setEmail(result.getString("email"));
+
+                Connect.closeConnection();
+                return new Response<>(userDBDTO, false, "successfully acquired password");
+            }
+            Connect.closeConnection();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return new Response<>(null, true, "failed to acquire coordinator");
+    }
+
 }

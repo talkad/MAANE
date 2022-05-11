@@ -488,6 +488,15 @@ public class UserController {
         return new Response<>(user.getSchools(), false, "");
     }
 
+    public Response<List<String>> getUserSchools(String currUser){//todo maybe add checks
+        User user = new User(userDAO.getFullUser(currUser).getResult());
+        return user.getUserSchools();
+    }
+
+    public Response<String> hasSchool(String username, String symbol) {
+        return new User(userDAO.getFullUser(username).getResult()).hasSchool(symbol);
+    }
+
     public Response<List<String>> getAppointedInstructors(String currUser){
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
@@ -902,6 +911,24 @@ public class UserController {
             else{
                 return new Response<>(null, result.isFailure(), result.getErrMsg());
             }
+        }
+        else {
+            return new Response<>(null, true, "User not connected");
+        }
+    }
+
+    public Response<UserDBDTO> getCoordinator(String currUser, String workField, String symbol){
+        if(connectedUsers.containsKey(currUser)) {//todo make it a better function
+            User user = connectedUsers.get(currUser);
+            //Response<User> result = user.assignCoordinator(createToken(), workField, school, firstName, lastName, email, phoneNumber);
+
+            //if (!result.isFailure()) {
+            return userDAO.getCoordinator(symbol, workField);
+                //return new Response<>(true, false, "assigned coordinator");
+            //}
+            /*else{
+                return new Response<>(null, result.isFailure(), result.getErrMsg());
+            }*/
         }
         else {
             return new Response<>(null, true, "User not connected");

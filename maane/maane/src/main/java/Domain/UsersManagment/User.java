@@ -167,6 +167,30 @@ public class User {
         return schools;
     }
 
+    public Response<String> hasSchool(String symbol) {
+        if(this.state.getStateEnum() == UserStateEnum.SUPERVISOR || this.state.getStateEnum() == UserStateEnum.SYSTEM_MANAGER) {
+            return new Response<>(this.workField, false, "all schools access");
+        }
+        else if(this.schools != null && !this.schools.isEmpty() && this.schools.contains(symbol)){
+            return new Response<>(this.workField, false, "has school");
+        }
+        else{
+            return new Response<>(null, true, "user cannot access this school");
+        }
+    }
+
+    public Response<List<String>> getUserSchools() {
+        if(this.state.getStateEnum() == UserStateEnum.SUPERVISOR || this.state.getStateEnum() == UserStateEnum.SYSTEM_MANAGER) {
+            return new Response<>(null, false, "all schools access");
+        }
+        else if(this.schools != null && !this.schools.isEmpty()){
+            return new Response<>(this.schools, false, "own schools access");
+        }
+        else{
+            return new Response<>(null, true, "user cannot access schools");
+        }
+    }
+
     public void setSchools(List<String> schools) {
         this.schools = schools;
     }
@@ -553,13 +577,6 @@ public class User {
         }
     }
 
-
-/*
-    public Map<String, WorkPlan> getWorkPlan() {
-        return this.workPlan;
-    }
-*/
-
     public Response<Boolean> viewAllUsers() {
         if (this.state.allowed(Permissions.VIEW_ALL_USERS_INFO, this)) {
             return new Response<>(true, false, "");
@@ -638,6 +655,8 @@ public class User {
         }
         return new Response<>(null, true, "user not allowed to assign coordinator");
     }
+
+
 
     public Response<String> removeCoordinator(String school, String workField) {
         if (this.state.allowed(Permissions.REMOVE_COORDINATOR, this))

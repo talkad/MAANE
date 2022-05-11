@@ -1,5 +1,6 @@
 package Persistence;
 
+import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Persistence.DbDtos.SchoolDBDTO;
 import org.springframework.stereotype.Repository;
@@ -7,6 +8,8 @@ import org.springframework.stereotype.Repository;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Vector;
 
 @Repository
 public class SchoolQueries {
@@ -191,6 +194,47 @@ public class SchoolQueries {
             e.printStackTrace();
         }
         return schoolDBDTO;
+    }
+
+    public Response<List<Pair<String, String>>> getSchoolNameAndSymbol(List<String> schools) {
+        Connect.createConnection();
+        String sql;
+        PreparedStatement statement;
+        List<Pair<String, String>> nameAndSymbol = new Vector<>();
+        if(schools == null){
+            sql = "SELECT name, symbol FROM \"Schools\"";
+            try {
+                statement = Connect.conn.prepareStatement(sql);
+                ResultSet resultSet = statement.executeQuery();
+                while (resultSet.next()) {
+                    nameAndSymbol.add(new Pair<>(resultSet.getString("name"), resultSet.getString("symbol")));
+                }
+                Connect.closeConnection();
+                return new Response<>(nameAndSymbol, false, "successfully acquired schools");
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        else{
+            sql = "SELECT name FROM \"Schools\" WHERE symbol = ?";
+            try {
+                statement = Connect.conn.prepareStatement(sql);
+                for(String school: schools){
+                    statement.setString(1, school);
+                    ResultSet resultSet = statement.executeQuery();
+                    if (resultSet.next()) {
+                        nameAndSymbol.add(new Pair<>(resultSet.getString("name"), school));
+                    }
+                }
+                Connect.closeConnection();
+                return new Response<>(nameAndSymbol, false, "successfully acquired schools");
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return new Response<>(null, true, "failed to acquire info");
     }
 
     //for test purposes only
