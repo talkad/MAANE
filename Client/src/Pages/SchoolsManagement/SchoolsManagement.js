@@ -1,6 +1,6 @@
 import * as Space from 'react-spaces';
 import {
-    Alert,
+    Alert, Autocomplete,
     Box, Button,
     Collapse, Dialog, DialogTitle, Divider, Grid,
     IconButton, InputAdornment,
@@ -405,7 +405,7 @@ const rows = [
 ]
 
 export default function SchoolsManagement(props){
-    const [schools, setSchools] = useState(rows);
+    const [schools, setSchools] = useState([{id: 123, name: 'idk'}, {id: 1234, name: 'idk2'}]);
 
     // dialog states
     // add coordinator
@@ -427,9 +427,12 @@ export default function SchoolsManagement(props){
 
     // STRINGS
     const page_title = "בתי הספר שלי";
+    const search_school_label = 'חיפוש בית ספר';
+
     const school_id_cell_head_string = "סמל מוסד";
     const school_name_cell_head_string = "שם מוסד";
     const school_city_cell_head_string = "עיר מוסד";
+
 
     useEffect(() => {
 
@@ -541,26 +544,45 @@ export default function SchoolsManagement(props){
                 {/*title*/}
                 <h1>{page_title}</h1>
                 {/*the table presenting the schools*/}
-                <TableContainer sx={{width: "70%", marginTop: "1%"}} component={Paper}>
-                    <Table aria-label="collapsible table">
-                        {/*the table head containing the various headers*/}
-                        <TableHead>
-                            <TableRow>
-                                <TableCell/>
-                                <TableCell>{school_id_cell_head_string}</TableCell>
-                                <TableCell>{school_name_cell_head_string}</TableCell>
-                                <TableCell>{school_city_cell_head_string}</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        {/*the body of the table containing the rows*/}
-                        <TableBody>
-                            {schools.map((tableRow) => (
-                                <Row key={tableRow.id} row={tableRow} handleOpenAddCoordinatorDialog={handleOpenAddCoordinatorDialog}
-                                handleOpenRemoveCoordinatorDialog={handleOpenRemoveCoordinatorDialog}/>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
+
+                <Autocomplete
+                    freeSolo
+                    id="search-schools"
+                    disableClearable
+                    options={schools.map((option) => `${option.name} (${option.id})`)}
+                    renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            label={search_school_label}
+                            InputProps={{
+                                ...params.InputProps,
+                                type: 'search',
+                            }}
+                        />
+                    )}
+                    sx={{width: "70%"}}
+                />
+
+                {/*<TableContainer sx={{width: "70%", marginTop: "1%"}} component={Paper}>*/}
+                {/*    <Table aria-label="collapsible table">*/}
+                {/*        /!*the table head containing the various headers*!/*/}
+                {/*        <TableHead>*/}
+                {/*            <TableRow>*/}
+                {/*                <TableCell/>*/}
+                {/*                <TableCell>{school_id_cell_head_string}</TableCell>*/}
+                {/*                <TableCell>{school_name_cell_head_string}</TableCell>*/}
+                {/*                <TableCell>{school_city_cell_head_string}</TableCell>*/}
+                {/*            </TableRow>*/}
+                {/*        </TableHead>*/}
+                {/*        /!*the body of the table containing the rows*!/*/}
+                {/*        <TableBody>*/}
+                {/*            {schools.map((tableRow) => (*/}
+                {/*                <Row key={tableRow.id} row={tableRow} handleOpenAddCoordinatorDialog={handleOpenAddCoordinatorDialog}*/}
+                {/*                handleOpenRemoveCoordinatorDialog={handleOpenRemoveCoordinatorDialog}/>*/}
+                {/*            ))}*/}
+                {/*        </TableBody>*/}
+                {/*    </Table>*/}
+                {/*</TableContainer>*/}
 
                 {/*add coordinator dialog pop up*/}
                 <AddCoordinatorDialog

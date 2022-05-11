@@ -32,25 +32,25 @@ public class DataController {
                 .body(service.removeCoordinator(sessionHandler.getUsernameByToken(token).getResult(), (String)body.get("workField"), (String)body.get("school")));
     }
 
-    @PostMapping(value = "/insertSchool")
-    public ResponseEntity<Response<Boolean>> insertSchool(@RequestBody SchoolDBDTO school){
-        return ResponseEntity.ok()
-                .body(service.insertSchool(school));
-    }
-
-    @PostMapping(value = "/removeSchool")
-    public ResponseEntity<Response<Boolean>> removeSchool(@RequestBody String symbol){
-        return ResponseEntity.ok()
-                .body(service.removeSchool(symbol));
-    }
-
-    @PostMapping(value = "/updateSchool")
-    public ResponseEntity<Response<Boolean>> updateSchool(@RequestBody Map<String, Object> body){
-        SchoolDBDTO schoolDBDTO = gson.fromJson((String)body.get("school"), SchoolDBDTO.class);;
-
-        return ResponseEntity.ok()
-                .body(service.updateSchool((String)body.get("symbol"), schoolDBDTO));
-    }
+//    @PostMapping(value = "/insertSchool")
+//    public ResponseEntity<Response<Boolean>> insertSchool(@RequestBody SchoolDBDTO school){
+//        return ResponseEntity.ok()
+//                .body(service.insertSchool(school));
+//    }
+//
+//    @PostMapping(value = "/removeSchool")
+//    public ResponseEntity<Response<Boolean>> removeSchool(@RequestBody String symbol){
+//        return ResponseEntity.ok()
+//                .body(service.removeSchool(symbol));
+//    }
+//
+//    @PostMapping(value = "/updateSchool")
+//    public ResponseEntity<Response<Boolean>> updateSchool(@RequestBody Map<String, Object> body){
+//        SchoolDBDTO schoolDBDTO = gson.fromJson((String)body.get("school"), SchoolDBDTO.class);;
+//
+//        return ResponseEntity.ok()
+//                .body(service.updateSchool((String)body.get("symbol"), schoolDBDTO));
+//    }
 
 }
 
