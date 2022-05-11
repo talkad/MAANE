@@ -1,6 +1,7 @@
 package Communication.DTOs;
 
 import Domain.UsersManagment.UserStateEnum;
+import Persistence.DbDtos.UserDBDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,18 @@ public class UserDTO {
     private String phoneNumber;
     private String city;
     private List<String> schools;
+
+    public UserDTO(UserDBDTO userDBDTO) {
+        username = userDBDTO.getUsername();
+        workField = userDBDTO.getWorkField();
+        userStateEnum = userDBDTO.getStateEnum();
+        firstName = userDBDTO.getFirstName();
+        lastName = userDBDTO.getLastName();
+        email = userDBDTO.getEmail();
+        phoneNumber = userDBDTO.getPhoneNumber();
+        city = userDBDTO.getCity();
+        schools = userDBDTO.getSchools();
+    }
 
 
 }

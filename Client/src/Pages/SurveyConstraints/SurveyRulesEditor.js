@@ -508,8 +508,8 @@ export default function SurveyRulesEditor(){
                                 handleNumericalConstraintChange={handleNumericalConstraintChange}/>)}
 
                 {/*add rule button*/}
-                <Button onClick={() => addRule()} variant={'contained'}>{add_rules_button_string}</Button>
-                <Button onClick={() => submitRules()} variant={'contained'} color={'success'} sx={{marginTop: 1}}>{submit_rules_button_string}</Button>
+                <Button id={'survey_rules_add_rule_button'} onClick={() => addRule()} variant={'contained'}>{add_rules_button_string}</Button>
+                <Button id={'survey_rules_submit_rules_button'} onClick={() => submitRules()} variant={'contained'} color={'success'} sx={{marginTop: 1}}>{submit_rules_button_string}</Button>
                 
                 {/* notification alert */}
                 <NotificationSnackbar

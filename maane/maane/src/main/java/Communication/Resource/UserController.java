@@ -107,13 +107,13 @@ public class UserController {
                 .body(service.logout(sessionHandler.getUsernameByToken(token).getResult()));
     }
 
-    @PostMapping(value = "/registerUser") //todo aviad
+    @PostMapping(value = "/registerUser")
     public ResponseEntity<Response<String>> registerUser(@RequestHeader(value = "Authorization") String token, @RequestBody UserDTO user) {
         return ResponseEntity.ok()
                 .body(service.registerUser(sessionHandler.getUsernameByToken(token).getResult(), user));
     }
 
-    @PostMapping(value = "/registerUserBySystemManager")//todo aviad
+    @PostMapping(value = "/registerUserBySystemManager")
     public ResponseEntity<Response<String>> registerUserBySystemManager(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object>  body) {
         String user = "";
 
@@ -214,7 +214,7 @@ public class UserController {
                 .body(service.changePassword(sessionHandler.getUsernameByToken(token).getResult(), (String)body.get("currPassword"), (String)body.get("newPassword"), (String)body.get("confirmPassword")));
     }
 
-    @GetMapping(value = "/getAllUsers")//todo aviad
+    @GetMapping(value = "/getAllUsers")
     public ResponseEntity<Response<List<UserDTO>>> getAllUsers(@RequestHeader(value = "Authorization") String token){
         return ResponseEntity.ok()
                 .body(service.getAllUsers(sessionHandler.getUsernameByToken(token).getResult()));
@@ -238,19 +238,19 @@ public class UserController {
                 .body(service.getUserInfo(sessionHandler.getUsernameByToken(token).getResult()));
     }
 
-    @PostMapping(value = "/sendCoordinatorEmails")//todo aviad
+    @PostMapping(value = "/sendCoordinatorEmails")
     public ResponseEntity<Response<Boolean>> sendCoordinatorEmails(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object>  body) {
         return ResponseEntity.ok()
                 .body(service.sendCoordinatorEmails(sessionHandler.getUsernameByToken(token).getResult(), (String)body.get("surveyLink"), (String)body.get("surveyToken")));
     }
 
-    @PostMapping(value = "/transferSupervision")//todo aviad
+    @PostMapping(value = "/transferSupervision")
     public ResponseEntity<Response<Boolean>> transferSupervision(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object>  body){
         return ResponseEntity.ok()
                 .body(service.transferSupervision(sessionHandler.getUsernameByToken(token).getResult(), (String)body.get("currSupervisor"), (String)body.get("newSupervisor"), (String)body.get("password"), (String)body.get("firstName"), (String)body.get("lastName"), (String)body.get("email"), (String)body.get("phoneNumber"), (String)body.get("city")));
     }
 
-    @GetMapping(value = "/getSupervisors")//todo aviad
+    @GetMapping(value = "/getSupervisors")
     public ResponseEntity<Response<List<UserDTO>>> getSupervisors(@RequestHeader(value = "Authorization") String token){
         return ResponseEntity.ok()
                 .body(service.getSupervisors(sessionHandler.getUsernameByToken(token).getResult()));

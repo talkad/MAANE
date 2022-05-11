@@ -75,6 +75,7 @@ export default function SurveyQuestionBuilder(props) {
                     <Grid item xs={9}>
                         {/*the question*/}
                         <TextField
+                            id={`create_question_title_${props.id}`}
                             sx={{width: "90%"}}
                             color="secondary"
                             margin="normal"
@@ -93,6 +94,7 @@ export default function SurveyQuestionBuilder(props) {
                         {/*selection of which type of question the question is*/}
                         <FormControl  sx={{ m: 1, minWidth: 80 }}>
                             <Select
+                                id={`create_question_type_selection_${props.id}`}
                                 value={props.type}
                                 onChange={handleChange}
                             >
@@ -106,7 +108,7 @@ export default function SurveyQuestionBuilder(props) {
                     {props.id !== -1 && <Grid item xs={1}>
                         {/*button to the delete the current question*/}
                         <Tooltip title={question_delete_title_tooltip_string}>
-                            <IconButton onClick={delete_question}>
+                            <IconButton id={`create_question_delete_button_${props.id}`} onClick={delete_question}>
                                 <DeleteIcon />
                             </IconButton>
                         </Tooltip>
@@ -116,14 +118,14 @@ export default function SurveyQuestionBuilder(props) {
                         <Grid item xs={12} sx={{margin: "1%"}}>
                                 <RadioGroup column>
                                         {/*viewing the options the user added*/}
-                                        {props.answers.map((element) =>
+                                        {props.answers.map((element, index) =>
                                             <Grid container spacing={2}>
                                                 <Grid item xs={2}>
                                                     <FormControlLabel disabled value={element.id} control={<Radio />} label={<TextField
+                                                        id={element.id}
                                                         color="secondary"
                                                         margin="normal"
                                                         variant="standard"
-                                                        id={element.id}
                                                         value={element.value}
                                                         error={props.showError && element.value.trim() === ''}
                                                         required
@@ -134,14 +136,15 @@ export default function SurveyQuestionBuilder(props) {
                                                 </Grid>
                                                 <Grid item xs={1}>
                                                     <Tooltip title={answer_delete_title_tooltip_string}>
-                                                        <IconButton onClick={() => delete_answer(element.id)} aria-label="delete">
+                                                        <IconButton id={`create_question_multiple_answer_remove_button_${index}_${props.id}`}
+                                                                    onClick={() => delete_answer(element.id)} aria-label="delete">
                                                             <RemoveCircleOutlineIcon color="warning" />
                                                         </IconButton>
                                                     </Tooltip>
                                                 </Grid>
                                             </Grid>
                                         )}
-                                    <FormControlLabel disabled value={'idk'} control={<Radio />} label={<Button onClick={() => add_answer()} variant="text" color="secondary">{multiple_add_string}</Button>}/>
+                                    <FormControlLabel disabled value={'idk'} control={<Radio />} label={<Button id={`create_question_multiple_add_answer_button_${props.id}`} onClick={() => add_answer()} variant="text" color="secondary">{multiple_add_string}</Button>}/>
                                 </RadioGroup>
                             <br/>
                         </Grid>

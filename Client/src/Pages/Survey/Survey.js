@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import '../SurveyBuilder/SurveyBuilder.css';
-import {Alert, AlertTitle, Box, Grid, Pagination, Paper, TextField} from "@mui/material";
+import {Alert, AlertTitle, Box, Collapse, Grid, Pagination, Paper, TextField} from "@mui/material";
 import Button from "@mui/material/Button";
 import SurveyQuestion from "./SurveyQuestion";
 import * as Space from 'react-spaces';
@@ -201,7 +201,9 @@ export default function Survey(){
             {!surveyComplete && <div style={{margin: '5vh'}} className="Survey">
                 {/*alert*/}
                 <Box sx={{width: "70%", marginBottom: "1%"}}>
-                    {showError && <Alert severity={errorSeverity}> {errorMessage} </Alert>}
+                    <Collapse in={showError}>
+                        <Alert id={'submit_survey_error_alert'} severity={errorSeverity}> {errorMessage} </Alert>
+                    </Collapse>
                 </Box>
 
                 <Paper className="Survey-paper" elevation={3}>
@@ -245,7 +247,7 @@ export default function Survey(){
                 <Pagination count={Math.ceil(questions.length/questionsPerPage)} page={page} onChange={handlePageChange} />
                 <br/>
                 {/*submitting the survey*/}
-                {page === Math.ceil(questions.length/questionsPerPage) && <Button color="secondary" variant="contained" onClick={handleSubmit}>{submit_survey_string}</Button>}
+                {page === Math.ceil(questions.length/questionsPerPage) && <Button id={`submit_survey_submit_button`} color="secondary" variant="contained" onClick={handleSubmit}>{submit_survey_string}</Button>}
 
                 {/*pop up notification*/}
                 <NotificationSnackbar
@@ -262,7 +264,7 @@ export default function Survey(){
                       justifyContent="center"
                       spacing={1}>
                     <Grid item xs={12}>
-                        <Alert severity="success">
+                        <Alert id={'submit_survey_success_alert'} severity="success">
                             <AlertTitle>{survey_success_title_string}</AlertTitle>
                             {survey_success_message_string}
                         </Alert>

@@ -14,19 +14,19 @@ const localizer = momentLocalizer(moment); // localizer to represent the data ac
 const myEventsList = [
     {
         title: "בטיחות במעבדה",
-        start: "1/3/2022",
-        end: "1/3/2022",
+        start: "May 6th 2022, 13:00:00 pm",
+        end: "May 6th 2022, 15:00:00 pm",
         allDay: false,
         resource: "https://momentjs.com/", // TODO: what the heck is the resource???
     },
 
-    {
-        title: "קידום תלמידים",
-        start: "1/4/2022",
-        end: "1/4/2022",
-        allDay: false,
-        resource: "https://momentjs.com/", // TODO: what the heck is the resource???
-    },
+    // {
+    //     title: "קידום תלמידים",
+    //     start: "7/5/2022",
+    //     end: "7/5/2022",
+    //     allDay: false,
+    //     resource: "https://momentjs.com/", // TODO: what the heck is the resource???
+    // },
 
     {
         title: "שעות פרטניות",

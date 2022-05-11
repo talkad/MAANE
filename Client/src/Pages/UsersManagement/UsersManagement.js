@@ -95,7 +95,7 @@ function Row(props) {
                     </IconButton>
                 </TableCell>
                 {/* main user's info */}
-                <TableCell component="th" scope="row">
+                <TableCell id={`td_non_supervisor_username_${row.username}`} component="th" scope="row">
                     <Grid container spacing={1}>
                         <Grid item xs={2}><Avatar>{row.name.charAt(0)}</Avatar></Grid>
                         <Grid item xs={4}>{row.name}</Grid>
@@ -142,7 +142,7 @@ function Row(props) {
                                 <Grid item xs={1.5}><Button id={`change_password_${row.username}`} fullWidth onClick={() => props.handleOpenCPDialog(row.username, row.name)} color="secondary" variant="outlined">{change_password_button_string}</Button></Grid>
                                 <Grid item xs={1.5}><Button id={`edit_schools_${row.username}`} fullWidth onClick={() => props.handleOpenEditSchoolsDialog(row.username, row.name, row.schools)} color="secondary" variant="outlined">{edit_schools_button_string}</Button></Grid>
                                 {props.supervisor !== undefined && <Grid item xs={1.5}>
-                                    <Button fullWidth onClick={() => props.handleOpenTransferSuperDialog(row.name, row.username, props.supervisorName, props.supervisor)} color="secondary" variant="outlined">{make_supervisor_button_string}</Button>
+                                    <Button id={`transfer_supervision_to_${row.username}`} fullWidth onClick={() => props.handleOpenTransferSuperDialog(row.name, row.username, props.supervisorName, props.supervisor)} color="secondary" variant="outlined">{make_supervisor_button_string}</Button>
                                 </Grid>}
                             </Grid>
                             <Grid container spacing={1}>
@@ -198,7 +198,7 @@ function SystemManagerRow(props) {
                     </IconButton>
                 </TableCell>
                 {/* main user's info */}
-                <TableCell component="th" scope="row">
+                <TableCell id={`td_supervisor_username_${row.username}`} component="th" scope="row">
                     <Grid container spacing={1}>
                         <Grid item xs={2}><Avatar>{row.name.charAt(0)}</Avatar></Grid>
                         <Grid item xs={4}>{row.name}</Grid>
@@ -332,7 +332,7 @@ function TransferSupervisionDialog(props){
     const cancel_string = "ביטול";
 
     const handleSubmitDeletion = () => {
-        props.callback(props.selectedSupervisorUsername, props.selectUser);
+        props.callback(props.selectedSupervisorUsername, props.selectedUser);
     }
 
     return (
@@ -341,11 +341,11 @@ function TransferSupervisionDialog(props){
             <Grid container justifyContent="center" spacing={0}>
                 <Grid item align="center" xs={6}>
                     {/*the cancel button*/}
-                    <Button onClick={() => props.onClose()} sx={{marginBottom: 1, width: "50%"}} variant="outlined">{cancel_string}</Button>
+                    <Button id={'transfer_supervision_decline_button'} onClick={() => props.onClose()} sx={{marginBottom: 1, width: "50%"}} color={'error'} variant="outlined">{cancel_string}</Button>
                 </Grid>
                 <Grid item align="center" xs={6}>
-                    {/*the delete button*/}
-                    <Button onClick={() => handleSubmitDeletion()} sx={{marginBottom: 1, width: "50%"}} color="error" variant="outlined">{delete_string}</Button>
+                    {/*the transfer button*/}
+                    <Button id={`transfer_supervision_accept_button`} onClick={() => handleSubmitDeletion()} sx={{marginBottom: 1, width: "50%"}} variant="outlined">{delete_string}</Button>
                 </Grid>
             </Grid>
         </Dialog>
@@ -695,7 +695,10 @@ export default function UsersManagement(props){
                 }
             }
             else if(props.userType === "SYSTEM_MANAGER"){
-                // todo: test this once there's connection again
+
+                console.log('hello there')
+                console.log(data.result)
+
                 let workFieldsDict = {}
                 // first iteration to get all the work fields
                 for (const row of data.result) {
@@ -714,8 +717,8 @@ export default function UsersManagement(props){
                         } else if (row.userStateEnum === "GENERAL_SUPERVISOR") {
                             role = "מפקח/ת כללי/ת";
                         }
-
-                        workFieldsDict[row.workField] = workFieldsDict.push(createData(
+                        console.log(row.username)
+                        workFieldsDict[row.workField].push(createData(
                             row.username,
                             row.firstName + " " + row.lastName,
                             role,
@@ -746,9 +749,6 @@ export default function UsersManagement(props){
             }
 
             setTableRows(rows);
-        }
-        else {
-            //TODO: needed?
         }
     }
 
@@ -877,6 +877,9 @@ export default function UsersManagement(props){
      * @param supervisorUsername the username of the selected supervisor
      */
     const handleOpenSupervisionTransferDialog = (name, username, supervisorName, supervisorUsername) => {
+        console.log('general kenobi')
+        console.log(username)
+        console.log(supervisorUsername)
         setOpenSupervisionTransferDialog(true);
         setSelectedUser(username);
         setSelectedName(name);

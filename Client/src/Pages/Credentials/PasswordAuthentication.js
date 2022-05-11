@@ -16,7 +16,6 @@ import {useNavigate} from "react-router-dom";
 import Connection from "../../Communication/Connection";
 
 // todo: refreshing on this page breaks the client
-// TODO: test this page
 
 export default function PasswordAuthentication(props){
     const [password, setPassword] = useState('');

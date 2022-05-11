@@ -305,6 +305,8 @@ public class UserController {
     }
 
     public Response<List<UserDTO>> getSupervisors(String currUser){
+        UserDBDTO userDB;
+
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             if(user.isSystemManager().getResult()){
@@ -312,11 +314,9 @@ public class UserController {
                 if (!appointeesRes.isFailure()) {
                     List<UserDTO> supervisorsDTOs = new Vector<>();
                     for (String username : appointeesRes.getResult()) {
-                        UserDTO userDTO = new UserDTO();
-                        userDTO.setWorkField(new User(userDAO.getFullUser(username).getResult()).getWorkField());
-                        userDTO.setFirstName(new User(userDAO.getFullUser(username).getResult()).getFirstName());
-                        userDTO.setLastName(new User(userDAO.getFullUser(username).getResult()).getLastName());
-                        supervisorsDTOs.add(userDTO);
+                        userDB = userDAO.getFullUser(username).getResult();
+
+                        supervisorsDTOs.add(new UserDTO(userDB));
                     }
                     return new Response<>(supervisorsDTOs, false, "");
                 }
