@@ -82,7 +82,7 @@ public class SurveyController {
     }
 
     @GetMapping("/detectFault/surveyID={surveyID}&year={year}")
-    public ResponseEntity<Response<List<List<String>>>> detectFault(@RequestHeader(value = "Authorization") String token, @PathVariable("surveyID") String surveyID, @PathVariable("year") String year){
+    public ResponseEntity<Response<List<List<String>>>> detectFault(@RequestHeader(value = "Authorization") String token, @PathVariable("surveyID") String surveyID, @PathVariable("year") Integer year){
         return ResponseEntity.ok()
                 .body(service.detectFault(sessionHandler.getUsernameByToken(token).getResult(), surveyID, year));
     }

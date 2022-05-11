@@ -102,6 +102,8 @@ public class UserQueries {
         String userSchoolsSql = "SELECT school FROM \"UsersSchools\" WHERE username = ?";
         String userAppointmentsSql = "SELECT appointee FROM \"Appointments\" WHERE appointor = ?";
         String userSurveysSql = "SELECT surveyid FROM \"UsersSurveys\" WHERE username = ?";
+        String userWorkPlans = "SELECT year FROM \"WorkPlans\" WHERE username = ? GROUP BY year";
+
 
         PreparedStatement statement;
         try {
@@ -149,6 +151,15 @@ public class UserQueries {
                     surveys.add(result.getString(1));
                 }
                 userDBDTO.setSurveys(surveys);
+
+                statement = Connect.conn.prepareStatement(userWorkPlans);
+                statement.setString(1, username);
+                result = statement.executeQuery();
+                List<Integer> workPlansYears = new Vector<>();
+                while (result.next()){
+                    workPlansYears.add(result.getInt(1));
+                }
+                userDBDTO.setWorkPlanYears(workPlansYears);
 
                 Connect.closeConnection();
                 return new Response<>(userDBDTO, false, "successfully acquired user");
@@ -628,6 +639,34 @@ public class UserQueries {
             throwables.printStackTrace();
         }
         return new Response<>(null, true, "failed to acquire emails");
+    }
+
+    public Response<UserDBDTO> getCoordinator(String symbol, String workField) {
+        Connect.createConnection();
+        String sql = "SELECT firstname, lastname, phonenumber, email FROM \"Users\" JOIN \"UsersSchools\" ON username WHERE workfield = ? AND symbol = ? AND userstateenum = COORDINATOR";
+        PreparedStatement statement;
+        try {
+            statement = Connect.conn.prepareStatement(sql);
+
+            statement.setString(1, workField);
+            statement.setString(2, symbol);
+
+            ResultSet result = statement.executeQuery();
+            if(result.next()) {
+                UserDBDTO userDBDTO = new UserDBDTO();
+                userDBDTO.setFirstName(result.getString("firstname"));
+                userDBDTO.setLastName(result.getString("lastname"));
+                userDBDTO.setPhoneNumber(result.getString("phonenumber"));
+                userDBDTO.setEmail(result.getString("email"));
+
+                Connect.closeConnection();
+                return new Response<>(userDBDTO, false, "successfully acquired password");
+            }
+            Connect.closeConnection();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return new Response<>(null, true, "failed to acquire coordinator");
     }
 
 }

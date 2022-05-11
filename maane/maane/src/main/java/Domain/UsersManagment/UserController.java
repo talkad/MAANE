@@ -13,6 +13,7 @@ import Domain.WorkPlan.WorkPlan;
 import Persistence.DbDtos.UserDBDTO;
 import Persistence.SurveyDAO;
 import Persistence.UserQueries;
+import Persistence.WorkPlanQueries;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
@@ -32,6 +33,7 @@ public class UserController {
     private SurveyController surveyController;
     private EmailController emailController;
     private UserQueries userDAO;
+    private WorkPlanQueries workPlanDAO;
     private final SecureRandom secureRandom;
     private final Base64.Encoder base64Encoder;
 
@@ -43,6 +45,7 @@ public class UserController {
         this.surveyController = SurveyController.getInstance();
         this.emailController = EmailController.getInstance();
         this.userDAO = UserQueries.getInstance();
+        this.workPlanDAO = WorkPlanQueries.getInstance();
         secureRandom = new SecureRandom();
         base64Encoder = Base64.getUrlEncoder();
 
@@ -61,9 +64,12 @@ public class UserController {
         return this.connectedUsers;
     }
 
-    public void assignWorkPlan(String instructor, WorkPlan workPlan, String year) {
+    public void assignWorkPlan(String instructor, WorkPlan workPlan, Integer year) {
         //todo implement properly later validate and prevent errors
-        new User(userDAO.getFullUser(instructor).getResult()).assignWorkPlan(workPlan, instructor);
+        User user = new User(userDAO.getFullUser(instructor).getResult());
+        //user.assignWorkPlan(workPlan, instructor);//todo assign properly
+        //workPlanDAO.insertUserWorkPlan(instructor, workPlan, year);
+
     }
 
     public Response<Boolean> sendCoordinatorEmails(String currUser, String surveyLink) {
@@ -482,6 +488,15 @@ public class UserController {
         return new Response<>(user.getSchools(), false, "");
     }
 
+    public Response<List<String>> getUserSchools(String currUser){//todo maybe add checks
+        User user = new User(userDAO.getFullUser(currUser).getResult());
+        return user.getUserSchools();
+    }
+
+    public Response<String> hasSchool(String username, String symbol) {
+        return new User(userDAO.getFullUser(username).getResult()).hasSchool(symbol);
+    }
+
     public Response<List<String>> getAppointedInstructors(String currUser){
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
@@ -724,7 +739,7 @@ public class UserController {
         }
     }
 
-    public Response<List<GoalDTO>> getGoals(String currUser, String year){
+    public Response<List<GoalDTO>> getGoals(String currUser, Integer year){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             Response<String> res = user.getGoals();
@@ -740,7 +755,7 @@ public class UserController {
         }
     }
 
-    public Response<Boolean> addGoal(String currUser, GoalDTO goalDTO, String year){
+    public Response<Boolean> addGoal(String currUser, GoalDTO goalDTO, Integer year){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             Response<String> res = user.addGoals();
@@ -808,7 +823,7 @@ public class UserController {
     }
 
 
-    public Response<Boolean> removeGoal(String currUser, String year, int goalId) {
+    public Response<Boolean> removeGoal(String currUser, Integer year, int goalId) {
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             Response<String> res = user.removeGoal();
@@ -833,13 +848,14 @@ public class UserController {
         }
     }
 
-    public Response<WorkPlanDTO> viewWorkPlan(String currUser, String year){
+    public Response<WorkPlanDTO> viewWorkPlan(String currUser, Integer year){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
-            Response<WorkPlan> workPlanResponse = user.getWorkPlan(year);
+            //return new Response<>(workPlanDAO.getUserWorkPlanByYear(currUser, year).getResult(), false, "");
+            Response<Boolean> workPlanResponse = user.getWorkPlanByYear(year);
             if(!workPlanResponse.isFailure()){
-                WorkPlanDTO workPlanDTO = generateWpDTO(user, year);
-                return new Response<>(workPlanDTO, false, "successfully acquired work plan");
+                return workPlanDAO.getUserWorkPlanByYear(currUser, year);// generateWpDTO(user, year);
+                //return new Response<>(workPlanDTO, false, "successfully acquired work plan");
             }
             else{
                 return new Response<>(null, true, workPlanResponse.getErrMsg());
@@ -850,9 +866,9 @@ public class UserController {
         }
     }
 
-    private WorkPlanDTO generateWpDTO(User user, String year) {
+/*    private WorkPlanDTO generateWpDTO(User user, String year) {
         WorkPlanDTO workPlanDTO = new WorkPlanDTO();
-        WorkPlan workPlan = user.getWorkPlan(year).getResult();
+        WorkPlan workPlan = user.getWorkPlanByYear(year).getResult();
         for (String date: workPlan.getCalendar().descendingKeySet()) {
             List<Activity> fromHere = workPlan.getCalendar().get(date);
             List<ActivityDTO> toHere = new ArrayList<>();
@@ -865,7 +881,7 @@ public class UserController {
             workPlanDTO.getCalendar().add(new Pair<>(date, toHere));
         }
         return workPlanDTO;
-    }
+    }*/
     
     public Response<UserDTO> getUserInfo(String currUser){
         if(connectedUsers.containsKey(currUser)) {
@@ -895,6 +911,24 @@ public class UserController {
             else{
                 return new Response<>(null, result.isFailure(), result.getErrMsg());
             }
+        }
+        else {
+            return new Response<>(null, true, "User not connected");
+        }
+    }
+
+    public Response<UserDBDTO> getCoordinator(String currUser, String workField, String symbol){
+        if(connectedUsers.containsKey(currUser)) {//todo make it a better function
+            User user = connectedUsers.get(currUser);
+            //Response<User> result = user.assignCoordinator(createToken(), workField, school, firstName, lastName, email, phoneNumber);
+
+            //if (!result.isFailure()) {
+            return userDAO.getCoordinator(symbol, workField);
+                //return new Response<>(true, false, "assigned coordinator");
+            //}
+            /*else{
+                return new Response<>(null, result.isFailure(), result.getErrMsg());
+            }*/
         }
         else {
             return new Response<>(null, true, "User not connected");

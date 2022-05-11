@@ -33,7 +33,7 @@ public class GoalsManagement {
         }
     }*/
 
-    public Response<Boolean> addGoalToField(String workField, GoalDTO goalDTO, String year){
+    public Response<Boolean> addGoalToField(String workField, GoalDTO goalDTO, Integer year){
 
 //        goalDTO.setGoalId(this.goalId.getAndIncrement());
         return goalsDAO.insertGoal(goalDTO);
@@ -53,7 +53,7 @@ public class GoalsManagement {
         return new Response<>(false, true, "work field: " + workField + " does not exists");*/
     }
 
-    public Response<List<Goal>> getGoals(String workField, String year){
+    public Response<List<Goal>> getGoals(String workField, Integer year){
         Response<List<GoalDTO>> goalsDTOListRes = goalsDAO.getGoals(workField, year);
         if(!goalsDTOListRes.isFailure()){
             List<Goal> goalList = goalsDTOToGoals(goalsDTOListRes.getResult());
@@ -78,7 +78,7 @@ public class GoalsManagement {
         return new Response<>(null, true, "work field: " + workField + " does not exists"); //todo cant really get here*/
     }
 
-    public Response<List<GoalDTO>> getGoalsDTO(String workField, String year){
+    public Response<List<GoalDTO>> getGoalsDTO(String workField, Integer year){
         return goalsDAO.getGoals(workField, year);
         /*if(this.goals.containsKey(workField) && this.goals.get(workField).containsKey(year)){
             List<GoalDTO> goalDTOList = new Vector<>();
@@ -108,7 +108,7 @@ public class GoalsManagement {
         return new Response<>(null, true, "no such goal exists");
     }*/
 
-    public Response<List<Goal>> getGoalsById(String workField, List<Integer> goalsId, String year){
+    public Response<List<Goal>> getGoalsById(String workField, List<Integer> goalsId, Integer year){
         List<Goal> goalsList;
         Response<List<GoalDTO>> goalDTOListRes = goalsDAO.getGoalsById(goalsId);
         if(!goalDTOListRes.isFailure()){
@@ -159,7 +159,7 @@ public class GoalsManagement {
 
     }
 
-    public Response<Boolean> removeGoal(String workField, String year, int goalId){
+    public Response<Boolean> removeGoal(String workField, Integer year, int goalId){
         return goalsDAO.removeGoal(goalId);
 /*        Response<List<GoalDTO>> goalListRes = goalsDAO.getGoals(workField, year);
         if(!goalListRes.isFailure()*//*goals.containsKey(workField) && goals.get(workField).containsKey(year)*//*){

@@ -1,9 +1,11 @@
 package Domain.DataManagement;
 
 
+import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.UserController;
 import Persistence.DbDtos.SchoolDBDTO;
+import Persistence.DbDtos.UserDBDTO;
 import Persistence.SchoolQueries;
 import Persistence.UserQueries;
 
@@ -84,6 +86,29 @@ public class DataController {
     public SchoolDBDTO getSchool(String symbol){
         return schoolDAO.getSchool(symbol);
         //return this.schools.get(symbol);
+    }
+
+    public Response<SchoolDBDTO> getSchool(String username, String symbol){//todo test it
+        Response<String> schoolsRes = UserController.getInstance().hasSchool(username, symbol);
+        if(!schoolsRes.isFailure()){
+            SchoolDBDTO school = schoolDAO.getSchool(symbol);
+            Response<UserDBDTO> coordinator = UserController.getInstance().getCoordinator(username, schoolsRes.getResult(), symbol);//todo probably dont need to send workfield fail check it didnt
+            school.setCoordinatorFirstName(coordinator.getResult().getFirstName());
+            school.setCoordinatorLastName(coordinator.getResult().getLastName());
+            school.setCoordinatorPhone(coordinator.getResult().getPhoneNumber());
+            school.setCoordinatorEmail(coordinator.getResult().getEmail());
+            return new Response<>(school, false, "successfully acquired the school");//todo add coordinator to school
+        }
+        return new Response<>(null, true, schoolsRes.getErrMsg());
+    }
+
+    public Response<List<Pair<String, String>>> getUserSchools(String username){  //pair<schoolName, symbol> //todo test it
+        Response<List<String>> schoolsRes = UserController.getInstance().getSchools(username);
+        if(!schoolsRes.isFailure()){
+            return schoolDAO.getSchoolNameAndSymbol(schoolsRes.getResult());
+        }
+        else return new Response<>(null, true, schoolsRes.getErrMsg());
+
     }
 
     //for test purposes only

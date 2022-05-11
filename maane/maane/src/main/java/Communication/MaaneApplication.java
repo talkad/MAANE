@@ -72,9 +72,9 @@ public class MaaneApplication {
 
 				// create goals
 				GoalDTO goalDTO1 = new GoalDTO(555, "yahad1", "", 1,
-						5, "tech","תשפ\"ב");
+						5, "tech", 2022);
 				GoalDTO goalDTO2 = new GoalDTO(666, "yahad2", "", 2,
-						10, "tech","תשפ\"ב");
+						10, "tech",2022);
 
 				GoalsQueries.getInstance().insertGoalMock(goalDTO1);
 				GoalsQueries.getInstance().insertGoalMock(goalDTO2);
@@ -95,7 +95,6 @@ public class MaaneApplication {
 				SurveyDAO.getInstance().insertCoordinatorAnswers("1111", "56789",
 						new LinkedList<>(Arrays.asList("open ans", "40", "1")),
 						new LinkedList<>(Arrays.asList(AnswerType.OPEN_ANSWER, AnswerType.NUMERIC_ANSWER, AnswerType.MULTIPLE_CHOICE)));
-
 				// create another survey
 				surveyDTO = new SurveyDTO(true, "2222", "title", "description",
 						Arrays.asList("symbol", "open?", "numeric?", "multiple choice?"),

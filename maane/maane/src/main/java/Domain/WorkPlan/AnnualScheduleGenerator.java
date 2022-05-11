@@ -1,10 +1,12 @@
 package Domain.WorkPlan;
 
+import Communication.DTOs.WorkPlanDTO;
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.SurveyAnswers;
 import Domain.DataManagement.SurveyController;
 import Domain.UsersManagment.UserController;
+import Persistence.WorkPlanQueries;
 
 import java.util.Comparator;
 import java.util.List;
@@ -32,7 +34,7 @@ public class AnnualScheduleGenerator {
         return CreateSafeThreadSingleton.INSTANCE;
     }
 
-    public Response<Boolean> generateSchedule(String supervisor, String surveyId, String year){
+    public Response<Boolean> generateSchedule(String supervisor, String surveyId, Integer year){
 
         Response<List<SurveyAnswers>> surveyRes = surveyController.getAnswersForSurvey(surveyId);
         String workField;
@@ -71,7 +73,7 @@ public class AnnualScheduleGenerator {
         return maxGoalIndex;
     }
 
-    public void algorithm(String supervisor, String surveyId, String workField, List<Goal> goals, String year) {
+    public void algorithm(String supervisor, String surveyId, String workField, List<Goal> goals, Integer year) {
 
         //1 - sort Goals by their weight (goal is per workfield)
         //2 - for every instructors under workField:
@@ -192,11 +194,13 @@ public class AnnualScheduleGenerator {
                     }
                 }
                 userController.assignWorkPlan(instructor, workPlan, year);
+                WorkPlanDTO workPlanDTO = new WorkPlanDTO(workPlan);
+                WorkPlanQueries.getInstance().insertUserWorkPlan(instructor, workPlanDTO, year);//todo replace the line above with this
             }
         }
     }
 
-    public void algorithmMock(String supervisor, List<Pair<String, List<Integer>>> schoolFaultsMock, String workField, List<Goal> goals, String year) {
+    public void algorithmMock(String supervisor, List<Pair<String, List<Integer>>> schoolFaultsMock, String workField, List<Goal> goals, Integer year) {
         //1 - sort Goals by their weight (goal is per workfield)
         //2 - for every instructors under workField:
         //3 - workDay = the work day of the current instructor
@@ -308,6 +312,8 @@ public class AnnualScheduleGenerator {
                     }
                 }
                 userController.assignWorkPlan(instructor, workPlan, year);
+                WorkPlanDTO workPlanDTO = new WorkPlanDTO(workPlan);
+                WorkPlanQueries.getInstance().insertUserWorkPlan(instructor, workPlanDTO, year);//todo replace the line above with this
             }
         }
     }

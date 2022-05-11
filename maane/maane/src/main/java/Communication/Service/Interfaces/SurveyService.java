@@ -40,7 +40,7 @@ public interface SurveyService {
 //
 //    Response<Boolean> removeRule(String username, int id, int index);
 
-    Response<List<List<String>>> detectFault(String username, String surveyID, String year);
+    Response<List<List<String>>> detectFault(String username, String surveyID, Integer year);
 
     Response<Boolean> removeRules(String username, String surveyID);
 

@@ -121,7 +121,7 @@ public class SupervisorTests extends AcceptanceTests{//todo reset the usercontro
     @Test
     public void workPlanTest(){
         List<GoalDTO> goalDTOList = new Vector<>();
-        String year = "תשפ\"ג";
+        Integer year = 2022;// "תשפ\"ג";
         userBridge.addGoal(supervisorName1, new GoalDTO(0, "research", "", 1, 3), year);
         userBridge.addGoal(supervisorName1, new GoalDTO(1, "private hours", "", 1, 2), year);
         userBridge.addGoal(supervisorName1, new GoalDTO(2, "maintenance", "", 1, 4), year);
@@ -156,8 +156,10 @@ public class SupervisorTests extends AcceptanceTests{//todo reset the usercontro
 
         scheduleBridge.generateSchedule(supervisorName1, res.getResult(), year);
 
-        userBridge.getUserRes(instructorName1).getResult().getWorkPlan(year).getResult().printMe();
-        userBridge.getUserRes(instructorName2).getResult().getWorkPlan(year).getResult().printMe();
+        userBridge.login(instructorName1);
+        userBridge.login(instructorName2);
 
+        userBridge.viewWorkPlan(instructorName1, year).getResult().printMe();
+        userBridge.viewWorkPlan(instructorName2, year).getResult().printMe();
     }
 }
