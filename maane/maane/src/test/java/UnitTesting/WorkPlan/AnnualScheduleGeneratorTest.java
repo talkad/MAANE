@@ -44,7 +44,7 @@ public class AnnualScheduleGeneratorTest {
 
     @Test
     public void basicAlgorithmFunctionalitySuccess(){
-        String year = "תשפ\"ג";
+        Integer year = 2022;// "תשפ\"ג";
         String supervisorName = userController.login("sup1").getResult();
 
         userController.addGoal(supervisorName, new GoalDTO(0,"1", "desc", 1,5), year);

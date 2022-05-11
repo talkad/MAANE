@@ -178,7 +178,7 @@ public class SurveyControllerTests {
 
     @Test
     public void faultDetectionSuccess(){
-        String year = "תשפ\"ג";
+        Integer year = 2022;// "תשפ\"ג";
         Response<List<List<String>>> faults;
 
         UserController userController = UserController.getInstance();

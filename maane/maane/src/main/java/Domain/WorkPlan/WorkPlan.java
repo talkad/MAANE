@@ -23,6 +23,7 @@ public class WorkPlan {
     }
 
     public TreeMap<String, List<Activity>> getCalendar(){
+        //return getCalendarAsDates();
         return calendar;
     }
 

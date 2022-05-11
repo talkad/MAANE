@@ -23,7 +23,8 @@ public class UserDBDTO {
     protected List<String> surveys;
     protected List<String> baskets;
     //    private MonthlyReport monthlyReport; //todo monthly reports history??
-    protected Map<String, WorkPlan> workPlan;
+    //protected Map<String, WorkPlan> workPlan;
+    protected List<Integer> workPlanYears;
 
 
     public UserDBDTO() {}
@@ -40,7 +41,8 @@ public class UserDBDTO {
         this.password = password;
         this.surveys = user.getSurveys().getResult();
         if(user.getState().getStateEnum() == UserStateEnum.INSTRUCTOR){
-            this.workPlan = user.getWorkPlan();
+            //this.workPlan = user.getWorkPlan();
+            this.workPlanYears = user.getWorkPlanYears();
         }
         //this.workPlan = new ConcurrentHashMap<>();
     }
@@ -161,11 +163,19 @@ public class UserDBDTO {
         this.baskets = baskets;
     }
 
-    public Map<String, WorkPlan> getWorkPlan() {
+/*    public Map<String, WorkPlan> getWorkPlan() {
         return workPlan;
     }
 
     public void setWorkPlan(Map<String, WorkPlan> workPlan) {
         this.workPlan = workPlan;
+    }*/
+
+    public List<Integer> getWorkPlanYears() {
+        return this.workPlanYears;
+    }
+
+    public void setWorkPlanYears(List<Integer> years) {
+        this.workPlanYears = years;
     }
 }

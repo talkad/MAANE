@@ -102,6 +102,8 @@ public class UserQueries {
         String userSchoolsSql = "SELECT school FROM \"UsersSchools\" WHERE username = ?";
         String userAppointmentsSql = "SELECT appointee FROM \"Appointments\" WHERE appointor = ?";
         String userSurveysSql = "SELECT surveyid FROM \"UsersSurveys\" WHERE username = ?";
+        String userWorkPlans = "SELECT year FROM \"WorkPlans\" WHERE username = ? GROUP BY year";
+
 
         PreparedStatement statement;
         try {
@@ -149,6 +151,15 @@ public class UserQueries {
                     surveys.add(result.getString(1));
                 }
                 userDBDTO.setSurveys(surveys);
+
+                statement = Connect.conn.prepareStatement(userWorkPlans);
+                statement.setString(1, username);
+                result = statement.executeQuery();
+                List<Integer> workPlansYears = new Vector<>();
+                while (result.next()){
+                    workPlansYears.add(result.getInt(1));
+                }
+                userDBDTO.setWorkPlanYears(workPlansYears);
 
                 Connect.closeConnection();
                 return new Response<>(userDBDTO, false, "successfully acquired user");

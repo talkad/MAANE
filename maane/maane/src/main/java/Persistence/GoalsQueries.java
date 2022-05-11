@@ -40,7 +40,7 @@ public class GoalsQueries {
                 goalDTO.setQuarterly(result.getInt("quarterly"));
                 goalDTO.setWeight(result.getInt("weight"));
                 goalDTO.setWorkField(result.getString("workfield"));
-                goalDTO.setYear(result.getString("goalyear"));
+                goalDTO.setYear(result.getInt("goalyear"));
                 Connect.closeConnection();
                 return new Response<>(goalDTO, false, "successfully acquired goal");
             }
@@ -51,7 +51,7 @@ public class GoalsQueries {
         return new Response<>(null, true, "failed to get goal");
     }
 
-    public Response<List<GoalDTO>> getGoals(String workField, String year) {//todo remove it later potentially
+    public Response<List<GoalDTO>> getGoals(String workField, Integer year) {//todo remove it later potentially
         Connect.createConnection();
         String sql = "SELECT * FROM \"Goals\" WHERE workfield = ? AND goalyear = ?";
         PreparedStatement statement;
@@ -59,7 +59,7 @@ public class GoalsQueries {
             statement = Connect.conn.prepareStatement(sql);
 
             statement.setString(1, workField);
-            statement.setString(2, year);
+            statement.setInt(2, year);
 
             ResultSet result = statement.executeQuery();
             List<GoalDTO> goals = new Vector<>();
@@ -72,7 +72,7 @@ public class GoalsQueries {
                 goalDTO.setQuarterly(result.getInt("quarterly"));
                 goalDTO.setWeight(result.getInt("weight"));
                 goalDTO.setWorkField(result.getString("workfield"));
-                goalDTO.setYear(result.getString("goalyear"));
+                goalDTO.setYear(result.getInt("goalyear"));
                 goals.add(goalDTO);
             }
             Connect.closeConnection();
@@ -118,7 +118,7 @@ public class GoalsQueries {
                 goalDTO.setQuarterly(result.getInt("quarterly"));
                 goalDTO.setWeight(result.getInt("weight"));
                 goalDTO.setWorkField(result.getString("workfield"));
-                goalDTO.setYear(result.getString("goalyear"));
+                goalDTO.setYear(result.getInt("goalyear"));
                 goals.add(goalDTO);
             }
             Connect.closeConnection();
@@ -143,7 +143,7 @@ public class GoalsQueries {
             preparedStatement.setInt(4, goalDTO.getQuarterly());
             preparedStatement.setInt(5, goalDTO.getWeight());
             preparedStatement.setString(6, goalDTO.getWorkField());
-            preparedStatement.setString(7, goalDTO.getYear());
+            preparedStatement.setInt(7, goalDTO.getYear());
             rows = preparedStatement.executeUpdate();
             Connect.closeConnection();
         }
@@ -169,7 +169,7 @@ public class GoalsQueries {
             preparedStatement.setInt(4, goalDTO.getQuarterly());
             preparedStatement.setInt(5, goalDTO.getWeight());
             preparedStatement.setString(6, goalDTO.getWorkField());
-            preparedStatement.setString(7, goalDTO.getYear());
+            preparedStatement.setInt(7, goalDTO.getYear());
             rows = preparedStatement.executeUpdate();
             Connect.closeConnection();
         }

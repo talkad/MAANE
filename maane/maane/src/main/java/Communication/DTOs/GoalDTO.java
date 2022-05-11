@@ -12,7 +12,7 @@ public class GoalDTO {
     private int quarterly;
     private int weight;
     private String workField;
-    private String year;
+    private Integer year;
 
     public GoalDTO(int goalId, String title, String description, int quarterly, int weight) {
         this.goalId = goalId;
@@ -70,11 +70,11 @@ public class GoalDTO {
         this.workField = workField;
     }
 
-    public String getYear() {
+    public Integer getYear() {
         return year;
     }
 
-    public void setYear(String year) {
+    public void setYear(Integer year) {
         this.year = year;
     }
 }

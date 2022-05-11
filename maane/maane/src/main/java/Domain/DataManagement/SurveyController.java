@@ -266,7 +266,7 @@ public class SurveyController {
      * @param id of the survey
      * @return response contains list of all goals that not consistent with the rules, for each answer
      */
-    public Response<List<List<String>>> detectFault(String username, String id, String year){
+    public Response<List<List<String>>> detectFault(String username, String id, Integer year){
 
         List<List<String>> faults = new LinkedList<>();
         FaultDetector faultDetector;
@@ -374,7 +374,7 @@ public class SurveyController {
      * @param symbol of the school
      * @return list of all goals that not consistent with the rules
      */
-    public Response<List<Integer>> detectSchoolFault(String username, String id, String symbol, String year){
+    public Response<List<Integer>> detectSchoolFault(String username, String id, String symbol, Integer year){
         FaultDetector faultDetector;
         List<GoalDTO> goals = UserController.getInstance().getGoals(username, year).getResult();
         List<Integer> currentFaults = new LinkedList<>();

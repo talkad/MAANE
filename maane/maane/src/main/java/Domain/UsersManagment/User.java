@@ -26,7 +26,8 @@ public class User {
     protected List<String> surveys;
     protected List<String> baskets;
     //    private MonthlyReport monthlyReport; //todo monthly reports history??
-    protected Map<String, WorkPlan> workPlan;
+    //protected Map<String, WorkPlan> workPlan;
+    protected List<Integer> workPlanYears;
 
 
     public User() {
@@ -60,7 +61,8 @@ public class User {
         this.surveys = new Vector<>();
         this.baskets = new Vector<>();
         if(this.state.getStateEnum() == UserStateEnum.INSTRUCTOR){
-            this.workPlan = new ConcurrentHashMap<>();
+            //this.workPlan = new ConcurrentHashMap<>();
+            this.workPlanYears = new Vector<>();
         }
     }
 
@@ -89,7 +91,8 @@ public class User {
         this.surveys = userDBDTO.getSurveys();
         this.baskets = userDBDTO.getBaskets();
         if(this.state.getStateEnum() == UserStateEnum.INSTRUCTOR){
-            this.workPlan = userDBDTO.getWorkPlan();
+            this.workPlanYears = userDBDTO.getWorkPlanYears();
+            //this.workPlan = userDBDTO.getWorkPlan();
         }
     }
 
@@ -523,23 +526,39 @@ public class User {
         return this.getState().getStateEnum() == UserStateEnum.INSTRUCTOR;
     }
 
-    public void assignWorkPlan(WorkPlan workPlan, String year) {
+/*    public void assignWorkPlan(WorkPlan workPlan, String year) {
         //this.workPlan = new ConcurrentHashMap<>();
         this.workPlan.put(year, workPlan);//todo prevent errors initialize in db no need for now
+    }*/
+
+    public void assignWorkPlan(Integer year) {
+        this.workPlanYears.add(year);
     }
 
-    public Response<WorkPlan> getWorkPlanByYear(String year) {
+/*    public Response<WorkPlan> getWorkPlanByYear(String year) {
         if (this.state.allowed(Permissions.VIEW_WORK_PLAN, this)) {
             return new Response<>(this.workPlan.get(year), false, "");
         }
         else {
             return new Response<>(null, true, "user not allowed to view work plan");
         }
+    }*/
+
+    public Response<Boolean> getWorkPlanByYear(Integer year) {
+        if (this.state.allowed(Permissions.VIEW_WORK_PLAN, this)) {
+            return new Response<>(this.workPlanYears.contains(year), !this.workPlanYears.contains(year), "");
+        }
+        else {
+            return new Response<>(null, true, "user not allowed to view work plan");
+        }
     }
 
+
+/*
     public Map<String, WorkPlan> getWorkPlan() {
         return this.workPlan;
     }
+*/
 
     public Response<Boolean> viewAllUsers() {
         if (this.state.allowed(Permissions.VIEW_ALL_USERS_INFO, this)) {
@@ -653,5 +672,9 @@ public class User {
         else {
             return new Response<>(false, true, "user not allowed to transfer supervision");
         }
+    }
+
+    public List<Integer> getWorkPlanYears() {
+        return this.workPlanYears;
     }
 }

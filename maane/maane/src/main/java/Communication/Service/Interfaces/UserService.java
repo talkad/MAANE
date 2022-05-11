@@ -18,15 +18,15 @@ public interface UserService {
 
     Response<Boolean> removeUser(String currUser, String userToRemove);
 
-    Response<WorkPlanDTO> viewWorkPlan(String currUser, String year);
+    Response<WorkPlanDTO> viewWorkPlan(String currUser, Integer year);
 
     Response<List<UserDTO>> getAppointedUsers(String currUser);
 
-    Response<Boolean> addGoal(String currUser, GoalDTO goalDTO, String year);
+    Response<Boolean> addGoal(String currUser, GoalDTO goalDTO, Integer year);
 
-    Response<Boolean> removeGoal(String currUser, String year, int goalId);
+    Response<Boolean> removeGoal(String currUser, Integer year, int goalId);
 
-    Response<List<GoalDTO>> getGoals(String currUser, String year);
+    Response<List<GoalDTO>> getGoals(String currUser, Integer year);
 
     Response<User> getUserRes(String username); //for testing purposes only
 

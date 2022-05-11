@@ -208,7 +208,7 @@ public class UserControllerTest {
 
     @Test
     public void assigningYeadimSuccess(){
-        String year = "תשפ\"ג";
+        Integer year = 2022;//"תשפ\"ג";
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "a@a.com", "0555555555", "");
         userController.logout(adminName);
@@ -223,7 +223,7 @@ public class UserControllerTest {
 
     @Test
     public void removingGoalSuccess(){
-        String year = "תשפ\"ג";
+        Integer year = 2022;//"תשפ\"ג";
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "a@a.com", "0555555555", "");
         userController.logout(adminName);

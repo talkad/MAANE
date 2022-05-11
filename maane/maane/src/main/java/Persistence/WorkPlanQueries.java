@@ -21,7 +21,7 @@ public class WorkPlanQueries {
         return WorkPlanQueries.CreateSafeThreadSingleton.INSTANCE;
     }
 
-    public Response<Boolean> insertUserWorkPlan(String username, WorkPlanDTO workPlan, String year){
+    public Response<Boolean> insertUserWorkPlan(String username, WorkPlanDTO workPlan, Integer year){
         Connect.createConnection();
         int rows = 0;
         String sql = "INSERT INTO \"WorkPlans\" (username, year, date, activities) VALUES (?, ?, ?, ?)";
@@ -35,7 +35,7 @@ public class WorkPlanQueries {
                     String date = annualPlan.getFirst();
                     String activities = ActivitiesToString(annualPlan.getSecond());
                     preparedStatement.setString(1, username);
-                    preparedStatement.setString(2, year);
+                    preparedStatement.setInt(2, year);
                     preparedStatement.setString(3, date);
                     preparedStatement.setString(4, activities);
                     rows = preparedStatement.executeUpdate();
@@ -93,7 +93,7 @@ public class WorkPlanQueries {
         return new Response<>(null, true, "failed to get work plans");
     }*/
 
-    public Response<WorkPlanDTO> getUserWorkPlanByYear(String username, String year)  {
+    public Response<WorkPlanDTO> getUserWorkPlanByYear(String username, Integer year)  {
         Connect.createConnection();
         String sql = "SELECT * FROM \"WorkPlans\" WHERE username = ? AND year = ?";
         PreparedStatement statement;
@@ -101,7 +101,7 @@ public class WorkPlanQueries {
         try {
             statement = Connect.conn.prepareStatement(sql);
             statement.setString(1, username);
-            statement.setString(2, year);
+            statement.setInt(2, year);
             ResultSet result = statement.executeQuery();
 
             List<Pair<String, List<ActivityDTO>>> calendar = new LinkedList<>();

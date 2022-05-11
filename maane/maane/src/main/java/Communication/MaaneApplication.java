@@ -73,9 +73,9 @@ public class MaaneApplication {
 
 				// create goals
 				GoalDTO goalDTO1 = new GoalDTO(555, "yahad1", "", 1,
-						5, "tech","תשפ\"ב");
+						5, "tech", 2022);
 				GoalDTO goalDTO2 = new GoalDTO(666, "yahad2", "", 2,
-						10, "tech","תשפ\"ב");
+						10, "tech",2022);
 
 				GoalsQueries.getInstance().insertGoalMock(goalDTO1);
 				GoalsQueries.getInstance().insertGoalMock(goalDTO2);

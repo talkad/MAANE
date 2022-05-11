@@ -113,7 +113,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public Response<WorkPlanDTO> viewWorkPlan(String currUser, String year) {
+    public Response<WorkPlanDTO> viewWorkPlan(String currUser, Integer year) {
         Response<WorkPlanDTO> res = UserController.getInstance().viewWorkPlan(currUser, year);
 
         if (res.isFailure())
@@ -164,7 +164,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return res;
     }
 
-    public Response<Boolean> addGoal(String currUser, GoalDTO goalDTO, String year) {
+    public Response<Boolean> addGoal(String currUser, GoalDTO goalDTO, Integer year) {
         Response<Boolean> res = UserController.getInstance().addGoal(currUser, goalDTO, year);
 
         if (res.isFailure())
@@ -174,7 +174,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return res;
     }
 
-    public Response<Boolean> removeGoal(String currUser, String year, int goalId) {
+    public Response<Boolean> removeGoal(String currUser, Integer year, int goalId) {
         Response<Boolean> res = UserController.getInstance().removeGoal(currUser, year, goalId);
 
         if (res.isFailure())
@@ -184,7 +184,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return res;
     }
 
-    public Response<List<GoalDTO>> getGoals(String currUser, String year) {
+    public Response<List<GoalDTO>> getGoals(String currUser, Integer year) {
         Response<List<GoalDTO>> res = UserController.getInstance().getGoals(currUser, year);
 
         if (res.isFailure())

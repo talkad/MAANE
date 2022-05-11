@@ -141,7 +141,7 @@ public class UserController {
     }
 
     @GetMapping(value = "/viewWorkPlan/year={year}")
-    public ResponseEntity<Response<WorkPlanDTO>> viewWorkPlan(@RequestHeader(value = "Authorization") String token, @PathVariable("year") String year){
+    public ResponseEntity<Response<WorkPlanDTO>> viewWorkPlan(@RequestHeader(value = "Authorization") String token, @PathVariable("year") Integer year){
         return ResponseEntity.ok()
                 .body(service.viewWorkPlan(sessionHandler.getUsernameByToken(token).getResult(), year));
     }
@@ -181,17 +181,17 @@ public class UserController {
         }
 
         return ResponseEntity.ok()
-                .body(service.addGoal(sessionHandler.getUsernameByToken(token).getResult(), gson.fromJson(goal, GoalDTO.class), (String)body.get("year")));
+                .body(service.addGoal(sessionHandler.getUsernameByToken(token).getResult(), gson.fromJson(goal, GoalDTO.class), (Integer) body.get("year")));
     }
 
     @PostMapping(value = "/removeGoal")
     public ResponseEntity<Response<Boolean>> removeGoal(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object>  body){
         return ResponseEntity.ok()
-                .body(service.removeGoal(sessionHandler.getUsernameByToken(token).getResult(), (String)body.get("year"), (Integer)body.get("goalId")));
+                .body(service.removeGoal(sessionHandler.getUsernameByToken(token).getResult(), (Integer) body.get("year"), (Integer)body.get("goalId")));
     }
 
     @GetMapping(value = "/getGoals/year={year}")
-    public ResponseEntity<Response<List<GoalDTO>>> getGoals(@RequestHeader(value = "Authorization") String token, @PathVariable("year") String year){
+    public ResponseEntity<Response<List<GoalDTO>>> getGoals(@RequestHeader(value = "Authorization") String token, @PathVariable("year") Integer year){
         return ResponseEntity.ok()
                 .body(service.getGoals(sessionHandler.getUsernameByToken(token).getResult(), year));
     }

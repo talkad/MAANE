@@ -139,7 +139,7 @@ public class ProxyBridgeSurvey implements SurveyService {
     }
 
     @Override
-    public Response<List<List<String>>> detectFault(String username, String surveyID, String year) {
+    public Response<List<List<String>>> detectFault(String username, String surveyID, Integer year) {
         if (real != null){
             return real.detectFault(username, surveyID, year);
         }

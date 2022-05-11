@@ -64,7 +64,7 @@ public class UserController {
         return this.connectedUsers;
     }
 
-    public void assignWorkPlan(String instructor, WorkPlan workPlan, String year) {
+    public void assignWorkPlan(String instructor, WorkPlan workPlan, Integer year) {
         //todo implement properly later validate and prevent errors
         User user = new User(userDAO.getFullUser(instructor).getResult());
         //user.assignWorkPlan(workPlan, instructor);//todo assign properly
@@ -730,7 +730,7 @@ public class UserController {
         }
     }
 
-    public Response<List<GoalDTO>> getGoals(String currUser, String year){
+    public Response<List<GoalDTO>> getGoals(String currUser, Integer year){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             Response<String> res = user.getGoals();
@@ -746,7 +746,7 @@ public class UserController {
         }
     }
 
-    public Response<Boolean> addGoal(String currUser, GoalDTO goalDTO, String year){
+    public Response<Boolean> addGoal(String currUser, GoalDTO goalDTO, Integer year){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             Response<String> res = user.addGoals();
@@ -814,7 +814,7 @@ public class UserController {
     }
 
 
-    public Response<Boolean> removeGoal(String currUser, String year, int goalId) {
+    public Response<Boolean> removeGoal(String currUser, Integer year, int goalId) {
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             Response<String> res = user.removeGoal();
@@ -839,26 +839,25 @@ public class UserController {
         }
     }
 
-    public Response<WorkPlanDTO> viewWorkPlan(String currUser, String year){
+    public Response<WorkPlanDTO> viewWorkPlan(String currUser, Integer year){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
-            return new Response<>(workPlanDAO.getUserWorkPlanByYear(currUser, year).getResult(), false, "");
-/*
-            Response<WorkPlan> workPlanResponse = user.getWorkPlanByYear(year);
+            //return new Response<>(workPlanDAO.getUserWorkPlanByYear(currUser, year).getResult(), false, "");
+            Response<Boolean> workPlanResponse = user.getWorkPlanByYear(year);
             if(!workPlanResponse.isFailure()){
-                WorkPlanDTO workPlanDTO = generateWpDTO(user, year);
-                return new Response<>(workPlanDTO, false, "successfully acquired work plan");
+                return workPlanDAO.getUserWorkPlanByYear(currUser, year);// generateWpDTO(user, year);
+                //return new Response<>(workPlanDTO, false, "successfully acquired work plan");
             }
             else{
                 return new Response<>(null, true, workPlanResponse.getErrMsg());
-            }*///todo bring back
+            }
         }
         else {
             return new Response<>(null, true, "User not connected");
         }
     }
 
-    private WorkPlanDTO generateWpDTO(User user, String year) {
+/*    private WorkPlanDTO generateWpDTO(User user, String year) {
         WorkPlanDTO workPlanDTO = new WorkPlanDTO();
         WorkPlan workPlan = user.getWorkPlanByYear(year).getResult();
         for (String date: workPlan.getCalendar().descendingKeySet()) {
@@ -873,7 +872,7 @@ public class UserController {
             workPlanDTO.getCalendar().add(new Pair<>(date, toHere));
         }
         return workPlanDTO;
-    }
+    }*/
     
     public Response<UserDTO> getUserInfo(String currUser){
         if(connectedUsers.containsKey(currUser)) {

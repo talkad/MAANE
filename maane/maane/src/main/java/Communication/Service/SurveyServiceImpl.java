@@ -108,7 +108,7 @@ public class SurveyServiceImpl implements SurveyService {
     }
 
     @Override
-    public Response<List<List<String>>> detectFault(String username, String surveyID, String year) {
+    public Response<List<List<String>>> detectFault(String username, String surveyID, Integer year) {
         Response<List<List<String>>> res = SurveyController.getInstance().detectFault(username, surveyID, year);
 
         if(res.isFailure())
