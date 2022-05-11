@@ -106,7 +106,7 @@ public class DataController {
     }
 
     public Response<List<Pair<String, String>>> getUserSchools(String username) {  //pair<schoolName, symbol> //todo test it
-        Response<List<String>> schoolsRes = UserController.getInstance().getSchools(username);
+        Response<List<String>> schoolsRes = UserController.getInstance().getUserSchools(username);
         if (!schoolsRes.isFailure()) {
             return schoolDAO.getSchoolNameAndSymbol(schoolsRes.getResult());
         } else return new Response<>(null, true, schoolsRes.getErrMsg());

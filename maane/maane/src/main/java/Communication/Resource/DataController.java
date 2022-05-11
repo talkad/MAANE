@@ -1,6 +1,8 @@
 package Communication.Resource;
 
+import Communication.DTOs.SurveyStatsDTO;
 import Communication.Service.Interfaces.DataService;
+import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Persistence.DbDtos.SchoolDBDTO;
 import com.google.gson.Gson;
@@ -8,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -30,6 +33,18 @@ public class DataController {
     public ResponseEntity<Response<Boolean>> removeCoordinator(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object> body){
         return ResponseEntity.ok()
                 .body(service.removeCoordinator(sessionHandler.getUsernameByToken(token).getResult(), (String)body.get("workField"), (String)body.get("school")));
+    }
+
+    @GetMapping("/getSchool/symbol={symbol}")
+    public ResponseEntity<Response<SchoolDBDTO>> getSchool(@RequestHeader(value = "Authorization") String token, @PathVariable("symbol") String symbol){
+        return ResponseEntity.ok()
+                .body(service.getSchool(sessionHandler.getUsernameByToken(token).getResult(), symbol));
+    }
+
+    @GetMapping("/getUserSchools")
+    public ResponseEntity<Response<List<Pair<String, String>>>> getUserSchools(@RequestHeader(value = "Authorization") String token){
+        return ResponseEntity.ok()
+                .body(service.getUserSchools(sessionHandler.getUsernameByToken(token).getResult()));
     }
 
 //    @PostMapping(value = "/insertSchool")

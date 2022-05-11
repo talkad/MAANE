@@ -207,7 +207,7 @@ public class SchoolQueries {
                 statement = Connect.conn.prepareStatement(sql);
                 ResultSet resultSet = statement.executeQuery();
                 while (resultSet.next()) {
-                    nameAndSymbol.add(new Pair<>(resultSet.getString("name"), resultSet.getString("symbol")));
+                    nameAndSymbol.add(new Pair<>(resultSet.getString("name"), Integer.toString(resultSet.getInt("symbol"))));
                 }
                 Connect.closeConnection();
                 return new Response<>(nameAndSymbol, false, "successfully acquired schools");

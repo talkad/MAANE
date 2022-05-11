@@ -391,16 +391,18 @@ const mockSchool = createData(432, "hello there", "grove street", "ronit", "elem
     [{firstName: "a", lastName: "b", email: "idk@post.lol", phoneNumber: "050-lmao"},
         {firstName: "c", lastName: "d", email: "idk2@post.lol", phoneNumber: "054-lmao"}])
 
+const mockSearchData = [{id: 123, label: 'idk (123)'}, {id: 1234, label: 'idk2 (1234)'}];
+
 export default function SchoolsManagement(props){
-    const [schools, setSchools] = useState([{id: 123, label: 'idk (123)'}, {id: 1234, label: 'idk2 (1234)'}]);
+    const [schools, setSchools] = useState([]);
     const [selectedSchoolSearchID, setSelectedSchoolSearchID] = useState('');
     const [searchText, setSearchText] = useState('');
     const [searchError, setSearchError] = useState(false);
 
     const [searching, setSearching] = useState(false);
-    const [loaded, setLoaded] = useState(true);
+    const [loaded, setLoaded] = useState(false);
 
-    const [searchedSchoolDetails, setSearchedSchoolDetails] = useState(mockSchool);
+    const [searchedSchoolDetails, setSearchedSchoolDetails] = useState({});
 
 
     // dialog states
@@ -435,7 +437,7 @@ export default function SchoolsManagement(props){
 
 
     useEffect(() => {
-
+        new Connection().getUserSchools(arrangeSchoolCallback)
 
         },[]);
 
@@ -445,7 +447,11 @@ export default function SchoolsManagement(props){
      */
     const arrangeSchoolCallback = (data) => {
         if (!data.failure){
-            setSchools(data.result); // todo: this once i know how it's passed
+
+            data.result.forEach((element) => setSchools(schools => [...schools,
+                {id: element.second, label: `${element.first} (${element.second})`}]))
+            //
+            //setSchools(data.result); // todo: this once i know how it's passed
         }
     }
 

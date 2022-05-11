@@ -581,6 +581,10 @@ class Connection{
 
     // SCHOOLS
 
+    getUserSchools(callback){
+        this.sendGET('/data/getUserSchools', callback)
+    }
+
 }
 
 Connection._instance = null;

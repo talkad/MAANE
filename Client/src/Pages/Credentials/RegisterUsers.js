@@ -195,7 +195,7 @@ export default function RegisterUsers(props){
     const handleSubmit = (event) => {
         event.preventDefault();
 
-        if(values.username === '' || values.password === '' || values.email === '' || values.phoneNumber === '' ||
+        if(values.username === '' || values.password === '' ||
             (radioValue === '0' && (roleChoiceEnum === undefined || roleChoiceEnum === '')) ||
             (roleChoiceEnum === 'SUPERVISOR' && values.workField === '') ||
             (props.type === "SYSTEM_MANAGER" && (roleChoiceEnum === "INSTRUCTOR" || roleChoiceEnum === "GENERAL_SUPERVISOR" ||
@@ -387,7 +387,6 @@ export default function RegisterUsers(props){
                                         value={values.email}
                                         onChange={handleTextFieldsChange('email')}
                                         fullWidth
-                                        required
                                     />
                                 </Grid>
 
@@ -402,7 +401,6 @@ export default function RegisterUsers(props){
                                         value={values.phoneNumber}
                                         onChange={handleTextFieldsChange('phoneNumber')}
                                         fullWidth
-                                        required
                                     />
                                 </Grid>
 
