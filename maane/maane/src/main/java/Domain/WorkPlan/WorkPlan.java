@@ -19,13 +19,13 @@ import java.util.stream.Collectors;
  */
 
 public class WorkPlan {
-    protected TreeMap<LocalDateTime, List<Activity>> calendar; //Date and his activities for each day of year
+    protected TreeMap<LocalDateTime, Activity> calendar; //Date and his activities for each day of year
 
     public WorkPlan(int year) {
         this.calendar = GenerateCalendarForYear(year);
     }
 
-    public TreeMap<LocalDateTime, List<Activity>> getCalendar() {
+    public TreeMap<LocalDateTime, Activity> getCalendar() {
         //return getCalendarAsDates();
         return this.calendar;
     }
@@ -65,18 +65,19 @@ public class WorkPlan {
     }
 
     private void insertActivity(LocalDateTime date, Activity activity) {
-        calendar.get(date).add(activity);
+        this.calendar.put(date, activity);
     }
 
     // find the next avaliable date
     private LocalDateTime findDate() {
         LocalDateTime freeDate = null;
-        for (LocalDateTime date : calendar.descendingKeySet()) {
-            if (calendar.get(date).isEmpty()) {
+        for (LocalDateTime date : calendar.keySet()) {
+            if (calendar.get(date) == null) {
                 boolean isFridayOrSaturday = date.getDayOfWeek() == DayOfWeek.FRIDAY || date.getDayOfWeek() == DayOfWeek.SATURDAY;
-                if (isFridayOrSaturday)
-                    continue;
-                freeDate = date;
+                if (!isFridayOrSaturday) {
+                    freeDate = date;
+                    break;
+                }
             }
         }
         return freeDate;
@@ -85,8 +86,7 @@ public class WorkPlan {
     public void printMe() {
         for (LocalDateTime key : calendar.keySet()) {
             System.out.println("Date: " + key);
-            for (Activity activity : calendar.get(key))
-                System.out.println("==> activity " + activity.getTitle() + " scheduled for school " + activity.getSchool());
+            System.out.println("==> activity " + calendar.get(key).getTitle() + " scheduled for school " + calendar.get(key).getSchool());
         }
     }
 
@@ -138,27 +138,27 @@ public class WorkPlan {
 
     }
 
-    private TreeMap<LocalDateTime, List<Activity>> GenerateCalendarForYear(int year) {
+    private TreeMap<LocalDateTime, Activity> GenerateCalendarForYear(int year) {
         List<LocalDateTime> datesForYear = generateDatesForYear(year);
         calendar = new TreeMap<>();
         for (LocalDateTime day : datesForYear) {
-            calendar.put(day, new LinkedList<>());
+            calendar.put(day, null);
         }
         return calendar;
     }
 
-    private String whatDayIsIt(String date) {
+   /* private String whatDayIsIt(String date) {
         java.util.Calendar calendar = java.util.Calendar.getInstance();
         Date myDate = new Date(date); //month first
         calendar.setTime(myDate);
         int dayOfWeek = calendar.get(java.util.Calendar.DAY_OF_WEEK);
         return "" + dayOfWeek;
-    }
+    }*/
 
-    public String whatMonthIsIt(String date) {
+/*    public String whatMonthIsIt(String date) {
         String[] arr = date.split("-"); //[month,day,year]
         return "" + arr[1];
-    }
+    }*/
 
 //    public TreeMap<LocalDateTime, List<Activity>> getCalendarAsDates(){
 //        TreeMap<LocalDateTime, List<Activity>> output = new TreeMap<>();

@@ -31,8 +31,8 @@ public class WorkPlanQueries {
         PreparedStatement preparedStatement;
         try {
             preparedStatement = Connect.conn.prepareStatement(sql);
-            for (Pair<LocalDateTime, List<ActivityDTO>> annualPlan : workPlan.getCalendar()) {
-                if(annualPlan.getSecond() != null && !annualPlan.getSecond().isEmpty()) {
+            for (Pair<LocalDateTime, ActivityDTO> annualPlan : workPlan.getCalendar()) {
+                if(annualPlan.getSecond() != null) {
                     LocalDateTime date = annualPlan.getFirst();
                     String activities = ActivitiesToString(annualPlan.getSecond());
                     preparedStatement.setString(1, username);
@@ -53,18 +53,13 @@ public class WorkPlanQueries {
 
     /***
      *
-     * @param activities
+     * @param activity
      * @return String in the shape of ActivityDto_1 | ActivityDto_2 | ActivityDto_3 ....
      * while ActivityDto in the shape of school_id title
      */
-    private String ActivitiesToString (List<ActivityDTO> activities){
-        if (activities==null || activities.isEmpty()) return "";
-        StringBuilder output = new StringBuilder();
-        for (ActivityDTO activity : activities){
-            //output.append(activity.getSchoolId()).append(" ").append(activity.getTitle()).append(" ");
-            output.append(activity.getSchoolId()).append(" ").append(activity.getTitle());
-        }
-        return output.toString();
+    private String ActivitiesToString (ActivityDTO activity){
+        if (activity == null) return "";
+        return activity.getSchoolId() + " " + activity.getTitle();
     }
 
 
@@ -106,14 +101,14 @@ public class WorkPlanQueries {
             statement.setInt(2, year);
             ResultSet result = statement.executeQuery();
 
-            List<Pair<LocalDateTime, List<ActivityDTO>>> calendar = new LinkedList<>();
+            List<Pair<LocalDateTime, ActivityDTO>> calendar = new LinkedList<>();
             while(result.next()) {
                 LocalDateTime date = result.getTimestamp("date").toInstant().atZone(TimeZone.getTimeZone("Asia/Jerusalem").toZoneId()).toLocalDateTime();
                 //timestamp.toInstant().atZone(TimeZone.getTimeZone("Asia/Jerusalem").toZoneId()).toLocalDate()
 
                 String activities = result.getString("activities");
-                List<ActivityDTO> activityDTOS = StringToActivities(activities);
-                Pair<LocalDateTime, List<ActivityDTO>> toAdd = new Pair<>(date, activityDTOS);
+                ActivityDTO activityDTO = StringToActivities(activities);
+                Pair<LocalDateTime, ActivityDTO> toAdd = new Pair<>(date, activityDTO);
                 calendar.add(toAdd);
             }
             output = new WorkPlanDTO(calendar);
@@ -126,18 +121,15 @@ public class WorkPlanQueries {
 
     /***
      *
-     * @param activities string
+     * @param activity string
      * @return parse back
      */
-    private List<ActivityDTO> StringToActivities (String activities){
-        if(activities==null || activities.equals("")) return new LinkedList<>();
-        List<ActivityDTO> activityDTOS = new LinkedList<>();
-        String [] activitiesArray = activities.split(" ", 2);
+    private ActivityDTO StringToActivities (String activity){
+        if(activity == null || activity.equals("")) return new ActivityDTO("","");//todo problem
+        String [] activitiesArray = activity.split(" ", 2);
         String schoolId = activitiesArray[0];
         String title = activitiesArray[1];
-        ActivityDTO activityDTO = new ActivityDTO(schoolId, title);
-        activityDTOS.add(activityDTO);
-        return activityDTOS;
+        return new ActivityDTO(schoolId, title);
     }
 
 }

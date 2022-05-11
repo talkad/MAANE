@@ -16,32 +16,26 @@ import java.util.Vector;
 @AllArgsConstructor
 
 public class WorkPlanDTO {
-    private List<Pair<LocalDateTime, List<ActivityDTO>>> calendar; //List of <Date String, List of activities for that day
+    private List<Pair<LocalDateTime, ActivityDTO>> calendar; //List of <Date String, List of activities for that day
 
-    public WorkPlanDTO(WorkPlan workPlan){ //TreeMap <String, List<Activity>>
-        List<Pair<LocalDateTime, List<ActivityDTO>>> calendar = new Vector<>();
-        for (Map.Entry<LocalDateTime, List<Activity>> oldEntry : workPlan.getCalendar().entrySet()) {
-            List<Activity> oldActivities = oldEntry.getValue();
-            List<ActivityDTO> newActivities = new Vector<>();
-            for (Activity oldActivity : oldActivities) {
-                ActivityDTO newActivity = new ActivityDTO(oldActivity.getSchool(), oldActivity.getTitle());
-                newActivities.add(newActivity);
+    public WorkPlanDTO(WorkPlan workPlan){ //TreeMap <LocalDateTime, Activity>
+        List<Pair<LocalDateTime, ActivityDTO>> calendar = new Vector<>();
+        for (Map.Entry<LocalDateTime, Activity> oldEntry : workPlan.getCalendar().entrySet()) {
+//            List<Activity> oldActivities = oldEntry.getValue();
+            if(oldEntry.getValue() != null) {
+                calendar.add(new Pair<>(oldEntry.getKey(), new ActivityDTO(oldEntry.getValue().getSchool(), oldEntry.getValue().getTitle())));
             }
-            calendar.add(new Pair<>(oldEntry.getKey(), newActivities));
         }
         this.calendar = calendar;
     }
 
-    public List<Pair<LocalDateTime, List<ActivityDTO>>> getCalendar(){
+    public List<Pair<LocalDateTime, ActivityDTO>> getCalendar(){
         return calendar;
     }
 
     public void printMe(){
-        for (Pair<LocalDateTime, List<ActivityDTO>> pair : calendar){
-            System.out.println("Date: " + pair.getFirst());
-            for (ActivityDTO activityDTO : pair.getSecond()){
-                System.out.println(" Activity: " + activityDTO.toString());
-            }
+        for (Pair<LocalDateTime, ActivityDTO> pair : calendar){
+            System.out.println("Date: " + pair.getFirst() + " Title: " + pair.getSecond());
         }
     }
 }

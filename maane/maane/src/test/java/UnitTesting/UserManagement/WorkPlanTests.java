@@ -1,5 +1,6 @@
 package UnitTesting.UserManagement;
 
+import Communication.Initializer.ServerContextInitializer;
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.Activity;
@@ -20,7 +21,8 @@ public class WorkPlanTests {
 
     @Before
     public void setUp(){
-        workPlan = new WorkPlan(2021);
+        ServerContextInitializer.getInstance().setMockMode();
+        workPlan = new WorkPlan(2022);
         goal1 = new Goal(1, "a", "aa", 1, 1, "tech", 2022);
         goal2 = new Goal(2, "b", "bb", 2, 2, "tech", 2022);
         goal2 = new Goal(3, "c", "cc", 3, 3, "tech", 2022);
@@ -31,8 +33,8 @@ public class WorkPlanTests {
         Response<Boolean> res = workPlan.insertActivityToFirstAvailableDate(new Pair<>("school1", goal1));
         Assert.assertFalse(res.isFailure());
 
-        List<Activity> activity = workPlan.getCalendar().get("2021-09-01");
-        Assert.assertEquals("school1", activity.get(0).getSchool());
+        Activity activity = workPlan.getCalendar().get(LocalDateTime.of(2022, 9, 1, 0, 0));
+        Assert.assertEquals("school1", activity.getSchool());
     }
 
     @Test
