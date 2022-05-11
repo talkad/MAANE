@@ -9,6 +9,9 @@ import org.springframework.stereotype.Repository;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Repository
@@ -28,19 +31,17 @@ public class WorkPlanQueries {
         PreparedStatement preparedStatement;
         try {
             preparedStatement = Connect.conn.prepareStatement(sql);
-/*            for (Map.Entry<String,WorkPlanDTO> entry : workPlan.entrySet()){
-                String year =  entry.getKey();
-                WorkPlanDTO workPlanDTO = entry.getValue();*/
-                for (Pair<String, List<ActivityDTO>> annualPlan : workPlan.getCalendar()) {
-                    String date = annualPlan.getFirst();
+            for (Pair<LocalDateTime, List<ActivityDTO>> annualPlan : workPlan.getCalendar()) {
+                if(annualPlan.getSecond() != null && !annualPlan.getSecond().isEmpty()) {
+                    LocalDateTime date = annualPlan.getFirst();
                     String activities = ActivitiesToString(annualPlan.getSecond());
                     preparedStatement.setString(1, username);
                     preparedStatement.setInt(2, year);
-                    preparedStatement.setString(3, date);
+                    preparedStatement.setTimestamp(3, Timestamp.valueOf(date));
                     preparedStatement.setString(4, activities);
                     rows = preparedStatement.executeUpdate();
                 }
-            //}
+            }
 
             Connect.closeConnection();
         } catch (SQLException e) {e.printStackTrace();}
@@ -54,15 +55,16 @@ public class WorkPlanQueries {
      *
      * @param activities
      * @return String in the shape of ActivityDto_1 | ActivityDto_2 | ActivityDto_3 ....
-     * while ActivityDto in the shape of school_id ^ title
+     * while ActivityDto in the shape of school_id title
      */
     private String ActivitiesToString (List<ActivityDTO> activities){
         if (activities==null || activities.isEmpty()) return "";
         StringBuilder output = new StringBuilder();
         for (ActivityDTO activity : activities){
-            output.append(activity.getSchoolId()).append(" A ").append(activity.getTitle()).append(" B ");
+            //output.append(activity.getSchoolId()).append(" ").append(activity.getTitle()).append(" ");
+            output.append(activity.getSchoolId()).append(" ").append(activity.getTitle());
         }
-        return output.substring(0, output.length()-3);
+        return output.toString();
     }
 
 
@@ -104,12 +106,14 @@ public class WorkPlanQueries {
             statement.setInt(2, year);
             ResultSet result = statement.executeQuery();
 
-            List<Pair<String, List<ActivityDTO>>> calendar = new LinkedList<>();
+            List<Pair<LocalDateTime, List<ActivityDTO>>> calendar = new LinkedList<>();
             while(result.next()) {
-                String date = result.getString("date");
+                LocalDateTime date = result.getTimestamp("date").toInstant().atZone(TimeZone.getTimeZone("Asia/Jerusalem").toZoneId()).toLocalDateTime();
+                //timestamp.toInstant().atZone(TimeZone.getTimeZone("Asia/Jerusalem").toZoneId()).toLocalDate()
+
                 String activities = result.getString("activities");
                 List<ActivityDTO> activityDTOS = StringToActivities(activities);
-                Pair<String, List<ActivityDTO>> toAdd = new Pair<>(date, activityDTOS);
+                Pair<LocalDateTime, List<ActivityDTO>> toAdd = new Pair<>(date, activityDTOS);
                 calendar.add(toAdd);
             }
             output = new WorkPlanDTO(calendar);
@@ -128,14 +132,11 @@ public class WorkPlanQueries {
     private List<ActivityDTO> StringToActivities (String activities){
         if(activities==null || activities.equals("")) return new LinkedList<>();
         List<ActivityDTO> activityDTOS = new LinkedList<>();
-        String [] activitiesArray = activities.split(" B ");
-        for (String activity : activitiesArray){
-            String [] details = activity.split(" A ");
-            String schoolId = details[0];
-            String title = details[1];
-            ActivityDTO activityDTO = new ActivityDTO(schoolId, title);
-            activityDTOS.add(activityDTO);
-        }
+        String [] activitiesArray = activities.split(" ", 2);
+        String schoolId = activitiesArray[0];
+        String title = activitiesArray[1];
+        ActivityDTO activityDTO = new ActivityDTO(schoolId, title);
+        activityDTOS.add(activityDTO);
         return activityDTOS;
     }
 

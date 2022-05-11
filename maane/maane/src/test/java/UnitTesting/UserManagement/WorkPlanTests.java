@@ -9,6 +9,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -42,7 +43,7 @@ public class WorkPlanTests {
 
     @Test
     public void getFromMonthSuccess(){
-        Map<String, List<Activity>> result = workPlan.getScheduleFromMonth("4");
+        Map<LocalDateTime, List<Activity>> result = workPlan.getScheduleFromMonth("4");
         Assert.assertTrue(result.size()==51);
     }
 }
