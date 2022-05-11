@@ -10,13 +10,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import Persistence.UserQueries;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-
-import javax.persistence.Persistence;
-import javax.xml.crypto.Data;
 
 public class DataControllerTests {
 

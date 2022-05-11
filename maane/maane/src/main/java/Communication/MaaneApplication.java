@@ -62,7 +62,6 @@ public class MaaneApplication {
 						"tal", "kad", "tal@gmail.com", "055-555-5555", "", null), "");
 
 				userController.logout("admin");
-<<<<<<< HEAD
 
 				// create survey
 				SurveyDTO surveyDTO = new SurveyDTO(true, "1111", "title", "description",
@@ -98,8 +97,13 @@ public class MaaneApplication {
 						new LinkedList<>(Arrays.asList("open ans", "40", "1")),
 						new LinkedList<>(Arrays.asList(AnswerType.OPEN_ANSWER, AnswerType.NUMERIC_ANSWER, AnswerType.MULTIPLE_CHOICE)));
 
-=======
->>>>>>> client_tests
+				// create another survey
+				surveyDTO = new SurveyDTO(true, "2222", "title", "description",
+						Arrays.asList("symbol", "open?", "numeric?", "multiple choice?"),
+						Arrays.asList(new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), Arrays.asList("correct", "wrong")),
+						Arrays.asList(AnswerType.NUMERIC_ANSWER, AnswerType.OPEN_ANSWER, AnswerType.NUMERIC_ANSWER, AnswerType.MULTIPLE_CHOICE));
+
+				SurveyDAO.getInstance().insertSurvey(surveyDTO);
 			}
 
 		};
