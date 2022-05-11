@@ -19,6 +19,7 @@ public class DataController {
         this.schoolDAO = SchoolQueries.getInstance();
     }
 
+
     private static class CreateSafeThreadSingleton {
         private static final DataController INSTANCE = new DataController();
     }
@@ -84,7 +85,9 @@ public class DataController {
 
 
     public SchoolDBDTO getSchool(String symbol){
+
         return schoolDAO.getSchool(symbol);
+
         //return this.schools.get(symbol);
     }
 
@@ -102,14 +105,13 @@ public class DataController {
         return new Response<>(null, true, schoolsRes.getErrMsg());
     }
 
-    public Response<List<Pair<String, String>>> getUserSchools(String username){  //pair<schoolName, symbol> //todo test it
+    public Response<List<Pair<String, String>>> getUserSchools(String username) {  //pair<schoolName, symbol> //todo test it
         Response<List<String>> schoolsRes = UserController.getInstance().getSchools(username);
-        if(!schoolsRes.isFailure()){
+        if (!schoolsRes.isFailure()) {
             return schoolDAO.getSchoolNameAndSymbol(schoolsRes.getResult());
-        }
-        else return new Response<>(null, true, schoolsRes.getErrMsg());
-
+        } else return new Response<>(null, true, schoolsRes.getErrMsg());
     }
+
 
     //for test purposes only
     public void clearSchools() {

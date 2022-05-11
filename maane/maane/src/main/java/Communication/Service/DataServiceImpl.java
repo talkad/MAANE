@@ -1,12 +1,15 @@
 package Communication.Service;
 
 import Communication.Service.Interfaces.DataService;
+import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.DataController;
 import Persistence.DbDtos.SchoolDBDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -53,7 +56,6 @@ public class DataServiceImpl implements DataService {
             log.info("inserted school {} successfully",school.getName());
 
         return res;
-
     }
 
     @Override
@@ -79,4 +81,29 @@ public class DataServiceImpl implements DataService {
 
         return res;
     }
+
+    @Override
+    public Response<SchoolDBDTO> getSchool(String username, String symbol) {
+        Response<SchoolDBDTO> res = DataController.getInstance().getSchool(username, symbol);
+
+        if (res.isFailure())
+            log.error(res.getErrMsg());
+        else
+            log.info(res.getErrMsg());
+
+        return res;
+    }
+
+    @Override
+    public Response<List<Pair<String, String>>> getUserSchools(String username) {
+        Response<List<Pair<String, String>>> res = DataController.getInstance().getUserSchools(username);
+
+        if (res.isFailure())
+            log.error(res.getErrMsg());
+        else
+            log.info(res.getErrMsg());
+
+        return res;
+    }
+
 }

@@ -1,11 +1,11 @@
 import * as Space from 'react-spaces';
 import {
-    Alert,
+    Alert, Autocomplete,
     Box, Button,
     Collapse, Dialog, DialogTitle, Divider, Grid,
     IconButton, InputAdornment,
     List, ListItem, ListItemText,
-    Paper, Stack,
+    Paper, Skeleton, Stack,
     Table, TableBody, TableCell,
     TableContainer,
     TableHead,
@@ -105,28 +105,11 @@ function Row(props) {
 
     return (
         <React.Fragment>
-            <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
-                {/* the arrow to open the extra info */}
-                <TableCell>
-                    <IconButton
-                        id={`school_collapse_button_${row.id}`}
-                        aria-label="expand row"
-                        size="small"
-                        onClick={() => setOpen(!open)}
-                    >
-                        {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-                    </IconButton>
-                </TableCell>
-                {/* main school's info */}
-                <TableCell>{row.id}</TableCell>
-                <TableCell>{row.name}</TableCell>
-                <TableCell>{row.city}</TableCell>
-            </TableRow>
-            {/*secondary school's into*/}
-            <TableRow id={`school_${row.id}_row`}>
-                <TableCell style={{ paddingBottom: 0, paddingTop: 0}} colSpan={6}>
-                    <Collapse in={open} timeout="auto" unmountOnExit>
+            <Paper sx={{width: "70%"}} elevation={3}>
                         <Grid container spacing={1}>
+                            <Grid sx={{margin: 1}} item xs={12}>
+                                <Typography variant={'h3'}>{row.name} ({row.id}), {row.city}</Typography>
+                            </Grid>
                             <Grid item xs={6}>
                                 <Box sx={{ margin: 1}}>
                                     <List
@@ -203,34 +186,32 @@ function Row(props) {
                                     </List>
                                 </Box>
                             </Grid>
-                            <Grid item xs={12}>
+                            <Grid sx={{margin: 1}} item xs={12}>
                                 <Typography>{coordinator_title_string}</Typography>
                             </Grid>
 
                             {/*coordinator info*/}
-                            <Grid item xs={12}>
+                            <Grid sx={{margin: 1}} item xs={12}>
                                 <List>
                                     {row.coordinators.map((coordinator) =>
-                                    <ListItem>
-                                        <ListItemText primary={coordinator_name_primary_string} secondary={coordinator.firstName + " " + coordinator.lastName} />
-                                        <ListItemText primary={coordinator_email_primary_string} secondary={coordinator.email} />
-                                        <ListItemText primary={coordinator_phone_number_primary_string} secondary={coordinator.phoneNumber} />
-                                        <Button id={`remove_coordinator_${coordinator.email}`} onClick={() => props.handleOpenRemoveCoordinatorDialog(coordinator.firstName + " " + coordinator.lastName, row.id)} variant="outlined" color="error">{remove_coordinator_button_string}</Button>
-                                    </ListItem>)}
+                                        <ListItem>
+                                            <ListItemText primary={coordinator_name_primary_string} secondary={coordinator.firstName + " " + coordinator.lastName} />
+                                            <ListItemText primary={coordinator_email_primary_string} secondary={coordinator.email} />
+                                            <ListItemText primary={coordinator_phone_number_primary_string} secondary={coordinator.phoneNumber} />
+                                            <Button id={`remove_coordinator_${coordinator.email}`} onClick={() => props.handleOpenRemoveCoordinatorDialog(coordinator.firstName + " " + coordinator.lastName, row.id)} variant="outlined" color="error">{remove_coordinator_button_string}</Button>
+                                        </ListItem>)}
                                 </List>
                             </Grid>
 
                             {/*actions*/}
-                            <Grid item xs={12}>
+                            <Grid sx={{margin: 1}} item xs={12}>
                                 <Typography>{action_title_string}</Typography>
                             </Grid>
-                            <Grid item xs={6}>
+                            <Grid sx={{margin: 1}} item xs={6}>
                                 <Button id={`school_add_coordinator_button_${row.id}`} onClick={() => props.handleOpenAddCoordinatorDialog(row.id, row.name)} variant="outlined" sx={{marginBottom: 1}}>{add_coordinator_string}</Button>
                             </Grid>
                         </Grid>
-                    </Collapse>
-                </TableCell>
-            </TableRow>
+            </Paper>
         </React.Fragment>
     )
 }
@@ -404,8 +385,23 @@ const rows = [
         [{firstName: "c", lastName: "d", email: "idk2@post.lol", phoneNumber: "054-lmao"}])
 ]
 
+const mockSchool = createData(432, "hello there", "grove street", "ronit", "elementary",
+    "idk", 420, "050-1234567", "lame", "narnia", "idk",
+    "shula","35423", "super supervision", "hahawhoreadsthis@lmao.lol",
+    [{firstName: "a", lastName: "b", email: "idk@post.lol", phoneNumber: "050-lmao"},
+        {firstName: "c", lastName: "d", email: "idk2@post.lol", phoneNumber: "054-lmao"}])
+
 export default function SchoolsManagement(props){
-    const [schools, setSchools] = useState(rows);
+    const [schools, setSchools] = useState([{id: 123, label: 'idk (123)'}, {id: 1234, label: 'idk2 (1234)'}]);
+    const [selectedSchoolSearchID, setSelectedSchoolSearchID] = useState('');
+    const [searchText, setSearchText] = useState('');
+    const [searchError, setSearchError] = useState(false);
+
+    const [searching, setSearching] = useState(false);
+    const [loaded, setLoaded] = useState(true);
+
+    const [searchedSchoolDetails, setSearchedSchoolDetails] = useState(mockSchool);
+
 
     // dialog states
     // add coordinator
@@ -427,9 +423,16 @@ export default function SchoolsManagement(props){
 
     // STRINGS
     const page_title = "בתי הספר שלי";
+
+    // search strings
+    const search_school_label = 'חיפוש בית ספר';
+    const search_error_string = "נא לבחור בית ספר";
+    const search_button_string = "חיפוש";
+
     const school_id_cell_head_string = "סמל מוסד";
     const school_name_cell_head_string = "שם מוסד";
     const school_city_cell_head_string = "עיר מוסד";
+
 
     useEffect(() => {
 
@@ -443,6 +446,34 @@ export default function SchoolsManagement(props){
     const arrangeSchoolCallback = (data) => {
         if (!data.failure){
             setSchools(data.result); // todo: this once i know how it's passed
+        }
+    }
+
+    /**
+     * arranges the school's data which got from the server
+     * @param data the response from the server for the request to get the searched school
+     */
+    const getSchoolCallback = (data) => {
+        if(!data.failure){
+            setSearching(false);
+            setLoaded(true);
+        }
+    }
+
+    const submitSchoolSearch = () => {
+        // checks if the current input matches any school
+        const findInSchools = (label) => {
+            return schools.find((ele) => ele.label === label) !== undefined
+        }
+
+        if(!findInSchools(searchText)){
+            setSearchError(true);
+        }
+        else{
+            setSearchError(false);
+            setSearching(true);
+            setLoaded(false);
+            // TODO: get the selected school
         }
     }
 
@@ -541,26 +572,71 @@ export default function SchoolsManagement(props){
                 {/*title*/}
                 <h1>{page_title}</h1>
                 {/*the table presenting the schools*/}
-                <TableContainer sx={{width: "70%", marginTop: "1%"}} component={Paper}>
-                    <Table aria-label="collapsible table">
-                        {/*the table head containing the various headers*/}
-                        <TableHead>
-                            <TableRow>
-                                <TableCell/>
-                                <TableCell>{school_id_cell_head_string}</TableCell>
-                                <TableCell>{school_name_cell_head_string}</TableCell>
-                                <TableCell>{school_city_cell_head_string}</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        {/*the body of the table containing the rows*/}
-                        <TableBody>
-                            {schools.map((tableRow) => (
-                                <Row key={tableRow.id} row={tableRow} handleOpenAddCoordinatorDialog={handleOpenAddCoordinatorDialog}
-                                handleOpenRemoveCoordinatorDialog={handleOpenRemoveCoordinatorDialog}/>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
+
+                <Collapse in={searchError}>
+                    <Alert severity={'error'} sx={{marginBottom: "2%"}}>{search_error_string}</Alert>
+                </Collapse>
+
+
+                <Autocomplete
+                    freeSolo
+                    id="search-schools"
+                    disableClearable
+                    onChange={(event, newValue) => {
+                        setSelectedSchoolSearchID(newValue.id)
+                    }}
+                    onInputChange={(event, newInputValue) => {
+                        setSearchText(newInputValue);
+                    }}
+                    options={schools}
+                    renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            label={search_school_label}
+                            onKeyDown={(e) => {
+                                if(e.keyCode === 13){
+                                    submitSchoolSearch()
+                                }
+                            }}
+                            InputProps={{
+                                ...params.InputProps,
+                                type: 'search',
+                                endAdornment: (
+                                    <Button variant={"outlined"} onClick={() => submitSchoolSearch()}>{search_button_string}</Button>
+                                )
+                            }}
+                            error={searchError}
+                            sx={{marginBottom: "2%"}}
+                        />
+                    )}
+                    sx={{width: "70%"}}
+                />
+
+                {searching ? (<Skeleton variant="rectangular" width={"70%"} height={500} />) : <div/>}
+
+                {loaded ? <Row key={searchedSchoolDetails.id} row={searchedSchoolDetails} handleOpenAddCoordinatorDialog={handleOpenAddCoordinatorDialog}
+                                handleOpenRemoveCoordinatorDialog={handleOpenRemoveCoordinatorDialog}/> : <div/>}
+
+                {/*<TableContainer sx={{width: "70%", marginTop: "1%"}} component={Paper}>*/}
+                {/*    <Table aria-label="collapsible table">*/}
+                {/*        /!*the table head containing the various headers*!/*/}
+                {/*        <TableHead>*/}
+                {/*            <TableRow>*/}
+                {/*                <TableCell/>*/}
+                {/*                <TableCell>{school_id_cell_head_string}</TableCell>*/}
+                {/*                <TableCell>{school_name_cell_head_string}</TableCell>*/}
+                {/*                <TableCell>{school_city_cell_head_string}</TableCell>*/}
+                {/*            </TableRow>*/}
+                {/*        </TableHead>*/}
+                {/*        /!*the body of the table containing the rows*!/*/}
+                {/*        <TableBody>*/}
+                {/*            {schools.map((tableRow) => (*/}
+                {/*                <Row key={tableRow.id} row={tableRow} handleOpenAddCoordinatorDialog={handleOpenAddCoordinatorDialog}*/}
+                {/*                handleOpenRemoveCoordinatorDialog={handleOpenRemoveCoordinatorDialog}/>*/}
+                {/*            ))}*/}
+                {/*        </TableBody>*/}
+                {/*    </Table>*/}
+                {/*</TableContainer>*/}
 
                 {/*add coordinator dialog pop up*/}
                 <AddCoordinatorDialog
@@ -588,6 +664,5 @@ export default function SchoolsManagement(props){
                     message={snackbarMessage}/>
             </div>
         </Space.Fill>
-
     )
 }

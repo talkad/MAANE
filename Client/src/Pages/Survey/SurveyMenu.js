@@ -15,6 +15,7 @@ import Typography from "@mui/material/Typography";
 import { useNavigate } from "react-router-dom";
 import Connection from "../../Communication/Connection";
 import DialogContext from "@mui/material/Dialog/DialogContext";
+import NotificationSnackbar from "../../CommonComponents/NotificationSnackbar";
 
 // todo: option to delete a survey
 
@@ -100,6 +101,11 @@ export default function SurveyMenu(props){
     const [selectedSurveyTitle, setSelectedSurveyTitle] = useState('');
     const [selectedSurveyID, setSelectedSurveyID] = useState('');
 
+    // notification snackbar
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackbarSeverity, setSnackbarSeverity] = useState('');
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+
     let navigate = useNavigate();
 
     const create_survey_button_string = "יצירת סקר";
@@ -108,6 +114,17 @@ export default function SurveyMenu(props){
         props.setHideBars(false);
 
         new Connection().getCreatedSurveys(arrangeSurveys);
+
+        if(window.sessionStorage.getItem('auth_result')){
+            setOpenSnackbar(true);
+            setSnackbarSeverity(window.sessionStorage.getItem('auth_result'));
+            setSnackbarMessage(window.sessionStorage.getItem('auth_result_message'));
+
+            window.sessionStorage.removeItem('auth_result');
+            window.sessionStorage.removeItem('auth_result_message');
+
+            window.location.reload(); // refreshing the page for tal
+        }
     }, []);
 
     /**
@@ -163,7 +180,14 @@ export default function SurveyMenu(props){
     }
 
     const publicSurveyCallback = (data) => {
-        // todo: implement
+        if (!data.failure){
+            window.sessionStorage.setItem('auth_result', 'error');
+            window.sessionStorage.setItem('auth_result_message', 'הפעולה נכשלה');
+        }
+        else{
+            window.sessionStorage.setItem('auth_result', 'success');
+            window.sessionStorage.setItem('auth_result_message', 'הסקרים נשלחו בהצלחה');
+        }
     }
 
     /**
@@ -225,6 +249,8 @@ export default function SurveyMenu(props){
                     </Space.Top>
                 )}
             </Space.Fill>
+
+            {/*publish survey dialog*/}
             <PublishSurveyDialog
                 selectedSurveyTitle={selectedSurveyTitle}
                 selectedSurveyID={selectedSurveyID}
@@ -232,6 +258,13 @@ export default function SurveyMenu(props){
                 onClose={handleClosePublishSurveyDialog}
                 callback={handlePublishSurvey}
             />
+
+        {/*    notification snackbar*/}
+            <NotificationSnackbar
+                open={openSnackbar}
+                setOpen={setOpenSnackbar}
+                severity={snackbarSeverity}
+                message={snackbarMessage}/>
         </Space.Fill>
     )
 }
