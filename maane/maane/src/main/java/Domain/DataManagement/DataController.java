@@ -88,7 +88,7 @@ public class DataController {
         //return this.schools.get(symbol);
     }
 
-    public Response<SchoolDBDTO> getSchool(String username, String symbol){
+    public Response<SchoolDBDTO> getSchool(String username, String symbol){//todo test it
         Response<String> schoolsRes = UserController.getInstance().hasSchool(username, symbol);
         if(!schoolsRes.isFailure()){
             SchoolDBDTO school = schoolDAO.getSchool(symbol);
@@ -102,7 +102,7 @@ public class DataController {
         return new Response<>(null, true, schoolsRes.getErrMsg());
     }
 
-    public Response<List<Pair<String, String>>> getUserSchools(String username){  //pair<schoolName, symbol>
+    public Response<List<Pair<String, String>>> getUserSchools(String username){  //pair<schoolName, symbol> //todo test it
         Response<List<String>> schoolsRes = UserController.getInstance().getSchools(username);
         if(!schoolsRes.isFailure()){
             return schoolDAO.getSchoolNameAndSymbol(schoolsRes.getResult());
