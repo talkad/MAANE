@@ -664,6 +664,5 @@ export default function SchoolsManagement(props){
                     message={snackbarMessage}/>
             </div>
         </Space.Fill>
-
     )
 }
