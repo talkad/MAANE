@@ -71,8 +71,6 @@ function createData(id, name, address, instructor, educationLevel, sector, numOf
 function Row(props) {
     const { row } = props;
 
-    const [workFieldSelect, setWorkFieldSelect] = useState('');
-
     // administrative info strings
     const administrative_info_string = "מידע אדמיניסטרטיבי:";
     const principle_name_string = "שם מנהל";
@@ -109,7 +107,6 @@ function Row(props) {
      * @param event the affected element
      */
     const workFieldSelectedOnChange = (event) => {
-        setWorkFieldSelect(event.target.value);
         props.workFieldChange(row.id, event.target.value);
     }
 
@@ -198,8 +195,6 @@ function Row(props) {
                             </Grid>
                             <Grid sx={{margin: 1}} item xs={12}>
                                 <Typography>{coordinator_title_string}</Typography>
-                                {props.coordinator === null && props.userType !== "SYSTEM_MANAGER" && <Typography>{coordinator_does_not_exist}</Typography>}
-                                {props.coordinator === null && props.userType === "SYSTEM_MANAGER" && workFieldSelect !== '' && <Typography>{coordinator_does_not_exist}</Typography>}
                             </Grid>
 
                             {/*coordinator info*/}
@@ -221,7 +216,7 @@ function Row(props) {
                                                 <InputLabel >{work_field_select_string}</InputLabel>
                                                 <Select
                                                     id="work-field-select"
-                                                    value={workFieldSelect}
+                                                    value={props.selectedWorkField}
                                                     onChange={workFieldSelectedOnChange}
                                                 >
                                                     {props.workFields.map((workField) => <MenuItem value={workField}>{workField}</MenuItem>)}
@@ -229,12 +224,12 @@ function Row(props) {
                                             </FormControl>
                                         </Grid>
                                         <Grid item xs={12}>
-                                            {props.coordinator !== null && workFieldSelect !== '' && <List>
+                                            {props.coordinator !== null && props.selectedWorkField !== '' && <List>
                                                 <ListItem>
                                                     <ListItemText primary={coordinator_name_primary_string} secondary={props.coordinator.firstName + " " + props.coordinator.lastName} />
                                                     <ListItemText primary={coordinator_email_primary_string} secondary={props.coordinator.email} />
                                                     <ListItemText primary={coordinator_phone_number_primary_string} secondary={props.coordinator.phoneNumber} />
-                                                    <Button id={`remove_coordinator_${props.coordinator.email}`} onClick={() => props.handleOpenRemoveCoordinatorDialog(props.coordinator.firstName + " " + props.coordinator.lastName, row.id, workFieldSelect)} variant="outlined" color="error">{remove_coordinator_button_string}</Button>
+                                                    <Button id={`remove_coordinator_${props.coordinator.email}`} onClick={() => props.handleOpenRemoveCoordinatorDialog(props.coordinator.firstName + " " + props.coordinator.lastName, row.id, props.selectedWorkField)} variant="outlined" color="error">{remove_coordinator_button_string}</Button>
                                                 </ListItem>
                                             </List>}
                                         </Grid>
@@ -242,13 +237,18 @@ function Row(props) {
                                 </Grid>)
                             }
 
+                            <Grid sx={{margin: 1}} item xs={12}>
+                                {props.coordinator === null && props.userType !== "SYSTEM_MANAGER" && <Typography>{coordinator_does_not_exist}</Typography>}
+                                {props.coordinator === null && props.userType === "SYSTEM_MANAGER" && props.selectedWorkField !== '' && <Typography>{coordinator_does_not_exist}</Typography>}
+                            </Grid>
+
                             {/*actions*/}
                             <Grid sx={{margin: 1}} item xs={12}>
                                 <Typography>{action_title_string}</Typography>
                             </Grid>
                             <Grid sx={{margin: 1}} item xs={6}>
                                 <Button id={`school_add_coordinator_button_${row.id}`} disabled={(props.coordinator !== null)
-                                    || (props.userType === "SYSTEM_MANAGER" && workFieldSelect === '')} onClick={() => props.handleOpenAddCoordinatorDialog(row.id, row.name, workFieldSelect)} variant="outlined" sx={{marginBottom: 1}}>{add_coordinator_string}</Button>
+                                    || (props.userType === "SYSTEM_MANAGER" && props.selectedWorkField === '')} onClick={() => props.handleOpenAddCoordinatorDialog(row.id, row.name, props.selectedWorkField)} variant="outlined" sx={{marginBottom: 1}}>{add_coordinator_string}</Button>
                             </Grid>
                         </Grid>
             </Paper>
@@ -558,7 +558,13 @@ export default function SchoolsManagement(props){
      * refreshes the new school data
      */
     const refreshSchoolData = () => {
-        new Connection().getSchoolByID(selectedSchoolSearchID, getSchoolCallback)
+
+        if(props.userType === "SYSTEM_MANAGER"){
+            new Connection().getCoordinatorOfSchool(selectedWorkField, selectedSchoolSearchID, arrangeCoordinatorData)
+        }
+        else{
+            new Connection().getSchoolByID(selectedSchoolSearchID, getSchoolCallback)
+        }
     }
 
     const submitSchoolSearch = () => {
@@ -575,6 +581,7 @@ export default function SchoolsManagement(props){
             setSearchError(false);
             setSearching(true);
             setLoaded(false);
+            setSelectedWorkField('');
             new Connection().getSchoolByID(selectedSchoolSearchID, getSchoolCallback)
         }
     }
@@ -596,6 +603,7 @@ export default function SchoolsManagement(props){
      * @param newWorkField the work field of the coordinator is under
      */
     const handleWorkFieldChange = (schoolID, newWorkField) => {
+        setSelectedWorkField(newWorkField);
         new Connection().getCoordinatorOfSchool(newWorkField, schoolID, arrangeCoordinatorData)
     }
 
@@ -693,6 +701,7 @@ export default function SchoolsManagement(props){
             setOpenSnackbar(true);
             setSnackbarSeverity('success');
             setSnackbarMessage("הרכז הוסר בהצלחה");
+            setCurrentCoordinator(null)
             refreshSchoolData()
         }
         else{
@@ -767,6 +776,7 @@ export default function SchoolsManagement(props){
                 {loaded ? <Row key={searchedSchoolDetails.id} row={searchedSchoolDetails} handleOpenAddCoordinatorDialog={handleOpenAddCoordinatorDialog}
                                 handleOpenRemoveCoordinatorDialog={handleOpenRemoveCoordinatorDialog}
                                workFieldChange={handleWorkFieldChange}
+                               selectedWorkField={selectedWorkField}
                                workFields={workFields}
                                coordinator={currentCoordinator}
                                userType={props.userType}/> : <div/>}

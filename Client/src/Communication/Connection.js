@@ -387,7 +387,7 @@ class Connection{
 
     /**
      * sends a POST request to add a coordinator to a given school
-     * @param wordField the work field of the coordinator to add
+     * @param workField the work field of the coordinator to add
      * @param firstName the first name of the coordinator to add
      * @param lastName the last name of the coordinator to add
      * @param email the email of the coordinator to add
@@ -395,10 +395,10 @@ class Connection{
      * @param schoolID the school id to which add the new coordinator
      * @param callback a callback function to call once there's a response
      */
-    addCoordinator(wordField, firstName, lastName, email, phoneNumber, schoolID, callback){
+    addCoordinator(workField, firstName, lastName, email, phoneNumber, schoolID, callback){
         this.sendPOST('/data/assignCoordinator',
             {
-                wordField: wordField,
+                workField: workField,
                 firstName: firstName,
                 lastName: lastName,
                 email: email,
