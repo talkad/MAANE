@@ -935,7 +935,7 @@ public class UserController {
 
     public Response<Boolean> removeCoordinator(String currUser, String workField, String school){
         if(connectedUsers.containsKey(currUser)) {
-            User user = connectedUsers.get(currUser);//todo make sure when displaying coordinators only display the ones from the same workField
+            User user = connectedUsers.get(currUser);
             Response<String> response = user.removeCoordinator(school, workField);
             if(!response.isFailure()){
                 return userDAO.removeCoordinator(response.getResult(), school);//todo check not failed

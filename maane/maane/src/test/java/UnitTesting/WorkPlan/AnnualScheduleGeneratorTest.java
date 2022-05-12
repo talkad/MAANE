@@ -75,4 +75,5 @@ public class AnnualScheduleGeneratorTest {
         userController.viewWorkPlan(instructorName, year).getResult().printMe();
         //userController.getUser(instructorName).getWorkPlanByYear(year).getResult().printMe();
     }
+
 }

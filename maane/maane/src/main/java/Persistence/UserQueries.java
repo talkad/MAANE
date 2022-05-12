@@ -598,25 +598,46 @@ public class UserQueries {
     public Response<Boolean> removeCoordinator(String workField, String school) {
         Connect.createConnection();
         int rows = 0;//todo add cascade to all tables with foreign keys
-        String sql = "DELETE FROM \"Users\", \"UsersSchools\" WHERE userame = (SELECT username FROM (\"Users\" JOIN \"UsersSchools\" ON \"Users\".username=\"UsersSchools\".username) WHERE (workfield = ? AND (symbol = ? AND userstateenum = COORDINATOR))";
+        String sqlName = "SELECT \"Users\".username FROM (\"Users\" JOIN \"UsersSchools\" ON \"Users\".username=\"UsersSchools\".username) WHERE (workfield = ? AND (school = ? AND userstateenum = ?))";
+
+        String sqlToDelete = "BEGIN;\n";
+        sqlToDelete += "DELETE FROM \"Users\" WHERE username = ?;\n";
+        sqlToDelete += "DELETE FROM \"UsersSchools\" WHERE username = ?;\n";
+        sqlToDelete += "COMMIT;\n";
+
+        String coordinatorName = "";
         //todo fix it with cascade
 //todo also remove schools
         // todo : this is not working regardless of the cascading
 
-        PreparedStatement preparedStatement;
+        PreparedStatement statement;
         try {
-            preparedStatement = Connect.conn.prepareStatement(sql);
+            statement = Connect.conn.prepareStatement(sqlName);
 
-            preparedStatement.setString(1, workField);
-            preparedStatement.setString(2, school);
+            statement.setString(1, workField);
+            statement.setString(2, school);
+            statement.setString(3, "COORDINATOR");
 
-            rows = preparedStatement.executeUpdate();
+            ResultSet result = statement.executeQuery();
+            if(result.next()) {
+                coordinatorName = result.getString("username");
+            }
+            else{
+                Connect.closeConnection();
+                new Response<>(false, true, "no such coordinator");
+            }
+
+            statement = Connect.conn.prepareStatement(sqlToDelete);
+            statement.setString(1, coordinatorName);
+            statement.setString(2, coordinatorName);
+            rows = statement.executeUpdate();
             Connect.closeConnection();
+            return new Response<>(true, false, "");
         }
         catch (SQLException throwables) {
             throwables.printStackTrace();
-        }//todo
-        return rows > 0 ? new Response<>(true, false, "") :
+        }
+        return rows > 0 ? new Response<>(true, false, "") ://todo fix rows
                 new Response<>(false, true, "bad Db writing");
     }
 
@@ -663,7 +684,7 @@ public class UserQueries {
                 userDBDTO.setPhoneNumber(result.getString("phonenumber"));
                 userDBDTO.setEmail(result.getString("email"));
                 Connect.closeConnection();
-                return new Response<>(userDBDTO, false, "successfully acquired password");
+                return new Response<>(userDBDTO, false, "successfully acquired coordinator");
             }
             else{
                 Connect.closeConnection();

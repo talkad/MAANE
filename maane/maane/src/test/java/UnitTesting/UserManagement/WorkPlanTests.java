@@ -30,7 +30,7 @@ public class WorkPlanTests {
 
     @Test
     public void addOneSchoolsSuccess(){
-        Response<Boolean> res = workPlan.insertActivityToFirstAvailableDate(new Pair<>("school1", goal1));
+        Response<Boolean> res = workPlan.insertActivityEveryWeek(new Pair<>("school1", goal1));
         Assert.assertFalse(res.isFailure());
 
         Activity activity = workPlan.getCalendar().get(LocalDateTime.of(2022, 9, 1, 0, 0));
@@ -39,7 +39,7 @@ public class WorkPlanTests {
 
     @Test
     public void addTwoSchoolsSuccess(){
-        Response<Boolean> res = workPlan.insertActivityToFirstAvailableDate(new Pair<>("school2", goal1), new Pair<>("school3", goal2));
+        Response<Boolean> res = workPlan.insertActivityEveryWeek(new Pair<>("school2", goal1), new Pair<>("school3", goal2));
         Assert.assertFalse(res.isFailure());
     }
 
@@ -47,5 +47,14 @@ public class WorkPlanTests {
     public void getFromMonthSuccess(){
         Map<LocalDateTime, List<Activity>> result = workPlan.getScheduleFromMonth("4");
         Assert.assertTrue(result.size()==51);
+    }
+
+    @Test
+    public void EveryWeeksSuccess(){
+        WorkPlan workPlan = new WorkPlan(2022);
+        Goal goal = new Goal(1, "a", "a", 1, 1, "a", 2022);
+        Pair<String, Goal> pair = new Pair<>("a", goal);
+        workPlan.insertActivityEveryWeek(pair);
+        workPlan.printMe();
     }
 }

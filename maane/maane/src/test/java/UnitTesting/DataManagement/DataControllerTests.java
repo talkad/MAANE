@@ -69,10 +69,10 @@ public class DataControllerTests {
         userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "email@gmail.com", "0555555555", "");
         Response<Boolean> res = dataController.assignCoordinator(supervisorName, "irrelevant", "coordinator", "1", "email@gmail.com", "5555555555", "1");
         Assert.assertFalse(res.isFailure());
-        //todo Assert.assertTrue(dataController.getSchool("1").getCoordinators().get("tech").getFirstName().equals("coordinator"));
+        Assert.assertTrue(UserController.getInstance().getCoordinator("sup1", "tech","1" ).getResult().getFirstName().equals("coordinator"));
         Response<Boolean> res2 = dataController.removeCoordinator(supervisorName, "irrelevant", "1");
         Assert.assertFalse(res2.isFailure());
-        //todo Assert.assertFalse(dataController.getSchool("1").getCoordinators().containsKey("tech"));
+        Assert.assertTrue(UserController.getInstance().getCoordinator("sup1", "tech","1" ).getResult() == null);
     }
 
     @Test
