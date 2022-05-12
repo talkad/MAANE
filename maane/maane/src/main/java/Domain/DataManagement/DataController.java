@@ -58,12 +58,12 @@ public class DataController {
 
     public Response<Boolean> removeCoordinator(String currUser, String workField, String school) {
         if(schoolDAO.schoolSymbolExists(school)/*schools.containsKey(school)*/){
-            Response<Boolean> coordinatorWorkFieldRes = UserController.getInstance().removeCoordinator(currUser, workField, school);
+            return UserController.getInstance().removeCoordinator(currUser, workField, school);
             /*if(!coordinatorWorkFieldRes.isFailure() && schools.get(school).getCoordinators().containsKey(coordinatorWorkFieldRes.getResult())){
                 schools.get(school).getCoordinators().remove(coordinatorWorkFieldRes.getResult());
                 return new Response<>(true, false, coordinatorWorkFieldRes.getErrMsg());
             }*/
-            return new Response<>(false, true, coordinatorWorkFieldRes.getErrMsg());
+            //return new Response<>(false, true, coordinatorWorkFieldRes.getErrMsg());
         }
         else {
             return new Response<>(false, true, "no such coordinator found");
