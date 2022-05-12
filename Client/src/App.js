@@ -59,7 +59,7 @@ import SurveySchoolResults from "./Pages/SurveyResults/SurveySchoolResults";
 
 function App(){
     // general state data
-    const [type, setType] = useState('SYSTEM_MANAGER'); //TODO: change back to window.sessionStorage.getItem('permission') when not developing
+    const [type, setType] = useState(window.sessionStorage.getItem('permission')); //TODO: change back to window.sessionStorage.getItem('permission') when not developing
     const [openSidebar, setOpenSidebar] = useState(false);
     const [hideBars, setHideBars] = useState(false);
     const [openBackdrop, setOpenBackdrop] = useState(false);
@@ -85,7 +85,33 @@ function App(){
         if(type === null){
             setHideBars(true);
         }
-    }, [])
+
+        let current_type = window.sessionStorage.getItem('permission');
+        if(!window.sessionStorage.getItem('schools')) {
+            if((current_type === "INSTRUCTOR" || current_type === "SUPERVISOR" || current_type === "SYSTEM_MANAGER")){
+                console.log('sent for the schools')
+                new Connection().getUserSchools(arrangeSchools)
+            }
+        }
+
+
+
+    }, [type])
+
+    /**
+     * arranges the schools data
+     * @param data the data
+     */
+    const arrangeSchools = (data) => {
+        if(!data.failure){
+            const mapFunc = (ele) => {
+                return {id: ele.second, label: `${ele.first} (${ele.second})`}
+            }
+
+            let schools_data = data.result.map(mapFunc);
+            window.sessionStorage.setItem('schools', JSON.stringify(schools_data));
+        }
+    }
 
     /**
      * a callback to call when the result of the logout request got back

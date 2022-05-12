@@ -105,7 +105,6 @@ public class UserQueries {
         String userSurveysSql = "SELECT surveyid FROM \"UsersSurveys\" WHERE username = ?";
         String userWorkPlans = "SELECT year FROM \"WorkPlans\" WHERE username = ? GROUP BY year";
 
-
         PreparedStatement statement;
         try {
             statement = Connect.conn.prepareStatement(userSql);
@@ -164,7 +163,10 @@ public class UserQueries {
 
                 Connect.closeConnection();
                 return new Response<>(userDBDTO, false, "successfully acquired user");
+            }else {
+                System.out.println(username);
             }
+
             Connect.closeConnection();
         } catch (SQLException throwables) {
             throwables.printStackTrace();

@@ -499,6 +499,7 @@ function EditSchoolsDialog(props){
     const [searchError, setSearchError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
 
+    const [schoolsToSearch] = useState(JSON.parse(window.sessionStorage.getItem('schools')))
     const [selectedSchoolSearchID, setSelectedSchoolSearchID] = useState('');
     const [searchText, setSearchText] = useState('');
 
@@ -515,7 +516,7 @@ function EditSchoolsDialog(props){
 
     const addSchool = () => {
         const findInSchools = (label) => {
-            return props.schoolsToSearch.find((ele) => ele.label === label) !== undefined
+            return schoolsToSearch.find((ele) => ele.label === label) !== undefined
         }
 
         if (!findInSchools(searchText)){
@@ -588,7 +589,7 @@ function EditSchoolsDialog(props){
                             onInputChange={(event, newInputValue) => {
                                 setSearchText(newInputValue);
                             }}
-                            options={props.schoolsToSearch}
+                            options={schoolsToSearch}
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
@@ -681,9 +682,6 @@ export default function UsersManagement(props){
         else if(props.userType === "SYSTEM_MANAGER"){
             new Connection().getAllUsers(handleReceivedData);
         }
-
-        new Connection().getUserSchools(arrangeSchools)
-
     }, []);
 
 
@@ -784,17 +782,6 @@ export default function UsersManagement(props){
             }
 
             setTableRows(rows);
-        }
-    }
-
-    /**
-     * arranges the schools data
-     * @param data the data
-     */
-    const arrangeSchools = (data) => {
-        if(!data.failure){
-            data.result.forEach((element) => setSchoolsToSearch(schoolsToSearch => [...schoolsToSearch,
-                {id: element.second, label: `${element.first} (${element.second})`}]))
         }
     }
 
@@ -1130,7 +1117,6 @@ export default function UsersManagement(props){
                 <EditSchoolsDialog
                     selectedUser={selectedUser}
                     selectedName={selectedName}
-                    schoolsToSearch={schoolsToSearch}
                     selectedSchools={selectedSchools}
                     open={openEditSchoolsDialog}
                     onClose={handleCloseEditSchoolsDialog}

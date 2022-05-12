@@ -436,7 +436,7 @@ const mockSchool = createData(432, "hello there", "grove street", "ronit", "elem
 const mockSearchData = [{id: 123, label: 'idk (123)'}, {id: 1234, label: 'idk2 (1234)'}];
 
 export default function SchoolsManagement(props){
-    const [schools, setSchools] = useState([]);
+    const [schools, setSchools] = useState(JSON.parse(window.sessionStorage.getItem('schools')));
     const [selectedSchoolSearchID, setSelectedSchoolSearchID] = useState('');
     const [searchText, setSearchText] = useState('');
     const [searchError, setSearchError] = useState(false);
@@ -480,7 +480,8 @@ export default function SchoolsManagement(props){
 
 
     useEffect(() => {
-        new Connection().getUserSchools(arrangeSchoolCallback)
+        //new Connection().getUserSchools(arrangeSchoolCallback)
+
 
         if (props.userType === "SYSTEM_MANAGER"){
             new Connection().getWorkFields(arrangeWorkFields)

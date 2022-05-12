@@ -31,7 +31,7 @@ public class SchoolQueries {
         PreparedStatement preparedStatement = null;
         try {
             preparedStatement = Connect.conn.prepareStatement(sql);
-            preparedStatement.setInt(1, Integer.parseInt(school.getSymbol()));
+            preparedStatement.setString(1, school.getSymbol());
             preparedStatement.setString(2, school.getName());
             preparedStatement.setString(3, school.getCity());
             preparedStatement.setString(4, school.getCity_mail());
@@ -159,7 +159,7 @@ public class SchoolQueries {
         SchoolDBDTO schoolDBDTO = null;
         try {
             statement = Connect.conn.prepareStatement(sql);
-            statement.setInt(1, Integer.parseInt(symbol));
+            statement.setString(1, symbol);
             ResultSet resultSchool = statement.executeQuery();
 
             if (resultSchool.next()) {
