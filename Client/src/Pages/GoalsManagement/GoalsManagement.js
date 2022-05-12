@@ -135,7 +135,7 @@ function NewGoalForm(props) {
         let delta = -7;
 
         while (delta <= 7) { // calculating up to 7 previous and ahead years
-            years_range.push(currentYear + delta + 3760); //3760 is the delta between the gregorian and hebrew calendars
+            years_range.push(currentYear + delta);
             delta++;
         }
 
@@ -330,7 +330,7 @@ function NewGoalForm(props) {
                         >
                             <MenuItem value={0}>{form_choose_year_string}</MenuItem>
                             {years.map((year) => (
-                                <MenuItem value={gematriya(year, {punctuate: true, limit: 3})}>{gematriya(year, {punctuate: true, limit: 3})}</MenuItem>
+                                <MenuItem value={year}>{year}</MenuItem>
                             ))}
                         </Select>
                     </FormControl>
@@ -394,8 +394,6 @@ export default function GoalsManagement(props){
     const add_goal_button_string = "הוספת יעד";
 
     useEffect(() => {
-        // todo: i have a funny feeling this conversion is not right
-        let year = new Date().getFullYear();
 
         let years_range = [];
         let currentYear = new Date().getFullYear();
@@ -403,14 +401,15 @@ export default function GoalsManagement(props){
         let delta = -7;
 
         while (delta <= 7) { // calculating up to 7 previous and ahead years
-            years_range.push(currentYear + delta + 3760); //3760 is the delta between the gregorian and hebrew calendars
+            years_range.push(currentYear + delta);
             delta++;
         }
 
         setYears(years_range);
 
-        setSelectedYear(gematriya(year + 3760, {punctuate: true, limit: 3}));
-        new Connection().getGoals(gematriya(year + 3760, {punctuate: true, limit: 3}),
+        //setSelectedYear(gematriya(year + 3760, {punctuate: true, limit: 3}));
+        setSelectedYear(currentYear)
+        new Connection().getGoals(currentYear,
             handleReceivedData);
     }, []);
 
@@ -532,7 +531,7 @@ export default function GoalsManagement(props){
                                         label={year_to_view_string}
                                     >
                                         {years.map((year) => (
-                                            <MenuItem value={gematriya(year, {punctuate: true, limit: 3})}>{gematriya(year, {punctuate: true, limit: 3})}</MenuItem>
+                                            <MenuItem value={year}>{year}</MenuItem>
                                         ))}
                                     </Select>
                                 </FormControl>
