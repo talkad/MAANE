@@ -55,6 +55,10 @@ public class WorkPlanTests {
         Goal goal = new Goal(1, "a", "a", 1, 1, "a", 2022);
         Pair<String, Goal> pair = new Pair<>("a", goal);
         workPlan.insertActivityEveryWeek(pair);
+
+        Goal goal2 = new Goal(2, "b", "b", 2, 2, "b", 2022);
+        Pair<String, Goal> pair2 = new Pair<>("b", goal2);
+        workPlan.insertActivityEveryWeek(pair2);
         workPlan.printMe();
     }
 }

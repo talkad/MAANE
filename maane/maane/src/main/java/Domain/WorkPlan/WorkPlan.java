@@ -20,14 +20,16 @@ import java.util.stream.Collectors;
 public class WorkPlan {
     protected TreeMap<LocalDateTime, Activity> calendar; //Date and his activities for each day of year
     protected int year;
+    protected LocalDateTime currDateToInsert;
 
     public WorkPlan(int year) {
         this.calendar = GenerateCalendarForYear(year);
         this.year = year;
+        this.currDateToInsert = LocalDateTime.of(year, 9, 1, 0, 0);
+        checkFridaySaturday();
     }
 
     public TreeMap<LocalDateTime, Activity> getCalendar() {
-        //return getCalendarAsDates();
         return this.calendar;
     }
 
@@ -74,14 +76,6 @@ public class WorkPlan {
         //LocalDateTime localDateTime = calendar.keySet().iterator().next();
         LocalDateTime freeDate = null;
 
-/*        while(calendar.containsKey(date2)){
-            date2 = date.plusWeeks(1);
-            if(calendar.get(date2) == null){
-                freeDate = date2;
-                break;
-            }
-
-            }*/
         for (LocalDateTime date : calendar.keySet()) {
 
             if (calendar.get(date) == null) {
@@ -94,13 +88,6 @@ public class WorkPlan {
         }
         return freeDate;
     }
-
-/*    public void printMe() {
-        for (LocalDateTime key : calendar.keySet()) {
-            System.out.println("Date: " + key);
-            System.out.println("==> activity " + calendar.get(key).getTitle() + " scheduled for school " + calendar.get(key).getSchool());
-        }
-    }*/
 
     public void printMe() {
         for (LocalDateTime key : calendar.keySet()) {
@@ -168,67 +155,60 @@ public class WorkPlan {
         return calendar;
     }
 
-   /* private String whatDayIsIt(String date) {
-        java.util.Calendar calendar = java.util.Calendar.getInstance();
-        Date myDate = new Date(date); //month first
-        calendar.setTime(myDate);
-        int dayOfWeek = calendar.get(java.util.Calendar.DAY_OF_WEEK);
-        return "" + dayOfWeek;
-    }*/
 
-/*    public String whatMonthIsIt(String date) {
-        String[] arr = date.split("-"); //[month,day,year]
-        return "" + arr[1];
-    }*/
-
-//    public TreeMap<LocalDateTime, List<Activity>> getCalendarAsDates(){
-//        TreeMap<LocalDateTime, List<Activity>> output = new TreeMap<>();
-//        for (Map.Entry<String, List<Activity>> oldEntry : calendar.entrySet()) {
-//            String dateAsString = oldEntry.getKey();
-//            LocalDate localDate = LocalDate.parse(dateAsString);
-//            LocalDateTime localDateTime = localDate.atTime(8, 30);
-//            output.put(localDateTime, oldEntry.getValue());
-//        }
-//        return output;
-//    }
-
-//    public void printMeNew (){
-//        for (LocalDateTime key: getCalendarAsDates().keySet()) {
-//            System.out.println("Date: " + key);
-//            for (Activity activity: getCalendarAsDates().get(key))
-//                System.out.println("==> activity " + activity.getTitle() + " scheduled for school " + activity.getSchool());
-//        }
-//    }
-
-/*    public Response<Boolean> insertActivityEveryWeek(Pair<String, Goal> input, String date) {
+//    public Response<Boolean> insertActivityEveryWeek(Pair<String, Goal> input) {
 //        Activity activity = new Activity(input.getFirst(), input.getSecond().getTitle());
-//        LocalDate localDate = LocalDate.parse(date);
-//        if (dayIsFridayOrSaturday(date)) //no free date
-//            return new Response<>(false, true, "no free days");
-//        LocalDate endYear = LocalDate.of(2021, Month.JUNE,21);
-//        while (localDate.isBefore(endYear)){
-////            String s = localDate.getYear()+"-"+addZeroIfNeeded(localDate.getMonthValue())+"-"+localDate.getDayOfMonth();
-////            insertActivity (s, activity);
-//            localDate = localDate.plusDays(7);
+//        LocalDateTime freeDate = findDate();
+//
+//        if (freeDate == null) //no free date
+//            return new Response<>(false, true, "no free days");//todo not actually failed check its ok
+//
+//        LocalDateTime lastDay = LocalDateTime.of(this.year + 1, 6, 21, 0, 0);
+//        while (freeDate.isBefore(lastDay)) {
+//            insertActivity(freeDate, activity);
+//            freeDate = freeDate.plusWeeks(1);
 //        }
 //
 //        return new Response<>(false, false, "Success");
-        return null;
-    }
-}*/
+//    }
+//
+//    public Response<Boolean> insertActivityEveryWeek(Pair<String, Goal> input1, Pair<String, Goal> input2) {
+//        Activity firstActivity = new Activity(input1.getFirst(), input1.getSecond().getTitle());
+//        Activity secondActivity = new Activity(input2.getFirst(), input2.getSecond().getTitle());
+//        LocalDateTime lastDay = LocalDateTime.of(this.year + 1, 6, 21, 0, 0);
+//
+//        LocalDateTime freeDate1 = findDate();
+//        if (freeDate1 == null) //no free date
+//            return new Response<>(false, true, "no free days");//todo not actually failed check its ok
+//
+//        while (freeDate1.isBefore(lastDay)){
+//            insertActivity(freeDate1, firstActivity);
+//            freeDate1 = freeDate1.plusWeeks(1);
+//        }
+//
+//        LocalDateTime freeDate2 = findDate();
+//        if (freeDate2 == null) //no free date
+//            return new Response<>(false, true, "no free days");//todo not actually failed check its ok
+//        freeDate2 = freeDate2.toLocalDate().atStartOfDay().plusHours(1);
+//
+//        while (freeDate2.isBefore(lastDay)){
+//            insertActivity(freeDate2, secondActivity);
+//            freeDate2 = freeDate2.plusWeeks(1);
+//        }
+//
+//        return new Response<>(false, false, "Success");
+//    }
+
 
     public Response<Boolean> insertActivityEveryWeek(Pair<String, Goal> input) {
         Activity activity = new Activity(input.getFirst(), input.getSecond().getTitle());
-        LocalDateTime freeDate = findDate();
+        LocalDateTime lastDay = LocalDateTime.of(this.year + 1, 6, 21, 0, 0);
 
-        if (freeDate == null) //no free date
+        if (lastDay.isBefore(currDateToInsert)) //no free date
             return new Response<>(false, true, "no free days");//todo not actually failed check its ok
 
-        LocalDateTime lastDay = LocalDateTime.of(this.year + 1, 6, 21, 0, 0);
-        while (freeDate.isBefore(lastDay)) {
-            insertActivity(freeDate, activity);
-            freeDate = freeDate.plusWeeks(1);
-        }
+        insertActivity(currDateToInsert, activity);
+        currDateToInsert = currDateToInsert.plusWeeks(1);
 
         return new Response<>(false, false, "Success");
     }
@@ -238,25 +218,20 @@ public class WorkPlan {
         Activity secondActivity = new Activity(input2.getFirst(), input2.getSecond().getTitle());
         LocalDateTime lastDay = LocalDateTime.of(this.year + 1, 6, 21, 0, 0);
 
-        LocalDateTime freeDate1 = findDate();
-        if (freeDate1 == null) //no free date
+        if (lastDay.isBefore(currDateToInsert)) //no free date
             return new Response<>(false, true, "no free days");//todo not actually failed check its ok
 
-        while (freeDate1.isBefore(lastDay)){
-            insertActivity(freeDate1, firstActivity);
-            freeDate1 = freeDate1.plusWeeks(1);
-        }
-
-        LocalDateTime freeDate2 = findDate();
-        if (freeDate2 == null) //no free date
-            return new Response<>(false, true, "no free days");//todo not actually failed check its ok
-        freeDate2 = freeDate2.toLocalDate().atStartOfDay().plusHours(1);
-
-        while (freeDate2.isBefore(lastDay)){
-            insertActivity(freeDate2, secondActivity);
-            freeDate2 = freeDate2.plusWeeks(1);
-        }
+        insertActivity(currDateToInsert, firstActivity);
+        insertActivity(currDateToInsert.toLocalDate().atStartOfDay().plusHours(1), secondActivity);
+        currDateToInsert = currDateToInsert.plusWeeks(1);
 
         return new Response<>(false, false, "Success");
+    }
+
+    private void checkFridaySaturday(){
+        if(currDateToInsert.getDayOfWeek() == DayOfWeek.FRIDAY)
+            currDateToInsert = currDateToInsert.plusDays(2);
+        if(currDateToInsert.getDayOfWeek() == DayOfWeek.SATURDAY)
+            currDateToInsert = currDateToInsert.plusDays(1);
     }
 }
