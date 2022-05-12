@@ -77,7 +77,7 @@ public class UserController {
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             if(user.isSupervisor().getResult()){
-                return emailController.sendEmail(user.getWorkField(),  surveyLink);//todo verify existence of the link and survey token
+                return emailController.sendEmail(user.getWorkField(),  surveyLink);//todo verify existence of the survey link
             }
             else{
                 return new Response<>(null, true, "user isn't supervisor");
@@ -489,7 +489,7 @@ public class UserController {
         return new Response<>(user.getSchools(), false, "");
     }
 
-    public Response<List<String>> getUserSchools(String currUser){//todo maybe add checks
+    public Response<List<String>> getUserSchools(String currUser){
         User user = new User(userDAO.getFullUser(currUser).getResult());
         return user.getUserSchools();
     }
@@ -723,7 +723,7 @@ public class UserController {
         }
     }
 
-    public Response<Boolean> publishSurvey(String currUser){
+    /*public Response<Boolean> publishSurvey(String currUser){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             Response<String> res = user.publishSurvey();
@@ -738,7 +738,7 @@ public class UserController {
         else {
             return new Response<>(false, true, "User not connected");
         }
-    }
+    }*/
 
     public Response<List<GoalDTO>> getGoals(String currUser, Integer year){
         if(connectedUsers.containsKey(currUser)) {
@@ -798,11 +798,6 @@ public class UserController {
     public void adminBoot(String username, String password) {
         User user = new User(username, UserStateEnum.SYSTEM_MANAGER);
         userDAO.insertUser(new UserDBDTO(user, passwordEncoder.encode(password)));
-        //todo temp static data
-/*        login("admin");
-        registerUserBySystemManager("admin", "ronit", "ronit", UserStateEnum.SUPERVISOR, "", "science", "ronit", "ronit", "ronit@gmail.com", "", "");
-        registerUserBySystemManager("admin", "shoshi", "shoshi", UserStateEnum.INSTRUCTOR, "ronit", "", "shoshi", "shoshi", "shoshi@gmail.com", "", "");
-        logout("admin");*/
     }
 
     public void notifySurveyCreation(String username, String surveyToken) {
@@ -813,14 +808,12 @@ public class UserController {
                 emailController.sendEmail(response.getResult(), "http://localhot:8080/survey/getSurvey/surveyID={" + surveyToken + "}");
             }
         }
-        else {
-            //return new Response<>(null, true, "User not connected");
-        }
-        // Yes we need it,
+/*        else {
+            return new Response<>(null, true, "User not connected");
+        }*/
         // the username is the name of the supervisor created a survey,
-        // so you need to email all relevant coordinator and send them this link (for now):
+        // email all relevant coordinator and send them this link (for now):
         // http://localhot:8080/survey/getSurvey/surveyID={surveyToken}
-        // thanks in advance, Tal
     }
 
 
@@ -907,6 +900,7 @@ public class UserController {
 
             if (!result.isFailure()) {
                 userDAO.insertUser(new UserDBDTO(result.getResult(), null));
+                userDAO.assignSchoolsToUser(result.getResult().getUsername(), result.getResult().getSchools());
                 return new Response<>(true, false, "assigned coordinator");
             }
             else{
@@ -919,17 +913,20 @@ public class UserController {
     }
 
     public Response<UserDBDTO> getCoordinator(String currUser, String workField, String symbol){
-        if(connectedUsers.containsKey(currUser)) {//todo make it a better function
+        if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
-            //Response<User> result = user.assignCoordinator(createToken(), workField, school, firstName, lastName, email, phoneNumber);
-
-            //if (!result.isFailure()) {
-            return userDAO.getCoordinator(symbol, workField);
-                //return new Response<>(true, false, "assigned coordinator");
-            //}
-            /*else{
-                return new Response<>(null, result.isFailure(), result.getErrMsg());
-            }*/
+            Response<String> workFieldRes = user.getCoordinator();
+            if (!workFieldRes.isFailure()) {
+                if(workFieldRes.getResult().equals("")){
+                    return userDAO.getCoordinator(symbol, workField);
+                }
+                else{
+                    return userDAO.getCoordinator(symbol, workFieldRes.getResult());
+                }
+            }
+            else{
+                return new Response<>(null, workFieldRes.isFailure(), workFieldRes.getErrMsg());
+            }
         }
         else {
             return new Response<>(null, true, "User not connected");
@@ -945,6 +942,22 @@ public class UserController {
             }
             else{
                 return new Response<>(false, true, response.getErrMsg());
+            }
+        }
+        else {
+            return new Response<>(null, true, "User not connected");
+        }
+    }
+
+    public Response<List<String>> allWorkFields(String currUser){
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            Response<List<String>> response = user.getAllWorkFields();
+            if(!response.isFailure()){
+                return userDAO.getAllWorkFields(response.getResult());
+            }
+            else{
+                return new Response<>(null, true, response.getErrMsg());
             }
         }
         else {
@@ -970,6 +983,7 @@ public class UserController {
                         userDAO.insertUser(new UserDBDTO(result.getResult(),passwordEncoder.encode(password)));
 
                         userDAO.removeUser(currSupervisor);
+                        userDAO.addAppointment(currUser, newSupervisor);
                         connectedUsers.remove(currSupervisor);
                         return transferSupervisionRes;
                     }
@@ -1011,7 +1025,7 @@ public class UserController {
                     userDAO.updateUserState(newSup.getUsername(), newSup.getState().getStateEnum().getState());
                     userDAO.updateSurveys(newSup.getUsername(), newSup.getSurveys().getResult());
                     userDAO.removeUser(currSupervisor);
-                    connectedUsers.remove(currSupervisor);//todo maybe dont delete old sup just change his role
+                    connectedUsers.remove(currSupervisor);
                     if(connectedUsers.containsKey(newSupervisor)){
                         newSup = connectedUsers.get(newSupervisor);
                         newSup.setState(UserStateEnum.SUPERVISOR);
@@ -1020,6 +1034,7 @@ public class UserController {
                         newSup.setSurveys(currSup.getSurveys().getResult());
                         newSup.setSchools(new Vector<>());
                     }
+                    userDAO.addAppointment(currUser, newSupervisor);
                     return transferSupervisionRes;
                 }
                 else{
@@ -1034,14 +1049,4 @@ public class UserController {
             return new Response<>(null, true, "User not connected");
         }
     }
-
-
-    public Response<Boolean> canGetSchoolInfo(String username, String symbol) {
-
-        //todo: implement
-        // idk if certain user needs a permission to get school data
-
-        return new Response<>(true, false, "OK");
-    }
-
 }

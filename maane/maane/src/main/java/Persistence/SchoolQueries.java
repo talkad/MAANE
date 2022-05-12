@@ -112,28 +112,24 @@ public class SchoolQueries {
         return new Response<>(true, false, "updated school successfully");
     }
 
-    public boolean schoolSymbolExists (String symbol){
-
+    public boolean schoolSymbolExists(String symbol){
         Connect.createConnection();
-        String sqlSurvey = "SELECT symbol FROM \"Schools\" WHERE symbol = ?";
+        String sql = "SELECT exists (SELECT 1 FROM \"Schools\" WHERE symbol = ? LIMIT 1)";
+        PreparedStatement statement;
         try {
-            PreparedStatement statement = Connect.conn.prepareStatement(sqlSurvey);
-            statement.setInt(1, Integer.parseInt(symbol));
-            ResultSet resultSurvey = statement.executeQuery();
-
-            if (resultSurvey.next()) {
+            statement = Connect.conn.prepareStatement(sql);
+            statement.setString(1, symbol);
+            ResultSet result = statement.executeQuery();
+            if(result.next()) {
+                boolean found = result.getBoolean(1);
                 Connect.closeConnection();
-
-                return true;
-            } else {
-                Connect.closeConnection();
-
-                return false;
+                return found;
             }
-
-        } catch(SQLException e) {
-            return false;
+            Connect.closeConnection();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
         }
+        return false;
     }
 
     public boolean schoolNameExists (String name){
@@ -142,7 +138,6 @@ public class SchoolQueries {
         PreparedStatement statement;
         try {
             statement = Connect.conn.prepareStatement(sql);
-
             statement.setString(1, name);
             ResultSet result = statement.executeQuery();
             if(result.next()) {
@@ -189,7 +184,6 @@ public class SchoolQueries {
             } else {
                 Connect.closeConnection();
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -218,8 +212,21 @@ public class SchoolQueries {
         }
         else{
             sql = "SELECT name FROM \"Schools\" WHERE symbol = ?";
+            /*sql = "BEGIN;\n";
+            for(String symbol: schools){
+                sql+="SELECT name, symbol FROM \"Schools\" WHERE symbol = ?;\n";
+            }
+            sql+= "COMMIT;\n";*/
             try {
                 statement = Connect.conn.prepareStatement(sql);
+                /*int index = 1;
+                for(String symbol : schools){
+                    statement.setString(index++, symbol);
+                }
+                ResultSet resultSet = statement.executeQuery();
+                while(resultSet.next()) {
+                    nameAndSymbol.add(new Pair<>(resultSet.getString("name"), resultSet.getString("symbol")));
+                }*/
                 for(String school: schools){
                     statement.setString(1, school);
                     ResultSet resultSet = statement.executeQuery();

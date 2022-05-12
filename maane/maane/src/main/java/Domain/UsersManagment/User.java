@@ -639,18 +639,18 @@ public class User {
             List<String> schoolList = new Vector<>();
             schoolList.add(school);
             if(this.state.getStateEnum() == UserStateEnum.SUPERVISOR) {
-                return new Response<>(new User(username, UserStateEnum.COORDINATOR, firstName, lastName, email, phoneNumber, this.workField, schoolList), false, "successfully assigned coordinator");
+                return new Response<>(new User(username, UserStateEnum.COORDINATOR, this.workField, firstName, lastName, email, phoneNumber, schoolList), false, "successfully assigned coordinator");
             }
             else if(this.state.getStateEnum() == UserStateEnum.INSTRUCTOR) {
                 if(this.schools.contains(school)){
-                    return new Response<>(new User(username,UserStateEnum.COORDINATOR, firstName, lastName, email, phoneNumber, this.workField, schoolList), false, "successfully assigned coordinator");
+                    return new Response<>(new User(username,UserStateEnum.COORDINATOR, this.workField, firstName, lastName, email, phoneNumber, schoolList), false, "successfully assigned coordinator");
                 }
                 else{
                     return new Response<>(null, true, "user not allowed to assign coordinator to the given school");
                 }
             }
             else if(this.state.getStateEnum() == UserStateEnum.SYSTEM_MANAGER){
-                return new Response<>(new User(username,UserStateEnum.COORDINATOR, firstName, lastName, email, phoneNumber, workField, schoolList), false, "successfully assigned coordinator");
+                return new Response<>(new User(username,UserStateEnum.COORDINATOR, workField, firstName, lastName, email, phoneNumber, schoolList), false, "successfully assigned coordinator");
             }
         }
         return new Response<>(null, true, "user not allowed to assign coordinator");
@@ -695,5 +695,27 @@ public class User {
 
     public List<Integer> getWorkPlanYears() {
         return this.workPlanYears;
+    }
+
+    public Response<String> getCoordinator() {
+        if(this.state.getStateEnum() == UserStateEnum.SYSTEM_MANAGER){
+            return new Response<>("", false, "user allowed to get coordinator");
+        }
+        else if (this.state.allowed(Permissions.GET_COORDINATOR, this))
+        {
+            return new Response<>(this.workField, false, "user allowed to get coordinator");
+        }
+        else {
+            return new Response<>(null, true, "user allowed to get coordinator");
+        }
+    }
+
+    public Response<List<String>> getAllWorkFields() {
+        if(this.state.getStateEnum() == UserStateEnum.SYSTEM_MANAGER){
+            return new Response<>(this.appointments, false, "user allowed to view all work fields");
+        }
+        else {
+            return new Response<>(null, true, "user not allowed to view all work fields");
+        }
     }
 }

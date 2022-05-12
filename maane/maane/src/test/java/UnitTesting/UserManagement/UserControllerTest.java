@@ -326,4 +326,42 @@ public class UserControllerTest {
         Assert.assertTrue(userQueries.userExists("ins2"));
         Assert.assertTrue(userQueries.getFullUser("ins1").getResult().getAppointments().contains("ins2"));
     }
+
+
+    @Test
+    public void transferSupervisionTwiceSuccess(){
+        String adminName = userController.login("admin").getResult();
+        userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "a@a.com", "0555555555", "");
+        Response<Boolean> res = userController.transferSupervision(adminName, "sup1", "new_sup", "new_sup", "", "", "", "", "");
+        Assert.assertFalse(res.isFailure());
+        userController.logout("admin");
+        userController.login("new_sup");
+        userController.registerUser("new_sup", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "a@a.com", "0555555555", "");
+        userController.logout("new_sup");
+        userController.login("admin");
+        Response<Boolean> res2 = userController.transferSupervisionToExistingUser(adminName, "new_sup", "ins1");
+        Assert.assertFalse(res2.isFailure());
+        Assert.assertTrue(userQueries.userExists("ins1"));
+        Assert.assertFalse(userQueries.userExists("sup1"));
+        Assert.assertFalse(userQueries.userExists("new_sup"));
+        Assert.assertTrue(userQueries.getFullUser("ins1").getResult().getAppointments().isEmpty());
+        userController.logout(adminName);
+        userController.login("ins1");
+        userController.registerUser("ins1", "ins2", "ins2", UserStateEnum.INSTRUCTOR, "", "", "a@a.com", "0555555555", "");
+        Assert.assertTrue(userQueries.userExists("ins2"));
+        Assert.assertTrue(userQueries.getFullUser("ins1").getResult().getAppointments().contains("ins2"));
+    }
+
+    @Test
+    public void allWorkFieldsSuccess() {
+        String adminName = userController.login("admin").getResult();
+        userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "a@a.com", "0555555555", "");
+        userController.registerUserBySystemManager(adminName, "sup2", "sup2", UserStateEnum.SUPERVISOR, "", "English", "", "", "a@a.com", "0555555555", "");
+        Response<List<String>> workFieldsRes = userController.allWorkFields(adminName);
+        Assert.assertFalse(workFieldsRes.isFailure());
+        Assert.assertTrue(workFieldsRes.getResult().size() == 2);
+        Assert.assertTrue(workFieldsRes.getResult().contains("tech"));
+        Assert.assertTrue(workFieldsRes.getResult().contains("English"));
+    }
+
 }

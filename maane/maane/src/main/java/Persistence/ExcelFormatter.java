@@ -19,14 +19,14 @@ public class   ExcelFormatter {
         return sheet.getPhysicalNumberOfRows();
     }
 
-    public static void MosadExelToDb() throws IOException, SQLException {
+    public static void MosadExcelToDb() throws IOException, SQLException {
         String projDir = System.getProperty("user.dir");
         String exelPath = projDir + "\\Mosad.xlsx";
         XSSFWorkbook workbook = new XSSFWorkbook(exelPath);
         XSSFSheet sheet = workbook.getSheet("Mosad");
         int rowCount = getRowCount();
         for (int i=1; i<rowCount; i++){
-            int symbol = (int) sheet.getRow(i).getCell(0).getNumericCellValue();
+            String symbol = sheet.getRow(i).getCell(0).getStringCellValue();
             String name = sheet.getRow(i).getCell(1).getStringCellValue();
             String city = sheet.getRow(i).getCell(2).getStringCellValue();
             String city_mail = sheet.getRow(i).getCell(3).getStringCellValue();
@@ -49,7 +49,7 @@ public class   ExcelFormatter {
         workbook.close();
     }
 
-    private static void insertToDb (int symbol, String name, String city, String city_mail, String address,
+    private static void insertToDb (String symbol, String name, String city, String city_mail, String address,
                                    String school_address, String principal, String manager, String supervisor,
                                    String phone, String mail, int zipcode, String education_stage, String education_type,
                                    String supervisor_type, String spector, int num_of_students) throws SQLException {
@@ -58,7 +58,7 @@ public class   ExcelFormatter {
                 " manager, supervisor, phone, mail, zipcode, education_stage, education_type, supervisor_type, spector," +
                 " num_of_students ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         PreparedStatement preparedStatement = Connect.conn.prepareStatement(sql);
-        preparedStatement.setInt(1, symbol);
+        preparedStatement.setString(1, symbol);
         preparedStatement.setString(2, name);
         preparedStatement.setString(3, city);
         preparedStatement.setString(4, city_mail);
@@ -82,6 +82,6 @@ public class   ExcelFormatter {
 
     public static void main (String [] args) throws SQLException, IOException {
         ServerContextInitializer.getInstance().setMockMode();
-        MosadExelToDb();
+        MosadExcelToDb();
     }
 }

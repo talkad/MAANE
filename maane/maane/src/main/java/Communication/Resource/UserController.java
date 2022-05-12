@@ -8,6 +8,7 @@ import Communication.Security.KeyLoader;
 import Communication.Service.UserServiceImpl;
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.User;
+import Persistence.DbDtos.UserDBDTO;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -266,5 +267,17 @@ public class UserController {
     public ResponseEntity<Response<WorkPlanDTO>> getWorkPlan(@RequestHeader(value = "Authorization") String token, @PathVariable("month") Integer month){
         return ResponseEntity.ok()
                 .body(service.getWorkPlan(sessionHandler.getUsernameByToken(token).getResult(), month));
+    }
+
+    @GetMapping(value="/getCoordinator/workfield={workfield}&symbol={symbol}")
+    public ResponseEntity<Response<UserDBDTO>> getCoordinator(@RequestHeader(value = "Authorization") String token, @PathVariable("workfield") String workfield, @PathVariable("symbol") String symbol){
+        return ResponseEntity.ok()
+                .body(service.getCoordinator(sessionHandler.getUsernameByToken(token).getResult(), workfield, symbol));
+    }
+
+    @GetMapping(value="/allWorkFields")
+    public ResponseEntity<Response<List<String>>> allWorkFields(@RequestHeader(value = "Authorization") String token){
+        return ResponseEntity.ok()
+                .body(service.allWorkFields(sessionHandler.getUsernameByToken(token).getResult()));
     }
 }

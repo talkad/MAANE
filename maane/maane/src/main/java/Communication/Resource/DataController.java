@@ -38,6 +38,7 @@ public class DataController {
     @GetMapping("/getSchool/symbol={symbol}")
     public ResponseEntity<Response<SchoolDBDTO>> getSchool(@RequestHeader(value = "Authorization") String token, @PathVariable("symbol") String symbol){
         return ResponseEntity.ok()
+
                 .body(service.getSchool(sessionHandler.getUsernameByToken(token).getResult(), symbol));
     }
 

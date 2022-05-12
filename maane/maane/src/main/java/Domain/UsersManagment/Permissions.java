@@ -16,6 +16,7 @@ public enum Permissions {
     ADD_BASKET,
     REGISTER_COORDINATOR,
     REMOVE_COORDINATOR,
+    GET_COORDINATOR,
 
     /** Supervisor User **/
     ASSIGN_SCHOOLS_TO_USER,

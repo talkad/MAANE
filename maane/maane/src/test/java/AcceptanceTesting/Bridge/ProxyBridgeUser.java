@@ -7,6 +7,7 @@ import Communication.Initializer.ServerContextInitializer;
 import Communication.Service.Interfaces.UserService;
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.User;
+import Persistence.DbDtos.UserDBDTO;
 
 import java.util.List;
 
@@ -221,6 +222,24 @@ public class ProxyBridgeUser implements UserService {
     public Response<WorkPlanDTO> getWorkPlan(String username, int month) {
         if (real != null) {
             return real.getWorkPlan(username, month);
+        }
+
+        return new Response<>(null, true, "not implemented");
+    }
+
+    @Override
+    public Response<UserDBDTO> getCoordinator(String currUser, String workField, String symbol) {
+        if (real != null) {
+            return real.getCoordinator(currUser, workField, symbol);
+        }
+
+        return new Response<>(null, true, "not implemented");
+    }
+
+    @Override
+    public Response<List<String>> allWorkFields(String currUser) {
+        if (real != null) {
+            return real.allWorkFields(currUser);
         }
 
         return new Response<>(null, true, "not implemented");

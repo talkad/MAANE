@@ -7,6 +7,7 @@ import Communication.Service.Interfaces.UserService;
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.User;
 import Domain.UsersManagment.UserController;
+import Persistence.DbDtos.UserDBDTO;
 import Persistence.UserQueries;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -291,6 +292,30 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public Response<WorkPlanDTO> getWorkPlan(String username, int month) {
         return null;
+    }
+
+    @Override
+    public Response<UserDBDTO> getCoordinator(String currUser, String workField, String symbol) {
+        Response<UserDBDTO> res = UserController.getInstance().getCoordinator(currUser, workField, symbol);
+
+        if (res.isFailure())
+            log.error("{} failed to receive coordinator of school {}", currUser, symbol);
+        else
+            log.info("{} received coordinator of school {}", currUser, symbol);
+
+        return res;
+    }
+
+    @Override
+    public Response<List<String>> allWorkFields(String currUser) {
+        Response<List<String>> res = UserController.getInstance().allWorkFields(currUser);
+
+        if (res.isFailure())
+            log.error("{} failed to receive work fields", currUser);
+        else
+            log.info("{} received work fields", currUser);
+
+        return res;
     }
 
 

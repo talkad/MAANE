@@ -19,7 +19,6 @@ public class DataController {
         this.schoolDAO = SchoolQueries.getInstance();
     }
 
-
     private static class CreateSafeThreadSingleton {
         private static final DataController INSTANCE = new DataController();
     }
@@ -95,11 +94,15 @@ public class DataController {
         Response<String> schoolsRes = UserController.getInstance().hasSchool(username, symbol);
         if(!schoolsRes.isFailure()){
             SchoolDBDTO school = schoolDAO.getSchool(symbol);
-            Response<UserDBDTO> coordinator = UserController.getInstance().getCoordinator(username, schoolsRes.getResult(), symbol);//todo probably dont need to send workfield fail check it didnt
-            school.setCoordinatorFirstName(coordinator.getResult().getFirstName());
-            school.setCoordinatorLastName(coordinator.getResult().getLastName());
-            school.setCoordinatorPhone(coordinator.getResult().getPhoneNumber());
-            school.setCoordinatorEmail(coordinator.getResult().getEmail());
+            if(!schoolsRes.getResult().equals("")) { //admin case - no workField
+                Response<UserDBDTO> coordinator = UserController.getInstance().getCoordinator(username, schoolsRes.getResult(), symbol);//todo probably dont need to send workfield fail check it didnt
+                if (!coordinator.isFailure() && coordinator.getResult() != null) {
+                    school.setCoordinatorFirstName(coordinator.getResult().getFirstName());
+                    school.setCoordinatorLastName(coordinator.getResult().getLastName());
+                    school.setCoordinatorPhone(coordinator.getResult().getPhoneNumber());
+                    school.setCoordinatorEmail(coordinator.getResult().getEmail());
+                }
+            }
             return new Response<>(school, false, "successfully acquired the school");//todo add coordinator to school
         }
         return new Response<>(null, true, schoolsRes.getErrMsg());

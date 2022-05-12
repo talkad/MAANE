@@ -1,5 +1,6 @@
 package Persistence;
 
+import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.UserStateEnum;
 import Persistence.DbDtos.UserDBDTO;
@@ -595,9 +596,9 @@ public class UserQueries {
     public Response<Boolean> removeCoordinator(String workField, String school) {
         Connect.createConnection();
         int rows = 0;//todo add cascade to all tables with foreign keys
-        String sql = "DELETE FROM \"Users\", \"UsersSchools\" WHERE userame = (SELECT username FROM \"Users\" JOIN \"UsersSchools\" ON username WHERE workfield = ? AND symbol = ? AND userstateenum = COORDINATOR)";
+        String sql = "DELETE FROM \"Users\", \"UsersSchools\" WHERE userame = (SELECT username FROM (\"Users\" JOIN \"UsersSchools\" ON \"Users\".username=\"UsersSchools\".username) WHERE (workfield = ? AND (symbol = ? AND userstateenum = COORDINATOR))";
         //todo fix it with cascade
-
+//todo also remove schools
         // todo : this is not working regardless of the cascading
 
         PreparedStatement preparedStatement;
@@ -643,13 +644,14 @@ public class UserQueries {
 
     public Response<UserDBDTO> getCoordinator(String symbol, String workField) {
         Connect.createConnection();
-        String sql = "SELECT firstname, lastname, phonenumber, email FROM \"Users\" JOIN \"UsersSchools\" ON username WHERE workfield = ? AND symbol = ? AND userstateenum = COORDINATOR";
+        String sql = "SELECT firstname, lastname, phonenumber, email FROM (\"Users\" JOIN \"UsersSchools\" ON \"Users\".username=\"UsersSchools\".username) WHERE (workfield = ? AND (school = ? AND userstateenum = ?))";
         PreparedStatement statement;
         try {
             statement = Connect.conn.prepareStatement(sql);
 
             statement.setString(1, workField);
             statement.setString(2, symbol);
+            statement.setString(3,"COORDINATOR");
 
             ResultSet result = statement.executeQuery();
             if(result.next()) {
@@ -658,15 +660,38 @@ public class UserQueries {
                 userDBDTO.setLastName(result.getString("lastname"));
                 userDBDTO.setPhoneNumber(result.getString("phonenumber"));
                 userDBDTO.setEmail(result.getString("email"));
-
                 Connect.closeConnection();
                 return new Response<>(userDBDTO, false, "successfully acquired password");
             }
-            Connect.closeConnection();
+            else{
+                Connect.closeConnection();
+                return new Response<>(null, false, "no coordinator was assigned to the school");
+            }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
         return new Response<>(null, true, "failed to acquire coordinator");
     }
 
+    public Response<List<String>> getAllWorkFields(List<String> supervisors) {
+        Connect.createConnection();
+        String sql = "SELECT workfield FROM \"Users\" WHERE username = ?";
+        PreparedStatement statement;
+        List<String> workFields = new Vector<>();;
+        try {
+            statement = Connect.conn.prepareStatement(sql);
+            for(String supervisor : supervisors){
+                statement.setString(1, supervisor);
+                ResultSet resultSet = statement.executeQuery();
+                if (resultSet.next()) {
+                    workFields.add(resultSet.getString("workfield"));
+                }
+            }
+            Connect.closeConnection();
+            return new Response<>(workFields, false, "successfully acquired all workfields");
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return new Response<>(null, true, "failed to acquire workFields");
+    }
 }
