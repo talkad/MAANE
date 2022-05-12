@@ -615,6 +615,21 @@ class Connection{
     }
 
     /**
+     * sends a POST request to remove a school from a given user
+     * @param userToRemoveFrom the user to remove from
+     * @param schoolID the school to remove
+     * @param callback a callback function to call once there's a response
+     */
+    removeSchoolFromUser(userToRemoveFrom, schoolID, callback){
+        this.sendPOST('/user/removeSchoolsFromUser',
+            {
+                affectedUser: userToRemoveFrom,
+                schools: [schoolID]
+            },
+            callback)
+    }
+
+    /**
      * sends a GET request to get all the schools (name-id pairs) under the current user
      * @param callback a callback function to call once there's a response
      */

@@ -128,7 +128,7 @@ function Row(props) {
                                 </ListItem>
                                 <Divider component="li" />
                                 <ListItem>
-                                    <ListItemText primary={schools} secondary={row.schools.reduce((previous, current) => previous + `${current}, `, '')} />
+                                    <ListItemText primary={schools} secondary={row.schools.reduce((previous, current) => previous + `${current.label}, `, '')} />
                                 </ListItem>
                                 <Divider component="li" />
                                 <ListItem>
@@ -527,7 +527,7 @@ function EditSchoolsDialog(props){
             setSearchError(false);
             setSchoolSearchValue('');
             setSelectedSchoolId('');
-            props.addSchoolCallback(props.selectedUser, schoolSearchValue, selectedSchoolId);
+            props.addSchoolCallback(props.selectedUser, schoolSearchValue, selectedSchoolSearchID);
         }
     }
 
@@ -550,7 +550,7 @@ function EditSchoolsDialog(props){
                                 }
                             >
                                 <ListItemText
-                                    primary={school}
+                                    primary={school.label}
                                 />
 
                             </ListItem>
@@ -692,7 +692,7 @@ export default function UsersManagement(props){
     const handleReceivedData = (data) => {
         if (!data.failure){
             let rows = [];
-
+            let school_id_map = JSON.parse(window.sessionStorage.getItem('schools'));
             if (props.userType === "SUPERVISOR") {
                 for (const row of data.result) {
                     let role = "";
@@ -715,6 +715,11 @@ export default function UsersManagement(props){
                         continue;
                     }
 
+                    let user_schools = school_id_map.filter((element) => row.schools.includes(element.id))
+
+                    console.log('idk anymore');
+                    console.log(user_schools)
+
                     rows.push(createData(
                         row.username,
                         row.firstName + " " + row.lastName,
@@ -722,7 +727,7 @@ export default function UsersManagement(props){
                         row.email,
                         row.phoneNumber,
                         row.city,
-                        row.schools,
+                        user_schools,
                         []
                     ));
                 }
@@ -992,12 +997,14 @@ export default function UsersManagement(props){
             setSnackbarSeverity('success');
             setSnackbarMessage('בית הספר הוסף בהצלחה למשתמש');
             setOpenSnackbar(true);
+            setOpenEditSchoolsDialog(false);
+            refreshData();
         }
         else {
             setSnackbarSeverity('error');
             setSnackbarMessage('הפעולה להוספת בית ספר למשתמש נכשלה'); // todo: better error?
             setOpenSnackbar(true);
-            refreshData();
+
         }
     }
 
@@ -1008,7 +1015,9 @@ export default function UsersManagement(props){
      * @param schoolId the id of the school to assign to the selected user
      */
     const handleUserAddSchool = (username, schoolName, schoolId) => {
-        new Connection().assignSchoolToUser(username, schoolId)
+        console.log('what was sent');
+        console.log(schoolId)
+        new Connection().assignSchoolToUser(username, schoolId, userAddSchoolCallback)
     }
 
     /**
@@ -1020,6 +1029,7 @@ export default function UsersManagement(props){
             setSnackbarSeverity('success');
             setSnackbarMessage('בית הספר הוסר בהצלחה מהמשתמש');
             setOpenSnackbar(true);
+            setOpenEditSchoolsDialog(false);
             refreshData();
         }
         else {
@@ -1035,7 +1045,7 @@ export default function UsersManagement(props){
      * @param schoolId the id of the school to remove from the selected user
      */
     const handleUserRemoveSchool = (username, schoolId) => {
-        // todo: send
+        new Connection().removeSchoolFromUser(username, schoolId, userRemoveSchoolCallback)
     }
 
 

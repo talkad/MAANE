@@ -221,13 +221,13 @@ public class UserController {
                 .body(service.getAllUsers(sessionHandler.getUsernameByToken(token).getResult()));
     }
 
-    @PostMapping(value = "/assignSchoolsToUser")//todo aviad
+    @PostMapping(value = "/assignSchoolsToUser")
     public ResponseEntity<Response<Boolean>> assignSchoolsToUser(@RequestHeader(value = "Authorization") String token, @RequestBody SchoolManagementDTO schoolManagementDTO){
         return ResponseEntity.ok()
                 .body(service.assignSchoolsToUser(sessionHandler.getUsernameByToken(token).getResult(), schoolManagementDTO.getAffectedUser(), schoolManagementDTO.getSchools()));
     }
 
-    @PostMapping(value = "/removeSchoolsFromUser")//todo aviad
+    @PostMapping(value = "/removeSchoolsFromUser")
     public ResponseEntity<Response<Boolean>> removeSchoolsFromUser(@RequestHeader(value = "Authorization") String token, @RequestBody SchoolManagementDTO schoolManagementDTO){
         return ResponseEntity.ok()
                 .body(service.removeSchoolsFromUser(sessionHandler.getUsernameByToken(token).getResult(), schoolManagementDTO.getAffectedUser(), schoolManagementDTO.getSchools()));
@@ -257,7 +257,7 @@ public class UserController {
                 .body(service.getSupervisors(sessionHandler.getUsernameByToken(token).getResult()));
     }
 
-    @PostMapping(value = "/transferSupervisionToExistingUser")//todo aviad
+    @PostMapping(value = "/transferSupervisionToExistingUser")
     public ResponseEntity<Response<Boolean>> transferSupervisionToExistingUser(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object>  body){
         return ResponseEntity.ok()
                 .body(service.transferSupervisionToExistingUser(sessionHandler.getUsernameByToken(token).getResult(), (String)body.get("currSupervisor"), (String)body.get("newSupervisor")));
