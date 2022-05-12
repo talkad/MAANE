@@ -23,7 +23,7 @@ public class DataController {
     private final DataService service;
     private final SessionHandler sessionHandler;
 
-    @PostMapping(value = "/assignCoordinator") //todo aviad
+    @PostMapping(value = "/assignCoordinator")
     public ResponseEntity<Response<Boolean>> assignCoordinator(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object> body){
         return ResponseEntity.ok()
                 .body(service.assignCoordinator(sessionHandler.getUsernameByToken(token).getResult(), (String)body.get("workField"), (String)body.get("firstName"), (String)body.get("lastName"), (String)body.get("email"), (String)body.get("phoneNumber"), (String)body.get("school")));

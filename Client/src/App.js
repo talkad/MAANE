@@ -90,7 +90,10 @@ function App(){
         if(!window.sessionStorage.getItem('schools')) {
             if((current_type === "INSTRUCTOR" || current_type === "SUPERVISOR" || current_type === "SYSTEM_MANAGER")){
                 console.log('sent for the schools')
-                new Connection().getUserSchools(arrangeSchools)
+                setTimeout(() => {
+                    new Connection().getUserSchools(arrangeSchools)
+                }, 2000)
+
             }
         }
 
@@ -118,9 +121,9 @@ function App(){
      * @param data the response for the logout request
      */
     const logoutCallback = (data) => {
-        console.log(data)
         if(!data.failure){
             window.sessionStorage.removeItem('permission');
+            window.sessionStorage.removeItem('schools');
             setType(null);
             setHideBars(true);
             navigate('/user/login', {replace: true});

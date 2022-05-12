@@ -717,9 +717,6 @@ export default function UsersManagement(props){
 
                     let user_schools = school_id_map.filter((element) => row.schools.includes(element.id))
 
-                    console.log('idk anymore');
-                    console.log(user_schools)
-
                     rows.push(createData(
                         row.username,
                         row.firstName + " " + row.lastName,

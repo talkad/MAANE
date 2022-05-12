@@ -582,6 +582,15 @@ class Connection{
     // SCHOOLS
 
     /**
+     * sends a GET request to get the full data of a school by its symbol
+     * @param id the id of the school
+     * @param callback a callback function to call once there's a response
+     */
+    getSchoolByID(id, callback){
+        this.sendGET(`/data/getSchool/symbol=${id}`, callback);
+    }
+
+    /**
      * sends a GET request to get all teh work fields of the system
      * @param callback a callback function to call once there's a response
      */

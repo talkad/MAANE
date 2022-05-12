@@ -39,11 +39,10 @@ import NotificationSnackbar from "../../CommonComponents/NotificationSnackbar";
  * @param zipCode the zip code of the shcool
  * @param supervisionType the type of supervision of the school is under
  * @param secretaryMail the email address of the secretary office of the school
- * @param coordinators list of the info of coordinators of the school
  * @returns {{zipCode, address, educationType, city, supervisionType, phoneNumber, educationLevel, principleName, name, numOfPupils, id, sector, secretaryMail, supervisor, cityForMail}}
  */
 function createData(id, name, address, instructor, educationLevel, sector, numOfPupils, phoneNumber, educationType,
-                    city, cityForMail, principleName, zipCode, supervisionType, secretaryMail, coordinators) {
+                    city, cityForMail, principleName, zipCode, supervisionType, secretaryMail) {
     return {
         id,
         name,
@@ -60,7 +59,6 @@ function createData(id, name, address, instructor, educationLevel, sector, numOf
         zipCode,
         supervisionType,
         secretaryMail,
-        coordinators,
     }
 }
 
@@ -95,6 +93,7 @@ function Row(props) {
 
     // coordinator's strings
     const coordinator_title_string = "רכזים:";
+    const coordinator_does_not_exist = "לא רשום רכז לבית ספר זה.";
     const coordinator_name_primary_string = "שם";
     const coordinator_email_primary_string = 'דוא"ל';
     const coordinator_phone_number_primary_string = "מספר טלפון";
@@ -198,19 +197,20 @@ function Row(props) {
                             </Grid>
                             <Grid sx={{margin: 1}} item xs={12}>
                                 <Typography>{coordinator_title_string}</Typography>
+                                {props.coordinator === null && props.userType !== "SYSTEM_MANAGER" && <Typography>{coordinator_does_not_exist}</Typography>}
+                                {props.coordinator === null && props.userType === "SYSTEM_MANAGER" && workFieldSelect !== '' && <Typography>{coordinator_does_not_exist}</Typography>}
                             </Grid>
 
                             {/*coordinator info*/}
                             {props.userType !== "SYSTEM_MANAGER" ? (<Grid sx={{margin: 1}} item xs={12}>
-                                <List>
-                                    {row.coordinators.map((coordinator) =>
-                                        <ListItem>
-                                            <ListItemText primary={coordinator_name_primary_string} secondary={coordinator.firstName + " " + coordinator.lastName} />
-                                            <ListItemText primary={coordinator_email_primary_string} secondary={coordinator.email} />
-                                            <ListItemText primary={coordinator_phone_number_primary_string} secondary={coordinator.phoneNumber} />
-                                            <Button id={`remove_coordinator_${coordinator.email}`} onClick={() => props.handleOpenRemoveCoordinatorDialog(coordinator.firstName + " " + coordinator.lastName, row.id)} variant="outlined" color="error">{remove_coordinator_button_string}</Button>
-                                        </ListItem>)}
-                                </List>
+                                {props.coordinator !== null && <List>
+                                    <ListItem>
+                                        <ListItemText primary={coordinator_name_primary_string} secondary={props.coordinator.firstName + " " + props.coordinator.lastName} />
+                                        <ListItemText primary={coordinator_email_primary_string} secondary={props.coordinator.email} />
+                                        <ListItemText primary={coordinator_phone_number_primary_string} secondary={props.coordinator.phoneNumber} />
+                                        <Button id={`remove_coordinator_${props.coordinator.email}`} onClick={() => props.handleOpenRemoveCoordinatorDialog(props.coordinator.firstName + " " + props.coordinator.lastName, row.id, '')} variant="outlined" color="error">{remove_coordinator_button_string}</Button>
+                                    </ListItem>
+                                </List>}
                             </Grid>) :
                                 (
                                 <Grid sx={{margin: 1}} item xs={12}>
@@ -228,29 +228,26 @@ function Row(props) {
                                             </FormControl>
                                         </Grid>
                                         <Grid item xs={12}>
-                                            <List>
-                                                {row.coordinators.map((coordinator) =>
-                                                    <ListItem>
-                                                        <ListItemText primary={coordinator_name_primary_string} secondary={coordinator.firstName + " " + coordinator.lastName} />
-                                                        <ListItemText primary={coordinator_email_primary_string} secondary={coordinator.email} />
-                                                        <ListItemText primary={coordinator_phone_number_primary_string} secondary={coordinator.phoneNumber} />
-                                                        <Button id={`remove_coordinator_${coordinator.email}`} onClick={() => props.handleOpenRemoveCoordinatorDialog(coordinator.firstName + " " + coordinator.lastName, row.id)} variant="outlined" color="error">{remove_coordinator_button_string}</Button>
-                                                    </ListItem>)}
-                                            </List>
+                                            {props.coordinator !== null && workFieldSelect !== '' && <List>
+                                                <ListItem>
+                                                    <ListItemText primary={coordinator_name_primary_string} secondary={props.coordinator.firstName + " " + props.coordinator.lastName} />
+                                                    <ListItemText primary={coordinator_email_primary_string} secondary={props.coordinator.email} />
+                                                    <ListItemText primary={coordinator_phone_number_primary_string} secondary={props.coordinator.phoneNumber} />
+                                                    <Button id={`remove_coordinator_${props.coordinator.email}`} onClick={() => props.handleOpenRemoveCoordinatorDialog(props.coordinator.firstName + " " + props.coordinator.lastName, row.id, workFieldSelect)} variant="outlined" color="error">{remove_coordinator_button_string}</Button>
+                                                </ListItem>
+                                            </List>}
                                         </Grid>
                                     </Grid>
                                 </Grid>)
                             }
-
-
-
 
                             {/*actions*/}
                             <Grid sx={{margin: 1}} item xs={12}>
                                 <Typography>{action_title_string}</Typography>
                             </Grid>
                             <Grid sx={{margin: 1}} item xs={6}>
-                                <Button id={`school_add_coordinator_button_${row.id}`} onClick={() => props.handleOpenAddCoordinatorDialog(row.id, row.name)} variant="outlined" sx={{marginBottom: 1}}>{add_coordinator_string}</Button>
+                                <Button id={`school_add_coordinator_button_${row.id}`} disabled={(props.coordinator !== null)
+                                    || (props.userType === "SYSTEM_MANAGER" && workFieldSelect === '')} onClick={() => props.handleOpenAddCoordinatorDialog(row.id, row.name, workFieldSelect)} variant="outlined" sx={{marginBottom: 1}}>{add_coordinator_string}</Button>
                             </Grid>
                         </Grid>
             </Paper>
@@ -304,9 +301,14 @@ function AddCoordinatorDialog(props){
             setError(true);
         }
         else{
-            //TODO: how do i get the work field
             setError(false);
-            props.callback("work field. how do i get this??", values.firstName, values.lastName, values.email, values.phoneNumber, props.schoolID);
+            props.callback(props.workField, values.firstName, values.lastName, values.email, values.phoneNumber, props.schoolID);
+            setValues({
+                firstName: '',
+                lastName: '',
+                email: '',
+                phoneNumber: '',
+            })
         }
     }
 
@@ -324,18 +326,6 @@ function AddCoordinatorDialog(props){
 
                     <Grid item xs={12}  sx={{marginRight: "3%", marginLeft: "3%"}}>
                         <Grid container spacing={1}>
-                            {/*first name*/}
-                            <Grid item xs={6}>
-                                <TextField
-                                    id={"add_coordinator_first_name"}
-                                    value={values.firstName}
-                                    onChange={handleTextFieldsChange("firstName")}
-                                    label={first_name_label_string}
-                                    error={error}
-                                    required
-                                    fullWidth
-                                />
-                            </Grid>
                             {/*last name*/}
                             <Grid item xs={6}>
                                 <TextField
@@ -343,6 +333,18 @@ function AddCoordinatorDialog(props){
                                     value={values.lastName}
                                     onChange={handleTextFieldsChange("lastName")}
                                     label={last_name_label_string}
+                                    error={error}
+                                    required
+                                    fullWidth
+                                />
+                            </Grid>
+                            {/*first name*/}
+                            <Grid item xs={6}>
+                                <TextField
+                                    id={"add_coordinator_first_name"}
+                                    value={values.firstName}
+                                    onChange={handleTextFieldsChange("firstName")}
+                                    label={first_name_label_string}
                                     error={error}
                                     required
                                     fullWidth
@@ -395,7 +397,7 @@ function RemoveCoordinatorDialog(props){
     const cancel_string = "ביטול";
 
     const handleSubmitDeletion = () => {
-        props.callback("dunno the work field", props.schoolID); // TODO: know the work field
+        props.callback(props.workField, props.schoolID);
     }
 
     return (
@@ -442,10 +444,11 @@ export default function SchoolsManagement(props){
     const [searchError, setSearchError] = useState(false);
 
     const [searching, setSearching] = useState(false);
-    const [loaded, setLoaded] = useState(true);
+    const [loaded, setLoaded] = useState(false);
 
     const [workFields, setWorkFields] = useState([]);
-    const [searchedSchoolDetails, setSearchedSchoolDetails] = useState(mockSchool);
+    const [searchedSchoolDetails, setSearchedSchoolDetails] = useState({});
+    const [currentCoordinator, setCurrentCoordinator] = useState(null)
 
 
     // dialog states
@@ -453,13 +456,11 @@ export default function SchoolsManagement(props){
     const [openACDialog, setOpenACDialog] = useState(false);
     const [selectedSchoolID, setSelectedSchoolID] = useState(-1);
     const [selectedSchoolName, setSelectedSchoolName] = useState('');
+    const [selectedWorkField, setSelectedWorkField] = useState('');
 
     // remove coordinator
     const [openDCDialog, setOpenDCDialog] = useState(false);
     const [selectedCoordinatorName, setSelectedCoordinatorName] = useState('');
-    // TODO: what other info i need?
-
-
 
     // snackbar states
     const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -480,7 +481,9 @@ export default function SchoolsManagement(props){
 
 
     useEffect(() => {
-        //new Connection().getUserSchools(arrangeSchoolCallback)
+        // if (props.userType === 'INSTRUCTOR' || props.userType === "GENERAL_SUPERVISOR"){
+        //     new Connection().getUserSchools(arrangeSchoolCallback)
+        // }
 
 
         if (props.userType === "SYSTEM_MANAGER"){
@@ -511,6 +514,9 @@ export default function SchoolsManagement(props){
         }
     }
 
+    // function createData(id, name, address, instructor, educationLevel, sector, numOfPupils, phoneNumber, educationType,
+    //                     city, cityForMail, principleName, zipCode, supervisionType, secretaryMail) {
+
     /**
      * arranges the school's data which got from the server
      * @param data the response from the server for the request to get the searched school
@@ -519,7 +525,39 @@ export default function SchoolsManagement(props){
         if(!data.failure){
             setSearching(false);
             setLoaded(true);
+            console.log('got the searched school')
+            console.log(data.result)
+            let school_data = data.result
+            setSearchedSchoolDetails(createData(school_data.symbol,
+                school_data.name,
+                school_data.address,
+                school_data.supervisor,
+                school_data.education_stage,
+                school_data.spector,
+                school_data.num_of_students,
+                school_data.phone,
+                school_data.education_type,
+                school_data.city,
+                school_data.city_mail,
+                school_data.principal,
+                school_data.zipcode,
+                school_data.supervisor_type,
+                school_data.mail))
+
+            if(school_data.coordinatorFirstName !== null && school_data.coordinatorLastName !== null){
+                setCurrentCoordinator({firstName: school_data.coordinatorFirstName,
+                lastName: school_data.coordinatorLastName,
+                email: school_data.coordinatorEmail,
+                phoneNumber: school_data.coordinatorPhone})
+            }
         }
+    }
+
+    /**
+     * refreshes the new school data
+     */
+    const refreshSchoolData = () => {
+        new Connection().getSchoolByID(selectedSchoolSearchID, getSchoolCallback)
     }
 
     const submitSchoolSearch = () => {
@@ -532,10 +570,11 @@ export default function SchoolsManagement(props){
             setSearchError(true);
         }
         else{
+            setCurrentCoordinator(null);
             setSearchError(false);
             setSearching(true);
             setLoaded(false);
-            // TODO: get the selected school
+            new Connection().getSchoolByID(selectedSchoolSearchID, getSchoolCallback)
         }
     }
 
@@ -560,11 +599,13 @@ export default function SchoolsManagement(props){
      * handles the opening of the dialog to add a coordinator to a given school
      * @param schoolID the id of the selected school
      * @param schoolName the name of the selected school
+     * @param workField the work field to assign to
      */
-    const handleOpenAddCoordinatorDialog = (schoolID, schoolName) => {
+    const handleOpenAddCoordinatorDialog = (schoolID, schoolName, workField) => {
         setOpenACDialog(true);
         setSelectedSchoolID(schoolID);
         setSelectedSchoolName(schoolName);
+        setSelectedWorkField(workField);
     }
 
     /**
@@ -579,12 +620,24 @@ export default function SchoolsManagement(props){
      * @param data the response from the server
      */
     const addCoordinatorCallback = (data) => {
-        // TODO: implement
+        if (!data.failure){
+            setOpenSnackbar(true);
+            setSnackbarSeverity('success');
+            setSnackbarMessage("הרכז הוסף בהצלחה");
+            refreshSchoolData()
+        }
+        else{
+            setOpenSnackbar(true);
+            setSnackbarSeverity('error');
+            setSnackbarMessage("הפעולה נכשלה. אנא נסה/י שנית");
+        }
+
+        setOpenACDialog(false);
     }
 
     /**
      * an handler for adding a coordinator to a given school
-     * @param workField the work field to which the coordinator is related to TODO: how do i get that?
+     * @param workField the work field to which the coordinator is related to
      * @param firstName the first name of the coordinator to add
      * @param lastName the last name of the coordinator to add
      * @param email the email of the coordinator to add
@@ -609,11 +662,13 @@ export default function SchoolsManagement(props){
      * handles the opening of the dialog to remove a coordinator of a given school
      * @param coordinatorName the name of the coordinator to remove
      * @param schoolID the id of the school from which to remove the coordinator
+     * @param workField the work field of the coordinator
      */
-    const handleOpenRemoveCoordinatorDialog = (coordinatorName, schoolID) => {
+    const handleOpenRemoveCoordinatorDialog = (coordinatorName, schoolID, workField) => {
         setOpenDCDialog(true);
         setSelectedCoordinatorName(coordinatorName);
         setSelectedSchoolID(schoolID)
+        setSelectedWorkField(workField)
     }
 
     /**
@@ -628,7 +683,19 @@ export default function SchoolsManagement(props){
      * @param data the response from the server
      */
     const removeCoordinatorCallback = (data) => {
-        // TODO: implement
+        if (!data.failure){
+            setOpenSnackbar(true);
+            setSnackbarSeverity('success');
+            setSnackbarMessage("הרכז הוסר בהצלחה");
+            refreshSchoolData()
+        }
+        else{
+            setOpenSnackbar(true);
+            setSnackbarSeverity('error');
+            setSnackbarMessage("הפעולה נכשלה. אנא נסה/י שנית");
+        }
+
+        setOpenDCDialog(false);
     }
 
     /**
@@ -694,12 +761,14 @@ export default function SchoolsManagement(props){
                 {loaded ? <Row key={searchedSchoolDetails.id} row={searchedSchoolDetails} handleOpenAddCoordinatorDialog={handleOpenAddCoordinatorDialog}
                                 handleOpenRemoveCoordinatorDialog={handleOpenRemoveCoordinatorDialog}
                                workFields={workFields}
+                               coordinator={currentCoordinator}
                                userType={props.userType}/> : <div/>}
 
                 {/*add coordinator dialog pop up*/}
                 <AddCoordinatorDialog
                     schoolID={selectedSchoolID}
                     schoolName={selectedSchoolName}
+                    workField={selectedWorkField}
                     open={openACDialog}
                     onClose={handleCloseACDialog}
                     callback={handleAddCoordinator}
@@ -709,6 +778,7 @@ export default function SchoolsManagement(props){
                 <RemoveCoordinatorDialog
                     name={selectedCoordinatorName}
                     schoolID={selectedSchoolID}
+                    workField={selectedWorkField}
                     open={openDCDialog}
                     onClose={handleCloseDCDialog}
                     callback={handleRemoveCoordinator}
