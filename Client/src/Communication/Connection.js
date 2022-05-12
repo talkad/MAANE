@@ -591,21 +591,21 @@ class Connection{
     }
 
     /**
+     * sends a GET request to get the coordinator data of a school under a given work field
+     * @param workField the work field of the coordinator
+     * @param schoolID the school id of the coordinator
+     * @param callback a callback function to call once there's a response
+     */
+    getCoordinatorOfSchool(workField, schoolID, callback){
+        this.sendGET(`/user/getCoordinator/workfield=${workField}&symbol=${schoolID}`, callback)
+    }
+
+    /**
      * sends a GET request to get all teh work fields of the system
      * @param callback a callback function to call once there's a response
      */
     getWorkFields(callback){
-        // todo: implement
-    }
-
-    /**
-     * sends a GET request to get the coordinator of a school under a selected field
-     * @param schoolID the id of the school
-     * @param workField the selected work field
-     * @param callback a callback function to call once there's a response
-     */
-    getCoordinatorOfField(schoolID, workField, callback){
-        // todo: implement
+        this.sendGET(`/user/allWorkFields`, callback)
     }
 
     /**

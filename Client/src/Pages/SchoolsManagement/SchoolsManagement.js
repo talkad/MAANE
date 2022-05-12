@@ -109,7 +109,8 @@ function Row(props) {
      * @param event the affected element
      */
     const workFieldSelectedOnChange = (event) => {
-        setWorkFieldSelect(event.target.value)
+        setWorkFieldSelect(event.target.value);
+        props.workFieldChange(row.id, event.target.value);
     }
 
     return (
@@ -221,7 +222,7 @@ function Row(props) {
                                                 <Select
                                                     id="work-field-select"
                                                     value={workFieldSelect}
-                                                    onChange={() => console.log('hi')}
+                                                    onChange={workFieldSelectedOnChange}
                                                 >
                                                     {props.workFields.map((workField) => <MenuItem value={workField}>{workField}</MenuItem>)}
                                                 </Select>
@@ -580,7 +581,12 @@ export default function SchoolsManagement(props){
 
     const arrangeCoordinatorData = (data) => {
         if (!data.failure){
+            let coordinator_data = data.result;
 
+            setCurrentCoordinator({firstName: coordinator_data.firstName,
+                lastName: coordinator_data.lastName,
+                email: coordinator_data.email,
+                phoneNumber: coordinator_data.phoneNumber});
         }
     }
 
@@ -590,7 +596,7 @@ export default function SchoolsManagement(props){
      * @param newWorkField the work field of the coordinator is under
      */
     const handleWorkFieldChange = (schoolID, newWorkField) => {
-        new Connection().getCoordinatorOfField(schoolID, newWorkField, arrangeCoordinatorData)
+        new Connection().getCoordinatorOfSchool(newWorkField, schoolID, arrangeCoordinatorData)
     }
 
     // add coordinator functions
@@ -760,6 +766,7 @@ export default function SchoolsManagement(props){
 
                 {loaded ? <Row key={searchedSchoolDetails.id} row={searchedSchoolDetails} handleOpenAddCoordinatorDialog={handleOpenAddCoordinatorDialog}
                                 handleOpenRemoveCoordinatorDialog={handleOpenRemoveCoordinatorDialog}
+                               workFieldChange={handleWorkFieldChange}
                                workFields={workFields}
                                coordinator={currentCoordinator}
                                userType={props.userType}/> : <div/>}
