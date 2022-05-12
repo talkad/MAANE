@@ -581,6 +581,25 @@ class Connection{
 
     // SCHOOLS
 
+    /**
+     * sends a POST request to assign a school to a given user
+     * @param assignedTo the user to assign the school to
+     * @param schoolID the school to assign to the user
+     * @param callback a callback function to call once there's a response
+     */
+    assignSchoolToUser(assignedTo, schoolID, callback){
+        this.sendPOST('/user/assignSchoolsToUser',
+            {
+                affectedUser: assignedTo,
+                schools: [schoolID]
+            },
+            callback);
+    }
+
+    /**
+     * sends a GET request to get all the schools (name-id pairs) under the current user
+     * @param callback a callback function to call once there's a response
+     */
     getUserSchools(callback){
         this.sendGET('/data/getUserSchools', callback)
     }
