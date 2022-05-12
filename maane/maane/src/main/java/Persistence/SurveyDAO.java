@@ -180,7 +180,7 @@ public class SurveyDAO {
         return surveyAnswers;
     }
 
-    public SurveyAnswersDTO getAnswersPerSchool(String surveyID, int symbol) {
+    public SurveyAnswersDTO getAnswersPerSchool(String surveyID, String symbol) {
         SurveyAnswersDTO surveyAnswers;
 
         surveyAnswers = persistence.getAnswersPerSchool(surveyID, symbol);

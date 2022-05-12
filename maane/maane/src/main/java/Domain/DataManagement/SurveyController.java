@@ -438,7 +438,7 @@ public class SurveyController {
      * @param symbol identifier of school
      * @return answers
      */
-    public Response<AnswersDTO> getAnswers(String username, String surveyID, int symbol) {
+    public Response<AnswersDTO> getAnswers(String username, String surveyID, String symbol) {
         FaultDetector faultDetector;
         List<String> actualAnswers;
         Response<Boolean> legalGet = UserController.getInstance().hasCreatedSurvey(username, surveyID);

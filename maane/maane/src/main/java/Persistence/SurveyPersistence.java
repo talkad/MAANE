@@ -624,7 +624,7 @@ public class SurveyPersistence {
         return output;
     }
 
-    public SurveyAnswersDTO getAnswersPerSchool(String surveyID, int symbol) {
+    public SurveyAnswersDTO getAnswersPerSchool(String surveyID, String symbol) {
         Connect.createConnection();
         String query = "SELECT * FROM \"Answers\" WHERE survey_id = ? AND school_symbol = ?";
         PreparedStatement statement;
@@ -634,11 +634,11 @@ public class SurveyPersistence {
 
             statement = Connect.conn.prepareStatement(query);
             statement.setString(1, surveyID);
-            statement.setString(2, symbol+"");
+            statement.setString(2, symbol);
             ResultSet result = statement.executeQuery();
 
             if (result.next()) {
-                symbol = result.getInt("school_symbol");
+                symbol = result.getString("school_symbol");
                 String answer = result.getString("answer");
                 String answerType = result.getString("answer_type");
 

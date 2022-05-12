@@ -106,7 +106,7 @@ public class SurveyController {
     }
 
     @GetMapping("/getAnswers/surveyID={surveyID}&symbol={symbol}")
-    public ResponseEntity<Response<AnswersDTO>> getAnswers(@RequestHeader(value = "Authorization") String token, @PathVariable("surveyID") String surveyID, @PathVariable("symbol") Integer symbol){
+    public ResponseEntity<Response<AnswersDTO>> getAnswers(@RequestHeader(value = "Authorization") String token, @PathVariable("surveyID") String surveyID, @PathVariable("symbol") String symbol){
         return ResponseEntity.ok()
                 .body(service.getAnswers(sessionHandler.getUsernameByToken(token).getResult(), surveyID, symbol));
     }

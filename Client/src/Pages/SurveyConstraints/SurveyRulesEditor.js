@@ -50,7 +50,7 @@ export default function SurveyRulesEditor(){
         // calculating the current hewbrew year
 
         let currentYear = new Date().getFullYear();
-        new Connection().getGoals(gematriya(currentYear + 3760, {punctuate: true, limit: 3}), arrangeGoalsData) // getting the goals
+        new Connection().getGoals(currentYear, arrangeGoalsData) // getting the goals
 
     }, []);
 
@@ -106,6 +106,8 @@ export default function SurveyRulesEditor(){
             
             setRules(rulesData.rules.map(generateRules))
             setRuleID(rulesIndexer);
+
+            console.log('arranged rules')
         }
     }
 
