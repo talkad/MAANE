@@ -496,8 +496,11 @@ const schools = [
  * @returns {JSX.Element} the element
  */
 function EditSchoolsDialog(props){
-    const [error, setError] = useState(false);
+    const [searchError, setSearchError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+
+    const [selectedSchoolSearchID, setSelectedSchoolSearchID] = useState('');
+    const [searchText, setSearchText] = useState('');
 
     const [schoolSearchValue, setSchoolSearchValue] = useState('');
     const [selectedSchoolId, setSelectedSchoolId] = useState(-1);
@@ -511,14 +514,18 @@ function EditSchoolsDialog(props){
 
 
     const addSchool = () => {
-        if (selectedSchoolId === -1){
-            setError(true);
+        const findInSchools = (label) => {
+            return props.schoolsToSearch.find((ele) => ele.label === label) !== undefined
+        }
+
+        if (!findInSchools(searchText)){
+            setSearchError(true);
             setErrorMessage("נא לבחור בית ספר מהרשימה")
         }
         else{
-            setError(false);
+            setSearchError(false);
             setSchoolSearchValue('');
-            setSelectedSchoolId(-1);
+            setSelectedSchoolId('');
             props.addSchoolCallback(props.selectedUser, schoolSearchValue, selectedSchoolId);
         }
     }
@@ -572,27 +579,53 @@ function EditSchoolsDialog(props){
                         {/*    }}/>*/}
 
                         <Autocomplete
-                            disablePortal
-                            value={schoolSearchValue}
-                            onChange={function (event, newValue){
-                                    if (newValue !== null){
-                                        setSchoolSearchValue(newValue.label);
-                                        setSelectedSchoolId(newValue.id);
-                                    }
-                                }
-                            }
-                            options={schools}
-                            // todo: is the below thingy bad?
-                            isOptionEqualToValue={(option, value) => true}
+                            freeSolo
+                            id="search-schools"
+                            disableClearable
+                            onChange={(event, newValue) => {
+                                setSelectedSchoolSearchID(newValue.id)
+                            }}
+                            onInputChange={(event, newInputValue) => {
+                                setSearchText(newInputValue);
+                            }}
+                            options={props.schoolsToSearch}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label={search_school_string}
+                                    InputProps={{
+                                        ...params.InputProps,
+                                        type: 'search',
+                                    }}
+                                    error={searchError}
+                                    sx={{marginBottom: "2%"}}
+                                />
+                            )}
                             fullWidth
-                            renderInput={(params) => <TextField {...params} label={search_school_string} error={error} />}
                         />
+
+                        {/*<Autocomplete*/}
+                        {/*    disablePortal*/}
+                        {/*    value={schoolSearchValue}*/}
+                        {/*    onChange={function (event, newValue){*/}
+                        {/*            if (newValue !== null){*/}
+                        {/*                setSchoolSearchValue(newValue.label);*/}
+                        {/*                setSelectedSchoolId(newValue.id);*/}
+                        {/*            }*/}
+                        {/*        }*/}
+                        {/*    }*/}
+                        {/*    options={props.schoolsToSearch}*/}
+                        {/*    // todo: is the below thingy bad?*/}
+                        {/*    isOptionEqualToValue={(option, value) => true}*/}
+                        {/*    fullWidth*/}
+                        {/*    renderInput={(params) => <TextField {...params} label={search_school_string} error={error} />}*/}
+                        {/*/>*/}
                     </ListItem>
                     <ListItem style={{display:'flex', justifyContent:'flex-end'}}>
-                        <Button onClick={addSchool} disabled={selectedSchoolId === -1} variant='contained'>{add_school_button_string}</Button>
+                        <Button onClick={addSchool} variant='contained'>{add_school_button_string}</Button>
                     </ListItem>
                 </List>
-                {error && <Alert sx={{marginBottom: 1}} severity="error">{errorMessage}</Alert>}
+                {searchError && <Alert sx={{marginBottom: 1}} severity="error">{errorMessage}</Alert>}
             </Stack>
         </Dialog>
     )
@@ -621,6 +654,7 @@ export default function UsersManagement(props){
     const [selectedUser, setSelectedUser] = useState('');
     const [selectedName, setSelectedName] = useState('');
     const [selectedSchools, setSelectedSchools] = useState([]);
+    const [schoolsToSearch, setSchoolsToSearch] = useState([])
 
     // supervision dialog
     const [openSupervisionTransferDialog, setOpenSupervisionTransferDialog] = useState(false);
@@ -647,7 +681,8 @@ export default function UsersManagement(props){
         else if(props.userType === "SYSTEM_MANAGER"){
             new Connection().getAllUsers(handleReceivedData);
         }
-        // todo: see about how i get the information about the school and how i arrange it
+
+        new Connection().getUserSchools(arrangeSchools)
 
     }, []);
 
@@ -749,6 +784,17 @@ export default function UsersManagement(props){
             }
 
             setTableRows(rows);
+        }
+    }
+
+    /**
+     * arranges the schools data
+     * @param data the data
+     */
+    const arrangeSchools = (data) => {
+        if(!data.failure){
+            data.result.forEach((element) => setSchoolsToSearch(schoolsToSearch => [...schoolsToSearch,
+                {id: element.second, label: `${element.first} (${element.second})`}]))
         }
     }
 
@@ -975,7 +1021,7 @@ export default function UsersManagement(props){
      * @param schoolId the id of the school to assign to the selected user
      */
     const handleUserAddSchool = (username, schoolName, schoolId) => {
-        // todo: send
+        new Connection().assignSchoolToUser(username, schoolId)
     }
 
     /**
@@ -1084,6 +1130,7 @@ export default function UsersManagement(props){
                 <EditSchoolsDialog
                     selectedUser={selectedUser}
                     selectedName={selectedName}
+                    schoolsToSearch={schoolsToSearch}
                     selectedSchools={selectedSchools}
                     open={openEditSchoolsDialog}
                     onClose={handleCloseEditSchoolsDialog}

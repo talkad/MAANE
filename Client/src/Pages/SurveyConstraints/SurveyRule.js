@@ -111,6 +111,11 @@ export default function SurveyRule(props){
         }
 
         const question = props.questions.find(element => element.id === props.questionSelection);
+
+        if(question === undefined){
+            return '';
+        }
+
         return question.type;
     }
 
@@ -138,6 +143,9 @@ export default function SurveyRule(props){
         
 
         const question = props.questions.find(element => element.id === props.questionSelection);
+        if(question === undefined){
+            return '';
+        }
         return question.question;
     }
 

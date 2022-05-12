@@ -2,10 +2,10 @@ import * as Space from 'react-spaces';
 import {
     Alert, Autocomplete,
     Box, Button,
-    Collapse, Dialog, DialogTitle, Divider, Grid,
-    IconButton, InputAdornment,
-    List, ListItem, ListItemText,
-    Paper, Skeleton, Stack,
+    Collapse, Dialog, DialogTitle, Divider, FormControl, Grid,
+    IconButton, InputAdornment, InputLabel,
+    List, ListItem, ListItemText, MenuItem,
+    Paper, Select, Skeleton, Stack,
     Table, TableBody, TableCell,
     TableContainer,
     TableHead,
@@ -72,7 +72,8 @@ function createData(id, name, address, instructor, educationLevel, sector, numOf
  */
 function Row(props) {
     const { row } = props;
-    const [open, setOpen] = React.useState(false);
+
+    const [workFieldSelect, setWorkFieldSelect] = useState('');
 
     // administrative info strings
     const administrative_info_string = "מידע אדמיניסטרטיבי:";
@@ -102,6 +103,15 @@ function Row(props) {
     // action strings
     const action_title_string = "פעולות:";
     const add_coordinator_string = "הוספת רכז/ת";
+    const work_field_select_string = "תחום הרכז/ת";
+
+    /**
+     * on chagen function for the work fields select
+     * @param event the affected element
+     */
+    const workFieldSelectedOnChange = (event) => {
+        setWorkFieldSelect(event.target.value)
+    }
 
     return (
         <React.Fragment>
@@ -191,7 +201,7 @@ function Row(props) {
                             </Grid>
 
                             {/*coordinator info*/}
-                            <Grid sx={{margin: 1}} item xs={12}>
+                            {props.userType !== "SYSTEM_MANAGER" ? (<Grid sx={{margin: 1}} item xs={12}>
                                 <List>
                                     {row.coordinators.map((coordinator) =>
                                         <ListItem>
@@ -201,7 +211,39 @@ function Row(props) {
                                             <Button id={`remove_coordinator_${coordinator.email}`} onClick={() => props.handleOpenRemoveCoordinatorDialog(coordinator.firstName + " " + coordinator.lastName, row.id)} variant="outlined" color="error">{remove_coordinator_button_string}</Button>
                                         </ListItem>)}
                                 </List>
-                            </Grid>
+                            </Grid>) :
+                                (
+                                <Grid sx={{margin: 1}} item xs={12}>
+                                    <Grid container spacing={1}>
+                                        <Grid item xs={12}>
+                                            <FormControl fullWidth>
+                                                <InputLabel >{work_field_select_string}</InputLabel>
+                                                <Select
+                                                    id="work-field-select"
+                                                    value={workFieldSelect}
+                                                    onChange={() => console.log('hi')}
+                                                >
+                                                    {props.workFields.map((workField) => <MenuItem value={workField}>{workField}</MenuItem>)}
+                                                </Select>
+                                            </FormControl>
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <List>
+                                                {row.coordinators.map((coordinator) =>
+                                                    <ListItem>
+                                                        <ListItemText primary={coordinator_name_primary_string} secondary={coordinator.firstName + " " + coordinator.lastName} />
+                                                        <ListItemText primary={coordinator_email_primary_string} secondary={coordinator.email} />
+                                                        <ListItemText primary={coordinator_phone_number_primary_string} secondary={coordinator.phoneNumber} />
+                                                        <Button id={`remove_coordinator_${coordinator.email}`} onClick={() => props.handleOpenRemoveCoordinatorDialog(coordinator.firstName + " " + coordinator.lastName, row.id)} variant="outlined" color="error">{remove_coordinator_button_string}</Button>
+                                                    </ListItem>)}
+                                            </List>
+                                        </Grid>
+                                    </Grid>
+                                </Grid>)
+                            }
+
+
+
 
                             {/*actions*/}
                             <Grid sx={{margin: 1}} item xs={12}>
@@ -400,9 +442,10 @@ export default function SchoolsManagement(props){
     const [searchError, setSearchError] = useState(false);
 
     const [searching, setSearching] = useState(false);
-    const [loaded, setLoaded] = useState(false);
+    const [loaded, setLoaded] = useState(true);
 
-    const [searchedSchoolDetails, setSearchedSchoolDetails] = useState({});
+    const [workFields, setWorkFields] = useState([]);
+    const [searchedSchoolDetails, setSearchedSchoolDetails] = useState(mockSchool);
 
 
     // dialog states
@@ -439,6 +482,10 @@ export default function SchoolsManagement(props){
     useEffect(() => {
         new Connection().getUserSchools(arrangeSchoolCallback)
 
+        if (props.userType === "SYSTEM_MANAGER"){
+            new Connection().getWorkFields(arrangeWorkFields)
+        }
+
         },[]);
 
     /**
@@ -450,8 +497,16 @@ export default function SchoolsManagement(props){
 
             data.result.forEach((element) => setSchools(schools => [...schools,
                 {id: element.second, label: `${element.first} (${element.second})`}]))
-            //
-            //setSchools(data.result); // todo: this once i know how it's passed
+        }
+    }
+
+    /**
+     * arranges the data of the work fields
+     * @param data the data from the server
+     */
+    const arrangeWorkFields = (data) => {
+        if (!data.failure){
+            setWorkFields(data.result)
         }
     }
 
@@ -481,6 +536,21 @@ export default function SchoolsManagement(props){
             setLoaded(false);
             // TODO: get the selected school
         }
+    }
+
+    const arrangeCoordinatorData = (data) => {
+        if (!data.failure){
+
+        }
+    }
+
+    /**
+     * handler function for getting the data of a coordinator of a school under a work field
+     * @param schoolID the id of the school of the coordinator
+     * @param newWorkField the work field of the coordinator is under
+     */
+    const handleWorkFieldChange = (schoolID, newWorkField) => {
+        new Connection().getCoordinatorOfField(schoolID, newWorkField, arrangeCoordinatorData)
     }
 
     // add coordinator functions
@@ -621,28 +691,9 @@ export default function SchoolsManagement(props){
                 {searching ? (<Skeleton variant="rectangular" width={"70%"} height={500} />) : <div/>}
 
                 {loaded ? <Row key={searchedSchoolDetails.id} row={searchedSchoolDetails} handleOpenAddCoordinatorDialog={handleOpenAddCoordinatorDialog}
-                                handleOpenRemoveCoordinatorDialog={handleOpenRemoveCoordinatorDialog}/> : <div/>}
-
-                {/*<TableContainer sx={{width: "70%", marginTop: "1%"}} component={Paper}>*/}
-                {/*    <Table aria-label="collapsible table">*/}
-                {/*        /!*the table head containing the various headers*!/*/}
-                {/*        <TableHead>*/}
-                {/*            <TableRow>*/}
-                {/*                <TableCell/>*/}
-                {/*                <TableCell>{school_id_cell_head_string}</TableCell>*/}
-                {/*                <TableCell>{school_name_cell_head_string}</TableCell>*/}
-                {/*                <TableCell>{school_city_cell_head_string}</TableCell>*/}
-                {/*            </TableRow>*/}
-                {/*        </TableHead>*/}
-                {/*        /!*the body of the table containing the rows*!/*/}
-                {/*        <TableBody>*/}
-                {/*            {schools.map((tableRow) => (*/}
-                {/*                <Row key={tableRow.id} row={tableRow} handleOpenAddCoordinatorDialog={handleOpenAddCoordinatorDialog}*/}
-                {/*                handleOpenRemoveCoordinatorDialog={handleOpenRemoveCoordinatorDialog}/>*/}
-                {/*            ))}*/}
-                {/*        </TableBody>*/}
-                {/*    </Table>*/}
-                {/*</TableContainer>*/}
+                                handleOpenRemoveCoordinatorDialog={handleOpenRemoveCoordinatorDialog}
+                               workFields={workFields}
+                               userType={props.userType}/> : <div/>}
 
                 {/*add coordinator dialog pop up*/}
                 <AddCoordinatorDialog
