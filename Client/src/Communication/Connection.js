@@ -582,6 +582,24 @@ class Connection{
     // SCHOOLS
 
     /**
+     * sends a GET request to get all teh work fields of the system
+     * @param callback a callback function to call once there's a response
+     */
+    getWorkFields(callback){
+        // todo: implement
+    }
+
+    /**
+     * sends a GET request to get the coordinator of a school under a selected field
+     * @param schoolID the id of the school
+     * @param workField the selected work field
+     * @param callback a callback function to call once there's a response
+     */
+    getCoordinatorOfField(schoolID, workField, callback){
+        // todo: implement
+    }
+
+    /**
      * sends a POST request to assign a school to a given user
      * @param assignedTo the user to assign the school to
      * @param schoolID the school to assign to the user
