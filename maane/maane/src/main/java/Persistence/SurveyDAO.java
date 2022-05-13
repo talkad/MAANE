@@ -132,6 +132,17 @@ public class SurveyDAO {
         return res;
     }
 
+    public Response<Integer> getSurveyYear(String surveyID)  {
+        Response<Integer> res;
+
+        if(surveys.containsKey(surveyID))
+            return new Response<>(surveys.get(surveyID).getSecond().getYear(), false, "survey found in cache");
+
+        res = persistence.getSurveyYear(surveyID);
+
+        return res;
+    }
+
     public Response<Boolean> getSurveySubmission(String id)  {
         return persistence.getSurveySubmission(id);
     }
@@ -153,7 +164,7 @@ public class SurveyDAO {
     }
 
     public List<Pair<RuleDTO, Integer>> getRules(String surveyID) {
-        if(ServerContextInitializer.getInstance().isMockMode())
+        if(ServerContextInitializer.getInstance().isTestMode())
             return SurveyDAOMockAdapter.getInstance().getRules(surveyID);
 
         return persistence.getRules(surveyID);
@@ -166,7 +177,7 @@ public class SurveyDAO {
     public List<SurveyAnswersDTO> getAnswers(String surveyId) {
         List<SurveyAnswersDTO> surveyAnswers;
 
-        if(ServerContextInitializer.getInstance().isMockMode())
+        if(ServerContextInitializer.getInstance().isTestMode())
             return SurveyDAOMockAdapter.getInstance().getAnswers(surveyId);
 
 //        if(answers.containsKey(surveyId))
@@ -180,7 +191,7 @@ public class SurveyDAO {
         return surveyAnswers;
     }
 
-    public SurveyAnswersDTO getAnswersPerSchool(String surveyID, int symbol) {
+    public SurveyAnswersDTO getAnswersPerSchool(String surveyID, String symbol) {
         SurveyAnswersDTO surveyAnswers;
 
         surveyAnswers = persistence.getAnswersPerSchool(surveyID, symbol);

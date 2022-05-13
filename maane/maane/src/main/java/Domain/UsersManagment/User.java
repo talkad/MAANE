@@ -2,14 +2,11 @@ package Domain.UsersManagment;
 
 import Communication.DTOs.UserDTO;
 import Domain.CommonClasses.Response;
-import Domain.WorkPlan.WorkPlan;
 import Persistence.DbDtos.UserDBDTO;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class User {
 
@@ -168,8 +165,11 @@ public class User {
     }
 
     public Response<String> hasSchool(String symbol) {
-        if(this.state.getStateEnum() == UserStateEnum.SUPERVISOR || this.state.getStateEnum() == UserStateEnum.SYSTEM_MANAGER) {
+        if(this.state.getStateEnum() == UserStateEnum.SUPERVISOR) {
             return new Response<>(this.workField, false, "all schools access");
+        }
+        else if(this.state.getStateEnum() == UserStateEnum.SYSTEM_MANAGER){
+            return new Response<>("", false, "all schools access");
         }
         else if(this.schools != null && !this.schools.isEmpty() && this.schools.contains(symbol)){
             return new Response<>(this.workField, false, "has school");
@@ -706,7 +706,7 @@ public class User {
             return new Response<>(this.workField, false, "user allowed to get coordinator");
         }
         else {
-            return new Response<>(null, true, "user allowed to get coordinator");
+            return new Response<>(null, true, "user not allowed to get coordinator");
         }
     }
 

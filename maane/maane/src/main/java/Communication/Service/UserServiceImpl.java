@@ -114,8 +114,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public Response<WorkPlanDTO> viewWorkPlan(String currUser, Integer year) {
-        Response<WorkPlanDTO> res = UserController.getInstance().viewWorkPlan(currUser, year);
+    public Response<WorkPlanDTO> viewWorkPlan(String currUser, Integer year, Integer month) {
+        Response<WorkPlanDTO> res = UserController.getInstance().viewWorkPlan(currUser, year, month);
 
         if (res.isFailure())
             log.error("user {} cannot view plan", currUser);
@@ -126,7 +126,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public Response<List<UserDTO>> getAppointedUsers(String currUser) {//todo implement on client side
+    public Response<List<UserDTO>> getAppointedUsers(String currUser) {
         Response<List<UserDTO>> res = UserController.getInstance().getAppointedUsers(currUser);
 
         if (res.isFailure())
@@ -317,6 +317,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         return res;
     }
+
 
 
 }

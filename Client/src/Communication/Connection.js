@@ -387,7 +387,7 @@ class Connection{
 
     /**
      * sends a POST request to add a coordinator to a given school
-     * @param wordField the work field of the coordinator to add
+     * @param workField the work field of the coordinator to add
      * @param firstName the first name of the coordinator to add
      * @param lastName the last name of the coordinator to add
      * @param email the email of the coordinator to add
@@ -395,10 +395,10 @@ class Connection{
      * @param schoolID the school id to which add the new coordinator
      * @param callback a callback function to call once there's a response
      */
-    addCoordinator(wordField, firstName, lastName, email, phoneNumber, schoolID, callback){
+    addCoordinator(workField, firstName, lastName, email, phoneNumber, schoolID, callback){
         this.sendPOST('/data/assignCoordinator',
             {
-                wordField: wordField,
+                workField: workField,
                 firstName: firstName,
                 lastName: lastName,
                 email: email,
@@ -591,21 +591,21 @@ class Connection{
     }
 
     /**
+     * sends a GET request to get the coordinator data of a school under a given work field
+     * @param workField the work field of the coordinator
+     * @param schoolID the school id of the coordinator
+     * @param callback a callback function to call once there's a response
+     */
+    getCoordinatorOfSchool(workField, schoolID, callback){
+        this.sendGET(`/user/getCoordinator/workfield=${workField}&symbol=${schoolID}`, callback)
+    }
+
+    /**
      * sends a GET request to get all teh work fields of the system
      * @param callback a callback function to call once there's a response
      */
     getWorkFields(callback){
-        // todo: implement
-    }
-
-    /**
-     * sends a GET request to get the coordinator of a school under a selected field
-     * @param schoolID the id of the school
-     * @param workField the selected work field
-     * @param callback a callback function to call once there's a response
-     */
-    getCoordinatorOfField(schoolID, workField, callback){
-        // todo: implement
+        this.sendGET(`/user/allWorkFields`, callback)
     }
 
     /**
@@ -644,6 +644,26 @@ class Connection{
      */
     getUserSchools(callback){
         this.sendGET('/data/getUserSchools', callback)
+    }
+
+    // WORK PLAN
+    /**
+     * sends a POST request to generate work plans according to a given plan
+     * @param surveyID the survey id of the survey according to which the work plans will be generated
+     * @param callback a callback function to call once there's a response
+     */
+    generateWorkPlans(surveyID, callback){
+        this.sendPOST('/user/generateSchedule',{
+            surveyID: surveyID,
+        },
+        callback)
+    }
+
+    /**
+     * sends a GET request to get the work plan of the current user in a given year and month
+     */
+    getWorkPlan(year, month, callback){
+        this.sendGET(`/user/viewWorkPlan/year=${year}&month=${month}`, callback)
     }
 
 }

@@ -180,7 +180,7 @@ public class SurveyServiceImpl implements SurveyService {
     }
 
     @Override
-    public Response<AnswersDTO> getAnswers(String username, String surveyID, int symbol) {
+    public Response<AnswersDTO> getAnswers(String username, String surveyID, String symbol) {
         Response<AnswersDTO> res = SurveyController.getInstance().getAnswers(username, surveyID, symbol);
 
         if(res.isFailure())

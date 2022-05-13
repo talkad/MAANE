@@ -70,9 +70,9 @@ public class ProxyBridgeUser implements UserService {
     }
 
     @Override
-    public Response<WorkPlanDTO> viewWorkPlan(String currUser, Integer year) {
+    public Response<WorkPlanDTO> viewWorkPlan(String currUser, Integer year, Integer month) {
         if (real != null) {
-            return real.viewWorkPlan(currUser, year);
+            return real.viewWorkPlan(currUser, year, month);
         }
 
         return new Response<>(null, true, "not implemented");

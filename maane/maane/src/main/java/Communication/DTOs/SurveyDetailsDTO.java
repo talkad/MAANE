@@ -13,4 +13,5 @@ public class SurveyDetailsDTO {
         private String title;
         private String description;
         private String id;
+        private int year;
 }

@@ -1,4 +1,3 @@
-import gematriya from "gematriya";
 
 let currentYear = new Date().getFullYear();
 
@@ -8,7 +7,7 @@ let goal_to_add = {
     describe: "did you ever hear the tragedy of darth palgueis the wise? i thoguht not. it's not a story the jedi would tell you, it's a sith legend",
     weight: 2,
     quarter: 3,
-    year: gematriya(currentYear + 3760 + 1, {punctuate: true, limit: 3}),
+    year: currentYear
 }
 
 describe('Goals management tests', () => {

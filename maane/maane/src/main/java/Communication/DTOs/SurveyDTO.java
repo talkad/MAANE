@@ -2,12 +2,14 @@ package Communication.DTOs;
 
 import Domain.DataManagement.AnswerState.AnswerType;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
 public class SurveyDTO {
 
     private boolean isPublished;
@@ -17,60 +19,6 @@ public class SurveyDTO {
     private List<String> questions;
     private List<List<String>> answers;
     private List<AnswerType> types;
+    private int year;
 
-    public String getTitle() {
-        return title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public List<String> getQuestions() {
-        return questions;
-    }
-
-    public List<List<String>> getAnswers() {
-        return answers;
-    }
-
-    public List<AnswerType> getTypes() {
-        return types;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setQuestions(List<String> questions) {
-        this.questions = questions;
-    }
-
-    public void setAnswers(List<List<String>> answers) {
-        this.answers = answers;
-    }
-
-    public boolean isPublished() {
-        return isPublished;
-    }
-
-    public void setPublished(boolean published) {
-        isPublished = published;
-    }
-
-    public void setTypes(List<AnswerType> types) {
-        this.types = types;
-    }
 }

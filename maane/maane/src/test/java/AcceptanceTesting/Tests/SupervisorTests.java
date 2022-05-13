@@ -154,12 +154,12 @@ public class SupervisorTests extends AcceptanceTests{//todo reset the usercontro
         userBridge.assignSchoolsToUser(supervisorName1, instructorName1, Arrays.asList("1", "2", "3"));
         userBridge.assignSchoolsToUser(supervisorName1, instructorName2, Arrays.asList("4", "5", "6"));
 
-        scheduleBridge.generateSchedule(supervisorName1, res.getResult(), year);
+        scheduleBridge.generateSchedule(supervisorName1, res.getResult());
 
         userBridge.login(instructorName1);
         userBridge.login(instructorName2);
 
-        userBridge.viewWorkPlan(instructorName1, year).getResult().printMe();
-        userBridge.viewWorkPlan(instructorName2, year).getResult().printMe();
+        userBridge.viewWorkPlan(instructorName1, year, -1).getResult().printMe();
+        userBridge.viewWorkPlan(instructorName2, year, -1).getResult().printMe();
     }
 }

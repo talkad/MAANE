@@ -106,4 +106,16 @@ public class DataServiceImpl implements DataService {
         return res;
     }
 
+    @Override
+    public Response<Boolean> resetDB() {
+        Response<Boolean> res = DataController.getInstance().resetDB();
+
+        if (res.isFailure())
+            log.error(res.getErrMsg());
+        else
+            log.info(res.getErrMsg());
+
+        return res;
+    }
+
 }

@@ -1,6 +1,5 @@
 package Persistence;
 
-import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.UserStateEnum;
 import Persistence.DbDtos.UserDBDTO;
@@ -540,7 +539,7 @@ public class UserQueries {
         Connect.createConnection();
         String sql = "TRUNCATE \"Answers\", \"Appointments\", \"MultiChoices\"" +
                 ", \"Questions\", \"Surveys\", \"Rules\", \"Users\"" +
-                ", \"UsersSchools\", \"UsersSurveys\", \"Goals\"";
+                ", \"UsersSchools\", \"UsersSurveys\", \"Goals\", \"WorkPlans\", \"Schools\"";
         PreparedStatement preparedStatement;
         try {
             preparedStatement = Connect.conn.prepareStatement(sql);
@@ -667,7 +666,7 @@ public class UserQueries {
 
     public Response<UserDBDTO> getCoordinator(String symbol, String workField) {
         Connect.createConnection();
-        String sql = "SELECT firstname, lastname, phonenumber, email FROM (\"Users\" JOIN \"UsersSchools\" ON \"Users\".username=\"UsersSchools\".username) WHERE (workfield = ? AND (school = ? AND userstateenum = ?))";
+        String sql = "SELECT \"Users\".firstname, \"Users\".lastname, \"Users\".phonenumber, \"Users\".email FROM (\"Users\" JOIN \"UsersSchools\" ON \"Users\".username=\"UsersSchools\".username) WHERE (workfield = ? AND (school = ? AND userstateenum = ?))";
         PreparedStatement statement;
         try {
             statement = Connect.conn.prepareStatement(sql);

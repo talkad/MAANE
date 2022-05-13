@@ -78,8 +78,11 @@ public class SurveyController {
         Response<Boolean> removalRes;
         Response<Boolean> legalAdd = UserController.getInstance().hasCreatedSurvey(username, surveyDTO.getId());
 
-        if(!legalAdd.getResult())
+        if(!legalAdd.getResult() && !ServerContextInitializer.getInstance().isMockMode())
             return new Response<>("", true, username + " does not create survey " + surveyDTO.getId());
+
+        if(ServerContextInitializer.getInstance().isMockMode())
+            UserController.getInstance().createSurvey(username, surveyDTO.getId());
 
         removalRes = surveyDAO.removeSurvey(surveyDTO.getId());
 
@@ -97,7 +100,7 @@ public class SurveyController {
         if(!legalAdd.getResult())
             return new Response<>(false, true, username + " does not create survey " + surveyID);
 
-        if(!ServerContextInitializer.getInstance().isMockMode())
+        if(!ServerContextInitializer.getInstance().isTestMode())
             UserController.getInstance().notifySurveyCreation(username, surveyID);
 
         return surveyDAO.surveySubmission(surveyID);
@@ -356,7 +359,7 @@ public class SurveyController {
             survey = surveyDAO.getSurvey(surveyID);
 
             if(!survey.isFailure())
-                surveyInfo.add(new SurveyDetailsDTO(survey.getResult().isPublished(), survey.getResult().getTitle(), survey.getResult().getDescription(), surveyID));
+                surveyInfo.add(new SurveyDetailsDTO(survey.getResult().isPublished(), survey.getResult().getTitle(), survey.getResult().getDescription(), surveyID, survey.getResult().getYear()));
             else
                 errMsg.append(surveyID).append("\n");
         }
@@ -438,7 +441,7 @@ public class SurveyController {
      * @param symbol identifier of school
      * @return answers
      */
-    public Response<AnswersDTO> getAnswers(String username, String surveyID, int symbol) {
+    public Response<AnswersDTO> getAnswers(String username, String surveyID, String symbol) {
         FaultDetector faultDetector;
         List<String> actualAnswers;
         Response<Boolean> legalGet = UserController.getInstance().hasCreatedSurvey(username, surveyID);
@@ -569,6 +572,10 @@ public class SurveyController {
 
 
         return new Response<>(survey, false, "OK");
+    }
+
+    public Response<Integer> getSurveyYear(String surveyId) {
+        return surveyDAO.getSurveyYear(surveyId);
     }
 
 }

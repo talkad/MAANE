@@ -1,6 +1,5 @@
 package Communication.Resource;
 
-import Communication.DTOs.SurveyStatsDTO;
 import Communication.Service.Interfaces.DataService;
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
@@ -29,7 +28,7 @@ public class DataController {
                 .body(service.assignCoordinator(sessionHandler.getUsernameByToken(token).getResult(), (String)body.get("workField"), (String)body.get("firstName"), (String)body.get("lastName"), (String)body.get("email"), (String)body.get("phoneNumber"), (String)body.get("school")));
     }
 
-    @PostMapping(value = "/removeCoordinator") //todo aviad
+    @PostMapping(value = "/removeCoordinator")
     public ResponseEntity<Response<Boolean>> removeCoordinator(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object> body){
         return ResponseEntity.ok()
                 .body(service.removeCoordinator(sessionHandler.getUsernameByToken(token).getResult(), (String)body.get("workField"), (String)body.get("school")));
@@ -46,6 +45,12 @@ public class DataController {
     public ResponseEntity<Response<List<Pair<String, String>>>> getUserSchools(@RequestHeader(value = "Authorization") String token){
         return ResponseEntity.ok()
                 .body(service.getUserSchools(sessionHandler.getUsernameByToken(token).getResult()));
+    }
+
+    @PostMapping(value = "/resetDB")
+    public ResponseEntity<Response<Boolean>> resetDB(){
+        return ResponseEntity.ok()
+                .body(service.resetDB());
     }
 
 //    @PostMapping(value = "/insertSchool")

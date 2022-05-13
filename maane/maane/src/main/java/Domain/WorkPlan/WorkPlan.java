@@ -7,8 +7,10 @@ import Domain.UsersManagment.Activity;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Month;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.Vector;
 import java.util.stream.Collectors;
 
 /**

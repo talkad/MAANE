@@ -22,6 +22,8 @@ public class WorkPlanTests {
     @Before
     public void setUp(){
         ServerContextInitializer.getInstance().setMockMode();
+        ServerContextInitializer.getInstance().setTestMode();
+
         workPlan = new WorkPlan(2022);
         goal1 = new Goal(1, "a", "aa", 1, 1, "tech", 2022);
         goal2 = new Goal(2, "b", "bb", 2, 2, "tech", 2022);

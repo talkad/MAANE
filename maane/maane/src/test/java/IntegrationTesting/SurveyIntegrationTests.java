@@ -46,6 +46,7 @@ public class SurveyIntegrationTests {
         surveyDTO = new SurveyDTO();
         surveyDAO.clearCache();
         ServerContextInitializer.getInstance().setMockMode();
+        ServerContextInitializer.getInstance().setTestMode();
         UserQueries.getInstance().clearDB();
         UserController.getInstance().clearUsers();
 

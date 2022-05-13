@@ -19,7 +19,7 @@ public interface UserService {
 
     Response<Boolean> removeUser(String currUser, String userToRemove);
 
-    Response<WorkPlanDTO> viewWorkPlan(String currUser, Integer year);
+    Response<WorkPlanDTO> viewWorkPlan(String currUser, Integer year, Integer month);
 
     Response<List<UserDTO>> getAppointedUsers(String currUser);
 
@@ -58,4 +58,5 @@ public interface UserService {
     Response<UserDBDTO> getCoordinator(String currUser, String workField, String symbol);
 
     Response<List<String>> allWorkFields(String currUser);
+
 }

@@ -19,6 +19,8 @@ public class DataControllerTests {
     @Before
     public void setup(){
         ServerContextInitializer.getInstance().setMockMode();
+        ServerContextInitializer.getInstance().setTestMode();
+
         UserQueries.getInstance().clearDB();
 
         UserController.getInstance().clearUsers();

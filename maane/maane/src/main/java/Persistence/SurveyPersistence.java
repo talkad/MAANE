@@ -16,6 +16,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -23,6 +24,8 @@ import java.util.List;
 @Repository
 @Slf4j
 public class SurveyPersistence {
+
+
 
 
     private static class CreateSafeThreadSingleton {
@@ -63,6 +66,31 @@ public class SurveyPersistence {
 
         return rows>0 ? new Response<>(true, false, "") :
                 new Response<>(false, true, "bad Db writing");
+    }
+
+    public Response<Integer> getSurveyYear(String surveyID) {
+        int year = -1;
+
+        Connect.createConnection();
+        String sqlSurvey = "SELECT year FROM \"Surveys\" WHERE id = ?";
+        try {
+            PreparedStatement statement = Connect.conn.prepareStatement(sqlSurvey);
+            statement.setString(1, surveyID);
+            ResultSet resultSurvey = statement.executeQuery();
+
+            if (resultSurvey.next()) {
+                year = resultSurvey.getInt("year");
+
+                Connect.closeConnection();
+            } else {
+                Connect.closeConnection();
+                return new Response<>(year, true, "failed to get survey");
+            }
+
+            return new Response<>(year, false, "survey loaded successfully");
+        } catch(SQLException e) {
+            return new Response<>(year, true, "Failed to get survey");
+        }
     }
 
     public Response<Boolean> removeSurvey(String surveyID) {
@@ -117,12 +145,13 @@ public class SurveyPersistence {
 
     public Response<Boolean> surveySubmission(String surveyID) {
         Connect.createConnection();
-        String sql = "UPDATE \"Surveys\" SET submit=TRUE  WHERE id=?;\n";
+        String sql = "UPDATE \"Surveys\" SET submit=TRUE, year=?  WHERE id=?;\n";
         PreparedStatement preparedStatement;
         try {
             preparedStatement = Connect.conn.prepareStatement(sql);
 
-            preparedStatement.setString(1, surveyID);
+            preparedStatement.setInt(1, Calendar.getInstance().get(Calendar.YEAR));
+            preparedStatement.setString(2, surveyID);
             preparedStatement.executeUpdate();
             Connect.closeConnection();
 
@@ -414,13 +443,38 @@ public class SurveyPersistence {
             preparedStatement.setInt(5, dto.getQuestionID());
             preparedStatement.setString(6, dto.getAnswers().toString());
             preparedStatement.setInt(7, parent_id);
-            preparedStatement.execute();
+            preparedStatement.executeUpdate();
+
+            if(dto.getSubRules() != null) {
+                for (RuleDTO rule : dto.getSubRules()) {
+                    insertSubRule(survey_id, goalID, rule, getMaxRuleIndex());
+                }
+            }
 
             log.info("DB: added  sub rules successfully");
 
         } catch (SQLException e) {
             log.error("DB: failed to add sub rules \n" + e.getMessage());
         }
+    }
+
+    private int getMaxRuleIndex(){
+        int maxID = 0;
+
+        String sql = "SELECT MAX(id) FROM \"Rules\"";
+        PreparedStatement statement;
+        try {
+            statement = Connect.conn.prepareStatement(sql);
+
+            ResultSet result = statement.executeQuery();
+            if(result.next())
+                maxID = result.getInt(1);
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+        return maxID;
     }
 
     public Response<Boolean> removeRule (int ruleID) {
@@ -624,7 +678,7 @@ public class SurveyPersistence {
         return output;
     }
 
-    public SurveyAnswersDTO getAnswersPerSchool(String surveyID, int symbol) {
+    public SurveyAnswersDTO getAnswersPerSchool(String surveyID, String symbol) {
         Connect.createConnection();
         String query = "SELECT * FROM \"Answers\" WHERE survey_id = ? AND school_symbol = ?";
         PreparedStatement statement;
@@ -634,11 +688,11 @@ public class SurveyPersistence {
 
             statement = Connect.conn.prepareStatement(query);
             statement.setString(1, surveyID);
-            statement.setString(2, symbol+"");
+            statement.setString(2, symbol);
             ResultSet result = statement.executeQuery();
 
             if (result.next()) {
-                symbol = result.getInt("school_symbol");
+                symbol = result.getString("school_symbol");
                 String answer = result.getString("answer");
                 String answerType = result.getString("answer_type");
 

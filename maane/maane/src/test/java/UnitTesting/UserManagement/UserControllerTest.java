@@ -30,6 +30,8 @@ public class UserControllerTest {
     public void setup(){
         this.passwordEncoder = new BCryptPasswordEncoder();
         ServerContextInitializer.getInstance().setMockMode();
+        ServerContextInitializer.getInstance().setTestMode();
+
 /*        if(!UserControllerTest.initialized){
             //setInitialization();
         }*/

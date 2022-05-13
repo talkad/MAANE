@@ -44,11 +44,15 @@ public class SurveyControllerTests {
     @Before
     public void setUp(){
         ServerContextInitializer.getInstance().setMockMode();
+        ServerContextInitializer.getInstance().setTestMode();
+
         MockitoAnnotations.openMocks(this);
 
         surveyDTO = new SurveyDTO();
         surveyDAO.clearCache();
         ServerContextInitializer.getInstance().setMockMode();
+        ServerContextInitializer.getInstance().setTestMode();
+
         UserQueries.getInstance().clearDB();
         UserController.getInstance().clearUsers();
 

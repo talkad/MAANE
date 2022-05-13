@@ -76,5 +76,15 @@ public class ProxyBridgeData implements DataService {//todo tests for this class
             return real.getUserSchools(username);
         }
 
-        return new Response<>(null, true, "not implemented");    }
+        return new Response<>(null, true, "not implemented");
+    }
+
+    @Override
+    public Response<Boolean> resetDB() {
+        if (real != null){
+            return real.resetDB();
+        }
+
+        return new Response<>(null, true, "not implemented");
+    }
 }

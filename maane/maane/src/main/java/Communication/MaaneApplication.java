@@ -6,11 +6,12 @@ import Communication.DTOs.UserDTO;
 import Communication.Initializer.ServerContextInitializer;
 import Communication.Service.UserServiceImpl;
 import Domain.DataManagement.AnswerState.AnswerType;
-import Domain.DataManagement.FaultDetector.Rules.*;
+import Domain.DataManagement.DataController;
+import Domain.DataManagement.SurveyController;
 import Domain.UsersManagment.UserController;
 import Domain.UsersManagment.UserStateEnum;
-import Persistence.GoalsQueries;
-import Persistence.SurveyDAO;
+import Domain.WorkPlan.GoalsManagement;
+import Persistence.DbDtos.SchoolDBDTO;
 import Persistence.UserQueries;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -24,6 +25,7 @@ import org.springframework.security.web.session.HttpSessionEventPublisher;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Vector;
 
 @SpringBootApplication
 public class MaaneApplication {
@@ -57,18 +59,47 @@ public class MaaneApplication {
 				UserController userController = UserController.getInstance();
 				userController.login("admin");
 
-				service.registerUserBySystemManager("admin", new UserDTO("admin", "tech", "tal", "1234", UserStateEnum.SUPERVISOR,
-						"tal", "kad", "tal@gmail.com", "055-555-5555", "", null), "");
+				service.registerUserBySystemManager("admin", new UserDTO("admin", "tech", "ronit", "1234abcd", UserStateEnum.SUPERVISOR,
+						"ronit", "newe", "ronit@gmail.com", "055-555-5555", "", null), "");
+
+				service.registerUserBySystemManager("admin", new UserDTO("admin", "tech", "tal", "1234abcd", UserStateEnum.INSTRUCTOR,
+						"tal", "kad", "tal@gmail.com", "055-555-5555", "", null), "ronit");
+
+				service.registerUserBySystemManager("admin", new UserDTO("admin", "tech", "shaked", "1234abcd", UserStateEnum.INSTRUCTOR,
+						"shaked", "ch", "shaked@gmail.com", "055-555-5555", "", null), "ronit");
+
+				DataController.getInstance().insertSchool(new SchoolDBDTO("1111111", "testing school", "beer sheva", "", "", "", "", "", "", "", "", 1000000, "", "", "", "", 30));
+
+				DataController.getInstance().insertSchool(new SchoolDBDTO("2222222", "testing school2", "beer sheva", "", "", "", "", "", "", "", "", 1000000, "", "", "", "", 31));
+
+				DataController.getInstance().insertSchool(new SchoolDBDTO("3333333", "testing school3", "beer sheva", "", "", "", "", "", "", "", "", 1000000, "", "", "", "", 32));
+
+
+				DataController.getInstance().assignCoordinator("admin", "tech", "aviad", "shal", "aviad@gmail.com", "0555555555", "1111111");
 
 				userController.logout("admin");
 
+				userController.login("ronit");
+
+				List<String> school1 = new Vector<>();
+				List<String> school2 = new Vector<>();
+				List<String> school3 = new Vector<>();
+				school1.add("1111111");
+				school2.add("2222222");
+				school3.add("33333333");
+
+				userController.assignSchoolsToUser("ronit", "tal", school1);
+				userController.assignSchoolsToUser("ronit", "shaked", school2);
+				userController.assignSchoolsToUser("ronit", "shaked", school3);
+
+
 				// create survey
-				SurveyDTO surveyDTO = new SurveyDTO(true, "1111", "title", "description",
+				SurveyDTO surveyDTO = new SurveyDTO(false, "1111", "title", "description",
 						Arrays.asList("symbol", "open?", "numeric?", "multiple choice?"),
 						Arrays.asList(new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), Arrays.asList("correct", "wrong")),
-						Arrays.asList(AnswerType.NUMERIC_ANSWER, AnswerType.OPEN_ANSWER, AnswerType.NUMERIC_ANSWER, AnswerType.MULTIPLE_CHOICE));
+						Arrays.asList(AnswerType.NUMERIC_ANSWER, AnswerType.OPEN_ANSWER, AnswerType.NUMERIC_ANSWER, AnswerType.MULTIPLE_CHOICE), 2022);
 
-				SurveyDAO.getInstance().insertSurvey(surveyDTO);
+				SurveyController.getInstance().createSurvey("ronit", surveyDTO);
 
 				// create goals
 				GoalDTO goalDTO1 = new GoalDTO(555, "yahad1", "", 1,
@@ -76,33 +107,40 @@ public class MaaneApplication {
 				GoalDTO goalDTO2 = new GoalDTO(666, "yahad2", "", 2,
 						10, "tech",2022);
 
-				GoalsQueries.getInstance().insertGoalMock(goalDTO1);
-				GoalsQueries.getInstance().insertGoalMock(goalDTO2);
-
-				// create rules
-				Rule rule1 = new AndRule(Arrays.asList(new NumericBaseRule(2, Comparison.EQUAL, 30),
-														new MultipleChoiceBaseRule(3, List.of(1))));
-				Rule rule2 = new NumericBaseRule(2, Comparison.EQUAL, 30);
-
-				SurveyDAO.getInstance().insertRule("1111", 555, rule1.getDTO());
-				SurveyDAO.getInstance().insertRule("1111", 666, rule2.getDTO());
-
-				// add answers
-				SurveyDAO.getInstance().insertCoordinatorAnswers("1111", "01234",
-						new LinkedList<>(Arrays.asList("open ans", "20", "0")),
-						new LinkedList<>(Arrays.asList(AnswerType.OPEN_ANSWER, AnswerType.NUMERIC_ANSWER, AnswerType.MULTIPLE_CHOICE)));
-
-				SurveyDAO.getInstance().insertCoordinatorAnswers("1111", "56789",
-						new LinkedList<>(Arrays.asList("open ans", "40", "1")),
-						new LinkedList<>(Arrays.asList(AnswerType.OPEN_ANSWER, AnswerType.NUMERIC_ANSWER, AnswerType.MULTIPLE_CHOICE)));
-				// create another survey
-				surveyDTO = new SurveyDTO(true, "2222", "title", "description",
-						Arrays.asList("symbol", "open?", "numeric?", "multiple choice?"),
-						Arrays.asList(new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), Arrays.asList("correct", "wrong")),
-						Arrays.asList(AnswerType.NUMERIC_ANSWER, AnswerType.OPEN_ANSWER, AnswerType.NUMERIC_ANSWER, AnswerType.MULTIPLE_CHOICE));
+				GoalsManagement.getInstance().addGoalToField("tech", goalDTO1, 2022);
+				GoalsManagement.getInstance().addGoalToField("tech", goalDTO2, 2022);
 
 
-				SurveyDAO.getInstance().insertSurvey(surveyDTO);
+//				// create rules
+//				Rule rule1 = new AndRule(Arrays.asList(new NumericBaseRule(2, Comparison.EQUAL, 30),
+//														new MultipleChoiceBaseRule(3, List.of(1))));
+//				Rule rule2 = new NumericBaseRule(2, Comparison.EQUAL, 30);
+//
+//				SurveyDAO.getInstance().insertRule("1111", 555, rule1.getDTO());
+//				SurveyDAO.getInstance().insertRule("1111", 666, rule2.getDTO());
+//
+
+				// submit survey
+				SurveyController.getInstance().submitSurvey("tal", "1111");
+
+//				// add answers
+//				SurveyDAO.getInstance().insertCoordinatorAnswers("1111", "01234",
+//						new LinkedList<>(Arrays.asList("open ans", "20", "0")),
+//						new LinkedList<>(Arrays.asList(AnswerType.OPEN_ANSWER, AnswerType.NUMERIC_ANSWER, AnswerType.MULTIPLE_CHOICE)));
+//
+//				SurveyDAO.getInstance().insertCoordinatorAnswers("1111", "56789",
+//						new LinkedList<>(Arrays.asList("open ans", "40", "1")),
+//						new LinkedList<>(Arrays.asList(AnswerType.OPEN_ANSWER, AnswerType.NUMERIC_ANSWER, AnswerType.MULTIPLE_CHOICE)));
+//				// create another survey
+//				surveyDTO = new SurveyDTO(true, "2222", "title", "description",
+//						Arrays.asList("symbol", "open?", "numeric?", "multiple choice?"),
+//						Arrays.asList(new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), Arrays.asList("correct", "wrong")),
+//						Arrays.asList(AnswerType.NUMERIC_ANSWER, AnswerType.OPEN_ANSWER, AnswerType.NUMERIC_ANSWER, AnswerType.MULTIPLE_CHOICE));
+//
+//
+//				SurveyDAO.getInstance().insertSurvey(surveyDTO);
+
+				userController.logout("ronit");
 
 			}
 
