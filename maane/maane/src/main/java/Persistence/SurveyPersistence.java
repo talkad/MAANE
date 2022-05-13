@@ -414,13 +414,38 @@ public class SurveyPersistence {
             preparedStatement.setInt(5, dto.getQuestionID());
             preparedStatement.setString(6, dto.getAnswers().toString());
             preparedStatement.setInt(7, parent_id);
-            preparedStatement.execute();
+            preparedStatement.executeUpdate();
+
+            if(dto.getSubRules() != null) {
+                for (RuleDTO rule : dto.getSubRules()) {
+                    insertSubRule(survey_id, goalID, rule, getMaxRuleIndex());
+                }
+            }
 
             log.info("DB: added  sub rules successfully");
 
         } catch (SQLException e) {
             log.error("DB: failed to add sub rules \n" + e.getMessage());
         }
+    }
+
+    private int getMaxRuleIndex(){
+        int maxID = 0;
+
+        String sql = "SELECT MAX(id) FROM \"Rules\"";
+        PreparedStatement statement;
+        try {
+            statement = Connect.conn.prepareStatement(sql);
+
+            ResultSet result = statement.executeQuery();
+            if(result.next())
+                maxID = result.getInt(1);
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+        return maxID;
     }
 
     public Response<Boolean> removeRule (int ruleID) {

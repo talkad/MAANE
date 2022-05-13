@@ -57,6 +57,7 @@ export default function WorkPlan(){
                     {/* TODO: for some reason when changing the calendar to weekly/daily/agenda it shows nothing*/}
                     {/* TODO: the toolbar of the calendar is in english. need to change it to hebrew */}
                     <Calendar
+                        id={'work-plan-calendar'}
                         localizer={localizer}
                         events={myEventsList}
                         startAccessor="start"
