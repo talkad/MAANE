@@ -24,6 +24,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.Period;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -236,7 +239,7 @@ public class UserController {
     }
 
     public Response<String> registerUserBySystemManager(String currUser, String userToRegister, String password, UserStateEnum userStateEnum, String optionalSupervisor, String workField, String firstName, String lastName, String email, String phoneNumber, String city){
-        if(!ServerContextInitializer.getInstance().isTestMode() && isValidPassword(password))
+        if(!ServerContextInitializer.getInstance().isTestMode() && !isValidPassword(password))
             return new Response<>("", true, "The password isn't strong enough");
 
         if(email.length() != 0 && !isValidEmailAddress(email))
@@ -642,7 +645,7 @@ public class UserController {
     }
 
     public Response<Boolean> changePassword(String currUser, String currPassword, String newPassword, String confirmPassword){
-        if(!ServerContextInitializer.getInstance().isTestMode() && isValidPassword(newPassword))
+        if(!ServerContextInitializer.getInstance().isTestMode() && !isValidPassword(newPassword))
             return new Response<>(false, true, "The password isn't strong enough");
 
         if(connectedUsers.containsKey(currUser)) {
@@ -816,7 +819,7 @@ public class UserController {
             User user = connectedUsers.get(username);
             Response<String> response = user.publishSurvey();
             if(!response.isFailure()){
-                emailController.sendEmail(response.getResult(), "http://localhot:8080/survey/getSurvey/surveyID={" + surveyToken + "}");
+                emailController.sendEmail(response.getResult(), "http://localhot:8080/survey/getSurvey/surveyID=" + surveyToken);
             }
         }
 /*        else {
@@ -853,22 +856,35 @@ public class UserController {
         }
     }
 
-    public Response<WorkPlanDTO> viewWorkPlan(String currUser, Integer year){
-        if(connectedUsers.containsKey(currUser)) {
-            User user = connectedUsers.get(currUser);
-            //return new Response<>(workPlanDAO.getUserWorkPlanByYear(currUser, year).getResult(), false, "");
-            Response<Boolean> workPlanResponse = user.getWorkPlanByYear(year);
-            if(!workPlanResponse.isFailure()){
-                return workPlanDAO.getUserWorkPlanByYear(currUser, year);// generateWpDTO(user, year);
-                //return new Response<>(workPlanDTO, false, "successfully acquired work plan");
-            }
-            else{
-                return new Response<>(null, true, workPlanResponse.getErrMsg());
-            }
-        }
-        else {
-            return new Response<>(null, true, "User not connected");
-        }
+    public Response<WorkPlanDTO> viewWorkPlan(String currUser, Integer year, Integer month){
+        WorkPlanDTO workPlanDTO = new WorkPlanDTO();
+        List<Pair<LocalDateTime, ActivityDTO>> l = new LinkedList<>();
+
+        l.add(new Pair<>(LocalDateTime.of(2022, Month.MAY, 15, 10, 0, 0), new ActivityDTO("2222222", "בטיחות במעבדה 1")));
+        l.add(new Pair<>(LocalDateTime.of(2022, Month.MAY, 15, 12, 0, 0), new ActivityDTO("2222222", "בטיחות במעבדה 1")));
+
+        l.add(new Pair<>(LocalDateTime.of(2022, Month.MAY, 18, 10, 0, 0), new ActivityDTO("2222222", "בטיחות במעבדה 2")));
+
+        workPlanDTO.setCalendar(l);
+
+        return new Response<>(workPlanDTO, false, "HI THERE!");
+
+        //todo: fix it
+//        if(connectedUsers.containsKey(currUser)) {
+//            User user = connectedUsers.get(currUser);
+//            //return new Response<>(workPlanDAO.getUserWorkPlanByYear(currUser, year).getResult(), false, "");
+//            Response<Boolean> workPlanResponse = user.getWorkPlanByYear(year);
+//            if(!workPlanResponse.isFailure()){
+//                return workPlanDAO.getUserWorkPlanByYear(currUser, year);// generateWpDTO(user, year);
+//                //return new Response<>(workPlanDTO, false, "successfully acquired work plan");
+//            }
+//            else{
+//                return new Response<>(null, true, workPlanResponse.getErrMsg());
+//            }
+//        }
+//        else {
+//            return new Response<>(null, true, "User not connected");
+//        }
     }
 
 /*    private WorkPlanDTO generateWpDTO(User user, String year) {

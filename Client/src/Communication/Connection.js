@@ -646,6 +646,26 @@ class Connection{
         this.sendGET('/data/getUserSchools', callback)
     }
 
+    // WORK PLAN
+    /**
+     * sends a POST request to generate work plans according to a given plan
+     * @param surveyID the survey id of the survey according to which the work plans will be generated
+     * @param callback a callback function to call once there's a response
+     */
+    generateWorkPlans(surveyID, callback){
+        this.sendPOST('/user/generateSchedule',{
+            surveyID: surveyID,
+        },
+        callback)
+    }
+
+    /**
+     * sends a GET request to get the work plan of the current user in a given year and month
+     */
+    getWorkPlan(year, month, callback){
+        this.sendGET(`/user/viewWorkPlan/year=${year}&month=${month}`, callback)
+    }
+
 }
 
 Connection._instance = null;

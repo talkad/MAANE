@@ -2,14 +2,11 @@ package Domain.UsersManagment;
 
 import Communication.DTOs.UserDTO;
 import Domain.CommonClasses.Response;
-import Domain.WorkPlan.WorkPlan;
 import Persistence.DbDtos.UserDBDTO;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class User {
 

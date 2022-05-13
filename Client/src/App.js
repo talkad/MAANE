@@ -89,11 +89,7 @@ function App(){
         let current_type = window.sessionStorage.getItem('permission');
         if(!window.sessionStorage.getItem('schools')) {
             if((current_type === "INSTRUCTOR" || current_type === "SUPERVISOR" || current_type === "SYSTEM_MANAGER")){
-                console.log('sent for the schools')
-                setTimeout(() => {
-                    new Connection().getUserSchools(arrangeSchools)
-                }, 2000)
-
+                new Connection().getUserSchools(arrangeSchools)
             }
         }
 

@@ -34,7 +34,12 @@ public class AnnualScheduleGenerator {
         return CreateSafeThreadSingleton.INSTANCE;
     }
 
-    public Response<Boolean> generateSchedule(String supervisor, String surveyId, Integer year){
+    public Response<Boolean> generateSchedule(String supervisor, String surveyId){
+
+        Response<Integer> yearRes = surveyController.getSurveyYear(surveyId);
+
+        if(yearRes.isFailure())
+            return new Response<>(false, true, "survey does not exist");
 
         Response<List<SurveyAnswers>> surveyRes = surveyController.getAnswersForSurvey(surveyId);
         String workField;
@@ -43,9 +48,9 @@ public class AnnualScheduleGenerator {
             if(!workFieldRes.isFailure()){
 
                 workField = workFieldRes.getResult();
-                Response<List<Goal>> goalsRes = goalsManagement.getGoals(workField, year);
+                Response<List<Goal>> goalsRes = goalsManagement.getGoals(workField, yearRes.getResult());
                 if(!goalsRes.isFailure()){
-                    algorithm(supervisor, surveyId, workField, goalsRes.getResult(), year);//todo
+                    algorithm(supervisor, surveyId, workField, goalsRes.getResult(), yearRes.getResult());//todo
                 }
                 else{
                     return new Response<>(false, true, goalsRes.getErrMsg());

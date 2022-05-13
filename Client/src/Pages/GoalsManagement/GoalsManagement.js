@@ -131,6 +131,7 @@ function NewGoalForm(props) {
         // calculating the numeric hebrew years
         let years_range = [];
         let currentYear = new Date().getFullYear();
+       
 
         let delta = -7;
 

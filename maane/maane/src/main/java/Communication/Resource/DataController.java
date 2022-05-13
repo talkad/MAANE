@@ -1,6 +1,5 @@
 package Communication.Resource;
 
-import Communication.DTOs.SurveyStatsDTO;
 import Communication.Service.Interfaces.DataService;
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;

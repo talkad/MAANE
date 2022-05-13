@@ -359,7 +359,7 @@ public class SurveyController {
             survey = surveyDAO.getSurvey(surveyID);
 
             if(!survey.isFailure())
-                surveyInfo.add(new SurveyDetailsDTO(survey.getResult().isPublished(), survey.getResult().getTitle(), survey.getResult().getDescription(), surveyID));
+                surveyInfo.add(new SurveyDetailsDTO(survey.getResult().isPublished(), survey.getResult().getTitle(), survey.getResult().getDescription(), surveyID, survey.getResult().getYear()));
             else
                 errMsg.append(surveyID).append("\n");
         }
@@ -572,6 +572,10 @@ public class SurveyController {
 
 
         return new Response<>(survey, false, "OK");
+    }
+
+    public Response<Integer> getSurveyYear(String surveyId) {
+        return surveyDAO.getSurveyYear(surveyId);
     }
 
 }

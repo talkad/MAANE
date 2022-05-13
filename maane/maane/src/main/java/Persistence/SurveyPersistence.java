@@ -16,6 +16,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -23,6 +24,8 @@ import java.util.List;
 @Repository
 @Slf4j
 public class SurveyPersistence {
+
+
 
 
     private static class CreateSafeThreadSingleton {
@@ -63,6 +66,31 @@ public class SurveyPersistence {
 
         return rows>0 ? new Response<>(true, false, "") :
                 new Response<>(false, true, "bad Db writing");
+    }
+
+    public Response<Integer> getSurveyYear(String surveyID) {
+        int year = -1;
+
+        Connect.createConnection();
+        String sqlSurvey = "SELECT year FROM \"Surveys\" WHERE id = ?";
+        try {
+            PreparedStatement statement = Connect.conn.prepareStatement(sqlSurvey);
+            statement.setString(1, surveyID);
+            ResultSet resultSurvey = statement.executeQuery();
+
+            if (resultSurvey.next()) {
+                year = resultSurvey.getInt("year");
+
+                Connect.closeConnection();
+            } else {
+                Connect.closeConnection();
+                return new Response<>(year, true, "failed to get survey");
+            }
+
+            return new Response<>(year, false, "survey loaded successfully");
+        } catch(SQLException e) {
+            return new Response<>(year, true, "Failed to get survey");
+        }
     }
 
     public Response<Boolean> removeSurvey(String surveyID) {
@@ -117,12 +145,13 @@ public class SurveyPersistence {
 
     public Response<Boolean> surveySubmission(String surveyID) {
         Connect.createConnection();
-        String sql = "UPDATE \"Surveys\" SET submit=TRUE  WHERE id=?;\n";
+        String sql = "UPDATE \"Surveys\" SET submit=TRUE, year=?  WHERE id=?;\n";
         PreparedStatement preparedStatement;
         try {
             preparedStatement = Connect.conn.prepareStatement(sql);
 
-            preparedStatement.setString(1, surveyID);
+            preparedStatement.setInt(1, Calendar.getInstance().get(Calendar.YEAR));
+            preparedStatement.setString(2, surveyID);
             preparedStatement.executeUpdate();
             Connect.closeConnection();
 

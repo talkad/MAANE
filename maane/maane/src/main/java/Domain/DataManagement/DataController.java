@@ -3,8 +3,6 @@ package Domain.DataManagement;
 
 import Communication.DTOs.GoalDTO;
 import Communication.DTOs.SurveyDTO;
-import Communication.DTOs.UserDTO;
-import Communication.Initializer.ServerContextInitializer;
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.AnswerState.AnswerType;
@@ -21,6 +19,7 @@ import Persistence.UserQueries;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Vector;
 
 public class DataController {
 
@@ -147,14 +146,26 @@ public class DataController {
         assignCoordinator("admin", "tech", "aviad", "shal", "aviad@gmail.com", "0555555555", "1111111");
 
         userController.logout("admin");
+        userController.login("ronit");
+
+        List<String> school1 = new Vector<>();
+        List<String> school2 = new Vector<>();
+        List<String> school3 = new Vector<>();
+        school1.add("1111111");
+        school2.add("2222222");
+        school3.add("33333333");
+
+        userController.assignSchoolsToUser("ronit", "tal", school1);
+        userController.assignSchoolsToUser("ronit", "shaked", school2);
+        userController.assignSchoolsToUser("ronit", "shaked", school3);
 
         // create survey
         SurveyDTO surveyDTO = new SurveyDTO(true, "1111", "title", "description",
-                Arrays.asList("symbol", "open?", "numeric?", "multiple choice?"),
-                Arrays.asList(new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), Arrays.asList("correct", "wrong")),
-                Arrays.asList(AnswerType.NUMERIC_ANSWER, AnswerType.OPEN_ANSWER, AnswerType.NUMERIC_ANSWER, AnswerType.MULTIPLE_CHOICE));
+        Arrays.asList("symbol", "open?", "numeric?", "multiple choice?"),
+        Arrays.asList(new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), Arrays.asList("correct", "wrong")),
+        Arrays.asList(AnswerType.NUMERIC_ANSWER, AnswerType.OPEN_ANSWER, AnswerType.NUMERIC_ANSWER, AnswerType.MULTIPLE_CHOICE), 2022);
 
-        SurveyDAO.getInstance().insertSurvey(surveyDTO);
+        SurveyController.getInstance().createSurvey("ronit", surveyDTO);
 
         // create goals
         GoalDTO goalDTO1 = new GoalDTO(555, "yahad1", "", 1,
@@ -173,6 +184,9 @@ public class DataController {
         SurveyDAO.getInstance().insertRule("1111", 555, rule1.getDTO());
         SurveyDAO.getInstance().insertRule("1111", 666, rule2.getDTO());
 
+        // submit survey
+        SurveyController.getInstance().submitSurvey("tal", "1111");
+
         // add answers
         SurveyDAO.getInstance().insertCoordinatorAnswers("1111", "01234",
                 new LinkedList<>(Arrays.asList("open ans", "20", "0")),
@@ -185,10 +199,11 @@ public class DataController {
         surveyDTO = new SurveyDTO(true, "2222", "title", "description",
                 Arrays.asList("symbol", "open?", "numeric?", "multiple choice?"),
                 Arrays.asList(new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), Arrays.asList("correct", "wrong")),
-                Arrays.asList(AnswerType.NUMERIC_ANSWER, AnswerType.OPEN_ANSWER, AnswerType.NUMERIC_ANSWER, AnswerType.MULTIPLE_CHOICE));
-
+                Arrays.asList(AnswerType.NUMERIC_ANSWER, AnswerType.OPEN_ANSWER, AnswerType.NUMERIC_ANSWER, AnswerType.MULTIPLE_CHOICE), 2022);
 
         SurveyDAO.getInstance().insertSurvey(surveyDTO);
+        userController.logout("ronit");
+
         return new Response<>(true, false, "reset db");
     }
 

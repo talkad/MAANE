@@ -7,10 +7,8 @@ import Domain.UsersManagment.UserController;
 import Domain.UsersManagment.UserStateEnum;
 import Domain.WorkPlan.AnnualScheduleGenerator;
 import Domain.WorkPlan.GoalsManagement;
-import Persistence.UserQueries;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.List;
 import java.util.Vector;
@@ -73,7 +71,7 @@ public class AnnualScheduleGeneratorTest {
         String workField = userController.getUser(supervisorName).getWorkField();
         AnnualScheduleGenerator.getInstance().algorithmMock(supervisorName, schoolsAndFaults, workField, GoalsManagement.getInstance().getGoals(workField, year).getResult(), year);
         userController.login("ins1");
-        userController.viewWorkPlan(instructorName, year).getResult().printMe();
+        userController.viewWorkPlan(instructorName, year, -1).getResult().printMe();
         //userController.getUser(instructorName).getWorkPlanByYear(year).getResult().printMe();
     }
 

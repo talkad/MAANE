@@ -1,6 +1,5 @@
 package Persistence;
 
-import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.UserStateEnum;
 import Persistence.DbDtos.UserDBDTO;
@@ -540,7 +539,7 @@ public class UserQueries {
         Connect.createConnection();
         String sql = "TRUNCATE \"Answers\", \"Appointments\", \"MultiChoices\"" +
                 ", \"Questions\", \"Surveys\", \"Rules\", \"Users\"" +
-                ", \"UsersSchools\", \"UsersSurveys\", \"Goals\"";
+                ", \"UsersSchools\", \"UsersSurveys\", \"Goals\", \"WorkPlans\", \"Schools\"";
         PreparedStatement preparedStatement;
         try {
             preparedStatement = Connect.conn.prepareStatement(sql);

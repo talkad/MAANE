@@ -204,6 +204,33 @@ export default function SurveyMenu(props){
         navigate(`../../user/auth`, {replace: true})
     }
 
+    // genererate work plans
+
+    /**
+     * a call back function which handles the response from the server regarding the request to generate work plans
+     * @param data the data from the server
+     */
+    const generateWorkPlansCallback = (data) => {
+        if (!data.failure){
+            setSnackbarSeverity('success');
+            setSnackbarMessage('המערכות נוצרו בהצלחה');
+            setOpenSnackbar(true);
+        }
+        else{
+            setSnackbarSeverity('error');
+            setSnackbarMessage('אירעה תקלה. אנא נסה/י שנית');
+            setOpenSnackbar(true);
+        }
+    }
+
+    /**
+     * handler for sending a request to generate work plans acacording to a given survey
+     * @param surveyID the survey id of the survey according to which the work plans will be generated
+     */
+    const handleGenerateWorkPlans = (surveyID) => {
+        new Connection().generateWorkPlans(surveyID, generateWorkPlansCallback);
+    }
+
 
     return (
         <Space.Fill>
@@ -240,6 +267,7 @@ export default function SurveyMenu(props){
                                             <Button color={'secondary'} size={'medium'} disabled={y.isPublished} onClick={() => navigate(`../rules?surveyID=${y.id}`, {replace: false})}>עריכת חוקים</Button>
                                             {y.isPublished && <Button color="secondary" size="medium" onClick={() => navigate(`../surveyResults?surveyID=${y.id}`, {replace: true})}>צפייה בתשובות</Button>}
                                             {!y.isPublished && <Button color={'secondary'} size={'medium'} onClick={() => handleOpenPublishSurveyDialog(y.id, y.title)}>פרסום סקר</Button>}
+                                            {y.isPublished && <Button color={'secondary'} size={'medium'} onClick={() => handleGenerateWorkPlans(y.id)}>בניית תוכניות עבודה לפי הסקר</Button>}
                                         </CardActions>
                                     </CardActionArea>
                                 </Card>

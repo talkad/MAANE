@@ -5,6 +5,7 @@ import Communication.DTOs.SchoolManagementDTO;
 import Communication.DTOs.UserDTO;
 import Communication.DTOs.WorkPlanDTO;
 import Communication.Security.KeyLoader;
+import Communication.Service.AnnualScheduleGeneratorServiceImpl;
 import Communication.Service.UserServiceImpl;
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.User;
@@ -38,6 +39,7 @@ public class UserController {
     private final ObjectMapper objectMapper;
     private final Gson gson;
     private final UserServiceImpl service;
+    private final AnnualScheduleGeneratorServiceImpl scheduleGeneratorService;
     private final SessionHandler sessionHandler;
 
 
@@ -141,10 +143,10 @@ public class UserController {
                 .body(service.removeUser(sessionHandler.getUsernameByToken(token).getResult(), (String)body.get("userToRemove")));
     }
 
-    @GetMapping(value = "/viewWorkPlan/year={year}")
-    public ResponseEntity<Response<WorkPlanDTO>> viewWorkPlan(@RequestHeader(value = "Authorization") String token, @PathVariable("year") Integer year){
+    @GetMapping(value = "/viewWorkPlan/year={year}&month={month}")
+    public ResponseEntity<Response<WorkPlanDTO>> viewWorkPlan(@RequestHeader(value = "Authorization") String token, @PathVariable("year") Integer year, @PathVariable("month") Integer month){
         return ResponseEntity.ok()
-                .body(service.viewWorkPlan(sessionHandler.getUsernameByToken(token).getResult(), year));
+                .body(service.viewWorkPlan(sessionHandler.getUsernameByToken(token).getResult(), year, month));
     }
 
     @PostMapping(value = "/authenticatePassword")
@@ -165,11 +167,11 @@ public class UserController {
                 .body(service.getAppointedUsers(sessionHandler.getUsernameByToken(token).getResult()));
     }
 
-//    @RequestMapping(value = "/generateSchedule", method = RequestMethod.POST)
-//    public ResponseEntity<Response<Boolean>> generateSchedule(@RequestBody Map<String, Object>  body){
-//        return ResponseEntity.ok()
-//                .body(service.generateSchedule((String)body.get("supervisor"), (Integer) body.get("surveyID")));
-//    }
+    @RequestMapping(value = "/generateSchedule", method = RequestMethod.POST)
+    public ResponseEntity<Response<Boolean>> generateSchedule(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object>  body){
+        return ResponseEntity.ok()
+                .body(scheduleGeneratorService.generateSchedule(sessionHandler.getUsernameByToken(token).getResult(), (String) body.get("surveyID")));
+    }
 
     @PostMapping(value = "/addGoal")
     public ResponseEntity<Response<Boolean>> addGoal(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object>  body){

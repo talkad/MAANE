@@ -7,14 +7,11 @@ import Communication.Initializer.ServerContextInitializer;
 import Communication.Service.UserServiceImpl;
 import Domain.DataManagement.AnswerState.AnswerType;
 import Domain.DataManagement.DataController;
-import Domain.DataManagement.FaultDetector.Rules.*;
 import Domain.DataManagement.SurveyController;
 import Domain.UsersManagment.UserController;
 import Domain.UsersManagment.UserStateEnum;
-import Persistence.DbDtos.SchoolDBDTO;
 import Domain.WorkPlan.GoalsManagement;
-import Persistence.GoalsQueries;
-import Persistence.SurveyDAO;
+import Persistence.DbDtos.SchoolDBDTO;
 import Persistence.UserQueries;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -28,6 +25,7 @@ import org.springframework.security.web.session.HttpSessionEventPublisher;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Vector;
 
 @SpringBootApplication
 public class MaaneApplication {
@@ -74,17 +72,32 @@ public class MaaneApplication {
 
 				DataController.getInstance().insertSchool(new SchoolDBDTO("2222222", "testing school2", "beer sheva", "", "", "", "", "", "", "", "", 1000000, "", "", "", "", 31));
 
+				DataController.getInstance().insertSchool(new SchoolDBDTO("3333333", "testing school3", "beer sheva", "", "", "", "", "", "", "", "", 1000000, "", "", "", "", 32));
+
+
 				DataController.getInstance().assignCoordinator("admin", "tech", "aviad", "shal", "aviad@gmail.com", "0555555555", "1111111");
 
 				userController.logout("admin");
 
 				userController.login("ronit");
 
+				List<String> school1 = new Vector<>();
+				List<String> school2 = new Vector<>();
+				List<String> school3 = new Vector<>();
+				school1.add("1111111");
+				school2.add("2222222");
+				school3.add("33333333");
+
+				userController.assignSchoolsToUser("ronit", "tal", school1);
+				userController.assignSchoolsToUser("ronit", "shaked", school2);
+				userController.assignSchoolsToUser("ronit", "shaked", school3);
+
+
 				// create survey
 				SurveyDTO surveyDTO = new SurveyDTO(false, "1111", "title", "description",
 						Arrays.asList("symbol", "open?", "numeric?", "multiple choice?"),
 						Arrays.asList(new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), Arrays.asList("correct", "wrong")),
-						Arrays.asList(AnswerType.NUMERIC_ANSWER, AnswerType.OPEN_ANSWER, AnswerType.NUMERIC_ANSWER, AnswerType.MULTIPLE_CHOICE));
+						Arrays.asList(AnswerType.NUMERIC_ANSWER, AnswerType.OPEN_ANSWER, AnswerType.NUMERIC_ANSWER, AnswerType.MULTIPLE_CHOICE), 2022);
 
 				SurveyController.getInstance().createSurvey("ronit", surveyDTO);
 
@@ -97,6 +110,7 @@ public class MaaneApplication {
 				GoalsManagement.getInstance().addGoalToField("tech", goalDTO1, 2022);
 				GoalsManagement.getInstance().addGoalToField("tech", goalDTO2, 2022);
 
+
 //				// create rules
 //				Rule rule1 = new AndRule(Arrays.asList(new NumericBaseRule(2, Comparison.EQUAL, 30),
 //														new MultipleChoiceBaseRule(3, List.of(1))));
@@ -105,6 +119,10 @@ public class MaaneApplication {
 //				SurveyDAO.getInstance().insertRule("1111", 555, rule1.getDTO());
 //				SurveyDAO.getInstance().insertRule("1111", 666, rule2.getDTO());
 //
+
+				// submit survey
+				SurveyController.getInstance().submitSurvey("tal", "1111");
+
 //				// add answers
 //				SurveyDAO.getInstance().insertCoordinatorAnswers("1111", "01234",
 //						new LinkedList<>(Arrays.asList("open ans", "20", "0")),

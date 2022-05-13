@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import './WorkPlan.css'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 
@@ -6,6 +6,8 @@ import 'react-big-calendar/lib/css/react-big-calendar.css'
 import * as Space from 'react-spaces';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment'
+import Connection from "../../Communication/Connection";
+
 import 'moment/locale/he'
 
 const localizer = momentLocalizer(moment); // localizer to represent the data according to our location (israel)
@@ -38,13 +40,36 @@ const myEventsList = [
 ]
 
 export default function WorkPlan(){
+    const [eventList, setEventList] = useState([])
 
     /**
      * sends a request to the server to get work plan of the current user
      */
     useEffect(() => {
-        // TODO: get information from server
-    }, );
+        let currentYear = new Date().getFullYear();
+        let currentMonth = new Date().getMonth();
+
+        new Connection().getWorkPlan(currentYear, currentMonth, arrangeActivities);
+    }, []);
+
+    /**
+     * 
+     */
+    const arrangeActivities = (data) => {
+        if(!data.failure){
+            console.log('parsing dates')
+            let dates = data.result.calendar
+            for(const date of dates){
+                let parsedDate = new Date(date.first);
+                console.log(parsedDate)
+                
+                let endDate = parsedDate;
+                endDate.setHours(endDate.getHours() + 2)
+
+                setEventList(eventList => [...eventList, {title: date.second.title, start: parsedDate, end: endDate, allDay: false, resource: "https://momentjs.com/"}])
+            }
+        }
+    }
 
     return (
         // all the spaces around are for placing the calendar
@@ -59,7 +84,7 @@ export default function WorkPlan(){
                     <Calendar
                         id={'work-plan-calendar'}
                         localizer={localizer}
-                        events={myEventsList}
+                        events={eventList}
                         startAccessor="start"
                         endAccessor="end"
                     />

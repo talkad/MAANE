@@ -4,9 +4,9 @@ import Domain.CommonClasses.Pair;
 import Domain.UsersManagment.Activity;
 import Domain.WorkPlan.WorkPlan;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +14,7 @@ import java.util.Vector;
 
 @NoArgsConstructor
 @AllArgsConstructor
-
+@Data
 public class WorkPlanDTO {
     private List<Pair<LocalDateTime, ActivityDTO>> calendar; //List of <Date String, List of activities for that day
 

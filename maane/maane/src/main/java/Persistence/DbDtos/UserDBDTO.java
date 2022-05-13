@@ -2,10 +2,8 @@ package Persistence.DbDtos;
 
 import Domain.UsersManagment.User;
 import Domain.UsersManagment.UserStateEnum;
-import Domain.WorkPlan.WorkPlan;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
 
 public class UserDBDTO {
