@@ -20,4 +20,6 @@ public interface DataService {
     Response<SchoolDBDTO> getSchool(String username, String symbol);
 
     Response<List<Pair<String, String>>> getUserSchools(String username);
+
+    Response<Boolean> resetDB();
 }

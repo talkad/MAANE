@@ -595,7 +595,7 @@ public class UserController {
         this.userDAO.deleteUsers();
         this.goalsManagement = GoalsManagement.getInstance();
         SurveyDAO.getInstance().clearCache();
-        adminBoot("admin", "admin");
+        adminBoot("admin", "admin123");
     }
 
     public Response<String> fillMonthlyReport(String currUser){

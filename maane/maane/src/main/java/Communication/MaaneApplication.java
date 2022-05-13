@@ -6,9 +6,11 @@ import Communication.DTOs.UserDTO;
 import Communication.Initializer.ServerContextInitializer;
 import Communication.Service.UserServiceImpl;
 import Domain.DataManagement.AnswerState.AnswerType;
+import Domain.DataManagement.DataController;
 import Domain.DataManagement.FaultDetector.Rules.*;
 import Domain.UsersManagment.UserController;
 import Domain.UsersManagment.UserStateEnum;
+import Persistence.DbDtos.SchoolDBDTO;
 import Persistence.GoalsQueries;
 import Persistence.SurveyDAO;
 import Persistence.UserQueries;
@@ -57,52 +59,64 @@ public class MaaneApplication {
 				UserController userController = UserController.getInstance();
 				userController.login("admin");
 
-				service.registerUserBySystemManager("admin", new UserDTO("admin", "tech", "tal", "1234", UserStateEnum.SUPERVISOR,
-						"tal", "kad", "tal@gmail.com", "055-555-5555", "", null), "");
+				service.registerUserBySystemManager("admin", new UserDTO("admin", "tech", "ronit", "1234abcd", UserStateEnum.SUPERVISOR,
+						"ronit", "newe", "ronit@gmail.com", "055-555-5555", "", null), "");
+
+				service.registerUserBySystemManager("admin", new UserDTO("admin", "tech", "tal", "1234abcd", UserStateEnum.INSTRUCTOR,
+						"tal", "kad", "tal@gmail.com", "055-555-5555", "", null), "ronit");
+
+				service.registerUserBySystemManager("admin", new UserDTO("admin", "tech", "shaked", "1234abcd", UserStateEnum.INSTRUCTOR,
+						"shaked", "ch", "shaked@gmail.com", "055-555-5555", "", null), "ronit");
+
+				DataController.getInstance().insertSchool(new SchoolDBDTO("1111111", "testing school", "beer sheva", "", "", "", "", "", "", "", "", 1000000, "", "", "", "", 30));
+
+				DataController.getInstance().insertSchool(new SchoolDBDTO("2222222", "testing school2", "beer sheva", "", "", "", "", "", "", "", "", 1000000, "", "", "", "", 31));
+
+				DataController.getInstance().assignCoordinator("admin", "tech", "aviad", "shal", "aviad@gmail.com", "0555555555", "1111111");
 
 				userController.logout("admin");
 
-//				// create survey
-//				SurveyDTO surveyDTO = new SurveyDTO(true, "1111", "title", "description",
-//						Arrays.asList("symbol", "open?", "numeric?", "multiple choice?"),
-//						Arrays.asList(new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), Arrays.asList("correct", "wrong")),
-//						Arrays.asList(AnswerType.NUMERIC_ANSWER, AnswerType.OPEN_ANSWER, AnswerType.NUMERIC_ANSWER, AnswerType.MULTIPLE_CHOICE));
-//
-//				SurveyDAO.getInstance().insertSurvey(surveyDTO);
-//
-//				// create goals
-//				GoalDTO goalDTO1 = new GoalDTO(555, "yahad1", "", 1,
-//						5, "tech", 2022);
-//				GoalDTO goalDTO2 = new GoalDTO(666, "yahad2", "", 2,
-//						10, "tech",2022);
-//
-//				GoalsQueries.getInstance().insertGoalMock(goalDTO1);
-//				GoalsQueries.getInstance().insertGoalMock(goalDTO2);
-//
-//				// create rules
-//				Rule rule1 = new AndRule(Arrays.asList(new NumericBaseRule(2, Comparison.EQUAL, 30),
-//														new MultipleChoiceBaseRule(3, List.of(1))));
-//				Rule rule2 = new NumericBaseRule(2, Comparison.EQUAL, 30);
-//
-//				SurveyDAO.getInstance().insertRule("1111", 555, rule1.getDTO());
-//				SurveyDAO.getInstance().insertRule("1111", 666, rule2.getDTO());
-//
-//				// add answers
-//				SurveyDAO.getInstance().insertCoordinatorAnswers("1111", "01234",
-//						new LinkedList<>(Arrays.asList("open ans", "20", "0")),
-//						new LinkedList<>(Arrays.asList(AnswerType.OPEN_ANSWER, AnswerType.NUMERIC_ANSWER, AnswerType.MULTIPLE_CHOICE)));
-//
-//				SurveyDAO.getInstance().insertCoordinatorAnswers("1111", "56789",
-//						new LinkedList<>(Arrays.asList("open ans", "40", "1")),
-//						new LinkedList<>(Arrays.asList(AnswerType.OPEN_ANSWER, AnswerType.NUMERIC_ANSWER, AnswerType.MULTIPLE_CHOICE)));
-//				// create another survey
-//				surveyDTO = new SurveyDTO(true, "2222", "title", "description",
-//						Arrays.asList("symbol", "open?", "numeric?", "multiple choice?"),
-//						Arrays.asList(new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), Arrays.asList("correct", "wrong")),
-//						Arrays.asList(AnswerType.NUMERIC_ANSWER, AnswerType.OPEN_ANSWER, AnswerType.NUMERIC_ANSWER, AnswerType.MULTIPLE_CHOICE));
-//
-//
-//				SurveyDAO.getInstance().insertSurvey(surveyDTO);
+				// create survey
+				SurveyDTO surveyDTO = new SurveyDTO(true, "1111", "title", "description",
+						Arrays.asList("symbol", "open?", "numeric?", "multiple choice?"),
+						Arrays.asList(new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), Arrays.asList("correct", "wrong")),
+						Arrays.asList(AnswerType.NUMERIC_ANSWER, AnswerType.OPEN_ANSWER, AnswerType.NUMERIC_ANSWER, AnswerType.MULTIPLE_CHOICE));
+
+				SurveyDAO.getInstance().insertSurvey(surveyDTO);
+
+				// create goals
+				GoalDTO goalDTO1 = new GoalDTO(555, "yahad1", "", 1,
+						5, "tech", 2022);
+				GoalDTO goalDTO2 = new GoalDTO(666, "yahad2", "", 2,
+						10, "tech",2022);
+
+				GoalsQueries.getInstance().insertGoalMock(goalDTO1);
+				GoalsQueries.getInstance().insertGoalMock(goalDTO2);
+
+				// create rules
+				Rule rule1 = new AndRule(Arrays.asList(new NumericBaseRule(2, Comparison.EQUAL, 30),
+														new MultipleChoiceBaseRule(3, List.of(1))));
+				Rule rule2 = new NumericBaseRule(2, Comparison.EQUAL, 30);
+
+				SurveyDAO.getInstance().insertRule("1111", 555, rule1.getDTO());
+				SurveyDAO.getInstance().insertRule("1111", 666, rule2.getDTO());
+
+				// add answers
+				SurveyDAO.getInstance().insertCoordinatorAnswers("1111", "01234",
+						new LinkedList<>(Arrays.asList("open ans", "20", "0")),
+						new LinkedList<>(Arrays.asList(AnswerType.OPEN_ANSWER, AnswerType.NUMERIC_ANSWER, AnswerType.MULTIPLE_CHOICE)));
+
+				SurveyDAO.getInstance().insertCoordinatorAnswers("1111", "56789",
+						new LinkedList<>(Arrays.asList("open ans", "40", "1")),
+						new LinkedList<>(Arrays.asList(AnswerType.OPEN_ANSWER, AnswerType.NUMERIC_ANSWER, AnswerType.MULTIPLE_CHOICE)));
+				// create another survey
+				surveyDTO = new SurveyDTO(true, "2222", "title", "description",
+						Arrays.asList("symbol", "open?", "numeric?", "multiple choice?"),
+						Arrays.asList(new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), Arrays.asList("correct", "wrong")),
+						Arrays.asList(AnswerType.NUMERIC_ANSWER, AnswerType.OPEN_ANSWER, AnswerType.NUMERIC_ANSWER, AnswerType.MULTIPLE_CHOICE));
+
+
+				SurveyDAO.getInstance().insertSurvey(surveyDTO);
 
 			}
 

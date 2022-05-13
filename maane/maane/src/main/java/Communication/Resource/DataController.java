@@ -48,6 +48,12 @@ public class DataController {
                 .body(service.getUserSchools(sessionHandler.getUsernameByToken(token).getResult()));
     }
 
+    @PostMapping(value = "/resetDB")
+    public ResponseEntity<Response<Boolean>> resetDB(){
+        return ResponseEntity.ok()
+                .body(service.resetDB());
+    }
+
 //    @PostMapping(value = "/insertSchool")
 //    public ResponseEntity<Response<Boolean>> insertSchool(@RequestBody SchoolDBDTO school){
 //        return ResponseEntity.ok()

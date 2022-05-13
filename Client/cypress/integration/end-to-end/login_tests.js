@@ -1,4 +1,19 @@
 
+let admin = {
+    username: 'admin',
+    password: 'admin',
+}
+
+let supervisor = {
+    username: 'ronit',
+    password: '1234abcd',
+}
+
+let instructor = {
+    username: 'tal',
+    password: '1234abcd',
+}
+
 describe('Login tests', () =>{
     beforeEach(() => {
         // visiting the login page
@@ -8,8 +23,8 @@ describe('Login tests', () =>{
     it('logging in with an existing SUPERVISOR user and logging out', () => {
 
         // filling the form
-        cy.get('input[id=login_username]').type('tal').should('have.value','tal')
-        cy.get('input[id=login_password]').type('1234').should('have.value','1234')
+        cy.get('input[id=login_username]').type(supervisor.username)
+        cy.get('input[id=login_password]').type(supervisor.password)
 
         // submitting
         cy.get('[id=login_button]').click()
@@ -20,6 +35,7 @@ describe('Login tests', () =>{
         // checking the login was successful by checking the url
         cy.url().should('include', '/user/home')
 
+        cy.find()
         // todo: tal is a SUPERVISOR, check that its homepage contains a table of instructors
 
         // logging out cause it clashes with the other tests
@@ -31,8 +47,8 @@ describe('Login tests', () =>{
     it('logging in with an existing SYSTEM_MANAGER user and logging out', () => {
 
         // filling the form
-        cy.get('input[id=login_username]').type('admin').should('have.value','admin')
-        cy.get('input[id=login_password]').type('admin').should('have.value','admin')
+        cy.get('input[id=login_username]').type('admin')
+        cy.get('input[id=login_password]').type('admin')
 
         // submitting
         cy.get('[id=login_button]').click()
@@ -54,8 +70,8 @@ describe('Login tests', () =>{
     it('logging in with an existing INSTRUCTOR user and logging out', () => {
 
         // filling the form
-        cy.get('input[id=login_username]').type('shoshi').should('have.value','shoshi')
-        cy.get('input[id=login_password]').type('works_with_mom').should('have.value','works_with_mom')
+        cy.get('input[id=login_username]').type('tal')
+        cy.get('input[id=login_password]').type('1234')
 
         // submitting
         cy.get('[id=login_button]').click()
@@ -139,7 +155,7 @@ describe('Login tests', () =>{
 
         // filling the form
         cy.get('input[id=login_username]').type('tal').should('have.value','tal')
-        cy.get('input[id=login_password]').type('123').should('have.value','123')
+        cy.get('input[id=login_password]').type('1234').should('have.value','1234')
 
         // submitting
         cy.get('[id=login_button]').click()
@@ -151,20 +167,20 @@ describe('Login tests', () =>{
         cy.url().should('include', '/user/login')
     })
 
-    it('logs in programmatically without using the UI', () => {
-        cy.request({
-            method: 'POST',
-            url: "http://localhost:8080/user/login",
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: {
-                username: "tal",
-                password: "1234",
-            }
-        }).then((response) => {
-            window.sessionStorage.setItem('access_token', response.body.access_token);
-            window.sessionStorage.setItem('refresh_token', response.body.refresh_token);
-        })
-    })
+    // it('logs in programmatically without using the UI', () => {
+    //     cy.request({
+    //         method: 'POST',
+    //         url: "http://localhost:8080/user/login",
+    //         headers: {
+    //             'Content-Type': 'application/x-www-form-urlencoded'
+    //         },
+    //         body: {
+    //             username: "tal",
+    //             password: "1234",
+    //         }
+    //     }).then((response) => {
+    //         window.sessionStorage.setItem('access_token', response.body.access_token);
+    //         window.sessionStorage.setItem('refresh_token', response.body.refresh_token);
+    //     })
+    // })
 })
