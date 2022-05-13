@@ -89,6 +89,7 @@ function App(){
         let current_type = window.sessionStorage.getItem('permission');
         if(!window.sessionStorage.getItem('schools')) {
             if((current_type === "INSTRUCTOR" || current_type === "SUPERVISOR" || current_type === "SYSTEM_MANAGER")){
+
                 new Connection().getUserSchools(arrangeSchools)
             }
         }

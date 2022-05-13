@@ -35,7 +35,7 @@ describe('Login tests', () =>{
         // checking the login was successful by checking the url
         cy.url().should('include', '/user/home')
 
-        cy.get(`td_non_supervisor_username_${instructor.username}`) // looking for an instructor element under the supervisor
+        cy.get(`#td_non_supervisor_username_${instructor.username}`) // looking for an instructor element under the supervisor
 
         // logging out cause it clashes with the other tests
         cy.get('[id=logout_button]').click()
@@ -58,7 +58,7 @@ describe('Login tests', () =>{
         // checking the login was successful by checking the url
         cy.url().should('include', '/user/home')
 
-        cy.get(`td_supervisor_username_${supervisor.username}`) // looking for a supervisor element under the system manager
+        cy.get(`#td_supervisor_username_${supervisor.username}`) // looking for a supervisor element under the system manager
 
         // logging out cause it clashes with the other tests
         cy.get('[id=logout_button]').click()
@@ -81,7 +81,8 @@ describe('Login tests', () =>{
         // checking the login was successful by checking the url
         cy.url().should('include', '/user/home')
 
-        cy.get('work-plan-calendar')
+        let page_title = "לוח העבודה שלי";
+        cy.contains(page_title)
 
         // logging out cause it clashes with the other tests
         cy.get('[id=logout_button]').click()
@@ -140,6 +141,11 @@ describe('Login tests', () =>{
 
         // checking that the user got redirected to the home page
         cy.url().should('include', '/user/home')
+
+        // logging out cause it clashes with the other tests
+        cy.get('[id=logout_button]').click()
+
+        cy.url().should('include', '/user/login')
     })
 
     it('logging in when someone just changed that password to that account', () => {

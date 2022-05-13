@@ -1,4 +1,9 @@
 
+let supervisor = {
+    username: 'ronit',
+    password: '1234abcd',
+}
+
 let user_to_register = {
     username: "anakin_the_slayer",
     password: "darth",
@@ -12,8 +17,33 @@ let user_to_register = {
 
 describe('Register users tests as supervisor', () => {
     beforeEach(() => {
-        //TODO: format the db and log in as a supervisor
-        cy.visit('/user/registerUsers')
+        cy.request({
+            method: 'POST',
+            url: "http://localhost:8080/data/resetDB",
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }).then(() => {
+            cy.log('hi')
+            // visiting the login page
+            cy.visit('/user/login')
+
+            // filling the login form
+            cy.get('input[id=login_username]').type(supervisor.username)
+            cy.get('input[id=login_password]').type(supervisor.password)
+
+            // submitting
+            cy.get('[id=login_button]').click()
+        })
+
+
+
+        //cy.visit('/user/registerUsers')
+    })
+
+    afterEach(() => {
+        // logging out cause it clashes with the other tests
+        cy.get('[id=logout_button]').click()
     })
 
     it('registering an instructor only with mandatory fields', () => {
