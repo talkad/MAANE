@@ -4,6 +4,7 @@ import Communication.DTOs.ActivityDTO;
 import Communication.DTOs.GoalDTO;
 import Communication.DTOs.UserDTO;
 import Communication.DTOs.WorkPlanDTO;
+import Communication.Initializer.ServerContextInitializer;
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.SurveyController;
@@ -230,7 +231,14 @@ public class UserController {
         return phoneUtil.isValidNumber(israeliNumberProto);
     }
 
+    private boolean isValidPassword(String password) {
+        return password.length() > 8 && password.matches("([A-Za-z]+[0-9]|[0-9]+[A-Za-z])[A-Za-z0-9]*");
+    }
+
     public Response<String> registerUserBySystemManager(String currUser, String userToRegister, String password, UserStateEnum userStateEnum, String optionalSupervisor, String workField, String firstName, String lastName, String email, String phoneNumber, String city){
+        if(!ServerContextInitializer.getInstance().isMockMode() && isValidPassword(password))
+            return new Response<>("", true, "The password isn't strong enough");
+
         if(email.length() != 0 && !isValidEmailAddress(email))
             return new Response<>("", true, "invalid email address");
 
@@ -634,6 +642,9 @@ public class UserController {
     }
 
     public Response<Boolean> changePassword(String currUser, String currPassword, String newPassword, String confirmPassword){
+        if(!ServerContextInitializer.getInstance().isMockMode() && isValidPassword(newPassword))
+            return new Response<>(false, true, "The password isn't strong enough");
+
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             if (passwordEncoder.matches(currPassword, userDAO.getPassword(currUser).getResult()))

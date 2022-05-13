@@ -7,8 +7,10 @@ import Communication.Initializer.ServerContextInitializer;
 import Communication.Service.UserServiceImpl;
 import Domain.DataManagement.AnswerState.AnswerType;
 import Domain.DataManagement.FaultDetector.Rules.*;
+import Domain.DataManagement.SurveyController;
 import Domain.UsersManagment.UserController;
 import Domain.UsersManagment.UserStateEnum;
+import Domain.WorkPlan.GoalsManagement;
 import Persistence.GoalsQueries;
 import Persistence.SurveyDAO;
 import Persistence.UserQueries;
@@ -59,26 +61,27 @@ public class MaaneApplication {
 
 				service.registerUserBySystemManager("admin", new UserDTO("admin", "tech", "tal", "1234", UserStateEnum.SUPERVISOR,
 						"tal", "kad", "tal@gmail.com", "055-555-5555", "", null), "");
+				userController.login("tal");
 
 				userController.logout("admin");
 
-//				// create survey
-//				SurveyDTO surveyDTO = new SurveyDTO(true, "1111", "title", "description",
-//						Arrays.asList("symbol", "open?", "numeric?", "multiple choice?"),
-//						Arrays.asList(new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), Arrays.asList("correct", "wrong")),
-//						Arrays.asList(AnswerType.NUMERIC_ANSWER, AnswerType.OPEN_ANSWER, AnswerType.NUMERIC_ANSWER, AnswerType.MULTIPLE_CHOICE));
-//
-//				SurveyDAO.getInstance().insertSurvey(surveyDTO);
-//
-//				// create goals
-//				GoalDTO goalDTO1 = new GoalDTO(555, "yahad1", "", 1,
-//						5, "tech", 2022);
-//				GoalDTO goalDTO2 = new GoalDTO(666, "yahad2", "", 2,
-//						10, "tech",2022);
-//
-//				GoalsQueries.getInstance().insertGoalMock(goalDTO1);
-//				GoalsQueries.getInstance().insertGoalMock(goalDTO2);
-//
+				// create survey
+				SurveyDTO surveyDTO = new SurveyDTO(false, "1111", "title", "description",
+						Arrays.asList("symbol", "open?", "numeric?", "multiple choice?"),
+						Arrays.asList(new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), Arrays.asList("correct", "wrong")),
+						Arrays.asList(AnswerType.NUMERIC_ANSWER, AnswerType.OPEN_ANSWER, AnswerType.NUMERIC_ANSWER, AnswerType.MULTIPLE_CHOICE));
+
+				SurveyController.getInstance().createSurvey("tal", surveyDTO);
+
+				// create goals
+				GoalDTO goalDTO1 = new GoalDTO(555, "yahad1", "", 1,
+						5, "tech", 2022);
+				GoalDTO goalDTO2 = new GoalDTO(666, "yahad2", "", 2,
+						10, "tech",2022);
+
+				GoalsManagement.getInstance().addGoalToField("tech", goalDTO1, 2022);
+				GoalsManagement.getInstance().addGoalToField("tech", goalDTO2, 2022);
+
 //				// create rules
 //				Rule rule1 = new AndRule(Arrays.asList(new NumericBaseRule(2, Comparison.EQUAL, 30),
 //														new MultipleChoiceBaseRule(3, List.of(1))));
@@ -103,6 +106,8 @@ public class MaaneApplication {
 //
 //
 //				SurveyDAO.getInstance().insertSurvey(surveyDTO);
+
+				userController.logout("logout");
 
 			}
 
