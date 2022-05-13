@@ -22,6 +22,8 @@ public class RuleDbTests {
     @Before
     public void setUp(){
         ServerContextInitializer.getInstance().setMockMode();
+        ServerContextInitializer.getInstance().setTestMode();
+
         surveyQueries = SurveyDAO.getInstance();
 
         List<RuleDTO> subRuleSubRules= new LinkedList<>();

@@ -22,6 +22,7 @@ public class AnnualScheduleGeneratorTest {
     @Before
     public void setup(){
         ServerContextInitializer.getInstance().setMockMode();
+        ServerContextInitializer.getInstance().setTestMode();
 
         //this.passwordEncoder = new BCryptPasswordEncoder();
         //ServerContextInitializer.getInstance().setMockMode();

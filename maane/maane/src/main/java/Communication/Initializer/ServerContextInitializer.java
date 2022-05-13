@@ -3,6 +3,7 @@ package Communication.Initializer;
 public class ServerContextInitializer {
 
     private boolean mockMode;
+    private boolean testMode;
     private String dbConnection;
     private String dbUsername;
     private String dbPassword;
@@ -17,6 +18,7 @@ public class ServerContextInitializer {
 
     public ServerContextInitializer() {
         this.mockMode = false;
+        this.testMode = false;
         this.dbConnection = "jdbc:postgresql://tai.db.elephantsql.com:5432/pxbghxfm";
         this.dbUsername = "pxbghxfm";
         this.dbPassword = "ogms2UJpzqjopRw29YcJ5Wau7wHQLkcJ";
@@ -36,6 +38,14 @@ public class ServerContextInitializer {
 /*        this.dbConnection = "jdbc:postgresql://localhost:5432/MAANE";
         this.dbUsername = "postgres";
         this.dbPassword = "1234";*/
+    }
+
+    public boolean isTestMode() {
+        return testMode;
+    }
+
+    public void setTestMode() {
+        this.testMode = true;
     }
 
     public boolean isMockMode(){

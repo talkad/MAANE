@@ -40,6 +40,7 @@ public class DataManagementTests {
 
         surveyDTO = new SurveyDTO();
         ServerContextInitializer.getInstance().setMockMode();
+        ServerContextInitializer.getInstance().setTestMode();
         SurveyDAO.getInstance().clearCache();
         UserQueries.getInstance().clearDB();
         UserController.getInstance().clearUsers();

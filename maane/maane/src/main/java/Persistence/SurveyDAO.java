@@ -153,7 +153,7 @@ public class SurveyDAO {
     }
 
     public List<Pair<RuleDTO, Integer>> getRules(String surveyID) {
-        if(ServerContextInitializer.getInstance().isMockMode())
+        if(ServerContextInitializer.getInstance().isTestMode())
             return SurveyDAOMockAdapter.getInstance().getRules(surveyID);
 
         return persistence.getRules(surveyID);
@@ -166,7 +166,7 @@ public class SurveyDAO {
     public List<SurveyAnswersDTO> getAnswers(String surveyId) {
         List<SurveyAnswersDTO> surveyAnswers;
 
-        if(ServerContextInitializer.getInstance().isMockMode())
+        if(ServerContextInitializer.getInstance().isTestMode())
             return SurveyDAOMockAdapter.getInstance().getAnswers(surveyId);
 
 //        if(answers.containsKey(surveyId))
