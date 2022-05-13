@@ -676,12 +676,16 @@ export default function UsersManagement(props){
 
     useEffect(() => {
         props.setHideBars(false);
-        if(props.userType === "SUPERVISOR"){
-            new Connection().getAppointedUsers(handleReceivedData);
-        }
-        else if(props.userType === "SYSTEM_MANAGER"){
-            new Connection().getAllUsers(handleReceivedData);
-        }
+
+        setTimeout(() => {
+            if(props.userType === "SUPERVISOR"){
+                new Connection().getAppointedUsers(handleReceivedData);
+            }
+            else if(props.userType === "SYSTEM_MANAGER"){
+                new Connection().getAllUsers(handleReceivedData);
+            }
+        }, 1000)
+
     }, []);
 
 

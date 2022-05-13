@@ -39,6 +39,8 @@ const myEventsList = [
 
 export default function WorkPlan(){
 
+    const page_title = "לוח העבודה שלי";
+
     /**
      * sends a request to the server to get work plan of the current user
      */
@@ -56,8 +58,8 @@ export default function WorkPlan(){
                     {/* the calendar */}
                     {/* TODO: for some reason when changing the calendar to weekly/daily/agenda it shows nothing*/}
                     {/* TODO: the toolbar of the calendar is in english. need to change it to hebrew */}
+                    <h1>{page_title}</h1>
                     <Calendar
-                        id={'work-plan-calendar'}
                         localizer={localizer}
                         events={myEventsList}
                         startAccessor="start"

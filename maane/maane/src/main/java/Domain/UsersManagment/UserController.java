@@ -236,7 +236,7 @@ public class UserController {
     }
 
     public Response<String> registerUserBySystemManager(String currUser, String userToRegister, String password, UserStateEnum userStateEnum, String optionalSupervisor, String workField, String firstName, String lastName, String email, String phoneNumber, String city){
-        if(!ServerContextInitializer.getInstance().isTestMode() && isValidPassword(password))
+        if(!ServerContextInitializer.getInstance().isTestMode() && !isValidPassword(password))
             return new Response<>("", true, "The password isn't strong enough");
 
         if(email.length() != 0 && !isValidEmailAddress(email))
@@ -642,7 +642,7 @@ public class UserController {
     }
 
     public Response<Boolean> changePassword(String currUser, String currPassword, String newPassword, String confirmPassword){
-        if(!ServerContextInitializer.getInstance().isTestMode() && isValidPassword(newPassword))
+        if(!ServerContextInitializer.getInstance().isTestMode() && !isValidPassword(newPassword))
             return new Response<>(false, true, "The password isn't strong enough");
 
         if(connectedUsers.containsKey(currUser)) {
