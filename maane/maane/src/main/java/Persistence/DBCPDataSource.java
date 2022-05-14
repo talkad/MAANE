@@ -18,7 +18,7 @@ public class DBCPDataSource {
 //        ds.setMaxOpenPreparedStatements(100);
 //    }
 
-    public static Connection getConnection(String url, String username, String password) throws SQLException {ds.setUrl("jdbc:postgresql://localhost:5432/maaneDBMock");
+    public static Connection getConnection(String url, String username, String password) throws SQLException {
         ds.setUrl(url);
         ds.setUsername(username);
         ds.setPassword(password);
