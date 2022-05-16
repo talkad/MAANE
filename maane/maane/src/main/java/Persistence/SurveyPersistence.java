@@ -50,6 +50,7 @@ public class SurveyPersistence {
             preparedStatement.setString(3, surveyDTO.getDescription());
             preparedStatement.setBoolean(4, false);
 
+
             rows = preparedStatement.executeUpdate();
 
             insertQuestions(surveyDTO.getId(), surveyDTO.getQuestions());
@@ -80,7 +81,6 @@ public class SurveyPersistence {
 
             if (resultSurvey.next()) {
                 year = resultSurvey.getInt("year");
-
                 Connect.closeConnection();
             } else {
                 Connect.closeConnection();
@@ -310,6 +310,7 @@ public class SurveyPersistence {
                 surveyDTO.setQuestions(questions);
                 surveyDTO.setAnswers(answers);
                 surveyDTO.setTypes(types);
+                surveyDTO.setYear(resultSurvey.getInt("year"));
 
                 Connect.closeConnection();
             } else {

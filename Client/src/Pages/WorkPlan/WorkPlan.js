@@ -49,7 +49,7 @@ export default function WorkPlan(){
      */
     useEffect(() => {
         let currentYear = new Date().getFullYear();
-        let currentMonth = new Date().getMonth();
+        let currentMonth = new Date().getMonth();//todo aviad fit to given date by the calendar
 
         new Connection().getWorkPlan(currentYear, currentMonth, arrangeActivities);
     }, []);

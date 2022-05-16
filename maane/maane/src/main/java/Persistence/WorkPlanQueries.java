@@ -26,6 +26,7 @@ public class WorkPlanQueries {
     }
 
     public Response<Boolean> insertUserWorkPlan(String username, WorkPlanDTO workPlan, Integer year){
+        System.out.println("name: " + username + " date: " + year);
         Connect.createConnection();
         int rows = 0;
         String sql = "INSERT INTO \"WorkPlans\" (username, year, date, activities) VALUES (?, ?, ?, ?)";
@@ -100,6 +101,37 @@ public class WorkPlanQueries {
             statement = Connect.conn.prepareStatement(sql);
             statement.setString(1, username);
             statement.setInt(2, year);
+            ResultSet result = statement.executeQuery();
+
+            List<Pair<LocalDateTime, ActivityDTO>> calendar = new LinkedList<>();
+            while(result.next()) {
+                LocalDateTime date = result.getTimestamp("date").toInstant().atZone(TimeZone.getTimeZone("Asia/Jerusalem").toZoneId()).toLocalDateTime();
+                //timestamp.toInstant().atZone(TimeZone.getTimeZone("Asia/Jerusalem").toZoneId()).toLocalDate()
+
+                String activities = result.getString("activities");
+                ActivityDTO activityDTO = StringToActivities(activities);
+                Pair<LocalDateTime, ActivityDTO> toAdd = new Pair<>(date, activityDTO);
+                calendar.add(toAdd);
+            }
+            output = new WorkPlanDTO(calendar);
+
+            Connect.closeConnection();
+            return new Response<>(output, false, "successfully got work plans");
+        } catch (SQLException throwables) {throwables.printStackTrace();}
+        return new Response<>(null, true, "failed to get work plans");
+    }
+
+    public Response<WorkPlanDTO> getUserWorkPlanByYearAndMonth(String username, Integer year, Integer month)  {
+        Connect.createConnection();
+        String sql = "SELECT * FROM \"WorkPlans\" WHERE username = ? AND (year = ? AND EXTRACT(MONTH FROM date) = ?)";
+        PreparedStatement statement;
+        WorkPlanDTO output;
+        try {
+            statement = Connect.conn.prepareStatement(sql);
+            statement.setString(1, username);
+            statement.setInt(2, year);
+            statement.setInt(3, month);
+
             ResultSet result = statement.executeQuery();
 
             List<Pair<LocalDateTime, ActivityDTO>> calendar = new LinkedList<>();

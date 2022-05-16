@@ -559,15 +559,6 @@ public class User {
         this.workPlanYears.add(year);
     }
 
-/*    public Response<WorkPlan> getWorkPlanByYear(String year) {
-        if (this.state.allowed(Permissions.VIEW_WORK_PLAN, this)) {
-            return new Response<>(this.workPlan.get(year), false, "");
-        }
-        else {
-            return new Response<>(null, true, "user not allowed to view work plan");
-        }
-    }*/
-
     public Response<Boolean> getWorkPlanByYear(Integer year) {
         if (this.state.allowed(Permissions.VIEW_WORK_PLAN, this)) {
             return new Response<>(this.workPlanYears.contains(year), !this.workPlanYears.contains(year), "");

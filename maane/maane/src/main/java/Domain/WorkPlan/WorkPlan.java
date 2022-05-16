@@ -93,8 +93,8 @@ public class WorkPlan {
 
     public void printMe() {
         for (LocalDateTime key : calendar.keySet()) {
-            System.out.println("Date: " + key);
             if(calendar.get(key) != null){
+                System.out.println("Date: " + key);
                 System.out.println("==> activity " + calendar.get(key).getTitle() + " scheduled for school " + calendar.get(key).getSchool());
             }
         }
