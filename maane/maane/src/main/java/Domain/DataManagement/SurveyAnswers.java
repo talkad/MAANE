@@ -5,8 +5,11 @@ import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.AnswerState.AnswerType;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class SurveyAnswers {
 
@@ -100,5 +103,18 @@ public class SurveyAnswers {
 
     public void setSymbol(String symbol) {
         this.symbol = symbol;
+    }
+
+    public void removeSymbolAnswer() {
+        Map<Integer, Pair<AnswerType, String>> ans = new ConcurrentHashMap<>();
+
+        // update keys
+        for(Integer queID: answers.keySet()){
+            if(queID > 0) {
+                ans.put(queID - 1, answers.get(queID));
+            }
+        }
+
+        answers = ans;
     }
 }
