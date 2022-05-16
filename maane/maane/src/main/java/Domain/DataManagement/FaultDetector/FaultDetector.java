@@ -62,7 +62,6 @@ public class FaultDetector {
             if(rule.getFirst().apply(answers))
                 faults.add(rule.getSecond());
         }
-
         return new Response<>(faults, false, "details");
     }
 

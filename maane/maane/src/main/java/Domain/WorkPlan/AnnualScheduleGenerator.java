@@ -119,8 +119,10 @@ public class AnnualScheduleGenerator {
                     schoolFaultsGoals = new Vector<>();//todo verify it doesnt get deleted from the map
 
                     Response<List<Integer>> schoolFaultsRes = surveyController.detectSchoolFault(supervisor, surveyId, school, year);
-
+                    System.out.println("school faults: " + schoolFaultsRes.getResult().toString());
+                    System.out.println("supervisor: " + supervisor + " surveyId: " + surveyId + " school: " + school + " year: " + year);
                     if(schoolFaultsRes.isFailure()) {
+                        System.out.println("fail1");
                         return; //todo some error
                     }
                     schoolFaults = schoolFaultsRes.getResult();
@@ -129,6 +131,7 @@ public class AnnualScheduleGenerator {
                         if (!goalsRes.isFailure()) {
                             schoolFaultsGoals.addAll(goalsRes.getResult());
                         } else {
+                            System.out.println("fail2");
                             return; //todo error goal not existent
                         }
                         schoolsAndFaults.put(school, schoolFaultsGoals);
@@ -143,6 +146,7 @@ public class AnnualScheduleGenerator {
                     instructorWithProblemsForSchools.get(instructor).get(school).sort(Comparator.comparing(Goal::getWeight).reversed());
                 }
             }
+
             for (String instructor : instructorWithProblemsForSchools.keySet()) {
 
                 WorkPlan workPlan = new WorkPlan(year);

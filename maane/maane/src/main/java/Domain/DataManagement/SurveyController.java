@@ -163,7 +163,7 @@ public class SurveyController {
         String symbol;
 
         if(!surveyDAO.getSurveySubmission(answersDTO.getId()).getResult())
-            return new Response<>(false, true, "The survey doesn't published yet");
+            return new Response<>(false, true, "The survey wasn't published yet");
 
         if(answerRes.isFailure())
             return new Response<>(false, true, answerRes.getErrMsg());
@@ -373,7 +373,7 @@ public class SurveyController {
      * @param username the name of the user that want to detect the faults
      * @param id of the survey
      * @param symbol of the school
-     * @return list of all goals that not consistent with the rules
+     * @return list of all goals that are not consistent with the rules
      */
     public Response<List<Integer>> detectSchoolFault(String username, String id, String symbol, Integer year){
         FaultDetector faultDetector;

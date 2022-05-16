@@ -101,20 +101,20 @@ public class MaaneApplication {
 				SurveyController.getInstance().createSurvey("ronit", surveyDTO);
 
 				// create goals
-				GoalDTO goalDTO1 = new GoalDTO(555, "yahad1", "", 1,
+				GoalDTO goalDTO1 = new GoalDTO(1, "yahad1", "", 1,
 						5, "tech", 2022);
-				GoalDTO goalDTO2 = new GoalDTO(666, "yahad2", "", 2,
+				GoalDTO goalDTO2 = new GoalDTO(2, "yahad2", "", 2,
 						10, "tech",2022);
 
 				GoalsManagement.getInstance().addGoalToField("tech", goalDTO1, 2022);
 				GoalsManagement.getInstance().addGoalToField("tech", goalDTO2, 2022);
 
-				Rule rule1 = new AndRule(Arrays.asList(new NumericBaseRule(2, Comparison.LESS_THAN, 30),
+				Rule rule1 = new AndRule(Arrays.asList(new NumericBaseRule(2, Comparison.EQUAL, 40),
 						new MultipleChoiceBaseRule(3, List.of(1))));
-				Rule rule2 = new NumericBaseRule(2, Comparison.LESS_THAN, 30);//todo set back as equal
+				Rule rule2 = new NumericBaseRule(2, Comparison.EQUAL, 30);
 				// create rules
-				SurveyController.getInstance().addRule("ronit", "1111", rule1, 555);
-				SurveyController.getInstance().addRule("ronit", "1111", rule2, 666);
+				SurveyController.getInstance().addRule("ronit", "1111", rule1, 1);
+				SurveyController.getInstance().addRule("ronit", "1111", rule2, 2);
 
 				//SurveyDAO.getInstance().insertRule("1111", 555, rule1.getDTO());
 				//SurveyDAO.getInstance().insertRule("1111", 666, rule2.getDTO());
