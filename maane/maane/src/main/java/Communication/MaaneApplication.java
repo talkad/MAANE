@@ -109,15 +109,13 @@ public class MaaneApplication {
 				GoalsManagement.getInstance().addGoalToField("tech", goalDTO1, 2022);
 				GoalsManagement.getInstance().addGoalToField("tech", goalDTO2, 2022);
 
-				Rule rule1 = new AndRule(Arrays.asList(new NumericBaseRule(2, Comparison.LESS_THAN, 30),
+				Rule rule1 = new AndRule(Arrays.asList(new NumericBaseRule(2, Comparison.EQUAL, 40),
 						new MultipleChoiceBaseRule(3, List.of(1))));
 				Rule rule2 = new NumericBaseRule(2, Comparison.LESS_THAN, 30);//todo set back as equal
-				// create rules
-				SurveyController.getInstance().addRule("ronit", "1111", rule1, 555);
-				SurveyController.getInstance().addRule("ronit", "1111", rule2, 666);
 
-				//SurveyDAO.getInstance().insertRule("1111", 555, rule1.getDTO());
-				//SurveyDAO.getInstance().insertRule("1111", 666, rule2.getDTO());
+				// create rules
+				SurveyController.getInstance().addRule("ronit", "1111", rule1, 1);
+				SurveyController.getInstance().addRule("ronit", "1111", rule2, 2);
 
 				// submit survey
 				SurveyController.getInstance().submitSurvey("ronit", "1111");

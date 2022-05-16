@@ -24,8 +24,7 @@ public class KeyLoader {
     public KeyLoader(){
         password = "1234";
         //filepath = "D:\\University\\Final Project\\code\\MAANE\\maane\\maane\\src\\main\\resources\\store.keystore"; // aviad's path
-        //filepath = "maane\\src\\main\\resources\\store.keystore"; // other's path
-        filepath = "C:\\MAANE\\maane\\maane\\src\\main\\resources\\store.keystore";
+        filepath = "maane\\src\\main\\resources\\store.keystore"; // other's path
         encryptedText = "354132168465432";
     }
 

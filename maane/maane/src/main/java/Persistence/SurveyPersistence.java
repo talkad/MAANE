@@ -310,6 +310,7 @@ public class SurveyPersistence {
                 surveyDTO.setQuestions(questions);
                 surveyDTO.setAnswers(answers);
                 surveyDTO.setTypes(types);
+                surveyDTO.setYear(resultSurvey.getInt("year"));
 
                 Connect.closeConnection();
             } else {

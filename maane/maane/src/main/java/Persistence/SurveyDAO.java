@@ -135,9 +135,9 @@ public class SurveyDAO {
     public Response<Integer> getSurveyYear(String surveyID)  {
         Response<Integer> res;
 
-        /*if(surveys.containsKey(surveyID))
+        if(surveys.containsKey(surveyID))
             return new Response<>(surveys.get(surveyID).getSecond().getYear(), false, "survey found in cache");
-*///todo bring back
+
         res = persistence.getSurveyYear(surveyID);
 
         return res;
