@@ -126,8 +126,8 @@ public class DataController {
     }
 
     public Response<Boolean> resetDB(){
-        UserQueries.getInstance().clearDB();
         UserController userController = UserController.getInstance();
+        userController.resetDB();
         userController.login("admin");
 
         userController.registerUserBySystemManager("admin","ronit", "1234abcd", UserStateEnum.SUPERVISOR, "", "tech",

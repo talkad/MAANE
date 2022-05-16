@@ -609,6 +609,14 @@ public class UserController {
         adminBoot("admin", "admin123");
     }
 
+    public void resetDB(){
+        this.passwordEncoder = new BCryptPasswordEncoder();
+        this.connectedUsers = new ConcurrentHashMap<>();
+        this.userDAO.clearDB();
+        this.goalsManagement = GoalsManagement.getInstance();
+        adminBoot("admin", "admin123");
+    }
+
     public Response<String> fillMonthlyReport(String currUser){
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
