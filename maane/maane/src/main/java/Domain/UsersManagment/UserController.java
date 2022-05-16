@@ -1,16 +1,13 @@
 package Domain.UsersManagment;
 
-import Communication.DTOs.ActivityDTO;
 import Communication.DTOs.GoalDTO;
 import Communication.DTOs.UserDTO;
 import Communication.DTOs.WorkPlanDTO;
 import Communication.Initializer.ServerContextInitializer;
-import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.SurveyController;
 import Domain.EmailManagement.EmailController;
 import Domain.WorkPlan.GoalsManagement;
-import Domain.WorkPlan.WorkPlan;
 import Persistence.DbDtos.UserDBDTO;
 import Persistence.SurveyDAO;
 import Persistence.UserQueries;
@@ -24,9 +21,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import java.security.SecureRandom;
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.time.Period;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -53,7 +47,7 @@ public class UserController {
         secureRandom = new SecureRandom();
         base64Encoder = Base64.getUrlEncoder();
 
-        adminBoot("admin", "admin");//todo need to hide password in db
+        adminBoot("admin", "admin123");//todo need to hide password in db
     }
 
 
@@ -67,14 +61,6 @@ public class UserController {
 
     public Map<String, User> getConnectedUsers() {
         return this.connectedUsers;
-    }
-
-    public void assignWorkPlan(String instructor, WorkPlan workPlan, Integer year) {
-        //todo implement properly later validate and prevent errors
-        User user = new User(userDAO.getFullUser(instructor).getResult());
-        //user.assignWorkPlan(workPlan, instructor);//todo assign properly
-        //workPlanDAO.insertUserWorkPlan(instructor, workPlan, year);
-
     }
 
     public Response<Boolean> sendCoordinatorEmails(String currUser, String surveyLink) {
@@ -257,7 +243,6 @@ public class UserController {
                         if (!result.isFailure()) {
                             userDAO.insertUser(new UserDBDTO(result.getResult(), passwordEncoder.encode(password)));
                             userDAO.addAppointment(currUser, userToRegister);
-                            //goalsManagement.addGoalsField(workField);
                             return new Response<>(result.getResult().getUsername(), false, "Registration occurred");
                         }
                         return new Response<>(null, result.isFailure(), result.getErrMsg());
@@ -472,7 +457,7 @@ public class UserController {
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             if(userDAO.userExists(userToRemoveSchoolsName)) {
-                response = user.removeSchoolsFromUser(userToRemoveSchoolsName, schools);
+                response = user.removeSchoolsFromUser(userToRemoveSchoolsName);
                 if(!response.isFailure()){
                    User userToRemoveSchools = new User(userDAO.getFullUser(userToRemoveSchoolsName).getResult());
                    userToRemoveSchools.removeSchools(schools);
@@ -865,28 +850,12 @@ public class UserController {
     }
 
     public Response<WorkPlanDTO> viewWorkPlan(String currUser, Integer year, Integer month){
-/*        WorkPlanDTO workPlanDTO = new WorkPlanDTO();
-        List<Pair<LocalDateTime, ActivityDTO>> l = new LinkedList<>();
-
-        l.add(new Pair<>(LocalDateTime.of(2022, Month.MAY, 15, 10, 0, 0), new ActivityDTO("2222222", "בטיחות במעבדה 1")));
-        l.add(new Pair<>(LocalDateTime.of(2022, Month.MAY, 15, 12, 0, 0), new ActivityDTO("2222222", "בטיחות במעבדה 1")));
-
-        l.add(new Pair<>(LocalDateTime.of(2022, Month.MAY, 18, 10, 0, 0), new ActivityDTO("2222222", "בטיחות במעבדה 2")));
-
-        workPlanDTO.setCalendar(l);
-
-        return new Response<>(workPlanDTO, false, "HI THERE!");*/
-
-        //todo: fix it
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
-            //return new Response<>(workPlanDAO.getUserWorkPlanByYear(currUser, year).getResult(), false, "");
-            //Response<Boolean> workPlanResponse = user.getWorkPlanByYear(year);
             Response<Boolean> workPlanResponse = user.getWorkPlanByYear(year);
 
             if(!workPlanResponse.isFailure()){
-                return workPlanDAO.getUserWorkPlanByYearAndMonth(currUser, year, month);// generateWpDTO(user, year);
-                //return new Response<>(workPlanDTO, false, "successfully acquired work plan");
+                return workPlanDAO.getUserWorkPlanByYearAndMonth(currUser, year, month);
             }
             else{
                 return new Response<>(null, true, workPlanResponse.getErrMsg());
@@ -897,23 +866,6 @@ public class UserController {
         }
     }
 
-/*    private WorkPlanDTO generateWpDTO(User user, String year) {
-        WorkPlanDTO workPlanDTO = new WorkPlanDTO();
-        WorkPlan workPlan = user.getWorkPlanByYear(year).getResult();
-        for (String date: workPlan.getCalendar().descendingKeySet()) {
-            List<Activity> fromHere = workPlan.getCalendar().get(date);
-            List<ActivityDTO> toHere = new ArrayList<>();
-            for (Activity activity : fromHere){
-                ActivityDTO activityDTO = new ActivityDTO();
-                activityDTO.setTitle(activity.getTitle());
-                activityDTO.setSchoolId(activity.getSchool());
-                toHere.add(activityDTO);
-            }
-            workPlanDTO.getCalendar().add(new Pair<>(date, toHere));
-        }
-        return workPlanDTO;
-    }*/
-    
     public Response<UserDTO> getUserInfo(String currUser){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
@@ -1003,7 +955,7 @@ public class UserController {
     }
 
     public Response<Boolean> transferSupervision(String currUser, String currSupervisor, String newSupervisor, String password, String firstName, String lastName, String email, String phoneNumber, String city){
-        if(connectedUsers.containsKey(currUser)) {//todo maybe remove all workPlans
+        if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             Response<Boolean> transferSupervisionRes = user.transferSupervision(currSupervisor, newSupervisor);
             if(!transferSupervisionRes.isFailure()){
@@ -1021,6 +973,7 @@ public class UserController {
 
                         userDAO.removeUser(currSupervisor);
                         userDAO.addAppointment(currUser, newSupervisor);
+                        userDAO.removeWorkPlan(newSupervisor);
                         connectedUsers.remove(currSupervisor);
                         return transferSupervisionRes;
                     }
@@ -1042,7 +995,7 @@ public class UserController {
     }
 
     public Response<Boolean> transferSupervisionToExistingUser(String currUser, String currSupervisor, String newSupervisor){
-        if(connectedUsers.containsKey(currUser)) {//todo maybe remove all workPlans
+        if(connectedUsers.containsKey(currUser)) {//todo check that transfer supervision works with removed workplans
             User user = connectedUsers.get(currUser);
             Response<Boolean> transferSupervisionRes = user.transferSupervision(currSupervisor, newSupervisor);
             if(!transferSupervisionRes.isFailure()){
@@ -1062,6 +1015,7 @@ public class UserController {
                     userDAO.updateUserState(newSup.getUsername(), newSup.getState().getStateEnum().getState());
                     userDAO.updateSurveys(newSup.getUsername(), newSup.getSurveys().getResult());
                     userDAO.removeUser(currSupervisor);
+                    userDAO.removeWorkPlan(newSupervisor);
                     connectedUsers.remove(currSupervisor);
                     if(connectedUsers.containsKey(newSupervisor)){
                         newSup = connectedUsers.get(newSupervisor);
