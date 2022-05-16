@@ -77,14 +77,14 @@ public class FaultDetector {
         Goal goal = null;
 
         for(Pair<Rule, Integer> rule: rules){
-            if(rule.getFirst().apply(answers))
+            if(rule.getFirst().apply(answers)) {
                 queIDs = rule.getFirst().getQuestionIndex();
                 goal = GoalsManagement.getInstance().getGoalTById(rule.getSecond()).getResult();
 
-                if(goal != null && queIDs != null){
-                    for(Integer queID: queIDs){
+                if (goal != null && queIDs != null) {
+                    for (Integer queID : queIDs) {
 
-                        if(!faults.containsKey(queID))
+                        if (!faults.containsKey(queID))
                             faults.put(queID, new LinkedList<>());
 
                         List<String> goals = faults.get(queID);
@@ -92,6 +92,7 @@ public class FaultDetector {
                         faults.put(queID, goals);
                     }
                 }
+            }
         }
 
         return new Response<>(faults, false, "details");

@@ -123,7 +123,7 @@ public class MaaneApplication {
 
 				// add answers
 				SurveyController.getInstance().addAnswers(new SurveyAnswersDTO("1111",
-						new LinkedList<>(Arrays.asList("1111111", "open ans","20", "0")),
+						new LinkedList<>(Arrays.asList("1111111", "open ans","30", "0")),
 						new LinkedList<>(Arrays.asList(AnswerType.NUMERIC_ANSWER, AnswerType.OPEN_ANSWER, AnswerType.NUMERIC_ANSWER, AnswerType.MULTIPLE_CHOICE))));
 
 				SurveyController.getInstance().addAnswers(new SurveyAnswersDTO("1111",

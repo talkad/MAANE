@@ -865,7 +865,7 @@ public class UserController {
     }
 
     public Response<WorkPlanDTO> viewWorkPlan(String currUser, Integer year, Integer month){
-        WorkPlanDTO workPlanDTO = new WorkPlanDTO();
+/*        WorkPlanDTO workPlanDTO = new WorkPlanDTO();
         List<Pair<LocalDateTime, ActivityDTO>> l = new LinkedList<>();
 
         l.add(new Pair<>(LocalDateTime.of(2022, Month.MAY, 15, 10, 0, 0), new ActivityDTO("2222222", "בטיחות במעבדה 1")));
@@ -875,24 +875,26 @@ public class UserController {
 
         workPlanDTO.setCalendar(l);
 
-        return new Response<>(workPlanDTO, false, "HI THERE!");
+        return new Response<>(workPlanDTO, false, "HI THERE!");*/
 
         //todo: fix it
-//        if(connectedUsers.containsKey(currUser)) {
-//            User user = connectedUsers.get(currUser);
-//            //return new Response<>(workPlanDAO.getUserWorkPlanByYear(currUser, year).getResult(), false, "");
-//            Response<Boolean> workPlanResponse = user.getWorkPlanByYear(year);
-//            if(!workPlanResponse.isFailure()){
-//                return workPlanDAO.getUserWorkPlanByYear(currUser, year);// generateWpDTO(user, year);
-//                //return new Response<>(workPlanDTO, false, "successfully acquired work plan");
-//            }
-//            else{
-//                return new Response<>(null, true, workPlanResponse.getErrMsg());
-//            }
-//        }
-//        else {
-//            return new Response<>(null, true, "User not connected");
-//        }
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            //return new Response<>(workPlanDAO.getUserWorkPlanByYear(currUser, year).getResult(), false, "");
+            //Response<Boolean> workPlanResponse = user.getWorkPlanByYear(year);
+            Response<Boolean> workPlanResponse = user.getWorkPlanByYear(year);
+
+            if(!workPlanResponse.isFailure()){
+                return workPlanDAO.getUserWorkPlanByYearAndMonth(currUser, year, month);// generateWpDTO(user, year);
+                //return new Response<>(workPlanDTO, false, "successfully acquired work plan");
+            }
+            else{
+                return new Response<>(null, true, workPlanResponse.getErrMsg());
+            }
+        }
+        else {
+            return new Response<>(null, true, "User not connected");
+        }
     }
 
 /*    private WorkPlanDTO generateWpDTO(User user, String year) {
