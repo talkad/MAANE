@@ -26,6 +26,7 @@ public class WorkPlanQueries {
     }
 
     public Response<Boolean> insertUserWorkPlan(String username, WorkPlanDTO workPlan, Integer year){
+        System.out.println("name: " + username + " date: " + year);
         Connect.createConnection();
         int rows = 0;
         String sql = "INSERT INTO \"WorkPlans\" (username, year, date, activities) VALUES (?, ?, ?, ?)";

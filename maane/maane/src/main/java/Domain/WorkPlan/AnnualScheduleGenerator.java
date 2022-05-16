@@ -145,7 +145,7 @@ public class AnnualScheduleGenerator {
             }
             for (String instructor : instructorWithProblemsForSchools.keySet()) {
 
-                WorkPlan workPlan = new WorkPlan(2022);
+                WorkPlan workPlan = new WorkPlan(year);
                 List<Pair<String, Goal>> goalsPriorityQueue = new Vector<>();
                 for (String school : instructorWithProblemsForSchools.get(instructor).keySet()) {
 
@@ -199,7 +199,9 @@ public class AnnualScheduleGenerator {
                     }
                 }
                 userController.assignWorkPlan(instructor, workPlan, year);
+                workPlan.printMe();
                 WorkPlanDTO workPlanDTO = new WorkPlanDTO(workPlan);
+                //workPlanDTO.printMe();
                 WorkPlanQueries.getInstance().insertUserWorkPlan(instructor, workPlanDTO, year);//todo replace the line above with this
             }
         }
