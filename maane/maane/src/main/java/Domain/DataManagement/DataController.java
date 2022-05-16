@@ -180,7 +180,9 @@ public class DataController {
 
         Rule rule1 = new AndRule(Arrays.asList(new NumericBaseRule(2, Comparison.EQUAL, 40),
                 new MultipleChoiceBaseRule(3, List.of(1))));
+
         Rule rule2 = new NumericBaseRule(2, Comparison.EQUAL, 30);
+
         // create rules
         SurveyController.getInstance().addRule("ronit", "1111", rule1, 1);
         SurveyController.getInstance().addRule("ronit", "1111", rule2, 2);
@@ -190,7 +192,7 @@ public class DataController {
 
         // add answers
         SurveyController.getInstance().addAnswers(new SurveyAnswersDTO("1111",
-                new LinkedList<>(Arrays.asList("1111111", "open ans","20", "0")),
+                new LinkedList<>(Arrays.asList("1111111", "open ans","30", "0")),
                 new LinkedList<>(Arrays.asList(AnswerType.NUMERIC_ANSWER, AnswerType.OPEN_ANSWER, AnswerType.NUMERIC_ANSWER, AnswerType.MULTIPLE_CHOICE))));
 
         SurveyController.getInstance().addAnswers(new SurveyAnswersDTO("1111",
@@ -202,7 +204,6 @@ public class DataController {
                 Arrays.asList("symbol", "open?", "numeric?", "multiple choice?"),
                 Arrays.asList(new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), Arrays.asList("correct", "wrong")),
                 Arrays.asList(AnswerType.NUMERIC_ANSWER, AnswerType.OPEN_ANSWER, AnswerType.NUMERIC_ANSWER, AnswerType.MULTIPLE_CHOICE), 2022);
-
 
         SurveyController.getInstance().createSurvey("ronit", surveyDTO);
 

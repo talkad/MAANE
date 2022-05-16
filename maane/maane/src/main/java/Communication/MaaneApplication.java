@@ -136,11 +136,9 @@ public class MaaneApplication {
 						Arrays.asList(new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), Arrays.asList("correct", "wrong")),
 						Arrays.asList(AnswerType.NUMERIC_ANSWER, AnswerType.OPEN_ANSWER, AnswerType.NUMERIC_ANSWER, AnswerType.MULTIPLE_CHOICE), 2022);
 
-
 				SurveyController.getInstance().createSurvey("ronit", surveyDTO);
 
 				userController.logout("ronit");
-
 			}
 
 		};
