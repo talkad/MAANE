@@ -190,6 +190,7 @@ function SystemManagerRow(props) {
                 {/* the arrow to open the extra info */}
                 <TableCell>
                     <IconButton
+                        id={`supervisor_collapse_button_${row.username}`}
                         aria-label="expand row"
                         size="small"
                         onClick={() => setOpen(!open)}
@@ -776,7 +777,7 @@ export default function UsersManagement(props){
                         rows.push(createData(
                             row.username,
                             row.firstName + " " + row.lastName,
-                            "מפקח/ת",
+                            row.workField,
                             row.email,
                             row.phoneNumber,
                             row.city,
@@ -1056,7 +1057,7 @@ export default function UsersManagement(props){
                 <h1>{page_title_string}</h1>
                 {/* adding new users button */}
                 <div>
-                    <Button variant="outlined" color="secondary" onClick={() => navigate('../registerUsers')}>הוספת משתמש</Button>
+                    <Button id={'register_users_button'} variant="outlined" color="secondary" onClick={() => navigate('../registerUsers')}>הוספת משתמש</Button>
                 </div>
 
                 {/*supervisor table*/}
