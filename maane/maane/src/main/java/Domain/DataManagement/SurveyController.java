@@ -377,7 +377,6 @@ public class SurveyController {
      */
     public Response<List<Integer>> detectSchoolFault(String username, String id, String symbol, Integer year){
         FaultDetector faultDetector;
-        List<GoalDTO> goals = UserController.getInstance().getGoals(username, year).getResult();
         List<Integer> currentFaults = new LinkedList<>();
 
         Response<Boolean> legalAdd = UserController.getInstance().hasCreatedSurvey(username, id);
@@ -388,11 +387,15 @@ public class SurveyController {
         faultDetector = new FaultDetector(rulesConverter(surveyDAO.getRules(id)));
         List<SurveyAnswers> answers = answerConverter(surveyDAO.getAnswers(id));
 
+        // remove redundant answer
+        for(SurveyAnswers ans: answers){
+            ans.removeSymbolAnswer();
+        }
+
         for(SurveyAnswers ans: answers){
 
             if(ans.getSymbol().equals(symbol)){
-                for(Integer fault: faultDetector.detectFault(ans).getResult())
-                    currentFaults.add(goals.get(fault).getGoalId());
+                currentFaults.addAll(faultDetector.detectFault(ans).getResult());
             }
         }
 
