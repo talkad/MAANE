@@ -18,6 +18,13 @@
 		<lombok.version>1.18.22</lombok.version>
 	</properties>
 
+	<repositories>
+		<repository>
+			<id>AsposeJavaAPI</id>
+			<name>Aspose Java API</name>
+			<url>https://repository.aspose.com/repo/</url>
+		</repository>
+	</repositories>
 
 	<dependencies>
 		<dependency>
@@ -123,15 +130,12 @@
 			<version>8.12.46</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.docx4j</groupId>
-			<artifactId>docx4j</artifactId>
-			<version>6.1.2</version>
-		</dependency>
 
 		<dependency>
-			<groupId>javax.xml.bind</groupId>
-			<artifactId>jaxb-api</artifactId>
+			<groupId>com.aspose</groupId>
+			<artifactId>aspose-words</artifactId>
+			<version>22.4</version>
+			<classifier>jdk17</classifier>
 		</dependency>
 
 	</dependencies>
