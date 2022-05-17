@@ -1,24 +1,28 @@
 package Domain.MonthlyReport;
 
 import Domain.CommonClasses.Response;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.wp.usermodel.HeaderFooterType;
 import org.apache.poi.xwpf.usermodel.*;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.*;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class MSWordWriterService {
 
     /**
      * create docx file according to monthly report template
-     * @param filepath the location the file will be saved and manupulated
+     * @param filepath the location the file will be saved and manipulated
      * @return response if the function succeeded
      */
     public Response<File> createDoc(String filepath) {
