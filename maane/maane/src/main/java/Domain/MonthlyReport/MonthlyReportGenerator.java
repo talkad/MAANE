@@ -2,6 +2,7 @@ package Domain.MonthlyReport;
 
 
 import Domain.CommonClasses.Response;
+import Domain.UsersManagment.APIs.UserInfoService;
 import Domain.UsersManagment.UserController;
 
 import java.io.File;
@@ -9,6 +10,7 @@ import java.io.FileInputStream;
 
 public class MonthlyReportGenerator {
 
+    private UserInfoService infoService;
     private UserController userController;
     private MSWordWriterService writerService;
 
@@ -27,12 +29,22 @@ public class MonthlyReportGenerator {
 
     public Response<byte[]> generateMonthlyReport(String username) {
 
-        Response<File> reportRes = writerService.createDoc("maane\\src\\main\\resources\\monthlyReport_" + username + ".docx");
+        Response<Boolean> legalRes = infoService.canGenerateReport(username);
+        Response<File> reportRes;
+
         byte[] binaryFile = null;
         FileInputStream fileInputStream;
-        File file = reportRes.getResult();
+        File file;
 
-        // receive data from userController
+        // check if the given user can generate a monthly report
+        if(!legalRes.getResult())
+            return new Response<>(null, true, legalRes.getErrMsg());
+
+        // ...
+
+        reportRes = writerService.createDoc("maane\\src\\main\\resources\\monthlyReport_" + username + ".docx");
+        file = reportRes.getResult();
+    // receive data from userController
 
         if(!reportRes.isFailure()) {
             binaryFile = new byte[(int)file.length()];
@@ -55,13 +67,13 @@ public class MonthlyReportGenerator {
     }
 
 
-//    public static void main(String[] args)  {
-//
+    public static void main(String[] args)  {
+
 //        MSWordWriterService service = new MSWordWriterService();
 //
 //        service.createDoc("maane\\src\\main\\resources\\monthlyReport.docx");
-//
-//
-//    }
+
+
+    }
 
 }
