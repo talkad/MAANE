@@ -2,14 +2,14 @@ package Domain.MonthlyReport;
 
 import Domain.CommonClasses.Response;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.common.usermodel.fonts.FontFamily;
 import org.apache.poi.wp.usermodel.HeaderFooterType;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.usermodel.XWPFFooter;
-import org.apache.poi.xwpf.usermodel.XWPFHeader;
-import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.*;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.*;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.math.BigInteger;
 
 @Service
 @Slf4j
@@ -23,16 +23,10 @@ public class MSWordWriterService {
     public Response<File> createDoc(String filepath) {
         XWPFDocument document = new XWPFDocument();
 
-
-
-        XWPFHeader header = document.createHeader(HeaderFooterType.DEFAULT);
-        header.createParagraph().createRun().setText("משרד החינוך");
-        XWPFFooter footer = document.createFooter(HeaderFooterType.DEFAULT);
-        XWPFParagraph p = footer.createParagraph();
-
-//        XWPFRun run = p.createRun();
-//        run.setFontSize(40);
-//        run.setText("Footer text bla bla bla");
+        setPageSize(document, 15840, 12240);
+        addFooter(document);
+        addHeader(document);
+        addUserDetailsTable(document);
 
         try {
             document.write(new FileOutputStream(filepath));
@@ -44,70 +38,142 @@ public class MSWordWriterService {
         return new Response<>(new File(filepath), false, "monthly report generated successfully");
     }
 
-//    private void saveDocument(XWPFDocument doc) throws IOException {
-//        File file = new File("Generated Information.docx");
-//        file.delete();
-//        file.createNewFile();
-//        doc.write(new FileOutputStream(file));
-////        ByteArrayOutputStream baos = new ByteArrayOutputStream(4096);
-////        doc.write(baos);
-//        doc.close();
-//    }
-//
-//    public void writeASmallStory() throws IOException {
-//        XWPFDocument document = new XWPFDocument();
-//        XWPFDocument template = new XWPFDocument(new FileInputStream("Generated Information.docx"));
-//        XWPFStyles newStyles = document.createStyles();
-//        XWPFStyle heading1 = template.getStyles().getStyle("Heading1");
-//        XWPFStyle heading2 = template.getStyles().getStyle("Heading2");
-//        newStyles.addStyle(heading1);
-//        newStyles.addStyle(heading2);
-//
-//        generateHeaderAndFooter(document);
-//        generateBodyParagraphs(document, heading1, heading2);
-//        generateTable(document);
-//
-//        saveDocument(document);
-//    }
-//
-//    public void generateTable(XWPFDocument document) {
-//        XWPFTable table = document.createTable(10, 2);
-//        int rownumber = 0;
-//        table.getRow(rownumber).getCell(0).setText("Name");
-//        table.getRow(rownumber++).getCell(1).setText("Age");
-//        table.getRow(rownumber).getCell(0).setText("Mike");
-//        table.getRow(rownumber++).getCell(1).setText("42");
-//        table.getRow(rownumber).getCell(0).setText("Susan");
-//        table.getRow(rownumber++).getCell(1).setText("26");
-//        table.getRow(rownumber).getCell(0).setText("John");
-//        table.getRow(rownumber++).getCell(1).setText("31");
-//    }
-//
-//    public void generateHeaderAndFooter(XWPFDocument document) {
-//        XWPFHeader header = document.createHeader(HeaderFooterType.DEFAULT);
-//        header.createParagraph().createRun().setText("Header tralallala 1 2 3 4 5 6");
-//        XWPFFooter footer = document.createFooter(HeaderFooterType.DEFAULT);
-//        XWPFParagraph p = footer.createParagraph();
-//        XWPFRun run = p.createRun();
-//        run.setFontSize(40);
-//        run.setText("Footer text bla bla bla");
-//    }
-//
-//    public void generateBodyParagraphs(XWPFDocument document, XWPFStyle heading1, XWPFStyle heading2) throws IOException {
-//        XWPFParagraph pBody = document.createParagraph();
-//        XWPFRun run1 = pBody.createRun();
-//        pBody.setStyle(heading1.getStyleId());
-//        run1.setStyle(heading1.getStyleId());
-//        run1.setText("This is the first headerr");
-//
-//        XWPFParagraph pBody2 = document.createParagraph();
-//        XWPFRun run2 = pBody2.createRun();
-//        pBody2.setStyle(heading2.getStyleId());
-//        run2.setText("This is the second headerr");
-//        run2.addCarriageReturn();
-//        // Empty paragraph
-//        document.createParagraph();
-//
-//    }
+
+    /**
+     * Set page size to given width and height
+     */
+    private void setPageSize(XWPFDocument document, int width, int height){
+        CTDocument1 doc = document.getDocument();
+        CTBody body = doc.getBody();
+
+        if (!body.isSetSectPr()) {
+            body.addNewSectPr();
+        }
+        CTSectPr section = body.getSectPr();
+
+        if(!section.isSetPgSz()) {
+            section.addNewPgSz();
+        }
+        CTPageSz pageSize = section.getPgSz();
+
+        pageSize.setW(BigInteger.valueOf(width));
+        pageSize.setH(BigInteger.valueOf(height));
+    }
+
+    private void addFooter(XWPFDocument document) {
+        XWPFHeader header = document.createHeader(HeaderFooterType.DEFAULT);
+        XWPFParagraph paragraph = header.createParagraph();
+        XWPFRun run = paragraph.createRun();
+        run.setText("מדינת ישראל");
+        run.addBreak();
+        run.setText(" משרד החינוך");
+        run.setFontFamily("Arial");
+        run.setFontSize(12);
+        run.setBold(true);
+        paragraph.setAlignment(ParagraphAlignment.CENTER);
+    }
+
+    private void addHeader(XWPFDocument document) {
+        XWPFParagraph paragraph = document.createParagraph();
+        XWPFRun run = paragraph.createRun();
+        run.setText("דוח עבודה חדשי במסגרת ההדרכה לעובדי הוראה/גני ילדים: מורה בתפקיד הדרכה במחוז");
+        run.setFontFamily("David");
+        run.setFontSize(14);
+        run.setBold(true);
+        paragraph.setAlignment(ParagraphAlignment.CENTER);
+    }
+
+    public void addUserDetailsTable(XWPFDocument document) {
+        XWPFTable table = document.createTable(2, 32);
+        table.setWidth(13500);
+
+        // first row
+        table.getRow(0).setHeight(500);
+
+        mergeTableCells(table,0, 0, 3);
+        writeIntoTableCell(table.getRow(0).getCell(0), "מקום המגורים", "", true, ParagraphAlignment.RIGHT);
+
+        mergeTableCells(table,0, 3, 5);
+        writeIntoTableCell(table.getRow(0).getCell(3), "השנה", "", true, ParagraphAlignment.RIGHT);
+
+        writeIntoTableCell(table.getRow(0).getCell(5), "החודש", "", true, ParagraphAlignment.RIGHT);
+
+        for(int i = 6; i < 15; i++)
+            table.getRow(0).getCell(i).getCTTc().addNewTcPr().addNewTcW().setW(BigInteger.valueOf(300));
+
+        writeIntoTableCell(table.getRow(0).getCell(15), "מס ת\"ז", "", true, ParagraphAlignment.RIGHT);
+
+        mergeTableCells(table,0, 16, 24);
+        writeIntoTableCell(table.getRow(0).getCell(16), "השם הפרטי", "", true, ParagraphAlignment.RIGHT);
+
+        mergeTableCells(table,0, 24, 32);
+        writeIntoTableCell(table.getRow(0).getCell(24), "שם המשפחה", "", true, ParagraphAlignment.RIGHT);
+
+
+        // second row
+        table.getRow(1).setHeight(1000);
+
+        mergeTableCells(table,1, 0, 5);
+        writeIntoTableCell(table.getRow(1).getCell(0), "היחידה/המחוז ", "המינהל לחינוך התיישבותי", true, ParagraphAlignment.RIGHT);
+
+        mergeTableCells(table,1, 5, 17);
+        writeIntoTableCell(table.getRow(1).getCell(5), ":נושא ההדרכה", "", true, ParagraphAlignment.RIGHT);
+
+        writeIntoTableCell(table.getRow(1).getCell(22), "א", "O", true, ParagraphAlignment.CENTER);
+        writeIntoTableCell(table.getRow(1).getCell(21), "ב", "O", true, ParagraphAlignment.CENTER);
+        writeIntoTableCell(table.getRow(1).getCell(20), "ג", "O", true, ParagraphAlignment.CENTER);
+        writeIntoTableCell(table.getRow(1).getCell(19), "ד", "O", true, ParagraphAlignment.CENTER);
+        writeIntoTableCell(table.getRow(1).getCell(18), "ה", "O", true, ParagraphAlignment.CENTER);
+        writeIntoTableCell(table.getRow(1).getCell(17), "ו", "O", true, ParagraphAlignment.CENTER);
+
+        mergeTableCells(table,1, 23, 27);
+        writeIntoTableCell(table.getRow(1).getCell(23), "היום בשבוע", "(יש לסמן X)", true, ParagraphAlignment.CENTER);
+
+        mergeTableCells(table,1, 27, 32);
+        writeIntoTableCell(table.getRow(1).getCell(27), "מספר ימי ההדרכה", "", true, ParagraphAlignment.RIGHT);
+
+    }
+
+    private void writeIntoTableCell(XWPFTableCell cell, String text, String subText,  boolean bold, ParagraphAlignment alignment) {
+        XWPFParagraph paragraph = cell.getParagraphs().get(0);
+        XWPFRun run = paragraph.createRun();
+
+        run.setFontFamily("David");
+        run.setFontSize(12);
+        paragraph.setAlignment(alignment);
+        run.setBold(bold);
+        run.setText(text);
+
+        run.addBreak();
+        run.addBreak();
+        run.setText(subText);
+    }
+
+    private void mergeTableCells(XWPFTable table, int rowIdx, int startColIdx, int endColIdx) {
+
+        for(int i = startColIdx + 1; i < endColIdx; i++) {
+            // first column
+            CTHMerge hMerge = CTHMerge.Factory.newInstance();
+            hMerge.setVal(STMerge.RESTART);
+            XWPFTableCell cell = table.getRow(rowIdx).getCell(startColIdx);
+
+            if (cell.getCTTc().getTcPr() == null)
+                cell.getCTTc().addNewTcPr();
+
+            cell.getCTTc().getTcPr().setHMerge(hMerge);
+
+            // the collapsed  column
+            CTHMerge hMerge1 = CTHMerge.Factory.newInstance();
+            hMerge1.setVal(STMerge.CONTINUE);
+            cell = table.getRow(rowIdx).getCell(i);
+
+            if (cell.getCTTc().getTcPr() == null)
+                cell.getCTTc().addNewTcPr();
+
+            cell.getCTTc().getTcPr().setHMerge(hMerge1);
+        }
+
+    }
+
 
 }
