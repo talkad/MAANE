@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.math.BigInteger;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Service
 @Slf4j
@@ -27,6 +29,8 @@ public class MSWordWriterService {
         addFooter(document);
         addHeader(document);
         addUserDetailsTable(document);
+        document.createParagraph();
+        addApprovalTable(document);
 
         try {
             document.write(new FileOutputStream(filepath));
@@ -148,6 +152,62 @@ public class MSWordWriterService {
         run.addBreak();
         run.setText(subText);
     }
+
+
+    private void addApprovalTable(XWPFDocument document) {
+
+        XWPFTable table = document.createTable(1, 2);
+        table.setWidth(13500);
+
+//        table.getRow(0).setHeight(1000);
+
+        XWPFTableCell cell = table.getRow(0).getCell(0);
+
+        XWPFParagraph paragraph = cell.getParagraphs().get(0);
+        XWPFRun run = paragraph.createRun();
+
+        run.setFontFamily("David");
+        run.setFontSize(10);
+        paragraph.setAlignment(ParagraphAlignment.RIGHT);
+        run.setText(":הריני מאשר שהעובד הועסק ונסע באישור בהתאם לרשום לעיל" );
+        run.addBreak();
+        run.setText(" נסע בתפקיד כרשום לעיל - " );
+        run.addBreak();
+        run.setText(" מגיעות לו הוצאות אש\"ל ודמי כלכלה - " );
+
+        paragraph = cell.addParagraph();
+        run = paragraph.createRun();
+
+        run.setFontFamily("David");
+        run.setFontSize(12);
+        paragraph.setAlignment(ParagraphAlignment.RIGHT);
+        run.setText(" __________ :תאריך    _________ :שם  _______________ :חתימה  ");
+
+
+        cell = table.getRow(0).getCell(1);
+
+        paragraph = cell.getParagraphs().get(0);
+        run = paragraph.createRun();
+
+        run.setFontFamily("David");
+        run.setFontSize(10);
+        paragraph.setAlignment(ParagraphAlignment.RIGHT);
+        run.setText(".אני מצהיר בזאת כי בתאריכים הנ\"ל עבדתי ונסעתי בהתאם לרשום לעיל" );
+        run.addBreak();
+        run.setText(".האש\"ל והוצאות הנסיעה הנדרשים על ידי לעיל לא שולמו לי ולא נדרשו משום גוף נוסף" );
+        run.addBreak();
+
+        paragraph = cell.addParagraph();
+        run = paragraph.createRun();
+
+        run.setFontFamily("David");
+        run.setFontSize(12);
+        paragraph.setAlignment(ParagraphAlignment.RIGHT);
+        run.setText("______________:" + "תאריך: " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + "   חתימה ");
+
+    }
+
+
 
     private void mergeTableCells(XWPFTable table, int rowIdx, int startColIdx, int endColIdx) {
 
