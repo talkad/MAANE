@@ -3,6 +3,7 @@ package Domain.MonthlyReport;
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.APIs.DTOs.UserActivityInfoDTO;
 import Domain.UsersManagment.APIs.DTOs.UserInfoDTO;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.wp.usermodel.HeaderFooterType;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -160,7 +162,7 @@ public class MSWordWriterService {
         if(subText.length() > 0) {
             run.addBreak();
             run.addBreak();
-            run.setText("  " + subText);
+            run.setText(subText);
         }
 
     }
@@ -344,6 +346,43 @@ public class MSWordWriterService {
     }
 
     private void fillActivitiesTable(XWPFTable table, List<UserActivityInfoDTO> activities) {
+
+        int row = 2;
+
+        for(UserActivityInfoDTO userActivityInfoDTO: activities){
+            insertActivity(table, userActivityInfoDTO, row);
+            row++;
+        }
+
+    }
+
+    private void insertActivity(XWPFTable table, UserActivityInfoDTO userActivityInfoDTO, int row) {
+
+        LocalDateTime start, end;
+
+        insertActivity(table.getRow(row).getCell(7), userActivityInfoDTO.getSchoolCity());
+        insertActivity(table.getRow(row).getCell(8), userActivityInfoDTO.getUserCity());
+        insertActivity(table.getRow(row).getCell(10), userActivityInfoDTO.getSchoolName());
+
+        // set time
+        start = userActivityInfoDTO.getActivityStart();
+        end = userActivityInfoDTO.getActivityEnd();
+
+        insertActivity(table.getRow(row).getCell(12), ChronoUnit.HOURS.between(start, end) + "");
+
+        insertActivity(table.getRow(row).getCell(13), end.format(DateTimeFormatter.ofPattern("HH:mm")));
+        insertActivity(table.getRow(row).getCell(14), start.format(DateTimeFormatter.ofPattern("HH:mm")));
+
+        insertActivity(table.getRow(row).getCell(15), start.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        insertActivity(table.getRow(row).getCell(16), dayToChar(start.getDayOfWeek().getValue()));
+
+
+    }
+
+    private String dayToChar(int dayOffset) {
+        int day = dayOffset == 7? 0: dayOffset;
+
+        return day == 6 ? "ש" : (char)('א' + day) + "";
     }
 
     private void insertAnswer(XWPFTableCell cell, String text) {
@@ -352,6 +391,17 @@ public class MSWordWriterService {
 
         run.setFontFamily("David");
         run.setFontSize(12);
+        run.setColor("2C2C2C");
+        paragraph.setAlignment(ParagraphAlignment.RIGHT);
+        run.setText(text);
+    }
+
+    private void insertActivity(XWPFTableCell cell, String text) {
+        XWPFParagraph paragraph = cell.getParagraphs().get(0);
+        XWPFRun run = paragraph.createRun();
+
+        run.setFontFamily("David");
+        run.setFontSize(10);
         run.setColor("2C2C2C");
         paragraph.setAlignment(ParagraphAlignment.RIGHT);
         run.setText(text);
