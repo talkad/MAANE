@@ -4,6 +4,7 @@ package Domain.MonthlyReport;
 import Domain.CommonClasses.Response;
 import Domain.UsersManagment.APIs.DTOs.UserActivityInfoDTO;
 import Domain.UsersManagment.APIs.DTOs.UserInfoDTO;
+import Domain.UsersManagment.APIs.UserInfoRetriever;
 import Domain.UsersManagment.APIs.UserInfoService;
 import Domain.UsersManagment.UserController;
 
@@ -15,7 +16,6 @@ import java.util.List;
 public class MonthlyReportGenerator {
 
     private UserInfoService infoService;
-    private UserController userController;
     private MSWordWriterService writerService;
 
     private static class CreateSafeThreadSingleton {
@@ -27,7 +27,7 @@ public class MonthlyReportGenerator {
     }
 
     public MonthlyReportGenerator() {
-        this.userController = UserController.getInstance();
+        this.infoService = new UserInfoRetriever();
         this.writerService = new MSWordWriterService();
     }
 
