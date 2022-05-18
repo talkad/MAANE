@@ -34,7 +34,7 @@ public class MSWordWriterService {
         setPageSize(document, 15840, 12240);
         addFooter(document);
         addHeader(document);
-        XWPFTable userDetailsTable = addUserDetailsTable(document);
+        XWPFTable userDetailsTable = addUserDetailsTable(document, userInfo.getWorkingDay());
         fillUserDetailsTable(userDetailsTable, userInfo, date);
 
         document.createParagraph();
@@ -99,7 +99,7 @@ public class MSWordWriterService {
         paragraph.setAlignment(ParagraphAlignment.CENTER);
     }
 
-    public XWPFTable addUserDetailsTable(XWPFDocument document) {
+    public XWPFTable addUserDetailsTable(XWPFDocument document, int workingDay) {
         XWPFTable table = document.createTable(2, 32);
         table.setWidth(13500);
 
@@ -135,12 +135,8 @@ public class MSWordWriterService {
         mergeTableCellsHorizontal(table,1, 5, 17);
         writeIntoTableCell(table.getRow(1).getCell(5), ":נושא ההדרכה", "", true, ParagraphAlignment.RIGHT, 12);
 
-        writeIntoTableCell(table.getRow(1).getCell(22), "א", "O", true, ParagraphAlignment.CENTER, 12);
-        writeIntoTableCell(table.getRow(1).getCell(21), "ב", "O", true, ParagraphAlignment.CENTER, 12);
-        writeIntoTableCell(table.getRow(1).getCell(20), "ג", "O", true, ParagraphAlignment.CENTER, 12);
-        writeIntoTableCell(table.getRow(1).getCell(19), "ד", "O", true, ParagraphAlignment.CENTER, 12);
-        writeIntoTableCell(table.getRow(1).getCell(18), "ה", "O", true, ParagraphAlignment.CENTER, 12);
-        writeIntoTableCell(table.getRow(1).getCell(17), "ו", "O", true, ParagraphAlignment.CENTER, 12);
+        for(int i = 0; i < 6; i++)
+            writeIntoTableCell(table.getRow(1).getCell(22 - i), (char)('א' + 1)+"", i == workingDay? "X": "O", true, ParagraphAlignment.CENTER, 12);
 
         mergeTableCellsHorizontal(table,1, 23, 27);
         writeIntoTableCell(table.getRow(1).getCell(23), "היום בשבוע", "(יש לסמן X)", true, ParagraphAlignment.CENTER, 12);
@@ -164,7 +160,7 @@ public class MSWordWriterService {
         if(subText.length() > 0) {
             run.addBreak();
             run.addBreak();
-            run.setText(subText);
+            run.setText("  " + subText);
         }
 
     }
@@ -341,12 +337,10 @@ public class MSWordWriterService {
 
         insertAnswer(table.getRow(0).getCell(0), userInfo.getCity());
         insertAnswer(table.getRow(0).getCell(3), date.getYear()+"");
-        insertAnswer(table.getRow(0).getCell(5), date.getMonth().getValue() + 1 + "");
+        insertAnswer(table.getRow(0).getCell(5), date.getMonth().getValue() + "");
         insertAnswer(table.getRow(0).getCell(16), userInfo.getFirstName());
         insertAnswer(table.getRow(0).getCell(24), userInfo.getLastName());
 
-        // second row
-        writeIntoTableCell(table.getRow(1).getCell(22 - userInfo.getWorkingDay()), (char)( 'א'+ userInfo.getWorkingDay())+"" , "X", true, ParagraphAlignment.CENTER, 12);
     }
 
     private void fillActivitiesTable(XWPFTable table, List<UserActivityInfoDTO> activities) {
@@ -357,11 +351,10 @@ public class MSWordWriterService {
         XWPFRun run = paragraph.createRun();
 
         run.setFontFamily("David");
-        run.setFontSize(10);
-//        run.setColor(); todo
+        run.setFontSize(12);
+        run.setColor("2C2C2C");
         paragraph.setAlignment(ParagraphAlignment.RIGHT);
         run.setText(text);
-
     }
 
 

@@ -94,22 +94,21 @@ public class MonthlyReportGenerator {
                 return new Response<>(null, true, e.getMessage());
             }
         }
-
-        // delete file from memory
-        if(file != null)
-            file.delete();
+//
+//        // delete file from memory
+//        if(file != null)
+//            file.delete();
 
         return new Response<>(binaryFile, reportRes.isFailure(), reportRes.getErrMsg());
     }
 
 
-//    public static void main(String[] args)  {
-//
-//        MSWordWriterService service = new MSWordWriterService();
-//
-//        service.createDoc("maane\\src\\main\\resources\\monthlyReport.docx");
-//
-//
-//    }
+    public static void main(String[] args)  {
+
+        MonthlyReportGenerator generator = getInstance();
+        generator.generateMonthlyReport("טל");
+
+
+    }
 
 }
