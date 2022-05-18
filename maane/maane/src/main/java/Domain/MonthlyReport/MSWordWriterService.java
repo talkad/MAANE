@@ -1,6 +1,8 @@
 package Domain.MonthlyReport;
 
 import Domain.CommonClasses.Response;
+import Domain.UsersManagment.APIs.DTOs.UserActivityInfoDTO;
+import Domain.UsersManagment.APIs.DTOs.UserInfoDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.wp.usermodel.HeaderFooterType;
@@ -14,6 +16,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -25,15 +28,19 @@ public class MSWordWriterService {
      * @param filepath the location the file will be saved and manipulated
      * @return response if the function succeeded
      */
-    public Response<File> createDoc(String filepath) {
+    public Response<File> createDoc(String filepath, UserInfoDTO userInfo, List<UserActivityInfoDTO> activities, LocalDateTime date) {
         XWPFDocument document = new XWPFDocument();
 
         setPageSize(document, 15840, 12240);
         addFooter(document);
         addHeader(document);
-        addUserDetailsTable(document);
+        XWPFTable userDetailsTable = addUserDetailsTable(document);
+        fillUserDetailsTable(userDetailsTable, userInfo, date);
+
         document.createParagraph();
-        addActivityTable(document);
+        XWPFTable activitiesTable = addActivityTable(document);
+        fillActivitiesTable(activitiesTable, activities);
+
         document.createParagraph();
         addApprovalTable(document);
 
@@ -92,7 +99,7 @@ public class MSWordWriterService {
         paragraph.setAlignment(ParagraphAlignment.CENTER);
     }
 
-    public void addUserDetailsTable(XWPFDocument document) {
+    public XWPFTable addUserDetailsTable(XWPFDocument document) {
         XWPFTable table = document.createTable(2, 32);
         table.setWidth(13500);
 
@@ -141,6 +148,7 @@ public class MSWordWriterService {
         mergeTableCellsHorizontal(table,1, 27, 32);
         writeIntoTableCell(table.getRow(1).getCell(27), "מספר ימי ההדרכה", "", true, ParagraphAlignment.RIGHT, 12);
 
+        return table;
     }
 
     private void writeIntoTableCell(XWPFTableCell cell, String text, String subText,  boolean bold, ParagraphAlignment alignment, int fontSize) {
@@ -214,7 +222,7 @@ public class MSWordWriterService {
     }
 
 
-    public void addActivityTable(XWPFDocument document) {
+    public XWPFTable addActivityTable(XWPFDocument document) {
         XWPFTable table = document.createTable(10, 17);
         table.setWidth(13500);
 
@@ -276,6 +284,7 @@ public class MSWordWriterService {
         mergeTableCellsVertical(table,15);
         mergeTableCellsVertical(table,16);
 
+        return table;
     }
 
     private void mergeTableCellsHorizontal(XWPFTable table, int rowIdx, int startColIdx, int endColIdx) {
@@ -327,6 +336,35 @@ public class MSWordWriterService {
         cell.getCTTc().getTcPr().setVMerge(vMerge1);
 
     }
+
+    private void fillUserDetailsTable(XWPFTable table, UserInfoDTO userInfo, LocalDateTime date) {
+
+        insertAnswer(table.getRow(0).getCell(0), userInfo.getCity());
+        insertAnswer(table.getRow(0).getCell(3), date.getYear()+"");
+        insertAnswer(table.getRow(0).getCell(5), date.getMonth().getValue() + 1 + "");
+        insertAnswer(table.getRow(0).getCell(16), userInfo.getFirstName());
+        insertAnswer(table.getRow(0).getCell(24), userInfo.getLastName());
+
+        // second row
+        writeIntoTableCell(table.getRow(1).getCell(22 - userInfo.getWorkingDay()), (char)( 'א'+ userInfo.getWorkingDay())+"" , "X", true, ParagraphAlignment.CENTER, 12);
+    }
+
+    private void fillActivitiesTable(XWPFTable table, List<UserActivityInfoDTO> activities) {
+    }
+
+    private void insertAnswer(XWPFTableCell cell, String text) {
+        XWPFParagraph paragraph = cell.addParagraph();
+        XWPFRun run = paragraph.createRun();
+
+        run.setFontFamily("David");
+        run.setFontSize(10);
+//        run.setColor(); todo
+        paragraph.setAlignment(ParagraphAlignment.RIGHT);
+        run.setText(text);
+
+    }
+
+
 
 
 }

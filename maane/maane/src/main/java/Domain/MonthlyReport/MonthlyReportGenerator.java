@@ -57,7 +57,7 @@ public class MonthlyReportGenerator {
         if(activities.isFailure())
             return new Response<>(null, true, userInfo.getErrMsg());
 
-        return generateReportDoc(username, userInfo.getResult(), activities.getResult());
+        return generateReportDoc(username, userInfo.getResult(), activities.getResult(), now);
 
     }
 
@@ -68,15 +68,19 @@ public class MonthlyReportGenerator {
      * @param activities the activities for the second table
      * @return response of binary document representation on success
      */
-    private Response<byte[]> generateReportDoc(String username, UserInfoDTO userInfo, List<UserActivityInfoDTO> activities) {
+    private Response<byte[]> generateReportDoc(String username, UserInfoDTO userInfo, List<UserActivityInfoDTO> activities, LocalDateTime date) {
         Response<File> reportRes;
         byte[] binaryFile = null;
         FileInputStream fileInputStream;
         File file;
 
-        reportRes = writerService.createDoc("maane\\src\\main\\resources\\monthlyReport_" + username + ".docx");
+        // update user city
+        for(UserActivityInfoDTO activity: activities)
+            activity.setUserCity(userInfo.getCity());
+
+        // create the document
+        reportRes = writerService.createDoc("maane\\src\\main\\resources\\monthlyReport_" + username + ".docx", userInfo, activities, date);
         file = reportRes.getResult();
-        // receive data from userController
 
         if(!reportRes.isFailure()) {
             binaryFile = new byte[(int)file.length()];
