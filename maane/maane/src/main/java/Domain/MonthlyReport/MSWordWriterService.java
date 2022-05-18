@@ -40,7 +40,7 @@ public class MSWordWriterService {
         fillUserDetailsTable(userDetailsTable, userInfo, date);
 
         document.createParagraph();
-        XWPFTable activitiesTable = addActivityTable(document);
+        XWPFTable activitiesTable = addActivityTable(document, activities.size() + 4);
         fillActivitiesTable(activitiesTable, activities);
 
         document.createParagraph();
@@ -220,8 +220,8 @@ public class MSWordWriterService {
     }
 
 
-    public XWPFTable addActivityTable(XWPFDocument document) {
-        XWPFTable table = document.createTable(10, 17);
+    public XWPFTable addActivityTable(XWPFDocument document, int numRows) {
+        XWPFTable table = document.createTable(numRows + 3, 17);
         table.setWidth(13500);
 
         // first row
@@ -271,8 +271,8 @@ public class MSWordWriterService {
         writeIntoTableCell(table.getRow(1).getCell(14), "משעה", "", false, ParagraphAlignment.CENTER, 10);
 
         // update last row - total
-        mergeTableCellsHorizontal(table,9, 9, 17);
-        writeIntoTableCell(table.getRow(9).getCell(9),"סה\"כ", "", true, ParagraphAlignment.RIGHT, 10);
+        mergeTableCellsHorizontal(table,numRows + 2, 9, 17);
+        writeIntoTableCell(table.getRow(numRows + 2).getCell(9),"סה\"כ", "", true, ParagraphAlignment.RIGHT, 10);
 
         // merging columns
         mergeTableCellsVertical(table,9);
@@ -359,6 +359,7 @@ public class MSWordWriterService {
     private void insertActivity(XWPFTable table, UserActivityInfoDTO userActivityInfoDTO, int row) {
 
         LocalDateTime start, end;
+        double totalTime;
 
         insertActivity(table.getRow(row).getCell(7), userActivityInfoDTO.getSchoolCity());
         insertActivity(table.getRow(row).getCell(8), userActivityInfoDTO.getUserCity());
@@ -367,8 +368,9 @@ public class MSWordWriterService {
         // set time
         start = userActivityInfoDTO.getActivityStart();
         end = userActivityInfoDTO.getActivityEnd();
+        totalTime = ChronoUnit.MINUTES.between(start, end);
 
-        insertActivity(table.getRow(row).getCell(12), ChronoUnit.HOURS.between(start, end) + "");
+        insertActivity(table.getRow(row).getCell(12),  (int)(totalTime / 60) + ":" + (int)(totalTime % 60));
 
         insertActivity(table.getRow(row).getCell(13), end.format(DateTimeFormatter.ofPattern("HH:mm")));
         insertActivity(table.getRow(row).getCell(14), start.format(DateTimeFormatter.ofPattern("HH:mm")));
