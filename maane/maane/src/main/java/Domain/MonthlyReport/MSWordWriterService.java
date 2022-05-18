@@ -264,6 +264,10 @@ public class MSWordWriterService {
         writeIntoTableCell(table.getRow(1).getCell(13), "עד שעה", "", false, ParagraphAlignment.CENTER, 10);
         writeIntoTableCell(table.getRow(1).getCell(14), "משעה", "", false, ParagraphAlignment.CENTER, 10);
 
+        // update last row - total
+        mergeTableCellsHorizontal(table,9, 9, 17);
+        writeIntoTableCell(table.getRow(9).getCell(9),"סה\"כ", "", true, ParagraphAlignment.RIGHT, 10);
+
         // merging columns
         mergeTableCellsVertical(table,9);
         mergeTableCellsVertical(table,10);

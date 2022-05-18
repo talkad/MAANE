@@ -2,11 +2,15 @@ package Domain.MonthlyReport;
 
 
 import Domain.CommonClasses.Response;
+import Domain.UsersManagment.APIs.DTOs.UserActivityInfoDTO;
+import Domain.UsersManagment.APIs.DTOs.UserInfoDTO;
 import Domain.UsersManagment.APIs.UserInfoService;
 import Domain.UsersManagment.UserController;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.time.LocalDateTime;
+import java.util.List;
 
 public class MonthlyReportGenerator {
 
@@ -27,24 +31,52 @@ public class MonthlyReportGenerator {
         this.writerService = new MSWordWriterService();
     }
 
+    /**
+     * main function for generating the montly report.
+     * receive data from specified API and build the doc accordingly
+     * @param username the user wish to generate the document
+     * @return response of binary document representation on success
+     */
     public Response<byte[]> generateMonthlyReport(String username) {
 
         Response<Boolean> legalRes = infoService.canGenerateReport(username);
-        Response<File> reportRes;
-
-        byte[] binaryFile = null;
-        FileInputStream fileInputStream;
-        File file;
+        LocalDateTime now = LocalDateTime.now();
+        Response<UserInfoDTO> userInfo;
+        Response<List<UserActivityInfoDTO>> activities;
 
         // check if the given user can generate a monthly report
         if(!legalRes.getResult())
             return new Response<>(null, true, legalRes.getErrMsg());
 
-        // ...
+        // get data
+        userInfo = infoService.getUserInfo(username);
+        if(userInfo.isFailure())
+            return new Response<>(null, true, userInfo.getErrMsg());
+
+        activities = infoService.getUserActivities(username, now.getMonth().getValue());
+        if(activities.isFailure())
+            return new Response<>(null, true, userInfo.getErrMsg());
+
+        return generateReportDoc(username, userInfo.getResult(), activities.getResult());
+
+    }
+
+    /**
+     * the actual document builder
+     * @param username the user wish to generate the file
+     * @param userInfo the user information for first table
+     * @param activities the activities for the second table
+     * @return response of binary document representation on success
+     */
+    private Response<byte[]> generateReportDoc(String username, UserInfoDTO userInfo, List<UserActivityInfoDTO> activities) {
+        Response<File> reportRes;
+        byte[] binaryFile = null;
+        FileInputStream fileInputStream;
+        File file;
 
         reportRes = writerService.createDoc("maane\\src\\main\\resources\\monthlyReport_" + username + ".docx");
         file = reportRes.getResult();
-    // receive data from userController
+        // receive data from userController
 
         if(!reportRes.isFailure()) {
             binaryFile = new byte[(int)file.length()];
@@ -67,13 +99,13 @@ public class MonthlyReportGenerator {
     }
 
 
-    public static void main(String[] args)  {
-
+//    public static void main(String[] args)  {
+//
 //        MSWordWriterService service = new MSWordWriterService();
 //
 //        service.createDoc("maane\\src\\main\\resources\\monthlyReport.docx");
-
-
-    }
+//
+//
+//    }
 
 }
