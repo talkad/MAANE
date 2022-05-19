@@ -689,7 +689,7 @@ public class UserQueries {
             }
             else{
                 Connect.closeConnection();
-                new Response<>(false, true, "no such coordinator");
+                return new Response<>(false, true, "no such coordinator");
             }
 
             statement = Connect.conn.prepareStatement(sqlToDelete);

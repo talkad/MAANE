@@ -147,10 +147,7 @@ alter table "MultiChoices"
 -- auto-generated definition
 create table "Appointments"
 (
-    appointor text not null
-        constraint appointments_users__fk_2
-            references "Users"
-            on delete cascade,
+    appointor text not null,
     appointee text not null
         constraint appointments_users__fk
             references "Users"

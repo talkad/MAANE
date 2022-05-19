@@ -140,7 +140,7 @@ public class WorkPlan {
         }
     }
 
-    //returns the schedule from month {input} till the end of year
+    /*//returns the schedule from month {input} till the end of year
     public Map<LocalDateTime, List<Activity>> getScheduleFromMonth(String input) {
         return null; //todo eh?
 //        final String month = addZeroIfNeeded(input); //need to work with "01","02" etc
@@ -165,7 +165,7 @@ public class WorkPlan {
 //            }
 //        }
 //        return output;
-    }
+    }*/
 
     private String addZeroIfNeeded(String number) {
         return number.length() == 1 ? "0" + number : number;
