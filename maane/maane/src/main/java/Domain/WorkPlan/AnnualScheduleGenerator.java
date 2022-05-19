@@ -147,10 +147,9 @@ public class AnnualScheduleGenerator {
                     instructorWithProblemsForSchools.get(instructor).get(school).sort(Comparator.comparing(Goal::getWeight).reversed());
                 }
             }
-
             for (String instructor : instructorWithProblemsForSchools.keySet()) {
-
                 UserDBDTO userDBDTO = userController.getWorkHours(instructor).getResult();
+                System.out.println(instructor + " " + year + " " + userDBDTO.getWorkDay()+ " " + userDBDTO.getAct1Start()+ " " + userDBDTO.getAct1End()+ " " + userDBDTO.getAct2Start()+ " " + userDBDTO.getAct2End());
                 WorkPlan workPlan = new WorkPlan(year, userDBDTO.getWorkDay(), userDBDTO.getAct1Start(), userDBDTO.getAct1End(), userDBDTO.getAct2Start(), userDBDTO.getAct2End());
 
                 List<Pair<String, Goal>> goalsPriorityQueue = new Vector<>();

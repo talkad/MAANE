@@ -33,7 +33,6 @@ public class WorkPlan {
     protected LocalTime act2End;
 
     public WorkPlan(int year, int workDay, LocalTime act1Start, LocalTime act1End, LocalTime act2Start, LocalTime act2End) {
-        this.calendar = GenerateCalendarForYear(year);
         this.year = year;
         this.workDay = workDay;
         this.act1Start = act1Start;
@@ -41,31 +40,32 @@ public class WorkPlan {
         this.act2Start = act2Start;
         this.act2End = act2End;
         this.currDateToInsert = findFirstWorkDayOfMonth(workDay, year);//LocalDate.of(year, 9, 1).atTime(0, 0);
+        this.calendar = GenerateCalendarForYear(year);
         checkFridaySaturday();
     }
 
     private LocalDateTime findFirstWorkDayOfMonth(int workDay, int year) {
         switch (workDay){
             case 0: {
-                return LocalDate.of(year, 9, workDay).with(firstInMonth(DayOfWeek.SUNDAY)).atTime(act1Start);
+                return LocalDate.of(year, 9, 1).with(firstInMonth(DayOfWeek.SUNDAY)).atTime(act1Start);
             }
             case 1: {
-                return LocalDate.of(year, 9, workDay).with(firstInMonth(DayOfWeek.MONDAY)).atTime(act1Start);
+                return LocalDate.of(year, 9, 1).with(firstInMonth(DayOfWeek.MONDAY)).atTime(act1Start);
             }
             case 2: {
-                return LocalDate.of(year, 9, workDay).with(firstInMonth(DayOfWeek.TUESDAY)).atTime(act1Start);
+                return LocalDate.of(year, 9, 1).with(firstInMonth(DayOfWeek.TUESDAY)).atTime(act1Start);
             }
             case 3: {
-                return LocalDate.of(year, 9, workDay).with(firstInMonth(DayOfWeek.WEDNESDAY)).atTime(act1Start);
+                return LocalDate.of(year, 9, 1).with(firstInMonth(DayOfWeek.WEDNESDAY)).atTime(act1Start);
             }
             case 4: {
-                return LocalDate.of(year, 9, workDay).with(firstInMonth(DayOfWeek.THURSDAY)).atTime(act1Start);
+                return LocalDate.of(year, 9, 1).with(firstInMonth(DayOfWeek.THURSDAY)).atTime(act1Start);
             }
             case 5: {
-                return LocalDate.of(year, 9, workDay).with(firstInMonth(DayOfWeek.FRIDAY)).atTime(act1Start);
+                return LocalDate.of(year, 9, 1).with(firstInMonth(DayOfWeek.FRIDAY)).atTime(act1Start);
             }
             case 6: {
-                return LocalDate.of(year, 9, workDay).with(firstInMonth(DayOfWeek.SATURDAY)).atTime(act1Start);
+                return LocalDate.of(year, 9, 1).with(firstInMonth(DayOfWeek.SATURDAY)).atTime(act1Start);
             }
             default: return null;
         }
@@ -256,11 +256,9 @@ public class WorkPlan {
         Activity firstActivity = new Activity(input1.getFirst(), input1.getSecond().getGoalId(), input1.getSecond().getTitle());
         Activity secondActivity = new Activity(input2.getFirst(), input2.getSecond().getGoalId(), input2.getSecond().getTitle());
         LocalDateTime lastDay = LocalDateTime.of(this.year + 1, 6, 21, 0, 0);
-
         if (lastDay.isBefore(currDateToInsert)) { //no free date
             return new Response<>(false, true, "no free days");//todo not actually failed check its ok
         }
-
         firstActivity.setEndActivity(currDateToInsert.toLocalDate().atTime(act1End));
         insertActivity(currDateToInsert, firstActivity);
         secondActivity.setEndActivity(currDateToInsert.toLocalDate().atTime(this.act2End));
