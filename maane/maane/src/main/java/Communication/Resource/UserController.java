@@ -131,13 +131,6 @@ public class UserController {
                 .body(service.registerUserBySystemManager(sessionHandler.getUsernameByToken(token).getResult(), gson.fromJson(user, UserDTO.class), (String)body.get("optionalSupervisor")));
     }
 
-
-/*    @RequestMapping(value = "/registerUserBySystemManager", method = RequestMethod.POST)
-    public ResponseEntity<Response<User>> registerUserBySystemManager(@RequestBody UserDTO user) {
-        return ResponseEntity.ok()
-                .body(service.registerUserBySystemManager(user));
-    }*/ //todo fix dto so it adds opt sup
-
     @PostMapping(value = "/removeUser")
     public ResponseEntity<Response<Boolean>> removeUser(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object>  body){
         return ResponseEntity.ok()
@@ -155,12 +148,6 @@ public class UserController {
         return ResponseEntity.ok()
                 .body(service.verifyUser(sessionHandler.getUsernameByToken(token).getResult(), body.get("password")));
     }
-
-///*    @GetMapping("/getAppointedUsers/username={currUser}")
-//        public ResponseEntity<Response<List<UserDTO>>> getAppointedUsers(@PathVariable("currUser") String currUser){
-//            return ResponseEntity.ok()
-//                    .body(service.getAppointedUsers(currUser));
-//        }*/
 
     @GetMapping(value = "/getAppointedUsers")
     public ResponseEntity<Response<List<UserDTO>>> getAppointedUsers(@RequestHeader(value = "Authorization") String token){
@@ -284,13 +271,13 @@ public class UserController {
                 .body(service.allWorkFields(sessionHandler.getUsernameByToken(token).getResult()));
     }
 
-    @PostMapping(value = "/setWorkingTime")
+    @PostMapping(value = "/setWorkingTime") //todo aviad
     public ResponseEntity<Response<Boolean>> setWorkingTime(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object>  body){
         return ResponseEntity.ok()
                 .body(service.setWorkingTime(sessionHandler.getUsernameByToken(token).getResult(), (int)body.get("workDay"), (LocalTime) body.get("act1Start"),  (LocalTime) body.get("act1End"),  (LocalTime) body.get("act2Start"),  (LocalTime) body.get("act2End")));
     }
 
-    @GetMapping(value="/getWorkHours")
+    @GetMapping(value="/getWorkHours") //todo aviad
     public ResponseEntity<Response<UserDBDTO>> getWorkHours(@RequestHeader(value = "Authorization") String token){
         return ResponseEntity.ok()
                 .body(service.getWorkHours(sessionHandler.getUsernameByToken(token).getResult()));

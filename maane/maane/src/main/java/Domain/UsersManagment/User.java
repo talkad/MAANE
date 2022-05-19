@@ -266,13 +266,13 @@ public class User {
         else return new Response<>(false, true, "user not allowed to assign schools to users");
     }
 
-    public Response<Boolean> removeUser(String username) { //todo can a user even be appointed twice? if so needs to be removed from all personal that he was appointed by
+    public Response<Boolean> removeUser(String username) {
         if(this.state.getStateEnum() == UserStateEnum.SYSTEM_MANAGER){
             if (!appointments.contains(username)) {
                 return new Response<>(true, false, "removing a user by system manager");
             }
             else {
-                return new Response<>(false, true, "cannot delete supervisor, try transferring supervisor");
+                return new Response<>(false, true, "cannot delete supervisor, try transferring supervision");
             }
         }
         else if(this.state.allowed(Permissions.REMOVE_USER, this)) {

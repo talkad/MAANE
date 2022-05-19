@@ -381,7 +381,7 @@ public class UserController {
         System.out.println(currUser + " trying to remove " + userToRemove);
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
-            Response<Boolean> response = user.removeUser(userToRemove);
+            Response<Boolean> response = user.removeUser(userToRemove);//todo verify connected user is dao updated
             if(!response.isFailure()){
                 if(userDAO.userExists(userToRemove)){
                     if(response.getResult()){

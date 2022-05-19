@@ -434,11 +434,11 @@ public class UserQueries {
     public Response<Boolean> removeUser(String username){
         Connect.createConnection();
         int rows = 0;
-        String sql = "DELETE FROM \"Users\" WHERE username = ?";//todo see if its possible to make it as one query
-        String sqlDeleteSchools = "DELETE FROM \"UsersSchools\" WHERE username = ?";
-        String sqlDeleteAppointments = "DELETE FROM \"Appointments\" WHERE appointor = ?";
-        String sqlDeleteSurveys = "DELETE FROM \"UsersSurveys\" WHERE username = ?";
-        String sqlDeleteWorkPlans = "DELETE FROM \"WorkPlans\" WHERE username = ?";
+        String sql = "DELETE FROM \"Users\" WHERE username = ?";
+        //String sqlDeleteSchools = "DELETE FROM \"UsersSchools\" WHERE username = ?";
+        //String sqlDeleteAppointments = "DELETE FROM \"Appointments\" WHERE appointor = ?";
+        //String sqlDeleteSurveys = "DELETE FROM \"UsersSurveys\" WHERE username = ?";
+        //String sqlDeleteWorkPlans = "DELETE FROM \"WorkPlans\" WHERE username = ?";
 
         PreparedStatement preparedStatement;
         try {
@@ -446,21 +446,21 @@ public class UserQueries {
             preparedStatement.setString(1, username);
             rows = preparedStatement.executeUpdate();
 
-            preparedStatement = Connect.conn.prepareStatement(sqlDeleteSchools);
+           /* preparedStatement = Connect.conn.prepareStatement(sqlDeleteSchools);
             preparedStatement.setString(1, username);
-            /*rows = */preparedStatement.executeUpdate();
+            *//*rows = *//*preparedStatement.executeUpdate();*/
 
-            preparedStatement = Connect.conn.prepareStatement(sqlDeleteAppointments);
+           /* preparedStatement = Connect.conn.prepareStatement(sqlDeleteAppointments);
             preparedStatement.setString(1, username);
-            /*rows = */preparedStatement.executeUpdate();//todo not sure if should update failure here for the admin user removal case
-
-            preparedStatement = Connect.conn.prepareStatement(sqlDeleteSurveys);
+            *//*rows = *//*preparedStatement.executeUpdate();//todo not sure if should update failure here for the admin user removal case
+*/
+            /*preparedStatement = Connect.conn.prepareStatement(sqlDeleteSurveys);
             preparedStatement.setString(1, username);
-            /*rows = */preparedStatement.executeUpdate();//todo not sure if should update failure here for the admin user removal case
-
-            preparedStatement = Connect.conn.prepareStatement(sqlDeleteWorkPlans);
+            *//*rows = *//*preparedStatement.executeUpdate();//todo not sure if should update failure here for the admin user removal case
+*/
+            /*preparedStatement = Connect.conn.prepareStatement(sqlDeleteWorkPlans);
             preparedStatement.setString(1, username);
-            /*rows = */preparedStatement.executeUpdate();
+            *//*rows = *//*preparedStatement.executeUpdate();*/
 
             Connect.closeConnection();
         }
@@ -653,17 +653,11 @@ public class UserQueries {
 
     public Response<Boolean> removeCoordinator(String workField, String school) {
         Connect.createConnection();
-        int rows = 0;//todo add cascade to all tables with foreign keys
+        int rows = 0;
         String sqlName = "SELECT \"Users\".username FROM (\"Users\" JOIN \"UsersSchools\" ON \"Users\".username=\"UsersSchools\".username) WHERE (workfield = ? AND (school = ? AND userstateenum = ?))";
-
-        String sqlToDelete = "BEGIN;\n";
-        sqlToDelete += "DELETE FROM \"Users\" WHERE username = ?;\n";
-        sqlToDelete += "DELETE FROM \"UsersSchools\" WHERE username = ?;\n";
-        sqlToDelete += "COMMIT;\n";
+        String sqlToDelete = "DELETE FROM \"Users\" WHERE username = ?";
 
         String coordinatorName = "";
-        //todo fix it with cascade
-        // todo : this is not working regardless of the cascading
 
         PreparedStatement statement;
         try {
@@ -684,7 +678,6 @@ public class UserQueries {
 
             statement = Connect.conn.prepareStatement(sqlToDelete);
             statement.setString(1, coordinatorName);
-            statement.setString(2, coordinatorName);
             rows = statement.executeUpdate();
             Connect.closeConnection();
             return new Response<>(true, false, "");
