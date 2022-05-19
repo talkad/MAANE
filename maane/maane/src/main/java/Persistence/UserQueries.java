@@ -543,7 +543,9 @@ public class UserQueries {
 
     public void deleteUsers(){
         Connect.createConnection();
-        String sql = "TRUNCATE \"Users\", \"Appointments\", \"UsersSchools\"";
+        String sql = "TRUNCATE \"Users\" CASCADE";
+
+        //String sql = "TRUNCATE \"Users\", \"Appointments\", \"UsersSchools\"";
 
         PreparedStatement preparedStatement;
         try {
@@ -602,9 +604,16 @@ public class UserQueries {
     // for end2end testing (mock mode)
     public void clearDB() {
         Connect.createConnection();
-        String sql = "TRUNCATE \"Answers\", \"Appointments\", \"MultiChoices\"" +
-                ", \"Questions\", \"Surveys\", \"Rules\", \"Users\"" +
-                ", \"UsersSchools\", \"UsersSurveys\", \"Goals\", \"WorkPlans\", \"Schools\"";
+/*        String sql = "BEGIN;\n";
+        sql += "TRUNCATE TABLE \"Users\" CASCADE;\n";
+        sql += "TRUNCATE TABLE \"Surveys\" CASCADE;\n";
+        sql += "TRUNCATE TABLE \"Schools\" CASCADE;\n";
+        sql += "TRUNCATE \"Answers\", \"MultiChoices\", \"Questions\", \"Rules\", \"Goals\";\n";
+        sql += "COMMIT;\n";*/
+
+        String sql = "TRUNCATE \"Users\", \"UsersSchools\", \"UsersSurveys\", \"WorkPlans\", " +
+                "\"Appointments\", \"Answers\", \"MultiChoices\", \"Questions\"," +
+                " \"Surveys\", \"Rules\",  \"Goals\", \"Schools\"";
         PreparedStatement preparedStatement;
         try {
             preparedStatement = Connect.conn.prepareStatement(sql);

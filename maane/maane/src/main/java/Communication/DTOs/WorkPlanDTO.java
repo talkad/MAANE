@@ -34,7 +34,7 @@ public class WorkPlanDTO {
 
     public void printMe(){
         for (Pair<LocalDateTime, ActivityDTO> pair : calendar){
-            System.out.println("Date: " + pair.getFirst() + " GoalId: " + pair.getSecond().getGoalId() + " Title: " + pair.getSecond().getTitle());
+            System.out.println("Date: " + pair.getFirst() + " SchoolId: " + pair.getSecond().getSchoolId() + " GoalId: " + pair.getSecond().getGoalId() + " Title: " + pair.getSecond().getTitle());
         }
     }
 }

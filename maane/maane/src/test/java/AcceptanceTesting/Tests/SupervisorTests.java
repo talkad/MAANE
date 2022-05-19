@@ -112,7 +112,7 @@ public class SupervisorTests extends AcceptanceTests{//todo reset the usercontro
     }
 
     @Test
-    public void testSetUp() {
+    public void testSetUp() {//todo set up the questions in a way which will allow us to assert true for certain activities time and goal that they mean to solve
         Assert.assertFalse(userBridge.getUserRes(supervisorName1).isFailure());
         Assert.assertFalse(userBridge.getUserRes(instructorName1).isFailure());
         Assert.assertFalse(userBridge.getUserRes(instructorName2).isFailure());
