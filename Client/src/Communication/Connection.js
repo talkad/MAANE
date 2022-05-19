@@ -676,7 +676,7 @@ class Connection{
      * @param callback a callback function to call once there's a response
      */
     getWorkReport(callback){
-        this.sendGET(``, callback)
+        this.sendGET(`/report/getMonthlyReport`, callback)
     }
 
 }

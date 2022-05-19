@@ -17,8 +17,8 @@ public class ReportController {
     private final SessionHandler sessionHandler;
 
 
-    @GetMapping("/getSurveys")
-    public ResponseEntity<Response<byte[]>> getSurveys(@RequestHeader(value = "Authorization") String token){
+    @GetMapping("/getMonthlyReport")
+    public ResponseEntity<Response<byte[]>> getMonthlyReport(@RequestHeader(value = "Authorization") String token){
         return ResponseEntity.ok()
                 .body(service.generateMonthlyReport(sessionHandler.getUsernameByToken(token).getResult()));
     }

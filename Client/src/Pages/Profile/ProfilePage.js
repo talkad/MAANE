@@ -21,6 +21,7 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Visibility from "@mui/icons-material/Visibility";
 import EditIcon from '@mui/icons-material/Edit';
 import EditOffIcon from '@mui/icons-material/EditOff';
+import WorkReport from "../WorkReport/WorkReport";
 
 /**
  * tab viewer
@@ -145,10 +146,13 @@ function InfoTabPanel(props){
      */
     const downloadReportCallback = (data) => {
         if(data.failure){
-
+            setError(true)
+            setErrorSeverity('error')
+            setErrorMessage('יצירת הדו"ח החודשי נכשלה')
         }
         else{
-
+            setError(false)
+            WorkReport(data.result)
         }
     }
 
@@ -162,7 +166,7 @@ function InfoTabPanel(props){
     return (
         <Grid container spacing={2} rowSpacing={4} sx={{paddingTop: 1}}>
             <Grid item xs={6}>
-                <Button id={"download_report_button"} onClick={() => setEdit(!edit)} variant={"outlined"}>
+                <Button id={"download_report_button"} onClick={() => downloadReportHandler()} variant={"outlined"}>
                     {download_report}
                 </Button>
             </Grid>

@@ -7,12 +7,14 @@ import Domain.UsersManagment.APIs.DTOs.UserInfoDTO;
 import Domain.UsersManagment.APIs.UserInfoRetriever;
 import Domain.UsersManagment.APIs.UserInfoService;
 import Domain.UsersManagment.UserController;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 public class MonthlyReportGenerator {
 
     private UserInfoService infoService;
@@ -96,8 +98,10 @@ public class MonthlyReportGenerator {
         }
 
         // delete file from memory
-        if(file != null)
-            file.delete();
+        if(file != null) {
+            if (file.delete())
+                log.error("failed to delete monthly report file");
+        }
 
         return new Response<>(binaryFile, reportRes.isFailure(), reportRes.getErrMsg());
     }

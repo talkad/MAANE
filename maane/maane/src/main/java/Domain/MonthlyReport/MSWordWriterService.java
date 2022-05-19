@@ -382,7 +382,7 @@ public class MSWordWriterService {
     }
 
     private String dayToChar(int dayOffset) {
-        int day = dayOffset == 7? 0: dayOffset;
+        int day = dayOffset % 7;
 
         return day == 6 ? "ש" : (char)('א' + day) + "";
     }
