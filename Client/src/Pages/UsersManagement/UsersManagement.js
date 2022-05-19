@@ -273,7 +273,7 @@ function SystemManagerRow(props) {
                             {/* the action buttons for each user */}
                             <Grid sx={{marginBottom: 1}} container spacing={1}>
                                 {/*editing actions*/}
-                                <Grid item xs={1.5}><Button fullWidth onClick={() => props.handleOpenCPDialog(row.username, row.name)} color="secondary" variant="outlined">{change_password_button_string}</Button></Grid>
+                                <Grid item xs={1.5}><Button id={`change_password_${row.username}`} fullWidth onClick={() => props.handleOpenCPDialog(row.username, row.name)} color="secondary" variant="outlined">{change_password_button_string}</Button></Grid>
                                 <Grid item xs={1.5}><Button fullWidth onClick={() => props.handleOpenEditSchoolsDialog(row.username, row.name, row.schools)} color="secondary" variant="outlined">{edit_schools_button_string}</Button></Grid>
                             </Grid>
                             <Grid container spacing={1}>
@@ -309,11 +309,11 @@ function DeleteUserDialog(props){
             <Grid container justifyContent="center" spacing={0}>
                 <Grid item align="center" xs={6}>
                     {/*the cancel button*/}
-                    <Button id={"remove_user_submit_button"} onClick={() => props.onClose()} sx={{marginBottom: 1, width: "50%"}} variant="outlined">{cancel_string}</Button>
+                    <Button id={"remove_user_cancel_button"} onClick={() => props.onClose()} sx={{marginBottom: 1, width: "50%"}} variant="outlined">{cancel_string}</Button>
                 </Grid>
                 <Grid item align="center" xs={6}>
                     {/*the delete button*/}
-                    <Button id={"remove_user_cancel_button"} onClick={() => handleSubmitDeletion()} sx={{marginBottom: 1, width: "50%"}} color="error" variant="outlined">{delete_string}</Button>
+                    <Button id={"remove_user_submit_button"} onClick={() => handleSubmitDeletion()} sx={{marginBottom: 1, width: "50%"}} color="error" variant="outlined">{delete_string}</Button>
                 </Grid>
             </Grid>
         </Dialog>
@@ -800,7 +800,7 @@ export default function UsersManagement(props){
             new Connection().getAppointedUsers(handleReceivedData);
         }
         else if(props.userType === "SYSTEM_MANAGER"){
-            new Connection().getAllUsers(handleReceivedData); // TODO: check this (logging in with admin)
+            new Connection().getAllUsers(handleReceivedData);
         }
     }
 

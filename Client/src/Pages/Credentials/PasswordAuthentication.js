@@ -75,7 +75,7 @@ export default function PasswordAuthentication(props){
                     <h2>{auth_password_string}</h2>
                     <p>{explanation_string}</p>
                     <Stack component="form" sx={{alignItems: "center"}} onSubmit={handleSubmit}>
-                        <Collapse>
+                        <Collapse in={error}>
                             <Alert id={"auth_alert"} severity="error">
                                 {alertMessage}
                             </Alert>
