@@ -369,7 +369,7 @@ public class User {
         return this.workField;
     }
 
-    public Response<Boolean> removeSchoolsFromUser(String userToRemoveSchools, List<String> schools) {
+    public Response<Boolean> removeSchoolsFromUser(String userToRemoveSchools) {
         if(this.state.allowed(Permissions.REMOVE_SCHOOLS_FROM_USER, this)) {
             if (appointments.contains(userToRemoveSchools)) {
                 return new Response<>(true, false, "successfully removed school assignment");

@@ -202,10 +202,7 @@ public class AnnualScheduleGenerator {
                         //todo make sure you stop when you fill WorkPlan
                     }
                 }
-                userController.assignWorkPlan(instructor, workPlan, year);
-                workPlan.printMe();
                 WorkPlanDTO workPlanDTO = new WorkPlanDTO(workPlan);
-                //workPlanDTO.printMe();
                 WorkPlanQueries.getInstance().insertUserWorkPlan(instructor, workPlanDTO, year);//todo replace the line above with this
             }
         }
@@ -322,7 +319,6 @@ public class AnnualScheduleGenerator {
                         //todo make sure you stop when you fill WorkPlan
                     }
                 }
-                userController.assignWorkPlan(instructor, workPlan, year);
                 WorkPlanDTO workPlanDTO = new WorkPlanDTO(workPlan);
                 WorkPlanQueries.getInstance().insertUserWorkPlan(instructor, workPlanDTO, year);//todo replace the line above with this
             }
