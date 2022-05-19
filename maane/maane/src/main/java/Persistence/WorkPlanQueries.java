@@ -28,7 +28,7 @@ public class WorkPlanQueries {
     public Response<Boolean> insertUserWorkPlan(String username, WorkPlanDTO workPlan, Integer year){
         Connect.createConnection();
         int rows = 0;
-        String sql = "INSERT INTO \"WorkPlans\" (username, year, date, activities) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO \"WorkPlans\" (username, year, date, activities, endactivity) VALUES (?, ?, ?, ?, ?)";
         PreparedStatement preparedStatement;
         try {
             preparedStatement = Connect.conn.prepareStatement(sql);
@@ -40,6 +40,7 @@ public class WorkPlanQueries {
                     preparedStatement.setInt(2, year);
                     preparedStatement.setTimestamp(3, Timestamp.valueOf(date));
                     preparedStatement.setString(4, activities);
+                    preparedStatement.setTimestamp(5, Timestamp.valueOf(annualPlan.getSecond().getEndActivity()));
                     rows = preparedStatement.executeUpdate();
                 }
             }
@@ -90,7 +91,7 @@ public class WorkPlanQueries {
         return new Response<>(null, true, "failed to get work plans");
     }*/
 
-    public Response<WorkPlanDTO> getUserWorkPlanByYear(String username, Integer year)  {
+/*    public Response<WorkPlanDTO> getUserWorkPlanByYear(String username, Integer year)  {
         Connect.createConnection();
         String sql = "SELECT * FROM \"WorkPlans\" WHERE username = ? AND year = ?";
         PreparedStatement statement;
@@ -116,7 +117,7 @@ public class WorkPlanQueries {
             return new Response<>(workPlanDTO, false, "successfully got work plans");
         } catch (SQLException throwables) {throwables.printStackTrace();}
         return new Response<>(null, true, "failed to get work plans");
-    }
+    }*/
 
     public Response<WorkPlanDTO> getUserWorkPlanByYearAndMonth(String username, Integer year, Integer month)  {
         Connect.createConnection();
@@ -134,9 +135,10 @@ public class WorkPlanQueries {
             List<Pair<LocalDateTime, ActivityDTO>> calendar = new LinkedList<>();
             while(result.next()) {
                 LocalDateTime date = result.getTimestamp("date").toInstant().atZone(TimeZone.getTimeZone("Asia/Jerusalem").toZoneId()).toLocalDateTime();
+                LocalDateTime endActivity = result.getTimestamp("endactivity").toInstant().atZone(TimeZone.getTimeZone("Asia/Jerusalem").toZoneId()).toLocalDateTime();
 
                 String activities = result.getString("activities");
-                ActivityDTO activityDTO = StringToActivities(activities);
+                ActivityDTO activityDTO = StringToActivities(activities, endActivity);
                 Pair<LocalDateTime, ActivityDTO> dateAndActivity = new Pair<>(date, activityDTO);
                 calendar.add(dateAndActivity);
             }
@@ -153,12 +155,12 @@ public class WorkPlanQueries {
      * @param activity string
      * @return parse back
      */
-    private ActivityDTO StringToActivities (String activity){
-        if(activity == null || activity.equals("")) return new ActivityDTO("", -1, "");//todo problem
+    protected ActivityDTO StringToActivities (String activity, LocalDateTime endActivity){
+        if(activity == null || activity.equals("")) return new ActivityDTO("", -1, "", null);//todo problem
         String [] activitiesArray = activity.split(" ", 3);
         String schoolId = activitiesArray[0];
         Integer goalId = Integer.parseInt(activitiesArray[1]);
         String title = activitiesArray[2];
-        return new ActivityDTO(schoolId, goalId, title);
+        return new ActivityDTO(schoolId, goalId, title, endActivity);
     }
 }

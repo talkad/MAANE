@@ -38,18 +38,18 @@ public class SurveyDbTests {
     }
 
     @Test
-    public void insertSurvey() throws SQLException {
+    public void insertSurvey() throws SQLException {//todo tal cannot throw exception and test is bugged
         Assert.assertTrue(surveyQueries.insertSurvey(surveyDTO).isFailure());
     }
 
     @Test
-    public void getSurvey() throws SQLException {
+    public void getSurvey() throws SQLException {//todo tal cannot throw exception and test is bugged
         Response<SurveyDTO> surveyDTO = surveyQueries.getSurvey("1");
         Assert.assertEquals(4, surveyDTO.getResult().getQuestions().size() + surveyDTO.getResult().getAnswers().size());
     }
 
     @Test
-    public void insertAnswer() throws SQLException {
+    public void insertAnswer() throws SQLException {//todo cannot throw exception
         List<String> answers = new LinkedList<>();
         answers.add("a1"); answers.add("a2");
 
@@ -60,7 +60,7 @@ public class SurveyDbTests {
     }
 
     @Test
-    public void getAnswers() throws SQLException {
+    public void getAnswers() throws SQLException {//todo make it a test
         List<SurveyAnswersDTO> surveyAnswersDTOS = surveyQueries.getAnswers("1");
         int checkMe;
     }

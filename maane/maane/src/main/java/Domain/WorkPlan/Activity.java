@@ -1,9 +1,12 @@
 package Domain.WorkPlan;
 
+import java.time.LocalDateTime;
+
 public class Activity {
     String schoolId;
     Integer goalId;
     String title;
+    LocalDateTime endActivity;
 
     public Activity (String school, Integer goalId, String title){
         this.schoolId = school;
@@ -33,5 +36,13 @@ public class Activity {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public LocalDateTime getEndActivity() {
+        return endActivity;
+    }
+
+    public void setEndActivity(LocalDateTime endActivity) {
+        this.endActivity = endActivity;
     }
 }

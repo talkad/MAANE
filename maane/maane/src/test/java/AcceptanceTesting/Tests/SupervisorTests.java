@@ -6,6 +6,7 @@ import Domain.DataManagement.AnswerState.AnswerType;
 import Domain.DataManagement.FaultDetector.Rules.Comparison;
 import Domain.DataManagement.FaultDetector.Rules.RuleType;
 import Domain.UsersManagment.UserStateEnum;
+import Persistence.DbDtos.SchoolDBDTO;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,13 +46,16 @@ public class SupervisorTests extends AcceptanceTests{//todo reset the usercontro
             ins2Schools.add("5");
             ins2Schools.add("6");
             userBridge.login(adminName);
+
+            dataBridge.insertSchool(new SchoolDBDTO("1", "testing school", "beer sheva", "", "", "", "", "", "", "", "", 1000000, "", "", "", "", 30));
+            dataBridge.insertSchool(new SchoolDBDTO("2", "testing school2", "beer sheva", "", "", "", "", "", "", "", "", 1000000, "", "", "", "", 31));
+
             userBridge.registerUserBySystemManager(adminName, new UserDTO(adminName, "science", supervisorName1, supervisorName1, UserStateEnum.SUPERVISOR,"Ronit", "Blisco", "ronit@gmail.com", "0501111111", "Tel Aviv", new Vector<>()), "");
             userBridge.registerUserBySystemManager(adminName, new UserDTO(adminName, "", instructorName1, instructorName1, UserStateEnum.INSTRUCTOR, "dan", "dani", "dan@gmail.com", "0501111111", "Tel Aviv", ins1Schools), supervisorName1);
             userBridge.registerUserBySystemManager(adminName, new UserDTO(adminName, "", instructorName2, instructorName2, UserStateEnum.INSTRUCTOR, "ben", "beni", "ben@gmail.com", "0501111111", "Tel Aviv", ins2Schools), supervisorName1);
             userBridge.login(supervisorName1);
 
             surveyDTO = new SurveyDTO();
-            //surveyBridge.clearCache();
 
             List<String> questions = Arrays.asList("is there research performed in the school?", "does the school provide at least 4 private hours a week?", "is there maintenance every week?");
             List<List<String>> possibleAnswers = Arrays.asList(Arrays.asList("No", "Yes"), Arrays.asList("No", "Yes"), Arrays.asList("No", "Yes"));
@@ -108,7 +112,7 @@ public class SupervisorTests extends AcceptanceTests{//todo reset the usercontro
     }
 
     @Test
-    public void testSetUp() {
+    public void testSetUp() {//todo set up the questions in a way which will allow us to assert true for certain activities time and goal that they mean to solve
         Assert.assertFalse(userBridge.getUserRes(supervisorName1).isFailure());
         Assert.assertFalse(userBridge.getUserRes(instructorName1).isFailure());
         Assert.assertFalse(userBridge.getUserRes(instructorName2).isFailure());

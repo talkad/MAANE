@@ -22,7 +22,7 @@ public class WorkPlanDTO {
         List<Pair<LocalDateTime, ActivityDTO>> calendar = new Vector<>();
         for (Map.Entry<LocalDateTime, Activity> oldEntry : workPlan.getCalendar().entrySet()) {
             if(oldEntry.getValue() != null) {
-                calendar.add(new Pair<>(oldEntry.getKey(), new ActivityDTO(oldEntry.getValue().getSchool(), oldEntry.getValue().getGoalId(), oldEntry.getValue().getTitle())));
+                calendar.add(new Pair<>(oldEntry.getKey(), new ActivityDTO(oldEntry.getValue().getSchool(), oldEntry.getValue().getGoalId(), oldEntry.getValue().getTitle(), oldEntry.getValue().getEndActivity())));
             }
         }
         this.calendar = calendar;
@@ -34,7 +34,7 @@ public class WorkPlanDTO {
 
     public void printMe(){
         for (Pair<LocalDateTime, ActivityDTO> pair : calendar){
-            System.out.println("Date: " + pair.getFirst() + " GoalId: " + pair.getSecond().getGoalId() + " Title: " + pair.getSecond().getTitle());
+            System.out.println("Date: " + pair.getFirst() + " SchoolId: " + pair.getSecond().getSchoolId() + " GoalId: " + pair.getSecond().getGoalId() + " Title: " + pair.getSecond().getTitle());
         }
     }
 }

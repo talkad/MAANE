@@ -21,6 +21,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -139,8 +140,15 @@ public class MaaneApplication {
 				SurveyController.getInstance().createSurvey("ronit", surveyDTO);
 
 				userController.logout("ronit");
-			}
 
+				userController.login("tal");
+				userController.setWorkingTime("tal", 0, LocalTime.of(8, 30), LocalTime.of(10, 30), LocalTime.of(11, 0), LocalTime.of(13, 0));
+				userController.logout("tal");
+
+				userController.login("shaked");
+				userController.setWorkingTime("shaked", 3, LocalTime.of(10, 0), LocalTime.of(12, 0), LocalTime.of(13, 0), LocalTime.of(15, 0));
+				userController.logout("shaked");
+			}
 		};
 	}
 

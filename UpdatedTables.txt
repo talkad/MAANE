@@ -1,4 +1,3 @@
-
 -- auto-generated definition
 create table "Answers"
 (
@@ -10,6 +9,7 @@ create table "Answers"
 
 alter table "Answers"
     owner to postgres;
+
 
 -- auto-generated definition
 create table "Goals"
@@ -28,6 +28,7 @@ create table "Goals"
 alter table "Goals"
     owner to postgres;
 
+
 -- auto-generated definition
 create table "Questions"
 (
@@ -38,6 +39,7 @@ create table "Questions"
 
 alter table "Questions"
     owner to postgres;
+
 
 -- auto-generated definition
 create table "Surveys"
@@ -52,6 +54,7 @@ create table "Surveys"
 alter table "Surveys"
     owner to postgres;
 
+
 -- auto-generated definition
 create table "Users"
 (
@@ -65,16 +68,25 @@ create table "Users"
     email         text,
     phonenumber   text,
     city          text,
-    password      text
+    password      text,
+    workday       integer,
+    act1start     time,
+    act1end       time,
+    act2start     time,
+    act2end       time
 );
 
 alter table "Users"
     owner to postgres;
 
+
 -- auto-generated definition
 create table "UsersSchools"
 (
-    username text,
+    username text
+        constraint usersschools_users__fk
+            references "Users"
+            on delete cascade,
     school   text,
     constraint usersschools_pk
         unique (username, school)
@@ -83,10 +95,14 @@ create table "UsersSchools"
 alter table "UsersSchools"
     owner to postgres;
 
+
 -- auto-generated definition
 create table "UsersSurveys"
 (
-    username text not null,
+    username text not null
+        constraint userssurveys_users__fk
+            references "Users"
+            on delete cascade,
     surveyid text not null,
     constraint userssurveys_pk
         primary key (username, surveyid)
@@ -114,6 +130,7 @@ create table "Rules"
 alter table "Rules"
     owner to postgres;
 
+
 -- auto-generated definition
 create table "MultiChoices"
 (
@@ -131,7 +148,10 @@ alter table "MultiChoices"
 create table "Appointments"
 (
     appointor text not null,
-    appointee text not null,
+    appointee text not null
+        constraint appointments_users__fk
+            references "Users"
+            on delete cascade,
     constraint appointments_pk
         primary key (appointor, appointee)
 );
@@ -165,18 +185,25 @@ create table "Schools"
 alter table "Schools"
     owner to postgres;
 
+
+-- auto-generated definition
 create table "WorkPlans"
 (
-    username   text      not null,
-    year       integer   not null,
-    date       timestamp not null,
-    activities text,
+    username    text      not null
+        constraint workplans_users__fk
+            references "Users"
+            on delete cascade,
+    year        integer   not null,
+    date        timestamp not null,
+    activities  text,
+    endactivity timestamp,
     constraint workplans_pk
         primary key (username, date, year)
 );
 
 alter table "WorkPlans"
     owner to postgres;
+
 
 -- auto-generated definition
 create table "Holidays"
@@ -188,6 +215,3 @@ create table "Holidays"
 
 alter table "Holidays"
     owner to postgres;
-
-
-

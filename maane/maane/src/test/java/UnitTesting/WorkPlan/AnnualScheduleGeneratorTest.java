@@ -43,7 +43,7 @@ public class AnnualScheduleGeneratorTest {
 
     @Test
     public void basicAlgorithmFunctionalitySuccess(){
-        Integer year = 2022;// "תשפ\"ג";
+        Integer year = 2022;
         String supervisorName = userController.login("sup1").getResult();
 
         userController.addGoal(supervisorName, new GoalDTO(0,"1", "desc", 1,5), year);
@@ -71,8 +71,7 @@ public class AnnualScheduleGeneratorTest {
         String workField = userController.getUser(supervisorName).getWorkField();
         AnnualScheduleGenerator.getInstance().algorithmMock(supervisorName, schoolsAndFaults, workField, GoalsManagement.getInstance().getGoals(workField, year).getResult(), year);
         userController.login("ins1");
-        userController.viewWorkPlan(instructorName, year, -1).getResult().printMe();
-        //userController.getUser(instructorName).getWorkPlanByYear(year).getResult().printMe();
+        userController.viewWorkPlan(instructorName, year, 9).getResult().printMe();
     }
 
 }

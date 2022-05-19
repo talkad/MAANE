@@ -55,7 +55,7 @@ public class MonthlyReportGenerator {
         if(userInfo.isFailure())
             return new Response<>(null, true, userInfo.getErrMsg());
 
-        activities = infoService.getUserActivities(username, now.getMonth().getValue());
+        activities = infoService.getUserActivities(username, now.getYear(), now.getMonth().getValue());//todo now get year may be a problem because in 2022 the workplan will reach 2023 as well
         if(activities.isFailure())
             return new Response<>(null, true, userInfo.getErrMsg());
 

@@ -3,6 +3,7 @@ package Persistence.DbDtos;
 import Domain.UsersManagment.User;
 import Domain.UsersManagment.UserStateEnum;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Vector;
 
@@ -20,10 +21,13 @@ public class UserDBDTO {
     protected List<String> appointments;
     protected List<String> surveys;
     protected List<String> baskets;
+    protected int workDay;
+    protected LocalTime act1Start;
+    protected LocalTime act1End;
+    protected LocalTime act2Start;
+    protected LocalTime act2End;
     //    private MonthlyReport monthlyReport; //todo monthly reports history??
-    //protected Map<String, WorkPlan> workPlan;
     protected List<Integer> workPlanYears;
-
 
     public UserDBDTO() {}
 
@@ -39,10 +43,13 @@ public class UserDBDTO {
         this.password = password;
         this.surveys = user.getSurveys().getResult();
         if(user.getState().getStateEnum() == UserStateEnum.INSTRUCTOR){
-            //this.workPlan = user.getWorkPlan();
             this.workPlanYears = user.getWorkPlanYears();
+            this.workDay = user.getWorkDay();
+            this.act1Start = user.getAct1Start();
+            this.act1End = user.getAct1End();
+            this.act2Start = user.getAct2Start();
+            this.act2End = user.getAct2End();
         }
-        //this.workPlan = new ConcurrentHashMap<>();
     }
 
     public UserDBDTO(String name, String password, UserStateEnum userStateEnum, String workField){
@@ -53,7 +60,6 @@ public class UserDBDTO {
         this.schools = new Vector<>();
         this.surveys = new Vector<>();
         this.workField = workField;
-        //this.workPlan = new ConcurrentHashMap<>();
     }
 
 
@@ -161,13 +167,45 @@ public class UserDBDTO {
         this.baskets = baskets;
     }
 
-/*    public Map<String, WorkPlan> getWorkPlan() {
-        return workPlan;
+    public int getWorkDay() {
+        return workDay;
     }
 
-    public void setWorkPlan(Map<String, WorkPlan> workPlan) {
-        this.workPlan = workPlan;
-    }*/
+    public void setWorkDay(int workDay) {
+        this.workDay = workDay;
+    }
+
+    public LocalTime getAct1Start() {
+        return act1Start;
+    }
+
+    public void setAct1Start(LocalTime act1Start) {
+        this.act1Start = act1Start;
+    }
+
+    public LocalTime getAct1End() {
+        return act1End;
+    }
+
+    public void setAct1End(LocalTime act1End) {
+        this.act1End = act1End;
+    }
+
+    public LocalTime getAct2Start() {
+        return act2Start;
+    }
+
+    public void setAct2Start(LocalTime act2Start) {
+        this.act2Start = act2Start;
+    }
+
+    public LocalTime getAct2End() {
+        return act2End;
+    }
+
+    public void setAct2End(LocalTime act2End) {
+        this.act2End = act2End;
+    }
 
     public List<Integer> getWorkPlanYears() {
         return this.workPlanYears;

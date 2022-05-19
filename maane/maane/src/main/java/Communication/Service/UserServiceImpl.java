@@ -19,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -318,6 +319,28 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return res;
     }
 
+    @Override
+    public Response<Boolean> setWorkingTime(String currUser, int workDay, LocalTime act1Start, LocalTime act1End, LocalTime act2Start, LocalTime act2End){
+        Response<Boolean> res = UserController.getInstance().setWorkingTime(currUser, workDay, act1Start, act1End, act2Start, act2End);
 
+        if (res.isFailure())
+            log.error("{} failed to change working hours", currUser);
+        else
+            log.info("{} changed working hours", currUser);
+
+        return res;
+    }
+
+    @Override
+    public Response<UserDBDTO> getWorkHours(String instructor) {
+        Response<UserDBDTO> res = UserController.getInstance().getWorkHours(instructor);
+
+        if (res.isFailure())
+            log.error("failed to view {}'s working hours ", instructor);
+        else
+            log.info("got {}'s working hours", instructor);
+
+        return res;
+    }
 
 }
