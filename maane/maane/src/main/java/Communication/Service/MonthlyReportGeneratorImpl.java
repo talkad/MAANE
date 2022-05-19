@@ -22,8 +22,8 @@ public class MonthlyReportGeneratorImpl implements MonthlyReportGenerator {
 
 
     @Override
-    public Response<byte[]> generateMonthlyReport(String username) {
-        Response<byte[]> res = Domain.MonthlyReport.MonthlyReportGenerator.getInstance().generateMonthlyReport(username);
+    public Response<byte[]> generateMonthlyReport(String username, int year, int month) {
+        Response<byte[]> res = Domain.MonthlyReport.MonthlyReportGenerator.getInstance().generateMonthlyReport(username, year, month);
 
         if(res.isFailure())
             log.error("{} failed to generate monthly report", username);

@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.wp.usermodel.HeaderFooterType;
 import org.apache.poi.xwpf.usermodel.*;
+import org.apache.tomcat.jni.Local;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.*;
 import org.springframework.stereotype.Service;
 
@@ -30,21 +31,21 @@ public class MSWordWriterService {
      * @param filepath the location the file will be saved and manipulated
      * @return response if the function succeeded
      */
-    public Response<File> createDoc(String filepath, UserInfoDTO userInfo, List<UserActivityInfoDTO> activities, LocalDateTime date) {
+    public Response<File> createDoc(String filepath, UserInfoDTO userInfo, List<UserActivityInfoDTO> activities, LocalDateTime date, int year, int month) {
         XWPFDocument document = new XWPFDocument();
 
         setPageSize(document, 15840, 12240);
         addFooter(document);
         addHeader(document);
         XWPFTable userDetailsTable = addUserDetailsTable(document, userInfo.getWorkingDay());
-        fillUserDetailsTable(userDetailsTable, userInfo, date);
+        fillUserDetailsTable(userDetailsTable, userInfo, year, month);
 
         document.createParagraph();
         XWPFTable activitiesTable = addActivityTable(document, activities.size() + 4);
         fillActivitiesTable(activitiesTable, activities);
 
         document.createParagraph();
-        addApprovalTable(document);
+        addApprovalTable(document, date);
 
         try {
             document.write(new FileOutputStream(filepath));
@@ -168,7 +169,7 @@ public class MSWordWriterService {
     }
 
 
-    private void addApprovalTable(XWPFDocument document) {
+    private void addApprovalTable(XWPFDocument document, LocalDateTime date) {
 
         XWPFTable table = document.createTable(1, 2);
         table.setWidth(13500);
@@ -215,7 +216,7 @@ public class MSWordWriterService {
         run.setFontFamily("David");
         run.setFontSize(12);
         paragraph.setAlignment(ParagraphAlignment.RIGHT);
-        run.setText("______________:" + "תאריך: " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + "   חתימה ");
+        run.setText("______________:" + "תאריך: " + date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + "   חתימה ");
 
     }
 
@@ -335,11 +336,11 @@ public class MSWordWriterService {
 
     }
 
-    private void fillUserDetailsTable(XWPFTable table, UserInfoDTO userInfo, LocalDateTime date) {
+    private void fillUserDetailsTable(XWPFTable table, UserInfoDTO userInfo, int year, int month) {
 
         insertAnswer(table.getRow(0).getCell(0), userInfo.getCity());
-        insertAnswer(table.getRow(0).getCell(3), date.getYear()+"");
-        insertAnswer(table.getRow(0).getCell(5), date.getMonth().getValue() + "");
+        insertAnswer(table.getRow(0).getCell(3), year + "");
+        insertAnswer(table.getRow(0).getCell(5), month + "");
         insertAnswer(table.getRow(0).getCell(16), userInfo.getFirstName());
         insertAnswer(table.getRow(0).getCell(24), userInfo.getLastName());
 

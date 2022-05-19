@@ -17,10 +17,10 @@ public class ReportController {
     private final SessionHandler sessionHandler;
 
 
-    @GetMapping("/getMonthlyReport")
-    public ResponseEntity<Response<byte[]>> getMonthlyReport(@RequestHeader(value = "Authorization") String token){
+    @GetMapping("/getMonthlyReport/year={year}&month={month}")
+    public ResponseEntity<Response<byte[]>> getMonthlyReport(@RequestHeader(value = "Authorization") String token, @PathVariable("year") Integer year, @PathVariable("month") Integer month){
         return ResponseEntity.ok()
-                .body(service.generateMonthlyReport(sessionHandler.getUsernameByToken(token).getResult()));
+                .body(service.generateMonthlyReport(sessionHandler.getUsernameByToken(token).getResult(), year, month));
     }
 
 

@@ -39,7 +39,7 @@ public class MonthlyReportGenerator {
      * @param username the user wish to generate the document
      * @return response of binary document representation on success
      */
-    public Response<byte[]> generateMonthlyReport(String username) {
+    public Response<byte[]> generateMonthlyReport(String username, int year, int month) {
 
         Response<Boolean> legalRes = infoService.canGenerateReport(username);
         LocalDateTime now = LocalDateTime.now();
@@ -55,11 +55,11 @@ public class MonthlyReportGenerator {
         if(userInfo.isFailure())
             return new Response<>(null, true, userInfo.getErrMsg());
 
-        activities = infoService.getUserActivities(username, now.getYear(), now.getMonth().getValue());//todo now get year may be a problem because in 2022 the workplan will reach 2023 as well
+        activities = infoService.getUserActivities(username, year, month);
         if(activities.isFailure())
             return new Response<>(null, true, userInfo.getErrMsg());
 
-        return generateReportDoc(username, userInfo.getResult(), activities.getResult(), now);
+        return generateReportDoc(username, userInfo.getResult(), activities.getResult(), now, year, month);
 
     }
 
@@ -70,7 +70,7 @@ public class MonthlyReportGenerator {
      * @param activities the activities for the second table
      * @return response of binary document representation on success
      */
-    private Response<byte[]> generateReportDoc(String username, UserInfoDTO userInfo, List<UserActivityInfoDTO> activities, LocalDateTime date) {
+    private Response<byte[]> generateReportDoc(String username, UserInfoDTO userInfo, List<UserActivityInfoDTO> activities, LocalDateTime date, int year, int month) {
         Response<File> reportRes;
         byte[] binaryFile = null;
         FileInputStream fileInputStream;
@@ -81,7 +81,7 @@ public class MonthlyReportGenerator {
             activity.setUserCity(userInfo.getCity());
 
         // create the document
-        reportRes = writerService.createDoc("maane\\src\\main\\resources\\monthlyReport_" + username + ".docx", userInfo, activities, date);
+        reportRes = writerService.createDoc("maane\\src\\main\\resources\\monthlyReport_" + username + ".docx", userInfo, activities, date, year, month);
         file = reportRes.getResult();
 
         if(!reportRes.isFailure()) {
