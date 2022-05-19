@@ -340,7 +340,7 @@ public class UserController {
         }
     }
 
-    public Response<Boolean> updateInfo(String currUser, String firstName, String lastName, String email, String phoneNumber, String city){//todo add workday and hours
+    public Response<Boolean> updateInfo(String currUser, String firstName, String lastName, String email, String phoneNumber, String city){
 
         if(email.length() != 0 && !isValidEmailAddress(email))
             return new Response<>(false, true, "invalid email address");
@@ -484,7 +484,7 @@ public class UserController {
         }
     }
 
-    public Response<List<String>> getSchools(String currUser){//todo maybe add checks
+    public Response<List<String>> getSchools(String currUser){
         User user = new User(userDAO.getFullUser(currUser).getResult());
         return new Response<>(user.getSchools(), false, "");
     }
@@ -772,8 +772,6 @@ public class UserController {
             User user = connectedUsers.get(currUser);
             Response<String> res = user.addGoals();
             if(!res.isFailure()){
-                goalDTO.setYear(year);//todo maybe make this a little less messy
-                goalDTO.setWorkField(user.getWorkField());//todo maybe make this a little less messy
                 return goalsManagement.addGoalToField(res.getResult(), goalDTO, year);
             }
             else{

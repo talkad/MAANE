@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.TimeZone;
 import java.util.Vector;
 
 public class UserQueries {
@@ -107,6 +106,14 @@ public class UserQueries {
 
     public Response<UserDBDTO> getFullUser(String username) {
         Connect.createConnection();
+/*        String sql = "BEGIN;\n";
+        sql += "SELECT * FROM \"Users\" WHERE username = ?;\n";
+        sql +="SELECT school FROM \"UsersSchools\" WHERE username = ?;\n";
+        sql += "SELECT appointee FROM \"Appointments\" WHERE appointor = ?;\n";
+        sql += "SELECT surveyid FROM \"UsersSurveys\" WHERE username = ?;\n";
+        sql += "SELECT year FROM \"WorkPlans\" WHERE username = ? GROUP BY year;\n";
+        sql += "COMMIT;\n";*/
+
         String userSql = "SELECT * FROM \"Users\" WHERE username = ?";//todo make into one query
         String userSchoolsSql = "SELECT school FROM \"UsersSchools\" WHERE username = ?";
         String userAppointmentsSql = "SELECT appointee FROM \"Appointments\" WHERE appointor = ?";
@@ -385,7 +392,7 @@ public class UserQueries {
                 new Response<>(false, true, "bad Db writing");
     }
 
-    public Response<Boolean> updateUserInfo(UserDBDTO userDBDTO){//todo hours and workday
+    public Response<Boolean> updateUserInfo(UserDBDTO userDBDTO){
         Connect.createConnection();
         int rows = 0;
         String sql = "UPDATE \"Users\" SET firstName = ?, lastName = ?, email = ?, phoneNumber = ?, city = ? WHERE username = ?";
@@ -452,11 +459,11 @@ public class UserQueries {
 
            /* preparedStatement = Connect.conn.prepareStatement(sqlDeleteAppointments);
             preparedStatement.setString(1, username);
-            *//*rows = *//*preparedStatement.executeUpdate();//todo not sure if should update failure here for the admin user removal case
+            *//*rows = *//*preparedStatement.executeUpdate();
 */
             /*preparedStatement = Connect.conn.prepareStatement(sqlDeleteSurveys);
             preparedStatement.setString(1, username);
-            *//*rows = *//*preparedStatement.executeUpdate();//todo not sure if should update failure here for the admin user removal case
+            *//*rows = *//*preparedStatement.executeUpdate();
 */
             /*preparedStatement = Connect.conn.prepareStatement(sqlDeleteWorkPlans);
             preparedStatement.setString(1, username);
@@ -691,7 +698,7 @@ public class UserQueries {
 
     public Response<List<String>> getCoordinatorEmails(String workField) {
         Connect.createConnection();
-        int rows = 0;//todo add cascade to all tables with foreign keys
+        int rows = 0;
         String sql = "SELECT email FROM \"Users\" WHERE workfield = ? AND userstateenum = ?";
         PreparedStatement statement;
         try {
@@ -863,7 +870,7 @@ public class UserQueries {
 
     public Response<UserDBDTO> getWorkingTime(String username) {
         Connect.createConnection();
-        String userSql = "SELECT workday, act1start, act1end, act2start, act2end FROM \"Users\" WHERE username = ?";//todo make into one query
+        String userSql = "SELECT workday, act1start, act1end, act2start, act2end FROM \"Users\" WHERE username = ?";
 
         PreparedStatement statement;
         try {

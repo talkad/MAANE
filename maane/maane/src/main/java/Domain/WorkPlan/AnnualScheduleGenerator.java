@@ -128,7 +128,7 @@ public class AnnualScheduleGenerator {
                     }
                     schoolFaults = schoolFaultsRes.getResult();
                     if(schoolFaults != null && schoolFaults.size() > 0) {
-                        Response<List<Goal>> goalsRes = goalsManagement.getGoalsById(workField, schoolFaults, year);
+                        Response<List<Goal>> goalsRes = goalsManagement.getGoalsById(schoolFaults);
                         if (!goalsRes.isFailure()) {
                             schoolFaultsGoals.addAll(goalsRes.getResult());
                         } else {
@@ -248,7 +248,7 @@ public class AnnualScheduleGenerator {
                     }
                     schoolFaults = schoolFaultsRes.getResult();
                     if(schoolFaults != null && schoolFaults.size() > 0) {
-                        Response<List<Goal>> goalsRes = goalsManagement.getGoalsById(workField, schoolFaults, year);
+                        Response<List<Goal>> goalsRes = goalsManagement.getGoalsById(schoolFaults);
                         if (!goalsRes.isFailure()) {
                             schoolFaultsGoals.addAll(goalsRes.getResult());
                         } else {
