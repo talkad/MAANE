@@ -15,8 +15,6 @@ let user_to_register = {
     workField: "jedi",
 }
 
-let logged_in = false
-
 describe('Register users tests as supervisor', () => {
 
     beforeEach(() => {
