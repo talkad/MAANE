@@ -7,6 +7,7 @@ import Domain.CommonClasses.Response;
 import Domain.UsersManagment.User;
 import Persistence.DbDtos.UserDBDTO;
 
+import java.time.LocalTime;
 import java.util.List;
 
 public interface UserService {
@@ -58,5 +59,9 @@ public interface UserService {
     Response<UserDBDTO> getCoordinator(String currUser, String workField, String symbol);
 
     Response<List<String>> allWorkFields(String currUser);
+
+    Response<Boolean> setWorkingTime(String currUser, int workDay, LocalTime act1Start, LocalTime act1End, LocalTime act2Start, LocalTime act2End);
+
+    Response<UserDBDTO> getWorkHours(String instructor);
 
 }

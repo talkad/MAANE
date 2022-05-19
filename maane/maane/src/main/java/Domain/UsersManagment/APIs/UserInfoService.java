@@ -12,5 +12,5 @@ public interface UserInfoService {
 
     Response<UserInfoDTO> getUserInfo(String username);
 
-    Response<List<UserActivityInfoDTO>> getUserActivities(String username, int month);
+    Response<List<UserActivityInfoDTO>> getUserActivities(String username, int year, int month);
 }

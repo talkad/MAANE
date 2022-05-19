@@ -18,6 +18,7 @@ import Persistence.SchoolQueries;
 import Persistence.SurveyDAO;
 import Persistence.UserQueries;
 
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -54,7 +55,7 @@ public class DataController {
     }
 
     public Response<Boolean> assignCoordinator(String currUser, String workField, String firstName, String lastName, String email, String phoneNumber, String school) {
-        if(schoolDAO.schoolSymbolExists(school)/*this.schools.containsKey(school)*/){
+        if(schoolDAO.schoolSymbolExists(school)){
             return UserController.getInstance().assignCoordinator(currUser, workField, firstName, lastName, email, phoneNumber, school);
             //Response<Boolean> coordinator = UserController.getInstance().assignCoordinator(currUser, workField, firstName, lastName, email, phoneNumber, school);
             /*if(!coordinator.isFailure() && !this.schools.get(school).getCoordinators().containsKey(coordinator.getResult().getWorkField())){
@@ -69,7 +70,7 @@ public class DataController {
     }
 
     public Response<Boolean> removeCoordinator(String currUser, String workField, String school) {
-        if(schoolDAO.schoolSymbolExists(school)/*schools.containsKey(school)*/){
+        if(schoolDAO.schoolSymbolExists(school)){
             return UserController.getInstance().removeCoordinator(currUser, workField, school);
             /*if(!coordinatorWorkFieldRes.isFailure() && schools.get(school).getCoordinators().containsKey(coordinatorWorkFieldRes.getResult())){
                 schools.get(school).getCoordinators().remove(coordinatorWorkFieldRes.getResult());
@@ -94,12 +95,8 @@ public class DataController {
         return schoolDAO.updateSchool(symbol, school);
     }
 
-
     public SchoolDBDTO getSchool(String symbol){
-
         return schoolDAO.getSchool(symbol);
-
-        //return this.schools.get(symbol);
     }
 
     public Response<SchoolDBDTO> getSchool(String username, String symbol){//todo test it
@@ -209,6 +206,14 @@ public class DataController {
 
         userController.logout("ronit");
 
+        userController.login("tal");
+        userController.setWorkingTime("tal", 0, LocalTime.of(8, 30), LocalTime.of(10, 30), LocalTime.of(11, 0), LocalTime.of(13, 0));
+        userController.logout("tal");
+
+        userController.login("shaked");
+        userController.setWorkingTime("shaked", 3, LocalTime.of(10, 0), LocalTime.of(12, 0), LocalTime.of(13, 0), LocalTime.of(15, 0));
+        userController.logout("shaked");
+
         return new Response<>(true, false, "reset db");
     }
 
@@ -216,7 +221,6 @@ public class DataController {
     //for test purposes only
     public void clearSchools() {
         schoolDAO.deleteSchools();
-        //this.schools = new ConcurrentHashMap<>();
     }
 
     //for test purposes only
@@ -224,6 +228,5 @@ public class DataController {
         SchoolDBDTO schoolDBDTO = new SchoolDBDTO();
         schoolDBDTO.setSymbol("1");
         schoolDAO.insertSchool(schoolDBDTO);
-        //schools.put("1", new School("1", "", "", ""));
     }
 }

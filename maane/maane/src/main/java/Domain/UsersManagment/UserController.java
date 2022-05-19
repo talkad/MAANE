@@ -7,6 +7,8 @@ import Communication.Initializer.ServerContextInitializer;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.SurveyController;
 import Domain.EmailManagement.EmailController;
+import Domain.UsersManagment.APIs.DTOs.UserActivityInfoDTO;
+import Domain.UsersManagment.APIs.DTOs.UserInfoDTO;
 import Domain.WorkPlan.GoalsManagement;
 import Persistence.DbDtos.UserDBDTO;
 import Persistence.SurveyDAO;
@@ -22,6 +24,7 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.Month;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -51,7 +54,6 @@ public class UserController {
 
         adminBoot("admin", "admin123");//todo need to hide password in db
     }
-
 
     private static class CreateSafeThreadSingleton {
         private static final UserController INSTANCE = new UserController();
@@ -338,7 +340,7 @@ public class UserController {
         }
     }
 
-    public Response<Boolean> updateInfo(String currUser, String firstName, String lastName, String email, String phoneNumber, String city){
+    public Response<Boolean> updateInfo(String currUser, String firstName, String lastName, String email, String phoneNumber, String city){//todo add workday and hours
 
         if(email.length() != 0 && !isValidEmailAddress(email))
             return new Response<>(false, true, "invalid email address");
@@ -1041,5 +1043,73 @@ public class UserController {
         else {
             return new Response<>(null, true, "User not connected");
         }
+    }
+
+    public Response<Boolean> canGenerateReport(String currUser) {
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);//todo maybe verify the dao was generated
+            return user.canGenerateReport();
+        }
+        else {
+            return new Response<>(null, true, "User not connected");
+        }
+    }
+
+    public Response<UserInfoDTO> getUserReportInfo(String currUser) {
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);//todo maybe verify the dao was generated
+            Response<Boolean> canGenerateReportRes = user.canGenerateReport();
+            if(!canGenerateReportRes.isFailure()){
+                return userDAO.getUserReportInfo(currUser);
+            }
+            else{
+                return new Response<>(null, true, canGenerateReportRes.getErrMsg());
+            }
+        }
+        else {
+            return new Response<>(null, true, "User not connected");
+        }
+    }
+
+    public Response<List<UserActivityInfoDTO>> getUserActivities(String currUser, int year, int month) {
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);//todo maybe verify the dao was generated
+            Response<Boolean> canGenerateReportRes = user.canGenerateReport();
+            if(!canGenerateReportRes.isFailure()){
+                return userDAO.getUserActivities(currUser, year, month);
+            }
+            else{
+                return new Response<>(null, true, canGenerateReportRes.getErrMsg());
+            }
+        }
+        else {
+            return new Response<>(null, true, "User not connected");
+        }
+    }
+
+    public Response<Boolean> setWorkingTime(String currUser, int workDay, LocalTime act1Start, LocalTime act1End, LocalTime act2Start, LocalTime act2End){
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);//todo maybe verify the dao was generated
+            Response<Boolean> changeWorkTime = user.setWorkingTime();//todo change active user info
+            if(workDay >=0 && workDay <=6 && noActivityCollision(act1Start, act1End, act2Start, act2End) && !changeWorkTime.isFailure()){
+                return userDAO.setWorkingTime(currUser, workDay, act1Start, act1End, act2Start, act2End);
+            }
+            else{
+                return new Response<>(null, true, changeWorkTime.getErrMsg() + " / colliding activity hours");
+            }
+        }
+        else {
+            return new Response<>(null, true, "User not connected");
+        }
+    }
+
+    private boolean noActivityCollision(LocalTime act1Start, LocalTime act1End, LocalTime act2Start, LocalTime act2End) {
+        return act1Start.isBefore(act1End) &&
+                (act1End.isBefore(act2Start) || act1End.equals(act2Start))
+                && act2Start.isBefore(act2End);
+    }
+
+    public Response<UserDBDTO> getWorkHours(String instructor) {
+        return userDAO.getWorkingTime(instructor);
     }
 }

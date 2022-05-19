@@ -7,6 +7,7 @@ import Domain.CommonClasses.Response;
 import Domain.UsersManagment.UserController;
 import Domain.UsersManagment.UserStateEnum;
 import Domain.WorkPlan.GoalsManagement;
+import Persistence.DbDtos.UserDBDTO;
 import Persistence.UserQueries;
 import org.junit.Assert;
 import org.junit.Before;
@@ -14,6 +15,7 @@ import org.junit.Test;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Vector;
 
@@ -364,6 +366,38 @@ public class UserControllerTest {
         Assert.assertTrue(workFieldsRes.getResult().size() == 2);
         Assert.assertTrue(workFieldsRes.getResult().contains("tech"));
         Assert.assertTrue(workFieldsRes.getResult().contains("English"));
+    }
+
+    @Test
+    public void assigningWorkHoursSuccess(){
+        String adminName = userController.login("admin").getResult();
+        userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "a@a.com", "0555555555", "");
+        userController.logout(adminName);
+        userController.login("sup1");
+        userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "a@a.com", "0555555555", "");
+        userController.logout("sup1");
+        userController.login("ins1");
+        userController.setWorkingTime("ins1", 1, LocalTime.of(9, 0), LocalTime.of(11, 0), LocalTime.of(11, 0), LocalTime.of(13, 0));
+        Response<UserDBDTO> userRes = userQueries.getWorkingTime("ins1");
+        Assert.assertFalse(userRes.isFailure());
+        Assert.assertTrue(userRes.getResult().getWorkDay() == 1);
+        Assert.assertTrue(userRes.getResult().getAct1Start().compareTo(LocalTime.of(9, 0)) == 0);
+    }
+
+    @Test
+    public void assigningWorkHoursFail(){
+        String adminName = userController.login("admin").getResult();
+        userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "a@a.com", "0555555555", "");
+        userController.logout(adminName);
+        userController.login("sup1");
+        userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "a@a.com", "0555555555", "");
+        userController.logout("sup1");
+        userController.login("ins1");
+        Response<Boolean> setWorkTimeRes = userController.setWorkingTime("ins1", 1, LocalTime.of(9, 0), LocalTime.of(11, 0), LocalTime.of(10, 0), LocalTime.of(13, 0));
+        Response<UserDBDTO> userRes = userQueries.getWorkingTime("ins1");
+        Assert.assertTrue(setWorkTimeRes.isFailure());
+        Assert.assertTrue(userRes.getResult().getWorkDay() == 0);
+        Assert.assertFalse(userRes.getResult().getAct1Start().compareTo(LocalTime.of(9, 0)) == 0);
     }
 
 }

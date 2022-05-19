@@ -4,6 +4,9 @@ import Communication.DTOs.UserDTO;
 import Domain.CommonClasses.Response;
 import Persistence.DbDtos.UserDBDTO;
 
+import java.time.DayOfWeek;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
@@ -22,8 +25,12 @@ public class User {
     protected List<String> appointments;
     protected List<String> surveys;
     protected List<String> baskets;
+    protected int workDay;
+    protected LocalTime act1Start;
+    protected LocalTime act1End;
+    protected LocalTime act2Start;
+    protected LocalTime act2End;
     //    private MonthlyReport monthlyReport; //todo monthly reports history??
-    //protected Map<String, WorkPlan> workPlan;
     protected List<Integer> workPlanYears;
 
 
@@ -58,8 +65,12 @@ public class User {
         this.surveys = new Vector<>();
         this.baskets = new Vector<>();
         if(this.state.getStateEnum() == UserStateEnum.INSTRUCTOR){
-            //this.workPlan = new ConcurrentHashMap<>();
             this.workPlanYears = new Vector<>();
+            this.workDay = 0;
+            this.act1Start = LocalTime.of(8, 0);
+            this.act1End = LocalTime.of(10, 0);
+            this.act2Start = LocalTime.of(10, 0);
+            this.act2End = LocalTime.of(12, 0);
         }
     }
 
@@ -88,8 +99,12 @@ public class User {
         this.surveys = userDBDTO.getSurveys();
         this.baskets = userDBDTO.getBaskets();
         if(this.state.getStateEnum() == UserStateEnum.INSTRUCTOR){
+            this.workDay = userDBDTO.getWorkDay();
+            this.act1Start = userDBDTO.getAct1Start();
+            this.act1End = userDBDTO.getAct1End();
+            this.act2Start = userDBDTO.getAct2Start();
+            this.act2End = userDBDTO.getAct2End();
             this.workPlanYears = userDBDTO.getWorkPlanYears();
-            //this.workPlan = userDBDTO.getWorkPlan();
         }
     }
 
@@ -146,6 +161,46 @@ public class User {
         }
 
         return state;
+    }
+
+    public int getWorkDay() {
+        return workDay;
+    }
+
+    public void setWorkDay(int workDay) {
+        this.workDay = workDay;
+    }
+
+    public LocalTime getAct1Start() {
+        return act1Start;
+    }
+
+    public void setAct1Start(LocalTime act1Start) {
+        this.act1Start = act1Start;
+    }
+
+    public LocalTime getAct1End() {
+        return act1End;
+    }
+
+    public void setAct1End(LocalTime act1End) {
+        this.act1End = act1End;
+    }
+
+    public LocalTime getAct2Start() {
+        return act2Start;
+    }
+
+    public void setAct2Start(LocalTime act2Start) {
+        this.act2Start = act2Start;
+    }
+
+    public LocalTime getAct2End() {
+        return act2End;
+    }
+
+    public void setAct2End(LocalTime act2End) {
+        this.act2End = act2End;
     }
 
     public Response<Boolean> logout() {
@@ -707,6 +762,24 @@ public class User {
         }
         else {
             return new Response<>(null, true, "user not allowed to view all work fields");
+        }
+    }
+
+    public Response<Boolean> canGenerateReport() {
+        if(this.state.getStateEnum() == UserStateEnum.INSTRUCTOR){
+            return new Response<>(true, false, "user allowed to generate report");
+        }
+        else {
+            return new Response<>(null, true, "user not allowed to generate report");
+        }
+    }
+
+    public Response<Boolean> setWorkingTime() {
+        if(this.state.getStateEnum() == UserStateEnum.INSTRUCTOR){
+            return new Response<>(true, false, "user allowed to update working hours");
+        }
+        else {
+            return new Response<>(null, true, "user not allowed to update working hours");
         }
     }
 }

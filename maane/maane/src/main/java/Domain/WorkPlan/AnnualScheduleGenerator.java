@@ -6,6 +6,7 @@ import Domain.CommonClasses.Response;
 import Domain.DataManagement.SurveyAnswers;
 import Domain.DataManagement.SurveyController;
 import Domain.UsersManagment.UserController;
+import Persistence.DbDtos.UserDBDTO;
 import Persistence.WorkPlanQueries;
 
 import java.util.Comparator;
@@ -116,7 +117,7 @@ public class AnnualScheduleGenerator {
                 schoolsAndFaults = new ConcurrentHashMap<>();
                 for (String school : schoolsOfInstructor) { //4 - schools of this instructor
 
-                    schoolFaultsGoals = new Vector<>();//todo verify it doesnt get deleted from the map
+                    schoolFaultsGoals = new Vector<>();
 
                     Response<List<Integer>> schoolFaultsRes = surveyController.detectSchoolFault(supervisor, surveyId, school, year);
                     System.out.println("school faults: " + schoolFaultsRes.getResult().toString());
@@ -149,7 +150,9 @@ public class AnnualScheduleGenerator {
 
             for (String instructor : instructorWithProblemsForSchools.keySet()) {
 
-                WorkPlan workPlan = new WorkPlan(year);
+                UserDBDTO userDBDTO = userController.getWorkHours(instructor).getResult();
+                WorkPlan workPlan = new WorkPlan(year, userDBDTO.getWorkDay(), userDBDTO.getAct1Start(), userDBDTO.getAct1End(), userDBDTO.getAct2Start(), userDBDTO.getAct2End());
+
                 List<Pair<String, Goal>> goalsPriorityQueue = new Vector<>();
                 for (String school : instructorWithProblemsForSchools.get(instructor).keySet()) {
 
@@ -266,7 +269,8 @@ public class AnnualScheduleGenerator {
                 }
             }
             for (String instructor : instructorWithProblemsForSchools.keySet()) {
-                WorkPlan workPlan = new WorkPlan(2022);
+                UserDBDTO userDBDTO = userController.getWorkHours(instructor).getResult();
+                WorkPlan workPlan = new WorkPlan(year, userDBDTO.getWorkDay(), userDBDTO.getAct1Start(), userDBDTO.getAct1End(), userDBDTO.getAct2Start(), userDBDTO.getAct2End());
                 List<Pair<String, Goal>> goalsPriorityQueue = new Vector<>();
                 for (String school : instructorWithProblemsForSchools.get(instructor).keySet()) {
                     if (instructorWithProblemsForSchools.get(instructor).get(school) != null && instructorWithProblemsForSchools.get(instructor).get(school).size() > 0) {

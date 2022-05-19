@@ -22,7 +22,7 @@ public class WorkPlanDTO {
         List<Pair<LocalDateTime, ActivityDTO>> calendar = new Vector<>();
         for (Map.Entry<LocalDateTime, Activity> oldEntry : workPlan.getCalendar().entrySet()) {
             if(oldEntry.getValue() != null) {
-                calendar.add(new Pair<>(oldEntry.getKey(), new ActivityDTO(oldEntry.getValue().getSchool(), oldEntry.getValue().getGoalId(), oldEntry.getValue().getTitle())));
+                calendar.add(new Pair<>(oldEntry.getKey(), new ActivityDTO(oldEntry.getValue().getSchool(), oldEntry.getValue().getGoalId(), oldEntry.getValue().getTitle(), oldEntry.getValue().getEndActivity())));
             }
         }
         this.calendar = calendar;

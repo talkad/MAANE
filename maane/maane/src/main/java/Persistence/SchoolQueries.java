@@ -152,7 +152,7 @@ public class SchoolQueries {
         return false;
     }
 
-    public SchoolDBDTO getSchool (String symbol) {
+    public SchoolDBDTO getSchool(String symbol) {
         Connect.createConnection();
         String sql = "SELECT * FROM \"Schools\" WHERE symbol = ?";
         PreparedStatement statement;
@@ -188,6 +188,28 @@ public class SchoolQueries {
             e.printStackTrace();
         }
         return schoolDBDTO;
+    }
+
+    public Response<Pair<String, String>> getSchoolNameAndCity(String symbol) {
+        Connect.createConnection();
+        String sql = "SELECT name, city FROM \"Schools\" WHERE symbol = ?";
+        PreparedStatement statement;
+        Pair<String, String> nameAndCity = null;
+        try {
+            statement = Connect.conn.prepareStatement(sql);
+            statement.setString(1, symbol);
+            ResultSet resultSchool = statement.executeQuery();
+
+            if (resultSchool.next()) {
+                String name = resultSchool.getString("name");
+                String city = resultSchool.getString("city");
+                return new Response<>(new Pair<>(name, city), false, "acquired name and city");
+            }
+            Connect.closeConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return new Response<>(null, true, "failed to acquire name and city");
     }
 
     public Response<List<Pair<String, String>>> getSchoolNameAndSymbol(List<String> schools) {

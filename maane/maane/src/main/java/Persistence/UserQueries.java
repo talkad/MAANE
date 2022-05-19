@@ -1,14 +1,23 @@
 package Persistence;
 
+import Communication.DTOs.ActivityDTO;
+import Communication.DTOs.WorkPlanDTO;
+import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
+import Domain.UsersManagment.APIs.DTOs.UserActivityInfoDTO;
+import Domain.UsersManagment.APIs.DTOs.UserInfoDTO;
 import Domain.UsersManagment.UserStateEnum;
 import Persistence.DbDtos.UserDBDTO;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.Vector;
 
 public class UserQueries {
@@ -121,6 +130,13 @@ public class UserQueries {
                 userDBDTO.setPhoneNumber(result.getString("phoneNumber"));
                 userDBDTO.setCity(result.getString("city"));
                 userDBDTO.setPassword(result.getString("password"));
+                if(userDBDTO.getStateEnum().equals(UserStateEnum.INSTRUCTOR)) {
+                    userDBDTO.setWorkDay(result.getInt("workday"));
+                    userDBDTO.setAct1Start(result.getTime("act1start").toLocalTime());
+                    userDBDTO.setAct1End(result.getTime("act1end").toLocalTime());
+                    userDBDTO.setAct2Start(result.getTime("act2start").toLocalTime());
+                    userDBDTO.setAct2End(result.getTime("act2end").toLocalTime());
+                }
 /*                if(userDBDTO.userStateEnum.equals(UserStateEnum.SUPERVISOR)){
                     userDBDTO.setSurveys(getUserSurveys(result.getString("username")));
                 }*///todo either use function or convert schools and appointments to functions as well
@@ -142,23 +158,27 @@ public class UserQueries {
                 }
                 userDBDTO.setAppointments(appointments);
 
-                statement = Connect.conn.prepareStatement(userSurveysSql);
-                statement.setString(1, username);
-                result = statement.executeQuery();
-                List<String> surveys = new Vector<>();
-                while (result.next()){
-                    surveys.add(result.getString(1));
+                if(userDBDTO.getStateEnum().equals(UserStateEnum.SUPERVISOR)){
+                    statement = Connect.conn.prepareStatement(userSurveysSql);
+                    statement.setString(1, username);
+                    result = statement.executeQuery();
+                    List<String> surveys = new Vector<>();
+                    while (result.next()){
+                        surveys.add(result.getString(1));
+                    }
+                    userDBDTO.setSurveys(surveys);
                 }
-                userDBDTO.setSurveys(surveys);
 
-                statement = Connect.conn.prepareStatement(userWorkPlans);
-                statement.setString(1, username);
-                result = statement.executeQuery();
-                List<Integer> workPlansYears = new Vector<>();
-                while (result.next()){
-                    workPlansYears.add(result.getInt(1));
+                if(userDBDTO.getStateEnum().equals(UserStateEnum.INSTRUCTOR)) {
+                    statement = Connect.conn.prepareStatement(userWorkPlans);
+                    statement.setString(1, username);
+                    result = statement.executeQuery();
+                    List<Integer> workPlansYears = new Vector<>();
+                    while (result.next()) {
+                        workPlansYears.add(result.getInt(1));
+                    }
+                    userDBDTO.setWorkPlanYears(workPlansYears);
                 }
-                userDBDTO.setWorkPlanYears(workPlansYears);
 
                 Connect.closeConnection();
                 return new Response<>(userDBDTO, false, "successfully acquired user");
@@ -175,7 +195,7 @@ public class UserQueries {
 
     private List<String> getUserSurveys (String username) {
         String query = "SELECT * FROM \"UsersSurveys\" WHERE username = ?";
-        PreparedStatement statement = null;
+        PreparedStatement statement;
         try {
             statement = Connect.conn.prepareStatement(query);
 
@@ -226,7 +246,7 @@ public class UserQueries {
     public Response<Boolean> insertUser(UserDBDTO userDBDTO){
         Connect.createConnection();
         int rows = 0;
-        String sql = "INSERT INTO \"Users\"(username, userstateenum, workfield , firstname , lastname , email,  phonenumber, city, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO \"Users\"(username, userstateenum, workfield , firstname , lastname , email,  phonenumber, city, password, workday, act1start, act1end, act2start, act2end) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ,? ,? ,?)";
         PreparedStatement preparedStatement;
         try {
             preparedStatement = Connect.conn.prepareStatement(sql);
@@ -240,6 +260,20 @@ public class UserQueries {
             preparedStatement.setString(7, userDBDTO.getPhoneNumber());
             preparedStatement.setString(8, userDBDTO.getCity());
             preparedStatement.setString(9, userDBDTO.getPassword());
+            if(userDBDTO.getStateEnum().equals(UserStateEnum.INSTRUCTOR)){
+                preparedStatement.setInt(10, userDBDTO.getWorkDay());
+                preparedStatement.setTime(11, Time.valueOf(userDBDTO.getAct1Start()));
+                preparedStatement.setTime(12, Time.valueOf(userDBDTO.getAct1End()));
+                preparedStatement.setTime(13, Time.valueOf(userDBDTO.getAct2Start()));
+                preparedStatement.setTime(14, Time.valueOf(userDBDTO.getAct2End()));
+            }
+            else{
+                preparedStatement.setInt(10, 0);
+                preparedStatement.setTime(11, null);
+                preparedStatement.setTime(12, null);
+                preparedStatement.setTime(13, null);
+                preparedStatement.setTime(14, null);
+            }
             rows = preparedStatement.executeUpdate();
             if(userDBDTO.getStateEnum().equals(UserStateEnum.SUPERVISOR)){
                 for(String survey : userDBDTO.getSurveys()){
@@ -351,7 +385,7 @@ public class UserQueries {
                 new Response<>(false, true, "bad Db writing");
     }
 
-    public Response<Boolean> updateUserInfo(UserDBDTO userDBDTO){
+    public Response<Boolean> updateUserInfo(UserDBDTO userDBDTO){//todo hours and workday
         Connect.createConnection();
         int rows = 0;
         String sql = "UPDATE \"Users\" SET firstName = ?, lastName = ?, email = ?, phoneNumber = ?, city = ? WHERE username = ?";
@@ -439,7 +473,7 @@ public class UserQueries {
 
     public Response<String> getPassword(String username) {
         Connect.createConnection();
-        String sql = "SELECT * FROM \"Users\" WHERE username = ?";
+        String sql = "SELECT password FROM \"Users\" WHERE username = ?";
         PreparedStatement statement;
         try {
             statement = Connect.conn.prepareStatement(sql);
@@ -456,6 +490,27 @@ public class UserQueries {
             throwables.printStackTrace();
         }
         return new Response<>(null, true, "failed to acquire password");
+    }
+
+    public Response<String> getCity(String username) {
+        Connect.createConnection();
+        String sql = "SELECT city FROM \"Users\" WHERE username = ?";
+        PreparedStatement statement;
+        try {
+            statement = Connect.conn.prepareStatement(sql);
+
+            statement.setString(1, username);
+            ResultSet result = statement.executeQuery();
+            if(result.next()) {
+                String city = result.getString("city");
+                Connect.closeConnection();
+                return new Response<>(city, false, "successfully acquired city");
+            }
+            Connect.closeConnection();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return new Response<>(null, true, "failed to acquire city");
     }
 
     public Boolean userExists(String username) {
@@ -596,7 +651,6 @@ public class UserQueries {
                 new Response<>(false, true, "bad Db writing");*/
     }
 
-
     public Response<Boolean> removeCoordinator(String workField, String school) {
         Connect.createConnection();
         int rows = 0;//todo add cascade to all tables with foreign keys
@@ -736,5 +790,109 @@ public class UserQueries {
         }
         return rows > 0 ? new Response<>(true, false, "") :
                 new Response<>(false, true, "bad Db writing");
+    }
+
+    public Response<UserInfoDTO> getUserReportInfo(String username) {
+        Connect.createConnection();
+        String sql = "SELECT lastname, firstname, city, workday FROM \"Users\" WHERE username = ?";
+        PreparedStatement statement;
+        try {
+            statement = Connect.conn.prepareStatement(sql);
+
+            statement.setString(1, username);
+            ResultSet result = statement.executeQuery();
+            if(result.next()) {
+                String lastName = result.getString("lastname");
+                String firstname = result.getString("firstname");
+                String city = result.getString("city");
+                int workDay = result.getInt("workday");
+
+                Connect.closeConnection();
+                return new Response<>(new UserInfoDTO(lastName, firstname, city, workDay), false, "successfully acquired user report info");
+            }
+            Connect.closeConnection();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return new Response<>(null, true, "failed to acquire user report info");
+    }
+
+    public Response<List<UserActivityInfoDTO>> getUserActivities(String username, int year, int month) {
+        List<UserActivityInfoDTO> userActivityInfo = new Vector<>();
+        Response<String> userCityRes = getCity(username);
+        if(!userCityRes.isFailure()){
+            Response<WorkPlanDTO> workPlanDTOResponse = WorkPlanQueries.getInstance().getUserWorkPlanByYearAndMonth(username, year, month);
+            if(!workPlanDTOResponse.isFailure()){
+                for (Pair<LocalDateTime, ActivityDTO> dateAndActivity: workPlanDTOResponse.getResult().getCalendar()) {
+                    Response<Pair<String, String>> schoolNameAndCityRes = SchoolQueries.getInstance().getSchoolNameAndCity(dateAndActivity.getSecond().getSchoolId());
+                    if(!schoolNameAndCityRes.isFailure()){
+                        userActivityInfo.add(new UserActivityInfoDTO(dateAndActivity.getFirst(), dateAndActivity.getSecond().getEndActivity(), schoolNameAndCityRes.getResult().getFirst(), userCityRes.getResult(), schoolNameAndCityRes.getResult().getSecond()));
+                    }
+                    else{
+                        continue;//todo some fail but maybe continue?
+                    }
+                }
+                return new Response<>(userActivityInfo, false, "successfully got activities");
+            }
+            else{
+                return new Response<>(null, true, workPlanDTOResponse.getErrMsg());
+            }
+        }
+        else{
+            return new Response<>(null, true, userCityRes.getErrMsg());
+        }
+    }
+
+    public Response<Boolean> setWorkingTime(String username, int workDay, LocalTime act1Start, LocalTime act1End, LocalTime act2Start, LocalTime act2End) {
+        Connect.createConnection();
+        int rows = 0;
+        String sql = "UPDATE \"Users\" SET workDay = ?, act1Start = ?, act1End = ?, act2Start = ?, act2End = ? WHERE username = ?";
+        PreparedStatement preparedStatement;
+        try {
+            preparedStatement = Connect.conn.prepareStatement(sql);
+
+            preparedStatement.setInt(1, workDay);
+            preparedStatement.setTime(2, Time.valueOf(act1Start));
+            preparedStatement.setTime(3, Time.valueOf(act1End));
+            preparedStatement.setTime(4, Time.valueOf(act2Start));
+            preparedStatement.setTime(5, Time.valueOf(act2End));
+            preparedStatement.setString(6, username);
+
+            rows = preparedStatement.executeUpdate();
+            Connect.closeConnection();
+        }
+        catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return rows > 0 ? new Response<>(true, false, "") :
+                new Response<>(false, true, "failed to write to db");
+    }
+
+    public Response<UserDBDTO> getWorkingTime(String username) {
+        Connect.createConnection();
+        String userSql = "SELECT workday, act1start, act1end, act2start, act2end FROM \"Users\" WHERE username = ?";//todo make into one query
+
+        PreparedStatement statement;
+        try {
+            statement = Connect.conn.prepareStatement(userSql);
+
+            statement.setString(1, username);
+            ResultSet result = statement.executeQuery();
+            UserDBDTO userDBDTO = new UserDBDTO();
+            if (result.next()) {
+                userDBDTO.setUsername(username);
+                userDBDTO.setWorkDay(result.getInt("workday"));
+                userDBDTO.setAct1Start(result.getTime("act1start").toLocalTime());
+                userDBDTO.setAct1End(result.getTime("act1end").toLocalTime());
+                userDBDTO.setAct2Start(result.getTime("act2start").toLocalTime());
+                userDBDTO.setAct2End(result.getTime("act2end").toLocalTime());
+                Connect.closeConnection();
+                return new Response<>(userDBDTO, false, "acquired user working day and hours");
+            }
+            Connect.closeConnection();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return new Response<>(null, true, "failed to get user");
     }
 }

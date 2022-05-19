@@ -9,6 +9,7 @@ import Domain.CommonClasses.Response;
 import Domain.UsersManagment.User;
 import Persistence.DbDtos.UserDBDTO;
 
+import java.time.LocalTime;
 import java.util.List;
 
 public class ProxyBridgeUser implements UserService {
@@ -240,6 +241,24 @@ public class ProxyBridgeUser implements UserService {
     public Response<List<String>> allWorkFields(String currUser) {
         if (real != null) {
             return real.allWorkFields(currUser);
+        }
+
+        return new Response<>(null, true, "not implemented");
+    }
+
+    @Override
+    public Response<Boolean> setWorkingTime(String currUser, int workDay, LocalTime act1Start, LocalTime act1End, LocalTime act2Start, LocalTime act2End) {
+        if (real != null) {
+            return real.setWorkingTime(currUser, workDay, act1Start, act1End, act2Start, act2End);
+        }
+
+        return new Response<>(null, true, "not implemented");
+    }
+
+    @Override
+    public Response<UserDBDTO> getWorkHours(String instructor) {
+        if (real != null) {
+            return real.getWorkHours(instructor);
         }
 
         return new Response<>(null, true, "not implemented");

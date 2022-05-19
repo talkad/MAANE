@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalTime;
 import java.util.*;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -281,5 +282,17 @@ public class UserController {
     public ResponseEntity<Response<List<String>>> allWorkFields(@RequestHeader(value = "Authorization") String token){
         return ResponseEntity.ok()
                 .body(service.allWorkFields(sessionHandler.getUsernameByToken(token).getResult()));
+    }
+
+    @PostMapping(value = "/setWorkingTime")
+    public ResponseEntity<Response<Boolean>> setWorkingTime(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object>  body){
+        return ResponseEntity.ok()
+                .body(service.setWorkingTime(sessionHandler.getUsernameByToken(token).getResult(), (int)body.get("workDay"), (LocalTime) body.get("act1Start"),  (LocalTime) body.get("act1End"),  (LocalTime) body.get("act2Start"),  (LocalTime) body.get("act2End")));
+    }
+
+    @GetMapping(value="/getWorkHours")
+    public ResponseEntity<Response<UserDBDTO>> getWorkHours(@RequestHeader(value = "Authorization") String token){
+        return ResponseEntity.ok()
+                .body(service.getWorkHours(sessionHandler.getUsernameByToken(token).getResult()));
     }
 }

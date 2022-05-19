@@ -65,7 +65,12 @@ create table "Users"
     email         text,
     phonenumber   text,
     city          text,
-    password      text
+    password      text,
+    workday       integer,
+    act1start     time,
+    act1end       time,
+    act2start     time,
+    act2end       time
 );
 
 alter table "Users"
@@ -104,7 +109,7 @@ create table "Rules"
     type        text,
     comparison  text,
     question_id integer,
-    answer      integer,
+    answer      text,
     parent_id   integer,
     id          serial not null
         constraint rules_pk
@@ -143,7 +148,7 @@ alter table "Appointments"
 -- auto-generated definition
 create table "Schools"
 (
-    symbol          integer,
+    symbol          text,
     name            text,
     city            text,
     city_mail       text,
@@ -165,12 +170,14 @@ create table "Schools"
 alter table "Schools"
     owner to postgres;
 
+-- auto-generated definition
 create table "WorkPlans"
 (
-    username   text      not null,
-    year       integer   not null,
-    date       timestamp not null,
-    activities text,
+    username    text      not null,
+    year        integer   not null,
+    date        timestamp not null,
+    activities  text,
+    endactivity timestamp,
     constraint workplans_pk
         primary key (username, date, year)
 );
