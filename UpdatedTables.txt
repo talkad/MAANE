@@ -104,7 +104,7 @@ create table "Rules"
     type        text,
     comparison  text,
     question_id integer,
-    answer      integer,
+    answer      text,
     parent_id   integer,
     id          serial not null
         constraint rules_pk
@@ -143,7 +143,7 @@ alter table "Appointments"
 -- auto-generated definition
 create table "Schools"
 (
-    symbol          integer,
+    symbol          text,
     name            text,
     city            text,
     city_mail       text,
