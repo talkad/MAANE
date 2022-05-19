@@ -13,7 +13,8 @@ public class Connect {
         ServerContextInitializer initializer = ServerContextInitializer.getInstance();
 
         try {
-            conn = DriverManager.getConnection(initializer.getDbConnection(), initializer.getDbUsername(), initializer.getDbPassword());
+            conn = DBCPDataSource.getConnection(initializer.getDbConnection(), initializer.getDbUsername(), initializer.getDbPassword());
+            //conn = DriverManager.getConnection(initializer.getDbConnection(), initializer.getDbUsername(), initializer.getDbPassword());
 
         } catch (SQLException throwables) {
             throwables.printStackTrace();

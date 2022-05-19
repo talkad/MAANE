@@ -2,7 +2,6 @@ package Domain.WorkPlan;
 
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
-import Domain.UsersManagment.Activity;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -39,8 +38,8 @@ public class WorkPlan {
     Inserts 2 goals from 2 schools for same date
      */
     public Response<Boolean> insertActivityToFirstAvailableDate(Pair<String, Goal> input1, Pair<String, Goal> input2) {
-        Activity firstActivity = new Activity(input1.getFirst(), input1.getSecond().getTitle());
-        Activity secondActivity = new Activity(input2.getFirst(), input2.getSecond().getTitle());//todo isnt it goald id?
+        Activity firstActivity = new Activity(input1.getFirst(), input1.getSecond().getGoalId(), input1.getSecond().getTitle());
+        Activity secondActivity = new Activity(input2.getFirst(), input2.getSecond().getGoalId(), input2.getSecond().getTitle());//todo isnt it goald id?
 
         LocalDateTime freeDate = findDate();
         if (freeDate == null) //no free date
@@ -59,7 +58,7 @@ public class WorkPlan {
     Gets a pair of <School name, Goal> and insert it to the first available date (not friday/saturday)
      */
     public Response<Boolean> insertActivityToFirstAvailableDate(Pair<String, Goal> input) {
-        Activity activity = new Activity(input.getFirst(), input.getSecond().getTitle());
+        Activity activity = new Activity(input.getFirst(), input.getSecond().getGoalId(), input.getSecond().getTitle());
         LocalDateTime freeDate = findDate();
 
         if (freeDate == null) //no free date
@@ -157,7 +156,6 @@ public class WorkPlan {
         return calendar;
     }
 
-
 //    public Response<Boolean> insertActivityEveryWeek(Pair<String, Goal> input) {
 //        Activity activity = new Activity(input.getFirst(), input.getSecond().getTitle());
 //        LocalDateTime freeDate = findDate();
@@ -201,9 +199,8 @@ public class WorkPlan {
 //        return new Response<>(false, false, "Success");
 //    }
 
-
     public Response<Boolean> insertActivityEveryWeek(Pair<String, Goal> input) {
-        Activity activity = new Activity(input.getFirst(), input.getSecond().getTitle());
+        Activity activity = new Activity(input.getFirst(), input.getSecond().getGoalId(), input.getSecond().getTitle());
         LocalDateTime lastDay = LocalDateTime.of(this.year + 1, 6, 21, 0, 0);
 
         if (lastDay.isBefore(currDateToInsert)) //no free date
@@ -216,8 +213,8 @@ public class WorkPlan {
     }
 
     public Response<Boolean> insertActivityEveryWeek(Pair<String, Goal> input1, Pair<String, Goal> input2) {
-        Activity firstActivity = new Activity(input1.getFirst(), input1.getSecond().getTitle());
-        Activity secondActivity = new Activity(input2.getFirst(), input2.getSecond().getTitle());
+        Activity firstActivity = new Activity(input1.getFirst(), input1.getSecond().getGoalId(), input1.getSecond().getTitle());
+        Activity secondActivity = new Activity(input2.getFirst(), input2.getSecond().getGoalId(), input2.getSecond().getTitle());
         LocalDateTime lastDay = LocalDateTime.of(this.year + 1, 6, 21, 0, 0);
 
         if (lastDay.isBefore(currDateToInsert)) //no free date

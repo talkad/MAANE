@@ -1,7 +1,7 @@
 package Communication.DTOs;
 
 import Domain.CommonClasses.Pair;
-import Domain.UsersManagment.Activity;
+import Domain.WorkPlan.Activity;
 import Domain.WorkPlan.WorkPlan;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,9 +21,8 @@ public class WorkPlanDTO {
     public WorkPlanDTO(WorkPlan workPlan){ //TreeMap <LocalDateTime, Activity>
         List<Pair<LocalDateTime, ActivityDTO>> calendar = new Vector<>();
         for (Map.Entry<LocalDateTime, Activity> oldEntry : workPlan.getCalendar().entrySet()) {
-//            List<Activity> oldActivities = oldEntry.getValue();
             if(oldEntry.getValue() != null) {
-                calendar.add(new Pair<>(oldEntry.getKey(), new ActivityDTO(oldEntry.getValue().getSchool(), oldEntry.getValue().getTitle())));
+                calendar.add(new Pair<>(oldEntry.getKey(), new ActivityDTO(oldEntry.getValue().getSchool(), oldEntry.getValue().getGoalId(), oldEntry.getValue().getTitle())));
             }
         }
         this.calendar = calendar;
@@ -35,7 +34,7 @@ public class WorkPlanDTO {
 
     public void printMe(){
         for (Pair<LocalDateTime, ActivityDTO> pair : calendar){
-            System.out.println("Date: " + pair.getFirst() + " Title: " + pair.getSecond());
+            System.out.println("Date: " + pair.getFirst() + " GoalId: " + pair.getSecond().getGoalId() + " Title: " + pair.getSecond().getTitle());
         }
     }
 }

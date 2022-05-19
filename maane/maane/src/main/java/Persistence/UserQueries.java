@@ -404,7 +404,7 @@ public class UserQueries {
         String sqlDeleteSchools = "DELETE FROM \"UsersSchools\" WHERE username = ?";
         String sqlDeleteAppointments = "DELETE FROM \"Appointments\" WHERE appointor = ?";
         String sqlDeleteSurveys = "DELETE FROM \"UsersSurveys\" WHERE username = ?";
-
+        String sqlDeleteWorkPlans = "DELETE FROM \"WorkPlans\" WHERE username = ?";
 
         PreparedStatement preparedStatement;
         try {
@@ -423,6 +423,10 @@ public class UserQueries {
             preparedStatement = Connect.conn.prepareStatement(sqlDeleteSurveys);
             preparedStatement.setString(1, username);
             /*rows = */preparedStatement.executeUpdate();//todo not sure if should update failure here for the admin user removal case
+
+            preparedStatement = Connect.conn.prepareStatement(sqlDeleteWorkPlans);
+            preparedStatement.setString(1, username);
+            /*rows = */preparedStatement.executeUpdate();
 
             Connect.closeConnection();
         }
@@ -474,7 +478,6 @@ public class UserQueries {
         }
         return false;
     }
-
 
     public void deleteUsers(){
         Connect.createConnection();
@@ -606,7 +609,6 @@ public class UserQueries {
 
         String coordinatorName = "";
         //todo fix it with cascade
-//todo also remove schools
         // todo : this is not working regardless of the cascading
 
         PreparedStatement statement;
@@ -715,5 +717,24 @@ public class UserQueries {
             throwables.printStackTrace();
         }
         return new Response<>(null, true, "failed to acquire workFields");
+    }
+
+    public Response<Boolean> removeWorkPlan(String username) {
+        Connect.createConnection();
+        int rows = 0;
+        String sql = "DELETE FROM \"WorkPlans\" WHERE username = ?";
+        PreparedStatement preparedStatement;
+        try {
+            preparedStatement = Connect.conn.prepareStatement(sql);
+            preparedStatement.setString(1, username);
+            rows = preparedStatement.executeUpdate();
+
+            Connect.closeConnection();
+        }
+        catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return rows > 0 ? new Response<>(true, false, "") :
+                new Response<>(false, true, "bad Db writing");
     }
 }

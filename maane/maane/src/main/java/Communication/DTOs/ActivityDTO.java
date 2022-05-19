@@ -9,9 +9,10 @@ import lombok.NoArgsConstructor;
 @Data
 public class ActivityDTO {
     String schoolId;
+    Integer goalId;
     String title;
 
     public String toString (){
-        return "School: "+schoolId+" Title: "+title;
+        return "School: " + schoolId + "GoalId: " + goalId + " Title: " + title;
     }
 }

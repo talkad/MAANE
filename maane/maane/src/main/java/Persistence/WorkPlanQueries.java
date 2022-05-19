@@ -26,7 +26,6 @@ public class WorkPlanQueries {
     }
 
     public Response<Boolean> insertUserWorkPlan(String username, WorkPlanDTO workPlan, Integer year){
-        System.out.println("name: " + username + " date: " + year);
         Connect.createConnection();
         int rows = 0;
         String sql = "INSERT INTO \"WorkPlans\" (username, year, date, activities) VALUES (?, ?, ?, ?)";
@@ -61,9 +60,8 @@ public class WorkPlanQueries {
      */
     private String ActivitiesToString (ActivityDTO activity){
         if (activity == null) return "";
-        return activity.getSchoolId() + " " + activity.getTitle();
+        return activity.getSchoolId() + " " + activity.getGoalId().toString() + " " + activity.getTitle();
     }
-
 
     /*public Response<Map<String, WorkPlanDTO>> getUserWorkPlan(String username)  {
         Connect.createConnection();
@@ -96,7 +94,7 @@ public class WorkPlanQueries {
         Connect.createConnection();
         String sql = "SELECT * FROM \"WorkPlans\" WHERE username = ? AND year = ?";
         PreparedStatement statement;
-        WorkPlanDTO output;
+        WorkPlanDTO workPlanDTO;
         try {
             statement = Connect.conn.prepareStatement(sql);
             statement.setString(1, username);
@@ -106,17 +104,16 @@ public class WorkPlanQueries {
             List<Pair<LocalDateTime, ActivityDTO>> calendar = new LinkedList<>();
             while(result.next()) {
                 LocalDateTime date = result.getTimestamp("date").toInstant().atZone(TimeZone.getTimeZone("Asia/Jerusalem").toZoneId()).toLocalDateTime();
-                //timestamp.toInstant().atZone(TimeZone.getTimeZone("Asia/Jerusalem").toZoneId()).toLocalDate()
 
                 String activities = result.getString("activities");
                 ActivityDTO activityDTO = StringToActivities(activities);
                 Pair<LocalDateTime, ActivityDTO> toAdd = new Pair<>(date, activityDTO);
                 calendar.add(toAdd);
             }
-            output = new WorkPlanDTO(calendar);
+            workPlanDTO = new WorkPlanDTO(calendar);
 
             Connect.closeConnection();
-            return new Response<>(output, false, "successfully got work plans");
+            return new Response<>(workPlanDTO, false, "successfully got work plans");
         } catch (SQLException throwables) {throwables.printStackTrace();}
         return new Response<>(null, true, "failed to get work plans");
     }
@@ -125,7 +122,7 @@ public class WorkPlanQueries {
         Connect.createConnection();
         String sql = "SELECT * FROM \"WorkPlans\" WHERE username = ? AND (year = ? AND EXTRACT(MONTH FROM date) = ?)";
         PreparedStatement statement;
-        WorkPlanDTO output;
+        WorkPlanDTO workPlanDTO;
         try {
             statement = Connect.conn.prepareStatement(sql);
             statement.setString(1, username);
@@ -137,17 +134,16 @@ public class WorkPlanQueries {
             List<Pair<LocalDateTime, ActivityDTO>> calendar = new LinkedList<>();
             while(result.next()) {
                 LocalDateTime date = result.getTimestamp("date").toInstant().atZone(TimeZone.getTimeZone("Asia/Jerusalem").toZoneId()).toLocalDateTime();
-                //timestamp.toInstant().atZone(TimeZone.getTimeZone("Asia/Jerusalem").toZoneId()).toLocalDate()
 
                 String activities = result.getString("activities");
                 ActivityDTO activityDTO = StringToActivities(activities);
-                Pair<LocalDateTime, ActivityDTO> toAdd = new Pair<>(date, activityDTO);
-                calendar.add(toAdd);
+                Pair<LocalDateTime, ActivityDTO> dateAndActivity = new Pair<>(date, activityDTO);
+                calendar.add(dateAndActivity);
             }
-            output = new WorkPlanDTO(calendar);
+            workPlanDTO = new WorkPlanDTO(calendar);
 
             Connect.closeConnection();
-            return new Response<>(output, false, "successfully got work plans");
+            return new Response<>(workPlanDTO, false, "successfully got work plans");
         } catch (SQLException throwables) {throwables.printStackTrace();}
         return new Response<>(null, true, "failed to get work plans");
     }
@@ -158,11 +154,11 @@ public class WorkPlanQueries {
      * @return parse back
      */
     private ActivityDTO StringToActivities (String activity){
-        if(activity == null || activity.equals("")) return new ActivityDTO("","");//todo problem
-        String [] activitiesArray = activity.split(" ", 2);
+        if(activity == null || activity.equals("")) return new ActivityDTO("", -1, "");//todo problem
+        String [] activitiesArray = activity.split(" ", 3);
         String schoolId = activitiesArray[0];
-        String title = activitiesArray[1];
-        return new ActivityDTO(schoolId, title);
+        Integer goalId = Integer.parseInt(activitiesArray[1]);
+        String title = activitiesArray[2];
+        return new ActivityDTO(schoolId, goalId, title);
     }
-
 }
