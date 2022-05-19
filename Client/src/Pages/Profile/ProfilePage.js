@@ -80,6 +80,7 @@ function InfoTabPanel(props){
     const save_button_string = "שמירה";
 
     const edit_string = 'עריכת פרטים';
+    const download_report = `הורדת דו"ח עבודה`;
 
     useEffect(() => {
         if (changes) {
@@ -138,8 +139,34 @@ function InfoTabPanel(props){
         }
     }
 
+    /**
+     * a call back function for the request to get the work report file of the current user
+     * @param data the response from the server
+     */
+    const downloadReportCallback = (data) => {
+        if(data.failure){
+
+        }
+        else{
+
+        }
+    }
+
+    /**
+     * an handler for sending the request to download  the work report of the current user
+     */
+    const downloadReportHandler = () => {
+        new Connection().getWorkReport(downloadReportCallback)
+    }
+
     return (
         <Grid container spacing={2} rowSpacing={4} sx={{paddingTop: 1}}>
+            <Grid item xs={6}>
+                <Button id={"download_report_button"} onClick={() => setEdit(!edit)} variant={"outlined"}>
+                    {download_report}
+                </Button>
+            </Grid>
+
             {/*edit button*/}
             <Grid item xs={6}>
                 <Button id={"profile_edit_button"} onClick={() => setEdit(!edit)} variant={edit ? "outlined" : "contained"} startIcon={edit? <EditOffIcon />  : <EditIcon />}>

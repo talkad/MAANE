@@ -661,9 +661,22 @@ class Connection{
 
     /**
      * sends a GET request to get the work plan of the current user in a given year and month
+     * @param year the year of the activities to get
+     * @param month the month of the activities to get
+     * @param callback a callback function to call once there's a response
      */
     getWorkPlan(year, month, callback){
         this.sendGET(`/user/viewWorkPlan/year=${year}&month=${month}`, callback)
+    }
+
+    // WORK REPORT
+
+    /**
+     * sends a GET request to get the work report of the current user
+     * @param callback a callback function to call once there's a response
+     */
+    getWorkReport(callback){
+        this.sendGET(``, callback)
     }
 
 }
