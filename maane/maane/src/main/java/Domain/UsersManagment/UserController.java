@@ -868,6 +868,22 @@ public class UserController {
         }
     }
 
+    public Response<WorkPlanDTO> viewInstructorWorkPlan(String currUser, String instructor, Integer year, Integer month) {//todo test it but should be fine
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            Response<Boolean> workPlanResponse = user.getInstructorWorkPlan(instructor);
+            if(!workPlanResponse.isFailure()){
+                return workPlanDAO.getUserWorkPlanByYearAndMonth(instructor, year, month);
+            }
+            else{
+                return new Response<>(null, true, workPlanResponse.getErrMsg());
+            }
+        }
+        else {
+            return new Response<>(null, true, "User not connected");
+        }
+    }
+
     public Response<UserDTO> getUserInfo(String currUser){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
@@ -1109,5 +1125,21 @@ public class UserController {
 
     public Response<UserDBDTO> getWorkHours(String instructor) {
         return userDAO.getWorkingTime(instructor);
+    }
+
+    public Response<Boolean> editActivity(String currUser, LocalDateTime currActStart, Integer year, LocalDateTime newActStart, LocalDateTime newActEnd){ //todo test it
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);//todo maybe verify the dao was generated
+            Response<Boolean> editActivityRes = user.editActivity(year);//todo change active user info
+            if(!editActivityRes.isFailure()){
+                return workPlanDAO.updateActivity(currUser, currActStart, year, newActStart, newActEnd);
+            }
+            else{
+                return new Response<>(null, true, editActivityRes.getErrMsg() + " / colliding activity hours");
+            }
+        }
+        else {
+            return new Response<>(null, true, "User not connected");
+        }
     }
 }

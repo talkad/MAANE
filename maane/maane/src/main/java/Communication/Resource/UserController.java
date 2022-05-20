@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -141,6 +142,12 @@ public class UserController {
     public ResponseEntity<Response<WorkPlanDTO>> viewWorkPlan(@RequestHeader(value = "Authorization") String token, @PathVariable("year") Integer year, @PathVariable("month") Integer month){
         return ResponseEntity.ok()
                 .body(service.viewWorkPlan(sessionHandler.getUsernameByToken(token).getResult(), year, month));
+    }
+
+    @GetMapping(value = "/viewInstructorWorkPlan/instructor={instructor}&year={year}&month={month}")//todo aviad
+    public ResponseEntity<Response<WorkPlanDTO>> viewInstructorWorkPlan(@RequestHeader(value = "Authorization") String token, @PathVariable("instructor") String instructor, @PathVariable("year") Integer year, @PathVariable("month") Integer month){
+        return ResponseEntity.ok()
+                .body(service.viewInstructorWorkPlan(sessionHandler.getUsernameByToken(token).getResult(), instructor, year, month));
     }
 
     @PostMapping(value = "/authenticatePassword")
@@ -274,7 +281,7 @@ public class UserController {
     @PostMapping(value = "/setWorkingTime") //todo aviad
     public ResponseEntity<Response<Boolean>> setWorkingTime(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object>  body){
         return ResponseEntity.ok()
-                .body(service.setWorkingTime(sessionHandler.getUsernameByToken(token).getResult(), (int)body.get("workDay"), (LocalTime) body.get("act1Start"),  (LocalTime) body.get("act1End"),  (LocalTime) body.get("act2Start"),  (LocalTime) body.get("act2End")));
+                .body(service.setWorkingTime(sessionHandler.getUsernameByToken(token).getResult(), (int)body.get("workDay"), (LocalTime) body.get("act1Start"), (LocalTime) body.get("act1End"), (LocalTime) body.get("act2Start"), (LocalTime) body.get("act2End")));
     }
 
     @GetMapping(value="/getWorkHours") //todo aviad
@@ -282,4 +289,12 @@ public class UserController {
         return ResponseEntity.ok()
                 .body(service.getWorkHours(sessionHandler.getUsernameByToken(token).getResult()));
     }
+
+    @PostMapping(value = "/editActivity") //todo aviad
+    public ResponseEntity<Response<Boolean>> editActivity(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object> body){
+        return ResponseEntity.ok()
+                .body(service.editActivity(sessionHandler.getUsernameByToken(token).getResult(), (LocalDateTime)body.get("currActStart"), (Integer) body.get("year"), (LocalDateTime) body.get("newActStart"), (LocalDateTime) body.get("newActEnd")));
+    }
+
+
 }

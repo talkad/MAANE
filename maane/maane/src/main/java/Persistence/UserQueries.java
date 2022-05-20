@@ -9,10 +9,7 @@ import Domain.UsersManagment.APIs.DTOs.UserInfoDTO;
 import Domain.UsersManagment.UserStateEnum;
 import Persistence.DbDtos.UserDBDTO;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Time;
+import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.LinkedList;
@@ -23,7 +20,6 @@ public class UserQueries {
     private UserQueries() {
 
     }
-
     private static class CreateSafeThreadSingleton {
         private static final UserQueries INSTANCE = new UserQueries();
     }

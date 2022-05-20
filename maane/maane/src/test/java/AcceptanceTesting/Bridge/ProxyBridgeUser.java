@@ -9,6 +9,7 @@ import Domain.CommonClasses.Response;
 import Domain.UsersManagment.User;
 import Persistence.DbDtos.UserDBDTO;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -74,6 +75,15 @@ public class ProxyBridgeUser implements UserService {
     public Response<WorkPlanDTO> viewWorkPlan(String currUser, Integer year, Integer month) {
         if (real != null) {
             return real.viewWorkPlan(currUser, year, month);
+        }
+
+        return new Response<>(null, true, "not implemented");
+    }
+
+    @Override
+    public Response<WorkPlanDTO> viewInstructorWorkPlan(String currUser, String instructor, Integer year, Integer month) {
+        if (real != null) {
+            return real.viewInstructorWorkPlan(currUser, instructor, year, month);
         }
 
         return new Response<>(null, true, "not implemented");
@@ -259,6 +269,15 @@ public class ProxyBridgeUser implements UserService {
     public Response<UserDBDTO> getWorkHours(String instructor) {
         if (real != null) {
             return real.getWorkHours(instructor);
+        }
+
+        return new Response<>(null, true, "not implemented");
+    }
+
+    @Override
+    public Response<Boolean> editActivity(String currUser, LocalDateTime currActStart, Integer year, LocalDateTime newActStart, LocalDateTime newActEnd) {
+        if (real != null) {
+            return real.editActivity(currUser, currActStart, year, newActStart, newActEnd);
         }
 
         return new Response<>(null, true, "not implemented");
