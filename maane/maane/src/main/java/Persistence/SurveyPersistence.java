@@ -26,8 +26,6 @@ import java.util.List;
 public class SurveyPersistence {
 
 
-
-
     private static class CreateSafeThreadSingleton {
         private static final SurveyPersistence INSTANCE = new SurveyPersistence();
     }
@@ -41,7 +39,7 @@ public class SurveyPersistence {
     public Response<Boolean> insertSurvey(SurveyDTO surveyDTO) {
         Connect.createConnection();
         int rows = 0;
-        String sql = "INSERT INTO \"Surveys\" (id, title, description, submit) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO \"Surveys\" (id, title, description, submit, year) VALUES (?, ?, ?, ?, ?)";
         PreparedStatement preparedStatement;
         try {
             preparedStatement = Connect.conn.prepareStatement(sql);
@@ -49,7 +47,7 @@ public class SurveyPersistence {
             preparedStatement.setString(2, surveyDTO.getTitle());
             preparedStatement.setString(3, surveyDTO.getDescription());
             preparedStatement.setBoolean(4, false);
-
+            preparedStatement.setInt(5, surveyDTO.getYear());
 
             rows = preparedStatement.executeUpdate();
 

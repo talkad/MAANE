@@ -1090,6 +1090,19 @@ public class UserController {
         }
     }
 
+    /**
+     * check if coordinator assigned to school {@param symbol} can answer to given survey
+     * @param symbol the symbol of school
+     * @param surveyID identifier of survey
+     * @return positive result if the answers made by suitable coordinator
+     */
+    public Response<Boolean> isValidAnswer(String symbol, String surveyID) {
+
+        //todo: shaked implementation
+
+        return null;
+    }
+
     //for test purposes only start
     public User getUser(String user){
         return new User(userDAO.getFullUser(user).getResult());

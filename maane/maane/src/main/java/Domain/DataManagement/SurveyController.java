@@ -13,6 +13,7 @@ import Persistence.DbDtos.SchoolDBDTO;
 import Persistence.SurveyDAO;
 
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -54,6 +55,8 @@ public class SurveyController {
         String indexer = createToken();
 
         surveyDTO.setId(indexer);
+        surveyDTO.setYear(LocalDateTime.now().getYear());
+
         permissionRes = UserController.getInstance().createSurvey(username, indexer);
 
         if(permissionRes.isFailure() || permissionRes.getResult().length() == 0)
@@ -160,6 +163,7 @@ public class SurveyController {
 
         SurveyAnswers answer = new SurveyAnswers();
         Response<Boolean> answerRes = answer.addAnswers(answersDTO);
+        Response<Boolean> validAnswer;
         String symbol;
 
         if(!surveyDAO.getSurveySubmission(answersDTO.getId()).getResult())
@@ -185,6 +189,11 @@ public class SurveyController {
 
         if(parseInteger(symbol) == -1)
             return new Response<>(false, true, "School symbol must be a number");
+
+        // check answer validity
+        validAnswer = UserController.getInstance().isValidAnswer(symbol, answersDTO.getId());
+        if(!validAnswer.getResult())
+            return new Response<>(false, true, validAnswer.getErrMsg());
 
         // remove from db if exists
         surveyDAO.removeCoordinatorAnswers(answersDTO.getId(), symbol);
