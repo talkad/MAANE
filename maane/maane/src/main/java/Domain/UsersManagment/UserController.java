@@ -63,40 +63,6 @@ public class UserController {
         return this.connectedUsers;
     }
 
-    public Response<Boolean> sendCoordinatorEmails(String currUser, String surveyLink) {
-        if (connectedUsers.containsKey(currUser)) {
-            User user = connectedUsers.get(currUser);
-            if(user.isSupervisor().getResult()){
-                return emailController.sendEmail(user.getWorkField(), surveyLink);//todo verify existence of the survey link
-            }
-            else{
-                return new Response<>(null, true, "user isn't supervisor");
-            }
-        }
-        else {
-            return new Response<>(null, true, "user is not logged in");
-        }
-    }
-
-    public Response<String> getPassword(String currUser) {
-        return userDAO.getPassword(currUser);
-    }
-
-    /**
-     * generate schedule for all instructors under current user
-     * @param currUser the supervisor wish to generate schedules
-     * @return response contains the work field of current user
-     */
-    public Response<String> generateSchedule(String currUser) {
-        if (connectedUsers.containsKey(currUser)) {
-            User user = connectedUsers.get(currUser);
-            return user.generateSchedule();
-        }
-        else {
-            return new Response<>("", true, "user is not logged in");
-        }
-    }
-
     /**
      * login user into system
      * @param username the original username
@@ -114,16 +80,6 @@ public class UserController {
             System.out.println(username + " failed to login successfully");
             return new Response<>(null, true, "failed to login");
         }
-    }
-
-    public boolean isValidUser(String username, String password){
-        if(userDAO.userExists(username)){
-            Response<String> pass = userDAO.getPassword(username);
-            if(!pass.isFailure()){
-                return passwordEncoder.matches(password, pass.getResult());
-            }
-        }
-        return false;
     }
 
     public Response<String> logout(String name) {
@@ -536,7 +492,7 @@ public class UserController {
         }
     }
 
-    private UserDTO createUserDTOS(String username){//todo either move this to user or move the one in User here
+    private UserDTO createUserDTOS(String username){
         UserDTO userDTO = new UserDTO();
         User user = new User(userDAO.getFullUser(username).getResult());
         userDTO.setUsername(username);
@@ -622,281 +578,25 @@ public class UserController {
         }
     }
 
-    public Response<String> createSurvey(String currUser, String surveyId) {
-        if(connectedUsers.containsKey(currUser)) {
-            User user = connectedUsers.get(currUser);
-            Response<String> surveyCreation = user.createSurvey(surveyId);
-            if(!surveyCreation.isFailure()){
-                return userDAO.addSurvey(currUser, surveyId);
-            }
-            else {
-                return surveyCreation;
-            }
-        }
-        else {
-            return new Response<>("", true, "User not connected");
-        }
-    }
-
-    public Response<String> createBasket(String currUser, String basketId) {
-        if(connectedUsers.containsKey(currUser)) {
-            User user = connectedUsers.get(currUser);
-            return user.createBasket(basketId);
-        }
-        else {
-            return new Response<>("", true, "User not connected");
-        }
-    }
-
-    public Response<Boolean> hasCreatedSurvey(String currUser, String surveyId) {
-        if(connectedUsers.containsKey(currUser)) {
-            User user = connectedUsers.get(currUser);
-            return user.hasCreatedSurvey(surveyId);
-        }
-        else {
-            return new Response<>(false, true, "User not connected");
-        }
-    }
-
-    public Response<Boolean> hasCreatedBasket(String currUser, String basketId) {
-        if(connectedUsers.containsKey(currUser)) {
-            User user = connectedUsers.get(currUser);
-            return user.hasCreatedBasket(basketId);
-        }
-        else {
-            return new Response<>(false, true, "User not connected");
-        }
-    }
-
-    public Response<String> removeSurvey(String currUser, String surveyId) {
-        if(connectedUsers.containsKey(currUser)) {
-            User user = connectedUsers.get(currUser);
-            return user.removeSurvey(surveyId);
-        }
-        else {
-            return new Response<>("", true, "User not connected");
-        }
-    }
-
-    public Response<String> removeBasket(String currUser, String basketId) {
-        if(connectedUsers.containsKey(currUser)) {
-            User user = connectedUsers.get(currUser);
-            return user.removeBasket(basketId);
-        }
-        else {
-            return new Response<>("", true, "User not connected");
-        }
-    }
-
-    public Response<List<GoalDTO>> getGoals(String currUser, Integer year){
-        if(connectedUsers.containsKey(currUser)) {
-            User user = connectedUsers.get(currUser);
-            Response<String> res = user.getGoals();
-            if(!res.isFailure()){
-                return goalsManagement.getGoalsDTO(res.getResult(), year);
-            }
-            else{
-                return new Response<>(null, true, res.getErrMsg());
-            }
-        }
-        else {
-            return new Response<>(null, true, "User not connected");
-        }
-    }
-
-    public Response<Boolean> addGoal(String currUser, GoalDTO goalDTO, Integer year){
-        if(connectedUsers.containsKey(currUser)) {
-            User user = connectedUsers.get(currUser);
-            Response<String> res = user.addGoals();
-            if(!res.isFailure()){
-                return goalsManagement.addGoalToField(res.getResult(), goalDTO, year);
-            }
-            else{
-                return new Response<>(null, true, res.getErrMsg());
-            }
-        }
-        else {
-            return new Response<>(null, true, "User not connected");
-        }
-    }
-
-    public Response<Boolean> isSupervisor(String currUser){
-         if(connectedUsers.containsKey(currUser)) {
-             User user = connectedUsers.get(currUser);
-             return user.isSupervisor();
-         }
-         else {
-             return new Response<>(null, true, "User not connected");
-         }
-     }
-
     public Response<Boolean> verifyUser(String currUser, String password){
-         if(connectedUsers.containsKey(currUser)) {
-             boolean verify = passwordEncoder.matches(password, userDAO.getPassword(currUser).getResult());
-             return new Response<>(verify, !verify, "");
-         }
-         else {
-             return new Response<>(null, true, "User not connected");
-         }
-     }
+        if(connectedUsers.containsKey(currUser)) {
+            boolean verify = passwordEncoder.matches(password, userDAO.getPassword(currUser).getResult());
+            return new Response<>(verify, !verify, "");
+        }
+        else {
+            return new Response<>(null, true, "User not connected");
+        }
+    }
 
     public void adminBoot(String username, String password) {
         User user = new User(username, UserStateEnum.SYSTEM_MANAGER);
         userDAO.insertUser(new UserDBDTO(user, passwordEncoder.encode(password)));
     }
 
-    public void notifySurveyCreation(String username, String surveyToken) {
-        if(connectedUsers.containsKey(username)) {
-            User user = connectedUsers.get(username);
-            Response<String> response = user.publishSurvey();
-            if(!response.isFailure()){
-                emailController.sendEmail(response.getResult(), "http://localhot:8080/survey/getSurvey/surveyID=" + surveyToken);
-            }
-        }
-/*        else {
-            return new Response<>(null, true, "User not connected");
-        }*/
-        // the username is the name of the supervisor created a survey,
-        // email all relevant coordinator and send them this link (for now):
-        // http://localhot:8080/survey/getSurvey/surveyID={surveyToken}
-    }
-
-
-    public Response<Boolean> removeGoal(String currUser, Integer year, int goalId) {
-        if (connectedUsers.containsKey(currUser)) {
-            User user = connectedUsers.get(currUser);
-            Response<String> res = user.removeGoal();
-            if (!res.isFailure()) {
-                return goalsManagement.removeGoal(user.workField, year, goalId);
-            } else {
-                return new Response<>(null, true, res.getErrMsg());
-            }
-        }
-        else {
-            return new Response<>(null, true, "User not connected");
-        }
-    }
-
-    public Response<List<String>> getSurveys(String currUser){
-        if(connectedUsers.containsKey(currUser)) {
-            User user = connectedUsers.get(currUser);
-            return user.getSurveys();
-        }
-        else {
-            return new Response<>(null, true, "User not connected");
-        }
-    }
-
-    public void assignWorkPlanYear(String instructor, Integer year) {
-        if(connectedUsers.containsKey(instructor)){
-            User user = connectedUsers.get(instructor);
-            user.assignWorkPlanYear(year);
-        }
-    }
-
-    public Response<WorkPlanDTO> viewWorkPlan(String currUser, Integer year, Integer month){
-        if(connectedUsers.containsKey(currUser)) {
-            User user = connectedUsers.get(currUser);
-            Response<Boolean> workPlanResponse = user.getWorkPlanByYear(year);
-            if(!workPlanResponse.isFailure()){
-                return workPlanDAO.getUserWorkPlanByYearAndMonth(currUser, year, month);
-            }
-            else{
-                return new Response<>(null, true, workPlanResponse.getErrMsg());
-            }
-        }
-        else {
-            return new Response<>(null, true, "User not connected");
-        }
-    }
-
-    public Response<WorkPlanDTO> viewInstructorWorkPlan(String currUser, String instructor, Integer year, Integer month) {//todo test it but should be fine
-        if(connectedUsers.containsKey(currUser)) {
-            User user = connectedUsers.get(currUser);
-            Response<Boolean> workPlanResponse = user.getInstructorWorkPlan(instructor);
-            if(!workPlanResponse.isFailure()){
-                return workPlanDAO.getUserWorkPlanByYearAndMonth(instructor, year, month);
-            }
-            else{
-                return new Response<>(null, true, workPlanResponse.getErrMsg());
-            }
-        }
-        else {
-            return new Response<>(null, true, "User not connected");
-        }
-    }
-
     public Response<UserDTO> getUserInfo(String currUser){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             return user.getInfo();
-        }
-        else {
-            return new Response<>(null, true, "User not connected");
-        }
-    }
-
-    private String createToken(){
-        byte[] randomBytes = new byte[32];
-        secureRandom.nextBytes(randomBytes);
-        return base64Encoder.encodeToString(randomBytes);
-    }
-
-    public Response<Boolean> assignCoordinator(String currUser, String workField, String firstName, String lastName, String email, String phoneNumber, String school){
-        if(connectedUsers.containsKey(currUser)) {
-            User user = connectedUsers.get(currUser);
-            Response<User> result = user.assignCoordinator(createToken(), workField, school, firstName, lastName, email, phoneNumber);
-            if (!result.isFailure()) {
-                Response<UserDBDTO> isCoordinatorAssignedRes = userDAO.getCoordinator(school, result.getResult().getWorkField());
-                if(!isCoordinatorAssignedRes.isFailure() && isCoordinatorAssignedRes.getResult() == null){
-                    userDAO.insertUser(new UserDBDTO(result.getResult(), null));
-                    userDAO.assignSchoolsToUser(result.getResult().getUsername(), result.getResult().getSchools());
-                    return new Response<>(true, false, "assigned coordinator");
-                }
-                else{
-                    return new Response<>(false, true, "a coordinator is already assigned to the school");
-                }
-            }
-            else{
-                return new Response<>(null, result.isFailure(), result.getErrMsg());
-            }
-        }
-        else {
-            return new Response<>(null, true, "User not connected");
-        }
-    }
-
-    public Response<UserDBDTO> getCoordinator(String currUser, String workField, String symbol){
-        if(connectedUsers.containsKey(currUser)) {
-            User user = connectedUsers.get(currUser);
-            Response<String> workFieldRes = user.getCoordinator();
-            if (!workFieldRes.isFailure()) {
-                if(workFieldRes.getResult().equals("")){
-                    return userDAO.getCoordinator(symbol, workField);
-                }
-                else{
-                    return userDAO.getCoordinator(symbol, workFieldRes.getResult());
-                }
-            }
-            else{
-                return new Response<>(null, workFieldRes.isFailure(), workFieldRes.getErrMsg());
-            }
-        }
-        else {
-            return new Response<>(null, true, "User not connected");
-        }
-    }
-
-    public Response<Boolean> removeCoordinator(String currUser, String workField, String school){
-        if(connectedUsers.containsKey(currUser)) {
-            User user = connectedUsers.get(currUser);
-            Response<String> response = user.removeCoordinator(school, workField);
-            if(!response.isFailure()){
-                return userDAO.removeCoordinator(response.getResult(), school);//todo check not failed
-            }
-            else{
-                return new Response<>(false, true, response.getErrMsg());
-            }
         }
         else {
             return new Response<>(null, true, "User not connected");
@@ -960,7 +660,7 @@ public class UserController {
     }
 
     public Response<Boolean> transferSupervisionToExistingUser(String currUser, String currSupervisor, String newSupervisor){
-        if(connectedUsers.containsKey(currUser)) {//todo check that transfer supervision works with removed workplans
+        if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             Response<Boolean> transferSupervisionRes = user.transferSupervision(currSupervisor, newSupervisor);
             if(!transferSupervisionRes.isFailure()){
@@ -1006,6 +706,308 @@ public class UserController {
         }
     }
 
+    //Basket Start
+    public Response<Boolean> hasCreatedBasket(String currUser, String basketId) {
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            return user.hasCreatedBasket(basketId);
+        }
+        else {
+            return new Response<>(false, true, "User not connected");
+        }
+    }
+
+    public Response<String> createBasket(String currUser, String basketId) {
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            return user.createBasket(basketId);
+        }
+        else {
+            return new Response<>("", true, "User not connected");
+        }
+    }
+
+    public Response<String> removeBasket(String currUser, String basketId) {
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            return user.removeBasket(basketId);
+        }
+        else {
+            return new Response<>("", true, "User not connected");
+        }
+    }
+    //Basket end
+
+    //Survey start
+    public Response<Boolean> hasCreatedSurvey(String currUser, String surveyId) {
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            return user.hasCreatedSurvey(surveyId);
+        }
+        else {
+            return new Response<>(false, true, "User not connected");
+        }
+    }
+
+    public Response<String> createSurvey(String currUser, String surveyId) {
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            Response<String> surveyCreation = user.createSurvey(surveyId);
+            if(!surveyCreation.isFailure()){
+                return userDAO.addSurvey(currUser, surveyId);
+            }
+            else {
+                return surveyCreation;
+            }
+        }
+        else {
+            return new Response<>("", true, "User not connected");
+        }
+    }
+
+    public Response<String> removeSurvey(String currUser, String surveyId) {
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            return user.removeSurvey(surveyId);
+        }
+        else {
+            return new Response<>("", true, "User not connected");
+        }
+    }
+
+    public void notifySurveyCreation(String username, String surveyToken) {
+        if(connectedUsers.containsKey(username)) {
+            User user = connectedUsers.get(username);
+            Response<String> response = user.publishSurvey();
+            if(!response.isFailure()){
+                emailController.sendEmail(response.getResult(), "http://localhot:8080/survey/getSurvey/surveyID=" + surveyToken);
+            }
+        }
+/*        else {
+            return new Response<>(null, true, "User not connected");
+        }*/
+        // the username is the name of the supervisor created a survey,
+        // email all relevant coordinator and send them this link (for now):
+        // http://localhot:8080/survey/getSurvey/surveyID={surveyToken}
+    }
+
+    public Response<List<String>> getSurveys(String currUser){
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            return user.getSurveys();
+        }
+        else {
+            return new Response<>(null, true, "User not connected");
+        }
+    }
+    //Survey end
+
+    //Goals start
+    public Response<List<GoalDTO>> getGoals(String currUser, Integer year){
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            Response<String> res = user.getGoals();
+            if(!res.isFailure()){
+                return goalsManagement.getGoalsDTO(res.getResult(), year);
+            }
+            else{
+                return new Response<>(null, true, res.getErrMsg());
+            }
+        }
+        else {
+            return new Response<>(null, true, "User not connected");
+        }
+    }
+
+    public Response<Boolean> addGoal(String currUser, GoalDTO goalDTO, Integer year){
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            Response<String> res = user.addGoals();
+            if(!res.isFailure()){
+                return goalsManagement.addGoalToField(res.getResult(), goalDTO, year);
+            }
+            else{
+                return new Response<>(null, true, res.getErrMsg());
+            }
+        }
+        else {
+            return new Response<>(null, true, "User not connected");
+        }
+    }
+
+    public Response<Boolean> removeGoal(String currUser, Integer year, int goalId) {
+        if (connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            Response<String> res = user.removeGoal();
+            if (!res.isFailure()) {
+                return goalsManagement.removeGoal(user.workField, year, goalId);
+            } else {
+                return new Response<>(null, true, res.getErrMsg());
+            }
+        }
+        else {
+            return new Response<>(null, true, "User not connected");
+        }
+    }
+    //Goals end
+
+    //Coordinator start
+    private String createToken(){
+        byte[] randomBytes = new byte[32];
+        secureRandom.nextBytes(randomBytes);
+        return base64Encoder.encodeToString(randomBytes);
+    }
+
+    public Response<Boolean> assignCoordinator(String currUser, String workField, String firstName, String lastName, String email, String phoneNumber, String school){
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            Response<User> result = user.assignCoordinator(createToken(), workField, school, firstName, lastName, email, phoneNumber);
+            if (!result.isFailure()) {
+                Response<UserDBDTO> isCoordinatorAssignedRes = userDAO.getCoordinator(school, result.getResult().getWorkField());
+                if(!isCoordinatorAssignedRes.isFailure() && isCoordinatorAssignedRes.getResult() == null){
+                    userDAO.insertUser(new UserDBDTO(result.getResult(), null));
+                    userDAO.assignSchoolsToUser(result.getResult().getUsername(), result.getResult().getSchools());
+                    return new Response<>(true, false, "assigned coordinator");
+                }
+                else{
+                    return new Response<>(false, true, "a coordinator is already assigned to the school");
+                }
+            }
+            else{
+                return new Response<>(null, result.isFailure(), result.getErrMsg());
+            }
+        }
+        else {
+            return new Response<>(null, true, "User not connected");
+        }
+    }
+
+    public Response<UserDBDTO> getCoordinator(String currUser, String workField, String symbol){
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            Response<String> workFieldRes = user.getCoordinator();
+            if (!workFieldRes.isFailure()) {
+                if(workFieldRes.getResult().equals("")){
+                    return userDAO.getCoordinator(symbol, workField);
+                }
+                else{
+                    return userDAO.getCoordinator(symbol, workFieldRes.getResult());
+                }
+            }
+            else{
+                return new Response<>(null, workFieldRes.isFailure(), workFieldRes.getErrMsg());
+            }
+        }
+        else {
+            return new Response<>(null, true, "User not connected");
+        }
+    }
+
+    public Response<Boolean> removeCoordinator(String currUser, String workField, String school){
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            Response<String> response = user.removeCoordinator(school, workField);
+            if(!response.isFailure()){
+                return userDAO.removeCoordinator(response.getResult(), school);
+            }
+            else{
+                return new Response<>(false, true, response.getErrMsg());
+            }
+        }
+        else {
+            return new Response<>(null, true, "User not connected");
+        }
+    }
+
+    public Response<Boolean> sendCoordinatorEmails(String currUser, String surveyLink) {
+        if (connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            if(user.isSupervisor().getResult()){
+                return emailController.sendEmail(user.getWorkField(), surveyLink);//todo verify existence of the survey link
+            }
+            else{
+                return new Response<>(null, true, "user isn't supervisor");
+            }
+        }
+        else {
+            return new Response<>(null, true, "user is not logged in");
+        }
+    }
+    //Coordinator end
+
+    //WorkPlan start
+    public void assignWorkPlanYear(String instructor, Integer year) {
+        if(connectedUsers.containsKey(instructor)){
+            User user = connectedUsers.get(instructor);
+            user.assignWorkPlanYear(year);
+        }
+    }
+
+    public Response<WorkPlanDTO> viewWorkPlan(String currUser, Integer year, Integer month){
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            Response<Boolean> workPlanResponse = user.getWorkPlanByYear(year);
+            if(!workPlanResponse.isFailure()){
+                return workPlanDAO.getUserWorkPlanByYearAndMonth(currUser, year, month);
+            }
+            else{
+                return new Response<>(null, true, workPlanResponse.getErrMsg());
+            }
+        }
+        else {
+            return new Response<>(null, true, "User not connected");
+        }
+    }
+
+    public Response<WorkPlanDTO> viewInstructorWorkPlan(String currUser, String instructor, Integer year, Integer month) {//todo test it but should be fine
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            Response<Boolean> workPlanResponse = user.getInstructorWorkPlan(instructor);
+            if(!workPlanResponse.isFailure()){
+                return workPlanDAO.getUserWorkPlanByYearAndMonth(instructor, year, month);
+            }
+            else{
+                return new Response<>(null, true, workPlanResponse.getErrMsg());
+            }
+        }
+        else {
+            return new Response<>(null, true, "User not connected");
+        }
+    }
+
+    public Response<Boolean> editActivity(String currUser, LocalDateTime currActStart, Integer year, LocalDateTime newActStart, LocalDateTime newActEnd){ //todo test it
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);//todo maybe verify the dao was generated
+            Response<Boolean> editActivityRes = user.editActivity(year);//todo change active user info
+            if(!editActivityRes.isFailure()){
+                return workPlanDAO.updateActivity(currUser, currActStart, year, newActStart, newActEnd);
+            }
+            else{
+                return new Response<>(null, true, editActivityRes.getErrMsg() + " / colliding activity hours");
+            }
+        }
+        else {
+            return new Response<>(null, true, "User not connected");
+        }
+    }
+
+    /**
+     * generate schedule for all instructors under current user
+     * @param currUser the supervisor wish to generate schedules
+     * @return response contains the work field of current user
+     */
+    public Response<String> generateSchedule(String currUser) {
+        if (connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);
+            return user.generateSchedule();
+        }
+        else {
+            return new Response<>("", true, "user is not logged in");
+        }
+    }
+    //WorkPlan end
+
+    //Monthly Report start
     public Response<Boolean> canGenerateReport(String currUser) {
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);//todo maybe verify the dao was generated
@@ -1047,13 +1049,22 @@ public class UserController {
             return new Response<>(null, true, "User not connected");
         }
     }
+    //Monthly Report end
 
     public Response<Boolean> setWorkingTime(String currUser, int workDay, LocalTime act1Start, LocalTime act1End, LocalTime act2Start, LocalTime act2End){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);//todo maybe verify the dao was generated
-            Response<Boolean> changeWorkTime = user.setWorkingTime();//todo change active user info
-            if(workDay >=0 && workDay <=6 && noActivityCollision(act1Start, act1End, act2Start, act2End) && !changeWorkTime.isFailure()){
-                return userDAO.setWorkingTime(currUser, workDay, act1Start, act1End, act2Start, act2End);
+            Response<Boolean> changeWorkTime = user.canSetWorkingTime();
+            if(workDay >= 0 && workDay <= 6 && noActivityCollision(act1Start, act1End, act2Start, act2End) && !changeWorkTime.isFailure()){
+                Response<Boolean> setWorkingTimeRes = userDAO.setWorkingTime(currUser, workDay, act1Start, act1End, act2Start, act2End);
+                if(!setWorkingTimeRes.isFailure()){
+                    user.setWorkDay(workDay);
+                    user.setAct1Start(act1Start);
+                    user.setAct1End(act1End);
+                    user.setAct2Start(act2Start);
+                    user.setAct2End(act2End);
+                }
+                return setWorkingTimeRes;
             }
             else{
                 return new Response<>(null, true, changeWorkTime.getErrMsg() + " / colliding activity hours");
@@ -1074,23 +1085,7 @@ public class UserController {
         return userDAO.getWorkingTime(instructor);
     }
 
-    public Response<Boolean> editActivity(String currUser, LocalDateTime currActStart, Integer year, LocalDateTime newActStart, LocalDateTime newActEnd){ //todo test it
-        if(connectedUsers.containsKey(currUser)) {
-            User user = connectedUsers.get(currUser);//todo maybe verify the dao was generated
-            Response<Boolean> editActivityRes = user.editActivity(year);//todo change active user info
-            if(!editActivityRes.isFailure()){
-                return workPlanDAO.updateActivity(currUser, currActStart, year, newActStart, newActEnd);
-            }
-            else{
-                return new Response<>(null, true, editActivityRes.getErrMsg() + " / colliding activity hours");
-            }
-        }
-        else {
-            return new Response<>(null, true, "User not connected");
-        }
-    }
-
-    //for test purposes only start
+    //For test purposes only start
     public User getUser(String user){
         return new User(userDAO.getFullUser(user).getResult());
     }
@@ -1160,5 +1155,5 @@ public class UserController {
         }
         return res;
     }
-    //for test purposes only end
+    //For test purposes only end
 }
