@@ -41,7 +41,6 @@ describe('Register users tests as supervisor', () => {
             // going to the registration page
             cy.get('#register_users_button').click()
         })
-
     })
 
     afterEach(() => {
