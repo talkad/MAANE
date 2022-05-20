@@ -202,8 +202,11 @@ public class AnnualScheduleGenerator {
                         //todo make sure you stop when you fill WorkPlan
                     }
                 }
-                WorkPlanDTO workPlanDTO = new WorkPlanDTO(workPlan);//todo maybe add wp years to user
-                WorkPlanQueries.getInstance().insertUserWorkPlan(instructor, workPlanDTO, year);
+                WorkPlanDTO workPlanDTO = new WorkPlanDTO(workPlan);
+                Response<Boolean> res = WorkPlanQueries.getInstance().insertUserWorkPlan(instructor, workPlanDTO, year);
+                if(!res.isFailure()){
+                    userController.assignWorkPlanYear(instructor, year);
+                }
             }
         }
     }
@@ -319,8 +322,11 @@ public class AnnualScheduleGenerator {
                         //todo make sure you stop when you fill WorkPlan
                     }
                 }
-                WorkPlanDTO workPlanDTO = new WorkPlanDTO(workPlan);//todo maybe add wp years to user
-                WorkPlanQueries.getInstance().insertUserWorkPlan(instructor, workPlanDTO, year);
+                WorkPlanDTO workPlanDTO = new WorkPlanDTO(workPlan);
+                Response<Boolean> res = WorkPlanQueries.getInstance().insertUserWorkPlan(instructor, workPlanDTO, year);
+                if(!res.isFailure()){
+                    userController.assignWorkPlanYear(instructor, year);
+                }
             }
         }
     }

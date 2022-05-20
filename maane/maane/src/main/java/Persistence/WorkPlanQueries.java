@@ -48,9 +48,8 @@ public class WorkPlanQueries {
             Connect.closeConnection();
         } catch (SQLException e) {e.printStackTrace();}
 
-        return rows>0 ? new Response<>(true, false, "") :
+        return rows > 0 ? new Response<>(true, false, "") :
                 new Response<>(false, true, "bad Db writing");
-
     }
 
     /***
@@ -63,33 +62,6 @@ public class WorkPlanQueries {
         if (activity == null) return "";
         return activity.getSchoolId() + " " + activity.getGoalId().toString() + " " + activity.getTitle();
     }
-
-    /*public Response<Map<String, WorkPlanDTO>> getUserWorkPlan(String username)  {
-        Connect.createConnection();
-        String sql = "SELECT * FROM \"WorkPlans\" WHERE username = ? AND year = ?";
-        PreparedStatement statement;
-        Map<String, WorkPlanDTO> output = new TreeMap<>();
-        try {
-            statement = Connect.conn.prepareStatement(sql);
-            statement.setString(1, username);
-            statement.setString(2, year);
-            ResultSet result = statement.executeQuery();
-
-            List<Pair<String, List<ActivityDTO>>> calendar = new LinkedList<>();
-            while(result.next()) {
-                String date = result.getString("date");
-                String activities = result.getString("activities");
-                List<ActivityDTO> activityDTOS = StringToActivities(activities);
-                Pair<String, List<ActivityDTO>> toAdd = new Pair<>(date, activityDTOS);
-                calendar.add(toAdd);
-            }
-            output.put(year, new WorkPlanDTO(calendar));
-
-            Connect.closeConnection();
-            return new Response<>(output, false, "successfully got work plans");
-        } catch (SQLException throwables) {throwables.printStackTrace();}
-        return new Response<>(null, true, "failed to get work plans");
-    }*/
 
 /*    public Response<WorkPlanDTO> getUserWorkPlanByYear(String username, Integer year)  {
         Connect.createConnection();

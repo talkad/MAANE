@@ -13,9 +13,7 @@ import Domain.UsersManagment.UserStateEnum;
 import Domain.WorkPlan.GoalsManagement;
 import Persistence.DbDtos.SchoolDBDTO;
 import Persistence.DbDtos.UserDBDTO;
-import Persistence.GoalsQueries;
 import Persistence.SchoolQueries;
-import Persistence.SurveyDAO;
 import Persistence.UserQueries;
 
 import java.time.LocalTime;
@@ -45,7 +43,7 @@ public class DataController {
     }
 
     public Response<Boolean> assignCoordinator(String currUser, String workField, String firstName, String lastName, String email, String phoneNumber, String school) {
-        if(schoolDAO.schoolSymbolExists(school)){//todo currently allows for multiple coordinators in the same school and field
+        if(schoolDAO.schoolSymbolExists(school)){
             return UserController.getInstance().assignCoordinator(currUser, workField, firstName, lastName, email, phoneNumber, school);
         }
         else{
@@ -206,5 +204,25 @@ public class DataController {
         SchoolDBDTO schoolDBDTO = new SchoolDBDTO();
         schoolDBDTO.setSymbol("1");
         schoolDAO.insertSchool(schoolDBDTO);
+    }
+
+    //for test purposes only
+    public Response<Boolean> removeCoordinatorTester(String school){
+        if(schoolDAO.schoolSymbolExists(school)){
+            return UserController.getInstance().removeCoordinatorTester("ronit", "ignore", school);
+        }
+        else {
+            return new Response<>(false, true, "no such coordinator found");
+        }
+    }
+
+    //for test purposes only
+    public Response<Boolean> assignCoordinatorTester(String school){
+        if(schoolDAO.schoolSymbolExists(school)){
+            return UserController.getInstance().assignCoordinatorTester("ronit", "ignore", "coor", "dinator", "a@gmail.com", "0555555555", school);
+        }
+        else {
+            return new Response<>(false, true, "no such coordinator found");
+        }
     }
 }

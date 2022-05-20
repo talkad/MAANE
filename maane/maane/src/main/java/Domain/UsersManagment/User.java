@@ -4,8 +4,6 @@ import Communication.DTOs.UserDTO;
 import Domain.CommonClasses.Response;
 import Persistence.DbDtos.UserDBDTO;
 
-import java.time.DayOfWeek;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,7 +28,6 @@ public class User {
     protected LocalTime act1End;
     protected LocalTime act2Start;
     protected LocalTime act2End;
-    //    private MonthlyReport monthlyReport; //todo monthly reports history??
     protected List<Integer> workPlanYears;
 
 
@@ -122,21 +119,6 @@ public class User {
         return userDTO;
     }
 
-
-    private UserDTO createCoordinator(String firstName, String lastName, String email, String phoneNumber, String school, String otherWorkField){
-        UserDTO userDTO = new UserDTO();
-        userDTO.setWorkField(otherWorkField);
-        userDTO.setFirstName(firstName);
-        userDTO.setLastName(lastName);
-        userDTO.setEmail(email);
-        userDTO.setUserStateEnum(UserStateEnum.COORDINATOR);
-        userDTO.setPhoneNumber(phoneNumber);
-        List<String> coordinatorSchool = new Vector<>();
-        coordinatorSchool.add(school);
-        userDTO.setSchools(coordinatorSchool);
-        return userDTO;
-    }
-
     private UserState inferUserType(UserStateEnum userStateEnum) {
         UserState state;
 
@@ -158,8 +140,8 @@ public class User {
                 break;
             default:
                 state = new Registered(); //this is a problem
+                break;
         }
-
         return state;
     }
 
@@ -254,7 +236,7 @@ public class User {
         return this.appointments;
     }
 
-    public Response<Boolean> assignSchoolsToUser(String userToAssign, List<String> schools) {
+    public Response<Boolean> assignSchoolsToUser(String userToAssign) {
         if(this.state.allowed(Permissions.ASSIGN_SCHOOLS_TO_USER, this)) {
             if (appointments.contains(userToAssign)) {
                 return new Response<>(true, false, "successfully assigned the schools to the user " + userToAssign);
@@ -598,10 +580,7 @@ public class User {
         return this.getState().getStateEnum() == UserStateEnum.INSTRUCTOR;
     }
 
-    public void assignWorkPlan(Integer year) {
-        this.workPlanYears.add(year);
-    }
-
+    
     public Response<Boolean> getWorkPlanByYear(Integer year) {
         if (this.state.allowed(Permissions.VIEW_WORK_PLAN, this)) {
             return new Response<>(this.workPlanYears.contains(year), !this.workPlanYears.contains(year), "");
@@ -650,23 +629,6 @@ public class User {
         }
     }
 
-/*    public User(String username, UserStateEnum userStateEnum, String workField, String firstName, String lastName, String email, String phoneNumber, String city) {
-        this.state = inferUserType(userStateEnum);
-        this.username = username;
-        this.workField = workField;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.city = city;
-        this.appointments = new Vector<>();
-        this.schools = new Vector<>();
-        this.surveys = new Vector<>();
-        this.baskets = new Vector<>();
-        if(this.state.getStateEnum() == UserStateEnum.INSTRUCTOR){
-            this.workPlan = new ConcurrentHashMap<>();
-        }*/
-
     public Response<User> assignCoordinator(String username, String workField, String school, String firstName, String lastName, String email, String phoneNumber) {
         if (this.state.allowed(Permissions.REGISTER_COORDINATOR, this))
         {
@@ -689,8 +651,6 @@ public class User {
         }
         return new Response<>(null, true, "user not allowed to assign coordinator");
     }
-
-
 
     public Response<String> removeCoordinator(String school, String workField) {
         if (this.state.allowed(Permissions.REMOVE_COORDINATOR, this))
@@ -786,6 +746,12 @@ public class User {
         }
         else {
             return new Response<>(null, true, "user not allowed to view " + instructor + "'s work plan");
+        }
+    }
+
+    public void assignWorkPlanYear(Integer year) {
+        if(!this.workPlanYears.contains(year)){
+            workPlanYears.add(year);
         }
     }
 }

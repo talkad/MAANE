@@ -283,7 +283,18 @@ public class ProxyBridgeUser implements UserService {
         return new Response<>(null, true, "not implemented");
     }
 
-    public void setMockDB() { //for tests purposes only
+    //for tests purposes only
+    @Override
+    public Response<Boolean> changePasswordTester(String currUser, String newPassword) {
+        if (real != null) {
+            return real.changePasswordTester(currUser, newPassword);
+        }
+
+        return new Response<>(null, true, "not implemented");
+    }
+
+    //for tests purposes only
+    public void setMockDB() {
         if (real != null) {
             ServerContextInitializer.getInstance().setMockMode();
         }

@@ -22,4 +22,8 @@ public interface DataService {
     Response<List<Pair<String, String>>> getUserSchools(String username);
 
     Response<Boolean> resetDB();
+
+    Response<Boolean> removeCoordinatorTester(String school);
+
+    Response<Boolean> assignCoordinatorTester(String school);
 }

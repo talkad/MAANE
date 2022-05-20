@@ -368,4 +368,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return res;
     }
 
+    @Override
+    public Response<Boolean> changePasswordTester(String username, String newPassword) {
+        Response<Boolean> res = UserController.getInstance().changePasswordTester(username, newPassword);
+
+        if (res.isFailure())
+            log.error("failed to edit {}'s password ", username);
+        else
+            log.info("edited {}'s password", username);
+
+        return res;
+    }
+
 }

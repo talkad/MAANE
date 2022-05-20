@@ -53,6 +53,18 @@ public class DataController {
                 .body(service.resetDB());
     }
 
+    @PostMapping(value = "/removeCoordinatorTester")//todo aviad
+    public ResponseEntity<Response<Boolean>> removeCoordinatorTester(@RequestBody Map<String, Object> body){
+        return ResponseEntity.ok()
+                .body(service.removeCoordinatorTester((String)body.get("school")));
+    }
+
+    @PostMapping(value = "/assignCoordinatorTester")//todo aviad
+    public ResponseEntity<Response<Boolean>> assignCoordinatorTester(@RequestBody Map<String, Object> body){
+        return ResponseEntity.ok()
+                .body(service.assignCoordinatorTester((String)body.get("school")));
+    }
+
 //    @PostMapping(value = "/insertSchool")
 //    public ResponseEntity<Response<Boolean>> insertSchool(@RequestBody SchoolDBDTO school){
 //        return ResponseEntity.ok()

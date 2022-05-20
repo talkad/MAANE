@@ -87,4 +87,22 @@ public class ProxyBridgeData implements DataService {//todo tests for this class
 
         return new Response<>(null, true, "not implemented");
     }
+
+    @Override
+    public Response<Boolean> removeCoordinatorTester(String school) {
+        if (real != null){
+            return real.removeCoordinatorTester(school);
+        }
+
+        return new Response<>(null, true, "not implemented");
+    }
+
+    @Override
+    public Response<Boolean> assignCoordinatorTester(String school) {
+        if (real != null){
+            return real.assignCoordinatorTester(school);
+        }
+
+        return new Response<>(null, true, "not implemented");
+    }
 }

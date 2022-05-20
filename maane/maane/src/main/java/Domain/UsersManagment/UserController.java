@@ -5,7 +5,6 @@ import Communication.DTOs.UserDTO;
 import Communication.DTOs.WorkPlanDTO;
 import Communication.Initializer.ServerContextInitializer;
 import Domain.CommonClasses.Response;
-import Domain.DataManagement.SurveyController;
 import Domain.EmailManagement.EmailController;
 import Domain.UsersManagment.APIs.DTOs.UserActivityInfoDTO;
 import Domain.UsersManagment.APIs.DTOs.UserInfoDTO;
@@ -25,7 +24,6 @@ import javax.mail.internet.InternetAddress;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.Month;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -33,7 +31,6 @@ public class UserController {
     private Map<String, User> connectedUsers;
     private PasswordEncoder passwordEncoder;
     private GoalsManagement goalsManagement;
-    private SurveyController surveyController;
     private EmailController emailController;
     private UserQueries userDAO;
     private WorkPlanQueries workPlanDAO;
@@ -45,7 +42,6 @@ public class UserController {
         this.passwordEncoder = new BCryptPasswordEncoder();
         this.connectedUsers = new ConcurrentHashMap<>();
         this.goalsManagement = GoalsManagement.getInstance();
-        this.surveyController = SurveyController.getInstance();
         this.emailController = EmailController.getInstance();
         this.userDAO = UserQueries.getInstance();
         this.workPlanDAO = WorkPlanQueries.getInstance();
@@ -71,7 +67,7 @@ public class UserController {
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             if(user.isSupervisor().getResult()){
-                return emailController.sendEmail(user.getWorkField(),  surveyLink);//todo verify existence of the survey link
+                return emailController.sendEmail(user.getWorkField(), surveyLink);//todo verify existence of the survey link
             }
             else{
                 return new Response<>(null, true, "user isn't supervisor");
@@ -210,7 +206,7 @@ public class UserController {
      */
     private boolean isValidPhoneNumber(String phoneNumber) {
         PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
-        Phonenumber.PhoneNumber israeliNumberProto = null;
+        Phonenumber.PhoneNumber israeliNumberProto;
 
         try {
              israeliNumberProto = phoneUtil.parse(phoneNumber, "IL");
@@ -313,7 +309,6 @@ public class UserController {
 
     public Response<List<UserDTO>> getSupervisors(String currUser){
         UserDBDTO userDB;
-
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             if(user.isSystemManager().getResult()){
@@ -435,7 +430,7 @@ public class UserController {
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             if(userDAO.userExists(userToAssign)) {
-                response = user.assignSchoolsToUser(userToAssign, schools);
+                response = user.assignSchoolsToUser(userToAssign);
                 if(!response.isFailure()){
                     User userToAssignSchools = new User(userDAO.getFullUser(userToAssign).getResult());
                     userToAssignSchools.addSchools(schools);
@@ -576,36 +571,6 @@ public class UserController {
         }
     }
 
-    //for test purposes only
-    public User getUser(String user){
-        return new User(userDAO.getFullUser(user).getResult());
-    }
-
-    public Response<User> getUserRes(String user){
-        if(userDAO.userExists(user)){
-            return new Response<>(new User(userDAO.getFullUser(user).getResult()), false, "user found");
-        }
-        return new Response<>(null, true, "user not found");
-    }
-
-    //for test purposes only
-    public void clearUsers(){
-        this.passwordEncoder = new BCryptPasswordEncoder();
-        this.connectedUsers = new ConcurrentHashMap<>();
-        this.userDAO.deleteUsers();
-        this.goalsManagement = GoalsManagement.getInstance();
-        SurveyDAO.getInstance().clearCache();
-        adminBoot("admin", "admin123");
-    }
-
-    public void resetDB(){
-        this.passwordEncoder = new BCryptPasswordEncoder();
-        this.connectedUsers = new ConcurrentHashMap<>();
-        this.userDAO.clearDB();
-        this.goalsManagement = GoalsManagement.getInstance();
-        adminBoot("admin", "admin123");
-    }
-
     public Response<Boolean> changePasswordToUser(String currUser, String userToChangePassword, String newPassword, String confirmPassword){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
@@ -723,23 +688,6 @@ public class UserController {
         }
     }
 
-    /*public Response<Boolean> publishSurvey(String currUser){
-        if(connectedUsers.containsKey(currUser)) {
-            User user = connectedUsers.get(currUser);
-            Response<String> res = user.publishSurvey();
-            if(!res.isFailure()){
-                //todo publisher.notify(res.getResult())
-                return new Response<>(true, false, res.getErrMsg());
-            }
-            else{
-                return new Response<>(false, false, res.getErrMsg());
-            }
-        }
-        else {
-            return new Response<>(false, true, "User not connected");
-        }
-    }*/
-
     public Response<List<GoalDTO>> getGoals(String currUser, Integer year){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
@@ -784,7 +732,6 @@ public class UserController {
 
     public Response<Boolean> verifyUser(String currUser, String password){
          if(connectedUsers.containsKey(currUser)) {
-
              boolean verify = passwordEncoder.matches(password, userDAO.getPassword(currUser).getResult());
              return new Response<>(verify, !verify, "");
          }
@@ -840,11 +787,17 @@ public class UserController {
         }
     }
 
+    public void assignWorkPlanYear(String instructor, Integer year) {
+        if(connectedUsers.containsKey(instructor)){
+            User user = connectedUsers.get(instructor);
+            user.assignWorkPlanYear(year);
+        }
+    }
+
     public Response<WorkPlanDTO> viewWorkPlan(String currUser, Integer year, Integer month){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             Response<Boolean> workPlanResponse = user.getWorkPlanByYear(year);
-
             if(!workPlanResponse.isFailure()){
                 return workPlanDAO.getUserWorkPlanByYearAndMonth(currUser, year, month);
             }
@@ -1136,4 +1089,76 @@ public class UserController {
             return new Response<>(null, true, "User not connected");
         }
     }
+
+    //for test purposes only start
+    public User getUser(String user){
+        return new User(userDAO.getFullUser(user).getResult());
+    }
+
+    public Response<User> getUserRes(String user){
+        if(userDAO.userExists(user)){
+            return new Response<>(new User(userDAO.getFullUser(user).getResult()), false, "user found");
+        }
+        return new Response<>(null, true, "user not found");
+    }
+
+    public void clearUsers(){
+        this.passwordEncoder = new BCryptPasswordEncoder();
+        this.connectedUsers = new ConcurrentHashMap<>();
+        this.userDAO.deleteUsers();
+        this.goalsManagement = GoalsManagement.getInstance();
+        SurveyDAO.getInstance().clearCache();
+        adminBoot("admin", "admin123");
+    }
+
+    public void resetDB(){
+        this.passwordEncoder = new BCryptPasswordEncoder();
+        this.connectedUsers = new ConcurrentHashMap<>();
+        this.userDAO.clearDB();
+        this.goalsManagement = GoalsManagement.getInstance();
+        adminBoot("admin", "admin123");
+    }
+
+    public Response<Boolean> removeCoordinatorTester(String currUser, String workField, String school){
+        User user = new User(userDAO.getFullUser(currUser).getResult());
+        Response<String> response = user.removeCoordinator(school, workField);
+        if(!response.isFailure()){
+            return userDAO.removeCoordinator(response.getResult(), school);//todo check not failed
+        }
+        else{
+            return new Response<>(false, true, response.getErrMsg());
+        }
+    }
+
+    public Response<Boolean> assignCoordinatorTester(String currUser, String workField, String firstName, String lastName, String email, String phoneNumber, String school){
+        User user = new User(userDAO.getFullUser(currUser).getResult());
+        Response<User> result = user.assignCoordinator(createToken(), workField, school, firstName, lastName, email, phoneNumber);
+        if (!result.isFailure()) {
+            Response<UserDBDTO> isCoordinatorAssignedRes = userDAO.getCoordinator(school, result.getResult().getWorkField());
+            if(!isCoordinatorAssignedRes.isFailure() && isCoordinatorAssignedRes.getResult() == null){
+                userDAO.insertUser(new UserDBDTO(result.getResult(), null));
+                userDAO.assignSchoolsToUser(result.getResult().getUsername(), result.getResult().getSchools());
+                return new Response<>(true, false, "assigned coordinator");
+            }
+            else{
+                return new Response<>(false, true, "a coordinator is already assigned to the school");
+            }
+        }
+        else{
+            return new Response<>(null, result.isFailure(), result.getErrMsg());
+        }
+    }
+
+    public Response<Boolean> changePasswordTester(String currUser, String newPassword){
+        if(!ServerContextInitializer.getInstance().isTestMode() && !isValidPassword(newPassword)){
+            return new Response<>(false, true, "The password isn't strong enough");
+        }
+        User user = new User(userDAO.getFullUser(currUser).getResult());
+        Response<Boolean> res = user.changePassword();
+        if (res.getResult()) {
+            userDAO.updateUserPassword(currUser, passwordEncoder.encode(newPassword));
+        }
+        return res;
+    }
+    //for test purposes only end
 }

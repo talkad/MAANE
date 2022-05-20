@@ -6,7 +6,6 @@ public class SystemManager extends Registered{
         super();
         allowedFunctions.add(Permissions.REGISTER_SUPERVISOR);
         allowedFunctions.add(Permissions.REMOVE_USER);
-        allowedFunctions.add(Permissions.ASSIGN_SCHOOLS_TO_USER);
         allowedFunctions.add(Permissions.REGISTER_USER);
         allowedFunctions.add(Permissions.CHANGE_PASSWORD_TO_USER);
         allowedFunctions.add(Permissions.VIEW_USERS_INFO);//todo maybe remove

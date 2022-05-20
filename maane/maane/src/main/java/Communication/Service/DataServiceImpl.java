@@ -118,4 +118,28 @@ public class DataServiceImpl implements DataService {
         return res;
     }
 
+    @Override
+    public Response<Boolean> removeCoordinatorTester(String school) {
+        Response<Boolean> res = DataController.getInstance().removeCoordinatorTester(school);
+
+        if (res.isFailure())
+            log.error(res.getErrMsg());
+        else
+            log.info(res.getErrMsg());
+
+        return res;
+    }
+
+    @Override
+    public Response<Boolean> assignCoordinatorTester(String school) {
+        Response<Boolean> res = DataController.getInstance().assignCoordinatorTester(school);
+
+        if (res.isFailure())
+            log.error(res.getErrMsg());
+        else
+            log.info(res.getErrMsg());
+
+        return res;
+    }
+
 }

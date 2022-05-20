@@ -296,5 +296,10 @@ public class UserController {
                 .body(service.editActivity(sessionHandler.getUsernameByToken(token).getResult(), (LocalDateTime)body.get("currActStart"), (Integer) body.get("year"), (LocalDateTime) body.get("newActStart"), (LocalDateTime) body.get("newActEnd")));
     }
 
+    @PostMapping(value = "/changePasswordTester") //todo aviad
+    public ResponseEntity<Response<Boolean>> changePasswordTester(@RequestBody Map<String, Object>  body){
+        return ResponseEntity.ok()
+                .body(service.changePasswordTester((String)body.get("currUser"), (String)body.get("newPassword")));
+    }
 
 }

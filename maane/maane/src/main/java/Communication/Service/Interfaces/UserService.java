@@ -69,4 +69,6 @@ public interface UserService {
 
     Response<Boolean> editActivity(String currUser, LocalDateTime currActStart, Integer year, LocalDateTime newActStart, LocalDateTime newActEnd);
 
+    Response<Boolean> changePasswordTester(String currUser, String newPassword);
+
 }
