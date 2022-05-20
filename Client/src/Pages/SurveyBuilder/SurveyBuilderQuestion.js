@@ -70,7 +70,7 @@ export default function SurveyQuestionBuilder(props) {
 
     return (
         <div className="SurveyQuestion">
-            <Paper className="Survey-paper" elevation={3}>
+            <Paper id={`question-${props.id}`} className="Survey-paper" elevation={3}>
                 <Grid container spacing={2}>
                     <Grid item xs={9}>
                         {/*the question*/}
@@ -98,7 +98,6 @@ export default function SurveyQuestionBuilder(props) {
                                 value={props.type}
                                 onChange={handleChange}
                             >
-                                {/*todo: add an icon for each option*/}
                                 <MenuItem value={'MULTIPLE_CHOICE'}>{multiple_item_string}</MenuItem>
                                 <MenuItem value={'OPEN_ANSWER'}>{open_item_string}</MenuItem>
                                 <MenuItem value={'NUMERIC_ANSWER'}>{open_number_item_string}</MenuItem>
@@ -122,6 +121,7 @@ export default function SurveyQuestionBuilder(props) {
                                             <Grid container spacing={2}>
                                                 <Grid item xs={2}>
                                                     <FormControlLabel disabled value={element.id} control={<Radio />} label={<TextField
+                                                        className={'question-answer'}
                                                         id={element.id}
                                                         color="secondary"
                                                         margin="normal"
