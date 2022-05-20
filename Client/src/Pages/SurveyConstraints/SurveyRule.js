@@ -39,12 +39,8 @@ export default function SurveyRule(props){
     const chosen_rule_string = "הכלל שנבחר:";
 
     useEffect(() => {
-
-        // TODO: send for the data
-
-    }, []);
-
-
+        console.log(props.id)
+    },[])
 
     /**
      * handles the addition of a new condition

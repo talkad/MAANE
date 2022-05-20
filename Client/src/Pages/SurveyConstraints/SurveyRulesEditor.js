@@ -1,7 +1,7 @@
 import * as Space from 'react-spaces';
 import {useEffect, useState} from "react";
 import Connection from "../../Communication/Connection";
-import {Button} from "@mui/material";
+import {Button, Collapse, Typography} from "@mui/material";
 import SurveyRule from "./SurveyRule";
 
 import gematriya from "gematriya";
@@ -17,8 +17,6 @@ const offline_questions_data = [{id: 0, question: "sup", type: "MULTIPLE_CHOICE"
 // NUMERIC_ANSWER, MULTIPLE_CHOICE
 
 
-// TODO: add the option to get already existing rules and present them
-
 const color_stack = ['#ffffff', '#E6B0AA', '#D7BDE2', '#A9CCE3', '#A3E4D7', '#A9DFBF', '#F9E79F', '#F5CBA7'];
 
 export default function SurveyRulesEditor(){
@@ -27,7 +25,7 @@ export default function SurveyRulesEditor(){
     const [surveyTitle, setSurveyTitle] = useState('');
 
     const [rules, setRules] = useState([]);
-    const [ruleID, setRuleID] = useState(0);
+    const [ruleID, setRuleID] = useState(1);
 
     const [goals, setGoals] = useState([]);
     const [questions, setQuestions] = useState([]);
@@ -35,6 +33,8 @@ export default function SurveyRulesEditor(){
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [snackbarSeverity, setSnackbarSeverity] = useState('');
     const [snackbarMessage, setSnackbarMessage] = useState('');
+
+    const no_rules_exist_string = "לא קיימים חוקים";
 
     const add_rules_button_string = "הוספת חוק";
     const submit_rules_button_string = "סיום ושמירה";
@@ -499,6 +499,10 @@ export default function SurveyRulesEditor(){
             <div className="Survey">
                 {/*title*/}
                 <h1>חוקים עבור {surveyTitle}</h1>
+
+                <Collapse in={rules.length === 0}>
+                    <Typography id={'no-rules-message'} variant={'h5'} sx={{margin: "1%"}}>{no_rules_exist_string}</Typography>
+                </Collapse>
 
                 {/*the rules*/}
                 {rules.map((rule) =>
