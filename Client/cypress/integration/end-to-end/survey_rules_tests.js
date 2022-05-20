@@ -572,7 +572,7 @@ describe('Survey rules tests', () => {
         cy.get('#no-rules-message').should('be.visible')
     })
 
-    it.only('Not picking a question or compound operation in an inner cell in a rule', () => {
+    it('Not picking a question or compound operation in an inner cell in a rule', () => {
         cy.wait(500)
 
         // adding cell
