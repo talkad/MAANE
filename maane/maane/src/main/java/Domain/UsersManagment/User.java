@@ -782,4 +782,22 @@ public class User {
             return new Response<>(null, true, "user not allowed to update working hours");
         }
     }
+
+    public Response<Boolean> editActivity(int year) {
+        if(this.state.getStateEnum() == UserStateEnum.INSTRUCTOR && this.getWorkPlanYears().contains(year)){
+            return new Response<>(true, false, "user allowed to update working hours");
+        }
+        else {
+            return new Response<>(null, true, "user not allowed to update working hours");
+        }
+    }
+
+    public Response<Boolean> getInstructorWorkPlan(String instructor) {
+        if(this.state.getStateEnum() == UserStateEnum.SUPERVISOR && this.appointments.contains(instructor)){
+            return new Response<>(true, false, "user allowed to view " + instructor + "'s work plan");
+        }
+        else {
+            return new Response<>(null, true, "user not allowed to view " + instructor + "'s work plan");
+        }
+    }
 }

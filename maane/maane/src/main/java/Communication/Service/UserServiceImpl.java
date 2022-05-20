@@ -19,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -122,6 +123,18 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             log.error("user {} cannot view plan", currUser);
         else
             log.info("user {} viewed plan", currUser);
+
+        return res;
+    }
+
+    @Override
+    public Response<WorkPlanDTO> viewInstructorWorkPlan(String currUser, String instructor, Integer year, Integer month) {
+        Response<WorkPlanDTO> res = UserController.getInstance().viewInstructorWorkPlan(currUser, instructor, year, month);
+
+        if (res.isFailure())
+            log.error("user {} cannot view {}'s work plan", currUser, instructor);
+        else
+            log.info("user {} viewed {}'s work plan", currUser, instructor);
 
         return res;
     }
@@ -339,6 +352,18 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             log.error("failed to view {}'s working hours ", instructor);
         else
             log.info("got {}'s working hours", instructor);
+
+        return res;
+    }
+
+    @Override
+    public Response<Boolean> editActivity(String currUser, LocalDateTime currActStart, Integer year, LocalDateTime newActStart, LocalDateTime newActEnd) {
+        Response<Boolean> res = UserController.getInstance().editActivity(currUser, currActStart, year, newActStart, newActEnd);
+
+        if (res.isFailure())
+            log.error("failed to edit {}'s activity ", currUser);
+        else
+            log.info("edited {}'s activity", currUser);
 
         return res;
     }

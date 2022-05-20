@@ -7,6 +7,7 @@ import Domain.CommonClasses.Response;
 import Domain.UsersManagment.User;
 import Persistence.DbDtos.UserDBDTO;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -21,6 +22,8 @@ public interface UserService {
     Response<Boolean> removeUser(String currUser, String userToRemove);
 
     Response<WorkPlanDTO> viewWorkPlan(String currUser, Integer year, Integer month);
+
+    Response<WorkPlanDTO> viewInstructorWorkPlan(String currUser, String instructor, Integer year, Integer month);
 
     Response<List<UserDTO>> getAppointedUsers(String currUser);
 
@@ -63,5 +66,7 @@ public interface UserService {
     Response<Boolean> setWorkingTime(String currUser, int workDay, LocalTime act1Start, LocalTime act1End, LocalTime act2Start, LocalTime act2End);
 
     Response<UserDBDTO> getWorkHours(String instructor);
+
+    Response<Boolean> editActivity(String currUser, LocalDateTime currActStart, Integer year, LocalDateTime newActStart, LocalDateTime newActEnd);
 
 }

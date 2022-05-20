@@ -119,7 +119,7 @@ public class WorkPlanQueries {
         return new Response<>(null, true, "failed to get work plans");
     }*/
 
-    public Response<WorkPlanDTO> getUserWorkPlanByYearAndMonth(String username, Integer year, Integer month)  {
+    public Response<WorkPlanDTO> getUserWorkPlanByYearAndMonth(String username, Integer year, Integer month){
         Connect.createConnection();
         String sql = "SELECT * FROM \"WorkPlans\" WHERE username = ? AND (year = ? AND EXTRACT(MONTH FROM date) = ?)";
         PreparedStatement statement;
@@ -162,5 +162,29 @@ public class WorkPlanQueries {
         Integer goalId = Integer.parseInt(activitiesArray[1]);
         String title = activitiesArray[2];
         return new ActivityDTO(schoolId, goalId, title, endActivity);
+    }
+
+    public Response<Boolean> updateActivity(String username, LocalDateTime currActStart, Integer year, LocalDateTime newActStart, LocalDateTime newActEnd) { //todo find a way to block collision
+        Connect.createConnection();
+        int rows = 0;
+        String sql = "UPDATE \"WorkPlans\" SET date = ?, endactivity = ? WHERE (username = ? AND (date = ? AND year = ?))";
+        PreparedStatement preparedStatement;
+        try {
+            preparedStatement = Connect.conn.prepareStatement(sql);
+
+            preparedStatement.setTimestamp(1, Timestamp.valueOf(newActStart));
+            preparedStatement.setTimestamp(2, Timestamp.valueOf(newActEnd));
+            preparedStatement.setString(3, username);
+            preparedStatement.setTimestamp(4, Timestamp.valueOf(currActStart));
+            preparedStatement.setInt(5, year);
+
+            rows = preparedStatement.executeUpdate();
+            Connect.closeConnection();
+        }
+        catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return rows > 0 ? new Response<>(true, false, "") :
+                new Response<>(false, true, "failed to write to db");
     }
 }
