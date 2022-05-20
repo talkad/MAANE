@@ -332,13 +332,6 @@ public class User {
         return new Response<>(appointments.add(appointee), false, "successfully added appointment");
     }
 
-    public Response<String> fillMonthlyReport(String currUser) {
-        if (this.state.allowed(Permissions.FILL_MONTHLY_REPORT, this)) {
-            return null; //todo unimplemented error
-        }
-        return null; //todo unimplemented error
-    }
-
     public Response<Boolean> changePasswordToUser(String userToChangePassword) {
         if (this.state.allowed(Permissions.CHANGE_PASSWORD_TO_USER, this)) {
             if(this.state.getStateEnum() == UserStateEnum.SUPERVISOR && this.appointments.contains(userToChangePassword)){
@@ -450,7 +443,7 @@ public class User {
         }
     }
 
-    public Response<String> getGoals() {//todo this and add goals are pretty much the same maybe call this function structure goal_management
+    public Response<String> getGoals() {
         if(this.state.allowed(Permissions.GET_GOALS, this)){
             return new Response<>(this.workField, false, "user allowed to view goals");
         }
@@ -604,11 +597,6 @@ public class User {
     public boolean isInstructor() {
         return this.getState().getStateEnum() == UserStateEnum.INSTRUCTOR;
     }
-
-/*    public void assignWorkPlan(WorkPlan workPlan, String year) {
-        //this.workPlan = new ConcurrentHashMap<>();
-        this.workPlan.put(year, workPlan);//todo prevent errors initialize in db no need for now
-    }*/
 
     public void assignWorkPlan(Integer year) {
         this.workPlanYears.add(year);
@@ -766,7 +754,7 @@ public class User {
     }
 
     public Response<Boolean> canGenerateReport() {
-        if(this.state.getStateEnum() == UserStateEnum.INSTRUCTOR){
+        if(this.state.allowed(Permissions.FILL_MONTHLY_REPORT, this)){
             return new Response<>(true, false, "user allowed to generate report");
         }
         else {

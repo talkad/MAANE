@@ -15,7 +15,7 @@ public class EmailController {
     private final DataController dataController;
 
     private EmailController(){
-        prop.put("mail.smtp.username", "maane@hityash.org");//todo create proper email and password
+        prop.put("mail.smtp.username", "maane@hityash.org");//todo hide actual password
         prop.put("mail.smtp.password", "maruhdrrsomuulzn");
         prop.put("mail.smtp.host", "smtp.gmail.com");
         prop.put("mail.smtp.port", "587");
@@ -89,7 +89,7 @@ public class EmailController {
             /* Step 1: Create MimeBodyPart and set content and its Mime Type */
             BodyPart mimeBody = new MimeBodyPart();
             try {
-                mimeBody.setContent("<h1></h1><br> <b>survey link: </b>" + surveyLink, "text/html");//todo make a better msg
+                mimeBody.setContent("<h1></h1><br> <b>survey link: </b>" + surveyLink, "text/html");
             } catch (MessagingException e) {
                 e.printStackTrace();
             }

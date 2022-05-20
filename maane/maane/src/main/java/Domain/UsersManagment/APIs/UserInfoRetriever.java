@@ -5,9 +5,6 @@ import Domain.UsersManagment.APIs.DTOs.UserActivityInfoDTO;
 import Domain.UsersManagment.APIs.DTOs.UserInfoDTO;
 import Domain.UsersManagment.UserController;
 
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.util.Arrays;
 import java.util.List;
 
 /**

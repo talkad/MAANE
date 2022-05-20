@@ -606,17 +606,6 @@ public class UserController {
         adminBoot("admin", "admin123");
     }
 
-    public Response<String> fillMonthlyReport(String currUser){
-        if (connectedUsers.containsKey(currUser)) {
-            User user = connectedUsers.get(currUser);
-            Response<String> response = user.fillMonthlyReport(currUser);
-            return response;
-        }
-        else{
-            return new Response<>(null, true, "User not connected");
-        }
-    }
-
     public Response<Boolean> changePasswordToUser(String currUser, String userToChangePassword, String newPassword, String confirmPassword){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
@@ -904,11 +893,16 @@ public class UserController {
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             Response<User> result = user.assignCoordinator(createToken(), workField, school, firstName, lastName, email, phoneNumber);
-
             if (!result.isFailure()) {
-                userDAO.insertUser(new UserDBDTO(result.getResult(), null));
-                userDAO.assignSchoolsToUser(result.getResult().getUsername(), result.getResult().getSchools());
-                return new Response<>(true, false, "assigned coordinator");
+                Response<UserDBDTO> isCoordinatorAssignedRes = userDAO.getCoordinator(school, result.getResult().getWorkField());
+                if(!isCoordinatorAssignedRes.isFailure() && isCoordinatorAssignedRes.getResult() == null){
+                    userDAO.insertUser(new UserDBDTO(result.getResult(), null));
+                    userDAO.assignSchoolsToUser(result.getResult().getUsername(), result.getResult().getSchools());
+                    return new Response<>(true, false, "assigned coordinator");
+                }
+                else{
+                    return new Response<>(false, true, "a coordinator is already assigned to the school");
+                }
             }
             else{
                 return new Response<>(null, result.isFailure(), result.getErrMsg());

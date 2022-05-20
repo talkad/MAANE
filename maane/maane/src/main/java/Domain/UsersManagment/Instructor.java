@@ -11,6 +11,7 @@ public class Instructor extends Registered{
         this.allowedFunctions.add(Permissions.REGISTER_COORDINATOR);
         this.allowedFunctions.add(Permissions.REMOVE_COORDINATOR);
         this.allowedFunctions.add(Permissions.GET_COORDINATOR);
+        this.allowedFunctions.add(Permissions.FILL_MONTHLY_REPORT);
     }
 
 

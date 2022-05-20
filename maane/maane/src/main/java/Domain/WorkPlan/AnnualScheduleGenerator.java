@@ -80,7 +80,6 @@ public class AnnualScheduleGenerator {
     }
 
     public void algorithm(String supervisor, String surveyId, String workField, List<Goal> goals, Integer year) {
-
         //1 - sort Goals by their weight (goal is per workfield)
         //2 - for every instructors under workField:
         //3 - workDay = the work day of the current instructor
@@ -149,12 +148,11 @@ public class AnnualScheduleGenerator {
             }
             for (String instructor : instructorWithProblemsForSchools.keySet()) {
                 UserDBDTO userDBDTO = userController.getWorkHours(instructor).getResult();
-                System.out.println(instructor + " " + year + " " + userDBDTO.getWorkDay()+ " " + userDBDTO.getAct1Start()+ " " + userDBDTO.getAct1End()+ " " + userDBDTO.getAct2Start()+ " " + userDBDTO.getAct2End());
+                //System.out.println(instructor + " " + year + " " + userDBDTO.getWorkDay()+ " " + userDBDTO.getAct1Start()+ " " + userDBDTO.getAct1End()+ " " + userDBDTO.getAct2Start()+ " " + userDBDTO.getAct2End());
                 WorkPlan workPlan = new WorkPlan(year, userDBDTO.getWorkDay(), userDBDTO.getAct1Start(), userDBDTO.getAct1End(), userDBDTO.getAct2Start(), userDBDTO.getAct2End());
 
                 List<Pair<String, Goal>> goalsPriorityQueue = new Vector<>();
                 for (String school : instructorWithProblemsForSchools.get(instructor).keySet()) {
-
                     if (instructorWithProblemsForSchools.get(instructor).get(school) != null && instructorWithProblemsForSchools.get(instructor).get(school).size() > 0) {
                         goalsPriorityQueue.add(new Pair<>(school, instructorWithProblemsForSchools.get(instructor).get(school).remove(0)));
                     }
@@ -204,8 +202,8 @@ public class AnnualScheduleGenerator {
                         //todo make sure you stop when you fill WorkPlan
                     }
                 }
-                WorkPlanDTO workPlanDTO = new WorkPlanDTO(workPlan);
-                WorkPlanQueries.getInstance().insertUserWorkPlan(instructor, workPlanDTO, year);//todo replace the line above with this
+                WorkPlanDTO workPlanDTO = new WorkPlanDTO(workPlan);//todo maybe add wp years to user
+                WorkPlanQueries.getInstance().insertUserWorkPlan(instructor, workPlanDTO, year);
             }
         }
     }
@@ -298,7 +296,6 @@ public class AnnualScheduleGenerator {
                     else {
                         String lastSchool = goalsPriorityQueue.get(0).getFirst();
                         if(instructorWithProblemsForSchools.get(instructor).get(lastSchool).size() > 0) {
-
                             goalsPriorityQueue.add(new Pair<>(lastSchool, instructorWithProblemsForSchools.get(instructor).get(lastSchool).remove(0)));
                             workPlan.insertActivityEveryWeek(goalsPriorityQueue.get(0), goalsPriorityQueue.get(1));
                             goalsPriorityQueue.remove(0);
@@ -322,8 +319,8 @@ public class AnnualScheduleGenerator {
                         //todo make sure you stop when you fill WorkPlan
                     }
                 }
-                WorkPlanDTO workPlanDTO = new WorkPlanDTO(workPlan);
-                WorkPlanQueries.getInstance().insertUserWorkPlan(instructor, workPlanDTO, year);//todo replace the line above with this
+                WorkPlanDTO workPlanDTO = new WorkPlanDTO(workPlan);//todo maybe add wp years to user
+                WorkPlanQueries.getInstance().insertUserWorkPlan(instructor, workPlanDTO, year);
             }
         }
     }

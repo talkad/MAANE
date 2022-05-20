@@ -1,7 +1,7 @@
 package Domain.DataManagement;
 
 /*
- * Represents School that gets his information from exel
+ * Represents School that gets his information from excel
  */
 public class School {
     String symbol;

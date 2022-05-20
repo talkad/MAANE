@@ -21,7 +21,7 @@ public class DataControllerTests {
         ServerContextInitializer.getInstance().setMockMode();
         ServerContextInitializer.getInstance().setTestMode();
 
-        UserQueries.getInstance().clearDB();
+        //UserQueries.getInstance().clearDB();
 
         UserController.getInstance().clearUsers();
         GoalsManagement.getInstance().clearGoals();
@@ -33,18 +33,17 @@ public class DataControllerTests {
     public void assignCoordinatorSuccess(){
         UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
-        String supervisorName = userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "email@gmail.com", "0555555555", "").getResult();
+        String supervisorName = userController.registerUserBySystemManager(adminName, "sup1", "sup11111", UserStateEnum.SUPERVISOR, "", "tech", "", "", "email@gmail.com", "0555555555", "").getResult();
         userController.logout(adminName);
         userController.login("sup1");
         userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "email@gmail.com", "0555555555", "");
         Response<Boolean> res = dataController.assignCoordinator(supervisorName, "irrelevant", "coordinator", "1", "email@gmail.com", "5555555555", "1");
         Assert.assertFalse(res.isFailure());
         Assert.assertTrue(UserController.getInstance().getCoordinator("sup1", "tech","1" ).getResult().getFirstName().equals("coordinator"));
-        //todo Assert.assertTrue(dataController.getSchool("1").getCoordinators().get("tech").getFirstName().equals("coordinator"));
     }
 
     @Test
-    public void assignTwoCoordinatorToTheSameFieldFail(){
+    public void assignTwoCoordinatorsToTheSameSchoolAndFieldFail(){
         UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
         String supervisorName = userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "email@gmail.com", "0555555555", "").getResult();
@@ -52,13 +51,12 @@ public class DataControllerTests {
         userController.login("sup1");
         userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "email@gmail.com", "0555555555", "");
         Response<Boolean> res1 = dataController.assignCoordinator(supervisorName, "irrelevant", "coordinator", "1", "email@gmail.com", "5555555555", "1");
-        //Response<Boolean> res2 = dataController.assignCoordinator(supervisorName, "irrelevant", "coordinator2", "2", "email@gmail.com", "5555555555", "1");
+        Response<Boolean> res2 = dataController.assignCoordinator(supervisorName, "irrelevant", "coordinator2", "2", "email@gmail.com", "5555555555", "1");
 
         Assert.assertFalse(res1.isFailure());
-        //Assert.assertTrue(res2.isFailure());
-
-        //todo Assert.assertFalse(dataController.getSchool("1").getCoordinators().get("tech").getFirstName().equals("coordinator2"));
-
+        Assert.assertTrue(res2.isFailure());
+        Assert.assertTrue(userController.getCoordinator(supervisorName, "irrelevent", "1").getResult().getFirstName().equals("coordinator"));
+        Assert.assertFalse(userController.getCoordinator(supervisorName, "irrelevent", "1").getResult().getFirstName().equals("coordinator2"));
     }
 
     @Test
@@ -87,11 +85,12 @@ public class DataControllerTests {
         userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "email@gmail.com", "0555555555", "");
         Response<Boolean> res = dataController.removeCoordinator(supervisorName, "irrelevant", "1");
         Assert.assertTrue(res.isFailure());
+        Assert.assertTrue(UserController.getInstance().getCoordinator("sup1", "tech","1" ).getResult() == null);
         //todo Assert.assertTrue(dataController.getSchool("1").getCoordinators().keySet().size() == 0);
     }
 
     @Test
-    public void getCoordinatorTest(){
+    public void getCoordinatorTest(){//todo seems like unnecessary test
         UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
         String supervisorName = userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "email@gmail.com", "0555555555", "").getResult();

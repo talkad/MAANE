@@ -41,42 +41,21 @@ public class DataController {
     }
 
     public Response<List<String>> getCoordinatorsEmails(String workField){
-        //todo change to one query
-        return UserQueries.getInstance().getCoordinatorEmails(workField);
-
-/*        public Response<List<String>> getCoordinatorsEmails(String workField){
-        List<String> emails = new Vector<>();
-        for (String symbol: schools.keySet()) {
-            if(schools.get(symbol).getCoordinators().containsKey(workField)){//todo check that there is actually an email assigned
-                emails.add(schools.get(symbol).getCoordinators().get(workField).getEmail());
-            }
-        }*/
-        //return new Response<>(emails, false, "successfully acquired emails");
+        return UserQueries.getInstance().getCoordinatorEmails(workField); //todo check that there is actually an email assigned
     }
 
     public Response<Boolean> assignCoordinator(String currUser, String workField, String firstName, String lastName, String email, String phoneNumber, String school) {
-        if(schoolDAO.schoolSymbolExists(school)){
+        if(schoolDAO.schoolSymbolExists(school)){//todo currently allows for multiple coordinators in the same school and field
             return UserController.getInstance().assignCoordinator(currUser, workField, firstName, lastName, email, phoneNumber, school);
-            //Response<Boolean> coordinator = UserController.getInstance().assignCoordinator(currUser, workField, firstName, lastName, email, phoneNumber, school);
-            /*if(!coordinator.isFailure() && !this.schools.get(school).getCoordinators().containsKey(coordinator.getResult().getWorkField())){
-                this.schools.get(school).getCoordinators().put(coordinator.getResult().getWorkField(), coordinator.getResult());
-                return new Response<>(true, coordinator.isFailure(), coordinator.getErrMsg());
-            }*/
-            //return new Response<>(false, true, coordinator.getErrMsg());
         }
         else{
-            return new Response<>(false, true, "no such school exists");
+            return new Response<>(false, true, "no such school exists or coordinator already assigned");
         }
     }
 
     public Response<Boolean> removeCoordinator(String currUser, String workField, String school) {
         if(schoolDAO.schoolSymbolExists(school)){
             return UserController.getInstance().removeCoordinator(currUser, workField, school);
-            /*if(!coordinatorWorkFieldRes.isFailure() && schools.get(school).getCoordinators().containsKey(coordinatorWorkFieldRes.getResult())){
-                schools.get(school).getCoordinators().remove(coordinatorWorkFieldRes.getResult());
-                return new Response<>(true, false, coordinatorWorkFieldRes.getErrMsg());
-            }*/
-            //return new Response<>(false, true, coordinatorWorkFieldRes.getErrMsg());
         }
         else {
             return new Response<>(false, true, "no such coordinator found");
@@ -216,7 +195,6 @@ public class DataController {
 
         return new Response<>(true, false, "reset db");
     }
-
 
     //for test purposes only
     public void clearSchools() {
