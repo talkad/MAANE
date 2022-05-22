@@ -1,4 +1,9 @@
 
+let supervisor = {
+    username: "ronit",
+    password: "1234abcd",
+}
+
 let survey_data = {
     title: "hello there",
     description: "general kenobi",
@@ -10,9 +15,35 @@ let survey_data = {
 
 describe('Survey builder tests', () => {
     beforeEach(() => {
-        //TODO: format the db and log in as a supervisor
+        cy.request({
+            method: 'POST',
+            url: "http://localhost:8080/data/resetDB",
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }).then(() => {
 
-        cy.visit('/survey/createSurvey')
+            // visiting the login page
+            cy.visit('/user/login')
+
+            // filling the login form
+            cy.get('input[id=login_username]').type(supervisor.username)
+            cy.get('input[id=login_password]').type(supervisor.password)
+
+            // submitting
+            cy.get('[id=login_button]').click()
+
+            cy.url().should('include', '/user/home')
+
+            cy.visit('/survey/createSurvey')
+        })
+    })
+
+    afterEach(() => {
+        // logging out cause it clashes with the other tests
+        cy.get('[id=logout_button]').click()
+
+        cy.url().should('include', '/user/login')
     })
 
     it('Successfully creating a survey', () => {
@@ -55,7 +86,7 @@ describe('Survey builder tests', () => {
         cy.get('#create_survey_go_back_button').click()
 
         // should find the title of the new survey in the menu
-        cy.find(survey_data.title)
+        cy.contains(survey_data.title)
     })
 
     it('Creating a survey with an empty title', () => {
@@ -95,6 +126,9 @@ describe('Survey builder tests', () => {
 
         // going back to the menu
         cy.visit('/survey/menu')
+
+        // waiting a 1 second for the page to fully load
+        cy.wait(1000)
 
         // should not find the title of the new survey in the menu
         cy.contains(survey_data.title).should('not.exist')
@@ -137,6 +171,9 @@ describe('Survey builder tests', () => {
 
         // going back to the menu
         cy.visit('/survey/menu')
+
+        // waiting a 1 second for the page to fully load
+        cy.wait(1000)
 
         // should not find the title of the new survey in the menu
         cy.contains(survey_data.title).should('not.exist')
@@ -183,6 +220,9 @@ describe('Survey builder tests', () => {
         // going back to the menu
         cy.visit('/survey/menu')
 
+        // waiting a 1 second for the page to fully load
+        cy.wait(1000)
+
         // should not find the title of the new survey in the menu
         cy.contains(survey_data.title).should('not.exist')
     })
@@ -228,11 +268,14 @@ describe('Survey builder tests', () => {
         // going back to the menu
         cy.visit('/survey/menu')
 
+        // waiting a 1 second for the page to fully load
+        cy.wait(1000)
+
         // should not find the title of the new survey in the menu
         cy.contains(survey_data.title).should('not.exist')
     })
 
-    it('Deletion of question', () => {
+    it('Deletion of a question', () => {
         // adding 2 questions
 
         for (const question of survey_data.questions.slice(0, 2)){
@@ -252,8 +295,8 @@ describe('Survey builder tests', () => {
         cy.get(`#create_question_delete_button_${survey_data.questions[0].index}`).click()
 
         // shouldn't find the first question but should the second
-        cy.contains(survey_data.questions[0].question_title).should('not.exist')
-        cy.contains(survey_data.questions[1].question_title).should('exist')
+        cy.get(`#create_question_title_${survey_data.questions[0].index}`).should('not.exist')
+        cy.get(`#create_question_title_${survey_data.questions[1].index}`).should('exist')
     })
 
     it('Deletion of an answer to a question', () => {
@@ -271,7 +314,8 @@ describe('Survey builder tests', () => {
         cy.get(`#create_question_multiple_answer_remove_button_${0}_${0}`).click()
 
         // shouldn't find the first answer but should the second
-        cy.contains('goodanswer1').should('not.exist')
-        cy.contains('greatanswer2').should('exist')
+
+        cy.get(`#question-${0}-answer-${0}`).should('not.exist')
+        cy.get(`#question-${0}-answer-${1}`).should('exist')
     })
 })

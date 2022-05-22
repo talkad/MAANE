@@ -88,21 +88,21 @@ export default function Survey(){
         var surveyID = url.searchParams.get("surveyID");
         new Connection().getSurvey(surveyID, arrangeSurvey);
 
-        function onCloseMessage(e) {
-
-            if(!surveyComplete){
-                var dialogText = 'temp';
-                e.preventDefault();
-                e.returnValue = dialogText;
-            }
-        }
-
-
-        window.addEventListener('beforeunload', onCloseMessage); // todo: make this work
-
-        return () => {
-            window.removeEventListener('beforeunload', onCloseMessage);
-        }
+        // function onCloseMessage(e) {
+        //
+        //     if(!surveyComplete){
+        //         var dialogText = 'temp';
+        //         e.preventDefault();
+        //         e.returnValue = dialogText;
+        //     }
+        // }
+        //
+        //
+        // window.addEventListener('beforeunload', onCloseMessage); // todo: make this work
+        //
+        // return () => {
+        //     window.removeEventListener('beforeunload', onCloseMessage);
+        // }
     }, []);
 
     /**
@@ -124,9 +124,8 @@ export default function Survey(){
 
             const zippedQuestionsList = zip([survey.questions, survey.types, survey.answers]);
 
-            let questionIndexer = 0;
-            zippedQuestionsList.forEach(([question, type, answers]) => setQuestions(questions =>
-                [...questions, {id: questionIndexer++, question: question, type: type, choices: answers, answer: '',}]));
+            zippedQuestionsList.forEach(([question, type, answers], index) => setQuestions(questions =>
+                [...questions, {id: index, question: question, type: type, choices: answers, answer: '',}]));
         }
         else {
             // TODO: have a page for when showing the survey fails

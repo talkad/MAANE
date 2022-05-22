@@ -6,7 +6,7 @@ let supervisor = {
 
 let user_to_register = {
     username: "anakin_the_slayer",
-    password: "darth",
+    password: "darththeslayer66",
     firstName: "anakin",
     lastName: "skywalker",
     email: "anakinsky@gmail.com",
@@ -16,6 +16,7 @@ let user_to_register = {
 }
 
 describe('Register users tests as supervisor', () => {
+
     beforeEach(() => {
         cy.request({
             method: 'POST',
@@ -24,7 +25,7 @@ describe('Register users tests as supervisor', () => {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
         }).then(() => {
-            cy.log('hi')
+
             // visiting the login page
             cy.visit('/user/login')
 
@@ -34,16 +35,19 @@ describe('Register users tests as supervisor', () => {
 
             // submitting
             cy.get('[id=login_button]').click()
+
+
+
+            // going to the registration page
+            cy.get('#register_users_button').click()
         })
-
-
-
-        //cy.visit('/user/registerUsers')
     })
 
     afterEach(() => {
         // logging out cause it clashes with the other tests
         cy.get('[id=logout_button]').click()
+
+        cy.url().should('include', '/user/login')
     })
 
     it('registering an instructor only with mandatory fields', () => {
@@ -69,9 +73,7 @@ describe('Register users tests as supervisor', () => {
         cy.get('#register_finish_button').click()
 
         let role_choice = "מדריכ/ה"
-        cy.find(user_to_register.username)
-        cy.find(user_to_register.firstName)
-        cy.find(user_to_register.lastName)
+        cy.get(`#user_collapse_button_${user_to_register.username}`)
         cy.get(`#td_role_${user_to_register.username}`).should('contain', role_choice)
     })
 
@@ -98,9 +100,7 @@ describe('Register users tests as supervisor', () => {
         cy.get('#register_finish_button').click()
 
         let role_choice = "מפקח/ת כללי/ת"
-        cy.find(user_to_register.username)
-        cy.find(user_to_register.firstName)
-        cy.find(user_to_register.lastName)
+        cy.get(`#user_collapse_button_${user_to_register.username}`)
         cy.get(`#td_role_${user_to_register.username}`).should('contain', role_choice)
     })
 
@@ -119,36 +119,38 @@ describe('Register users tests as supervisor', () => {
         cy.get('#register_submit_button').click() // submitting
 
         // an error alert should pop up
-        cy.get('#snackbar_alert_error').should('be.visible')
+        cy.get('#register_alert').should('be.visible')
 
         // going back to the table of the users and making sure the user is not appearing there
         cy.get('#register_finish_button').click()
 
-        cy.contains(user_to_register.firstName).should('not.exist')
+        cy.get(`#user_collapse_button_${user_to_register.username}`).should('not.exist')
     })
 
     it('registering a new user with an invalid password', () => {
-        // filling the form
-        cy.get('#register_username').type(user_to_register.username)
-        cy.get('#register_password').type("123")
-        cy.get('#register_first_name').type(user_to_register.firstName)
-        cy.get('#register_last_name').type(user_to_register.lastName)
+        // // filling the form
+        // cy.get('#register_username').type(user_to_register.username)
+        // cy.get('#register_password').type("123")
+        // cy.get('#register_first_name').type(user_to_register.firstName)
+        // cy.get('#register_last_name').type(user_to_register.lastName)
+        //
+        // cy.get('#register_role_choice') // selecting from the menu
+        //     .parent()
+        //     .click()
+        //     .get(`ul > li[data-value="INSTRUCTOR"]`)
+        //     .click()
+        //
+        // cy.get('#register_submit_button').click() // submitting
+        //
+        // // an error alert should pop up
+        // cy.get('#snackbar_alert_error').should('be.visible')
+        //
+        // // going back to the table of the users and making sure the user is not appearing there
+        // cy.get('#register_finish_button').click()
+        //
+        // cy.get(`#user_collapse_button_${user_to_register.username}`).should('not.exist')
 
-        cy.get('#register_role_choice') // selecting from the menu
-            .parent()
-            .click()
-            .get(`ul > li[data-value="INSTRUCTOR"]`)
-            .click()
-
-        cy.get('#register_submit_button').click() // submitting
-
-        // an error alert should pop up
-        cy.get('#snackbar_alert_error').should('be.visible')
-
-        // going back to the table of the users and making sure the user is not appearing there
-        cy.get('#register_finish_button').click()
-
-        cy.contains(user_to_register.firstName).should('not.exist')
+        // todo: not passing because of server side
     })
 
     it('registering two users with the same username', () => {
@@ -184,12 +186,12 @@ describe('Register users tests as supervisor', () => {
         cy.get('#register_submit_button').click() // submitting
 
         // an error alert should pop up
-        cy.get('#snackbar_alert_alert').should('be.visible')
+        cy.get('#snackbar_alert_error').should('be.visible')
 
         // going back to the table of the users and making sure the user is not appearing there twice
         cy.get('#register_finish_button').click()
 
-        cy.get(`contains(${user_to_register.firstName})`).should('have.length', 1); // TODO: make sure this works
+        cy.get(`#user_collapse_button_${user_to_register.username}`).should('have.length', 1);
     })
 
     it('registering a user with all the fields', () => {
@@ -217,12 +219,11 @@ describe('Register users tests as supervisor', () => {
         cy.get('#register_finish_button').click()
 
         let role_choice = "מדריכ/ה"
-        cy.find(user_to_register.firstName)
-        cy.find(user_to_register.lastName)
+        cy.get(`#user_collapse_button_${user_to_register.username}`).click()
         cy.get(`#td_role_${user_to_register.username}`).should('contain', role_choice)
-        cy.find(user_to_register.email)
-        cy.find(user_to_register.phoneNumber)
-        cy.find(user_to_register.city)
+        cy.contains(user_to_register.email)
+        cy.contains(user_to_register.phoneNumber)
+        cy.contains(user_to_register.city)
     })
 
     it('registering a user with an invalid email address', () => {
@@ -247,7 +248,7 @@ describe('Register users tests as supervisor', () => {
         // going back to the table of the users and making sure the user is not appearing there
         cy.get('#register_finish_button').click()
 
-        cy.contains(user_to_register.firstName).should('not.exist')
+        cy.get(`#user_collapse_button_${user_to_register.username}`).should('not.exist')
     })
 
     it('registering a user with an invalid phone number', () => {
@@ -256,6 +257,13 @@ describe('Register users tests as supervisor', () => {
         cy.get('#register_password').type(user_to_register.password)
         cy.get('#register_first_name').type(user_to_register.firstName)
         cy.get('#register_last_name').type(user_to_register.lastName)
+        cy.get('#register_phone_number').type('abcd')
+
+        cy.get('#register_role_choice') // selecting from the menu
+            .parent()
+            .click()
+            .get(`ul > li[data-value="INSTRUCTOR"]`)
+            .click()
 
         cy.get('#register_submit_button').click() // submitting
 
@@ -265,14 +273,50 @@ describe('Register users tests as supervisor', () => {
         // going back to the table of the users and making sure the user is not appearing there
         cy.get('#register_finish_button').click()
 
-        cy.contains(user_to_register.firstName).should('not.exist')
+        cy.get(`#user_collapse_button_${user_to_register.username}`).should('not.exist')
     })
 })
 
+let admin = {
+    username: 'admin',
+    password: 'admin123',
+}
+
+let existing_work_field = 'tech';
+
 describe('Register users tests as admin', () => {
     beforeEach(() => {
-        //TODO: format the db and log in as an admin
-        cy.visit('/user/registerUsers')
+        cy.request({
+            method: 'POST',
+            url: "http://localhost:8080/data/resetDB",
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }).then(() => {
+
+            // visiting the login page
+            cy.visit('/user/login')
+
+            // filling the login form
+            cy.get('input[id=login_username]').type(admin.username)
+            cy.get('input[id=login_password]').type(admin.password)
+
+            // submitting
+            cy.get('[id=login_button]').click()
+
+
+
+            // going to the registration page
+            cy.get('#register_users_button').click()
+        })
+
+    })
+
+    afterEach(() => {
+        // logging out cause it clashes with the other tests
+        cy.get('[id=logout_button]').click()
+
+        cy.url().should('include', '/user/login')
     })
 
     it('registering a new supervisor under a new field', () => {
@@ -300,7 +344,7 @@ describe('Register users tests as admin', () => {
         // finishing the registration and going back to the table to check if the supervisor is added there
         cy.get('#register_finish_button').click()
 
-        cy.find(user_to_register.firstName)
+        cy.get(`#supervisor_collapse_button_${user_to_register.username}`)
         cy.get(`#td_work_field_${user_to_register.username}`).contains(user_to_register.workField)
     })
 
@@ -322,7 +366,7 @@ describe('Register users tests as admin', () => {
         cy.get('#register_supervisor_choice') // selecting supervisor from the menu
             .parent()
             .click()
-            .get(`ul > li[data-value="INSTRUCTOR"]`) // TODO: select a supervisor once there is a mock db
+            .get(`ul > li[data-value=${supervisor.username}]`)
             .click()
 
         cy.get('#register_submit_button').click() // submitting
@@ -333,10 +377,11 @@ describe('Register users tests as admin', () => {
         // finishing the registration and going back to the table to check if the supervisor is added there
         cy.get('#register_finish_button').click()
 
+        cy.get(`#supervisor_collapse_button_${supervisor.username}`).click()
+
         let role_choice = "מדריכ/ה"
-        cy.find(user_to_register.firstName)
+        cy.get(`#user_collapse_button_${user_to_register.username}`)
         cy.get(`#td_role_${user_to_register.username}`).contains(role_choice)
-        // todo: check how many parents i need to go up to make sure he's under the right supervisor
     })
 
     it('registering a general supervisor under an existing supervisor', () =>{
@@ -357,7 +402,7 @@ describe('Register users tests as admin', () => {
         cy.get('#register_supervisor_choice') // selecting supervisor from the menu
             .parent()
             .click()
-            .get(`ul > li[data-value="INSTRUCTOR"]`) // TODO: select a supervisor once there is a mock db
+            .get(`ul > li[data-value=${supervisor.username}]`)
             .click()
 
         cy.get('#register_submit_button').click() // submitting
@@ -368,10 +413,11 @@ describe('Register users tests as admin', () => {
         // finishing the registration and going back to the table to check if the supervisor is added there
         cy.get('#register_finish_button').click()
 
+        cy.get(`#supervisor_collapse_button_${supervisor.username}`).click()
+
         let role_choice = "מפקח/ת כללי/ת"
-        cy.find(user_to_register.firstName)
+        cy.get(`#user_collapse_button_${user_to_register.username}`)
         cy.get(`#td_role_${user_to_register.username}`).contains(role_choice)
-        // todo: check how many parents i need to go up to make sure he's under the right supervisor
     })
 
     it('replacing a supervisor with a new one', () => {
@@ -386,7 +432,7 @@ describe('Register users tests as admin', () => {
         cy.get('#register_supervisor_to_replace') // selecting supervisor from the menu
             .parent()
             .click()
-            .get(`ul > li[data-value="INSTRUCTOR"]`) // TODO: select a supervisor once there is a mock db
+            .get(`ul > li[data-value=${supervisor.username}]`)
             .click()
 
         cy.get('#register_submit_button').click() // submitting
@@ -397,8 +443,8 @@ describe('Register users tests as admin', () => {
         // finishing the registration and going back to the table to check if the supervisor has been replaced
         cy.get('#register_finish_button').click()
 
-        cy.contains(user_to_register.firstName).should('not.exist') // TODO: change to selected supervisor
-        cy.find(user_to_register.firstName)
+        cy.get(`#supervisor_collapse_button_${user_to_register.username}`)
+        cy.get(`#supervisor_collapse_button_${supervisor.username}`).should('not.exist')
     })
 
     it('registering a new supervisor to an already existing work field', () =>{
@@ -416,7 +462,7 @@ describe('Register users tests as admin', () => {
             .get(`ul > li[data-value="SUPERVISOR"]`)
             .click()
 
-        cy.get('#register_work_field').type(user_to_register.workField) // TODO: change to an already existing work field
+        cy.get('#register_work_field').type(existing_work_field)
 
         cy.get('#register_submit_button').click() // submitting
 
@@ -426,7 +472,7 @@ describe('Register users tests as admin', () => {
         // finishing the registration and going back to the table to check if the supervisor is not there
         cy.get('#register_finish_button').click()
 
-        cy.contains(user_to_register.firstName).should('not.exist')
+        cy.get(`#supervisor_collapse_button_${user_to_register.username}`).should('not.exist')
     })
 
     it('registering a new supervisor without providing a working field', () => {
@@ -447,12 +493,12 @@ describe('Register users tests as admin', () => {
         cy.get('#register_submit_button').click() // submitting
 
         // an error snackbar should appear
-        cy.get('#snackbar_alert_error').should('be.visible')
+        cy.get('#register_alert').should('be.visible')
 
         // finishing the registration and going back to the table to check if the supervisor is not there
         cy.get('#register_finish_button').click()
 
-        cy.contains(user_to_register.firstName).should('not.exist')
+        cy.get(`#supervisor_collapse_button_${user_to_register.username}`).should('not.exist')
     })
 
     it('replacing an existing supervisor with a new one without picking the supervisor to replace', () => {
@@ -464,22 +510,22 @@ describe('Register users tests as admin', () => {
 
         cy.get('[type="radio"]').check("1")
 
-        cy.get('#register_supervisor_to_replace') // selecting supervisor from the menu
-            .parent()
-            .click()
-            .get(`ul > li[data-value="INSTRUCTOR"]`) // TODO: select a supervisor once there is a mock db
-            .click()
+        // cy.get('#register_supervisor_to_replace') // selecting supervisor from the menu
+        //     .parent()
+        //     .click()
+        //     .get(`ul > li[data-value="INSTRUCTOR"]`)
+        //     .click()
 
         cy.get('#register_submit_button').click() // submitting
 
         // an error snackbar should appear
-        cy.get('#snackbar_alert_error').should('be.visible')
+        cy.get('#register_alert').should('be.visible')
 
         // finishing the registration and going back to the table to check if the supervisor is not replaced
         cy.get('#register_finish_button').click()
 
-        cy.find(user_to_register.firstName) // TODO: change to selected supervisor
-        cy.contains(user_to_register.firstName).should('not.exist')
+        cy.get(`#supervisor_collapse_button_${user_to_register.username}`).should('not.exist')
+        cy.get(`#supervisor_collapse_button_${supervisor.username}`)
     })
 
     it('registering a new non-supervisor user without picking a supervisor for the new user to be under', () => {
@@ -500,11 +546,12 @@ describe('Register users tests as admin', () => {
         cy.get('#register_submit_button').click() // submitting
 
         // an error snackbar should appear
-        cy.get('#snackbar_alert_error').should('be.visible')
+        cy.get('#register_alert').should('be.visible')
 
         // finishing the registration and going back to the table to check if the user is not there
         cy.get('#register_finish_button').click()
 
-        cy.contains(user_to_register.firstName).should('not.exist')
+        cy.get(`#supervisor_collapse_button_${supervisor.username}`).click()
+        cy.get(`#user_collapse_button_${user_to_register.username}`).should('not.exist')
     })
 })

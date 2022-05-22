@@ -204,7 +204,7 @@ function Row(props) {
                                         <ListItemText primary={coordinator_name_primary_string} secondary={props.coordinator.firstName + " " + props.coordinator.lastName} />
                                         <ListItemText primary={coordinator_email_primary_string} secondary={props.coordinator.email} />
                                         <ListItemText primary={coordinator_phone_number_primary_string} secondary={props.coordinator.phoneNumber} />
-                                        <Button id={`remove_coordinator_${props.coordinator.email}`} onClick={() => props.handleOpenRemoveCoordinatorDialog(props.coordinator.firstName + " " + props.coordinator.lastName, row.id, '')} variant="outlined" color="error">{remove_coordinator_button_string}</Button>
+                                        <Button id={`remove_coordinator`} onClick={() => props.handleOpenRemoveCoordinatorDialog(props.coordinator.firstName + " " + props.coordinator.lastName, row.id, '')} variant="outlined" color="error">{remove_coordinator_button_string}</Button>
                                     </ListItem>
                                 </List>}
                             </Grid>) :
@@ -229,7 +229,7 @@ function Row(props) {
                                                     <ListItemText primary={coordinator_name_primary_string} secondary={props.coordinator.firstName + " " + props.coordinator.lastName} />
                                                     <ListItemText primary={coordinator_email_primary_string} secondary={props.coordinator.email} />
                                                     <ListItemText primary={coordinator_phone_number_primary_string} secondary={props.coordinator.phoneNumber} />
-                                                    <Button id={`remove_coordinator_${props.coordinator.email}`} onClick={() => props.handleOpenRemoveCoordinatorDialog(props.coordinator.firstName + " " + props.coordinator.lastName, row.id, props.selectedWorkField)} variant="outlined" color="error">{remove_coordinator_button_string}</Button>
+                                                    <Button id={`remove_coordinator`} onClick={() => props.handleOpenRemoveCoordinatorDialog(props.coordinator.firstName + " " + props.coordinator.lastName, row.id, props.selectedWorkField)} variant="outlined" color="error">{remove_coordinator_button_string}</Button>
                                                 </ListItem>
                                             </List>}
                                         </Grid>
@@ -247,7 +247,7 @@ function Row(props) {
                                 <Typography>{action_title_string}</Typography>
                             </Grid>
                             <Grid sx={{margin: 1}} item xs={6}>
-                                <Button id={`school_add_coordinator_button_${row.id}`} disabled={(props.coordinator !== null)
+                                <Button id={`school_add_coordinator_button`} disabled={(props.coordinator !== null)
                                     || (props.userType === "SYSTEM_MANAGER" && props.selectedWorkField === '')} onClick={() => props.handleOpenAddCoordinatorDialog(row.id, row.name, props.selectedWorkField)} variant="outlined" sx={{marginBottom: 1}}>{add_coordinator_string}</Button>
                             </Grid>
                         </Grid>
@@ -439,7 +439,7 @@ const mockSchool = createData(432, "hello there", "grove street", "ronit", "elem
 const mockSearchData = [{id: 123, label: 'idk (123)'}, {id: 1234, label: 'idk2 (1234)'}];
 
 export default function SchoolsManagement(props){
-    const [schools, setSchools] = useState(JSON.parse(window.sessionStorage.getItem('schools')));
+    const [schools, setSchools] = useState([]);
     const [selectedSchoolSearchID, setSelectedSchoolSearchID] = useState('');
     const [searchText, setSearchText] = useState('');
     const [searchError, setSearchError] = useState(false);
@@ -483,8 +483,10 @@ export default function SchoolsManagement(props){
 
     useEffect(() => {
         // if (props.userType === 'INSTRUCTOR' || props.userType === "GENERAL_SUPERVISOR"){
-        //     new Connection().getUserSchools(arrangeSchoolCallback)
+        //
         // }
+
+        new Connection().getUserSchools(arrangeSchoolCallback)
 
 
         if (props.userType === "SYSTEM_MANAGER"){
@@ -750,6 +752,7 @@ export default function SchoolsManagement(props){
                     options={schools}
                     renderInput={(params) => (
                         <TextField
+                            id={'search_schools_text_field'}
                             {...params}
                             label={search_school_label}
                             onKeyDown={(e) => {
@@ -761,7 +764,7 @@ export default function SchoolsManagement(props){
                                 ...params.InputProps,
                                 type: 'search',
                                 endAdornment: (
-                                    <Button variant={"outlined"} onClick={() => submitSchoolSearch()}>{search_button_string}</Button>
+                                    <Button id={'search_school_button'} variant={"outlined"} onClick={() => submitSchoolSearch()}>{search_button_string}</Button>
                                 )
                             }}
                             error={searchError}

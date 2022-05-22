@@ -116,6 +116,9 @@ function NewGoalForm(props) {
     const [error, setError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
 
+    // snackbar
+    const [openSnackbar, setOpenSnackbar] = useState(false)
+
     const form_title_string = "הוספת יעד חדש";
     const form_title_field_label_string = "כותרת היעד";
     const form_description_field_label_string = "תיאור היעד";
@@ -214,6 +217,7 @@ function NewGoalForm(props) {
 
         if(title === '' || description === ''){
             setError(true);
+            setOpenSnackbar(true)
             setErrorMessage("נא למלא את כל השדות");
         }
         else{
@@ -339,6 +343,12 @@ function NewGoalForm(props) {
                     {/*form submit button*/}
                     <Button id={"add_goal_submit_button"} type="submit" variant={"contained"} sx={{width: "20%", marginBottom: "1%"}}>{form_add_button_string}</Button>
                 </Stack>
+                {/*notification snackbar*/}
+                <NotificationSnackbar
+                    open={openSnackbar}
+                    setOpen={setOpenSnackbar}
+                    severity={'error'}
+                    message={errorMessage}/>
             </Paper>
     );
 }
