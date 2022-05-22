@@ -47,8 +47,10 @@ public class UserController {
         this.workPlanDAO = WorkPlanQueries.getInstance();
         secureRandom = new SecureRandom();
         base64Encoder = Base64.getUrlEncoder();
-
-        adminBoot("admin", "admin123");//todo need to hide password in db
+        if(!userDAO.userExists("admin")){
+            System.out.println("here");
+            adminBoot("admin", "admin123");//todo need to hide password in db also note the if query helps the tests
+        }
     }
 
     private static class CreateSafeThreadSingleton {
@@ -329,7 +331,6 @@ public class UserController {
      * @return successful response upon success. failure otherwise
      */
     public Response<Boolean> removeUser(String currUser, String userToRemove) {
-        System.out.println(currUser + " trying to remove " + userToRemove);
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             Response<Boolean> response = user.removeUser(userToRemove);//todo verify connected user is dao updated
@@ -945,8 +946,8 @@ public class UserController {
 
     public Response<WorkPlanDTO> viewWorkPlan(String currUser, Integer year, Integer month){
         if(connectedUsers.containsKey(currUser)) {
-            User user = connectedUsers.get(currUser);
-            Response<Boolean> workPlanResponse = user.getWorkPlanByYear(year);
+            User user = new User(userDAO.getFullUser(currUser).getResult());
+            Response<Boolean> workPlanResponse = user.getWorkPlanByYear(year);//todo causes problem
             if(!workPlanResponse.isFailure()){
                 return workPlanDAO.getUserWorkPlanByYearAndMonth(currUser, year, month);
             }

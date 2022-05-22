@@ -76,12 +76,12 @@ public class DataController {
         return schoolDAO.getSchool(symbol);
     }
 
-    public Response<SchoolDBDTO> getSchool(String username, String symbol){//todo test it
+    public Response<SchoolDBDTO> getSchool(String username, String symbol){
         Response<String> schoolsRes = UserController.getInstance().hasSchool(username, symbol);
         if(!schoolsRes.isFailure()){
             SchoolDBDTO school = schoolDAO.getSchool(symbol);
             if(!schoolsRes.getResult().equals("")) { //admin case - no workField
-                Response<UserDBDTO> coordinator = UserController.getInstance().getCoordinator(username, schoolsRes.getResult(), symbol);//todo probably dont need to send workfield fail check it didnt
+                Response<UserDBDTO> coordinator = UserController.getInstance().getCoordinator(username, schoolsRes.getResult(), symbol);
                 if (!coordinator.isFailure() && coordinator.getResult() != null) {
                     school.setCoordinatorFirstName(coordinator.getResult().getFirstName());
                     school.setCoordinatorLastName(coordinator.getResult().getLastName());
@@ -89,7 +89,7 @@ public class DataController {
                     school.setCoordinatorEmail(coordinator.getResult().getEmail());
                 }
             }
-            return new Response<>(school, false, "successfully acquired the school");//todo add coordinator to school
+            return new Response<>(school, false, "successfully acquired the school");
         }
         return new Response<>(null, true, schoolsRes.getErrMsg());
     }

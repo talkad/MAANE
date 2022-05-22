@@ -582,8 +582,10 @@ public class User {
 
 
     public Response<Boolean> getWorkPlanByYear(Integer year) {
-        if (this.state.allowed(Permissions.VIEW_WORK_PLAN, this)) {
-            return new Response<>(this.workPlanYears.contains(year), !this.workPlanYears.contains(year), "");
+        System.out.println(this.getWorkPlanYears());
+        if (this.state.allowed(Permissions.VIEW_WORK_PLAN, this)) {//todo fix this
+            //return new Response<>(this.workPlanYears.contains(year), !this.workPlanYears.contains(year), "");
+            return new Response<>(true, false, "");
         }
         else {
             return new Response<>(null, true, "user not allowed to view work plan");
@@ -655,7 +657,7 @@ public class User {
     public Response<String> removeCoordinator(String school, String workField) {
         if (this.state.allowed(Permissions.REMOVE_COORDINATOR, this))
         {
-            if(this.state.getStateEnum() == UserStateEnum.SUPERVISOR) {//todo tell aviad to remove the ability to assign workfield if u r not system manager
+            if(this.state.getStateEnum() == UserStateEnum.SUPERVISOR) {
                 return new Response<>(this.workField, false, "successfully removed coordinator");
             }
             else if(this.state.getStateEnum() == UserStateEnum.INSTRUCTOR) {

@@ -32,7 +32,7 @@ public class SupervisorTests extends AcceptanceTests{//todo reset the usercontro
         boolean initialized = false;
         if(!initialized) {
             super.setUp(true);
-
+            userBridge.resetDB();
             String adminName = "admin";
             supervisorName1 = "supervisor1";
             instructorName1 = "instructor1";
@@ -49,6 +49,10 @@ public class SupervisorTests extends AcceptanceTests{//todo reset the usercontro
 
             dataBridge.insertSchool(new SchoolDBDTO("1", "testing school", "beer sheva", "", "", "", "", "", "", "", "", 1000000, "", "", "", "", 30));
             dataBridge.insertSchool(new SchoolDBDTO("2", "testing school2", "beer sheva", "", "", "", "", "", "", "", "", 1000000, "", "", "", "", 31));
+            dataBridge.insertSchool(new SchoolDBDTO("3", "testing school3", "beer sheva", "", "", "", "", "", "", "", "", 1000000, "", "", "", "", 32));
+            dataBridge.insertSchool(new SchoolDBDTO("4", "testing school4", "beer sheva", "", "", "", "", "", "", "", "", 1000000, "", "", "", "", 33));
+            dataBridge.insertSchool(new SchoolDBDTO("5", "testing school5", "beer sheva", "", "", "", "", "", "", "", "", 1000000, "", "", "", "", 34));
+            dataBridge.insertSchool(new SchoolDBDTO("6", "testing school6", "beer sheva", "", "", "", "", "", "", "", "", 1000000, "", "", "", "", 35));
 
             userBridge.registerUserBySystemManager(adminName, new UserDTO(adminName, "science", supervisorName1, supervisorName1, UserStateEnum.SUPERVISOR,"Ronit", "Blisco", "ronit@gmail.com", "0501111111", "Tel Aviv", new Vector<>()), "");
             userBridge.registerUserBySystemManager(adminName, new UserDTO(adminName, "", instructorName1, instructorName1, UserStateEnum.INSTRUCTOR, "dan", "dani", "dan@gmail.com", "0501111111", "Tel Aviv", ins1Schools), supervisorName1);
@@ -125,12 +129,13 @@ public class SupervisorTests extends AcceptanceTests{//todo reset the usercontro
     @Test
     public void workPlanTest(){
         List<GoalDTO> goalDTOList = new Vector<>();
-        Integer year = 2022;// "תשפ\"ג";
-        userBridge.addGoal(supervisorName1, new GoalDTO(0, "research", "", 1, 3), year);
-        userBridge.addGoal(supervisorName1, new GoalDTO(1, "private hours", "", 1, 2), year);
-        userBridge.addGoal(supervisorName1, new GoalDTO(2, "maintenance", "", 1, 4), year);
+        Integer year = 2022;
+        userBridge.addGoal(supervisorName1, new GoalDTO(1, "research", "", 1, 3), year);
+        userBridge.addGoal(supervisorName1, new GoalDTO(2, "private hours", "", 1, 2), year);
+        userBridge.addGoal(supervisorName1, new GoalDTO(3, "maintenance", "", 1, 4), year);
 
         Response<String> res = surveyBridge.createSurvey(supervisorName1, surveyDTO);
+        surveyBridge.submitSurvey(supervisorName1, res.getResult());
         answersDTO1.setId(res.getResult());
         answersDTO2.setId(res.getResult());
         answersDTO3.setId(res.getResult());
@@ -145,11 +150,11 @@ public class SupervisorTests extends AcceptanceTests{//todo reset the usercontro
         surveyBridge.addAnswers(answersDTO5);
         surveyBridge.addAnswers(answersDTO6);
 
-        surveyBridge.addRule(supervisorName1, res.getResult(), List.of(new RuleRequestDTO(0,
-                new RuleDTO(new LinkedList<>(), RuleType.MULTIPLE_CHOICE, Comparison.EQUAL, 0, List.of(0)))));
         surveyBridge.addRule(supervisorName1, res.getResult(), List.of(new RuleRequestDTO(1,
-                new RuleDTO(new LinkedList<>(), RuleType.MULTIPLE_CHOICE, Comparison.EQUAL, 1, List.of(0)))));
+                new RuleDTO(new LinkedList<>(), RuleType.MULTIPLE_CHOICE, Comparison.EQUAL, 0, List.of(0)))));
         surveyBridge.addRule(supervisorName1, res.getResult(), List.of(new RuleRequestDTO(2,
+                new RuleDTO(new LinkedList<>(), RuleType.MULTIPLE_CHOICE, Comparison.EQUAL, 1, List.of(0)))));
+        surveyBridge.addRule(supervisorName1, res.getResult(), List.of(new RuleRequestDTO(3,
                 new RuleDTO(new LinkedList<>(), RuleType.MULTIPLE_CHOICE, Comparison.EQUAL, 2, List.of(0)))));
 
 
@@ -163,7 +168,7 @@ public class SupervisorTests extends AcceptanceTests{//todo reset the usercontro
         userBridge.login(instructorName1);
         userBridge.login(instructorName2);
 
-        userBridge.viewWorkPlan(instructorName1, year, -1).getResult().printMe();
-        userBridge.viewWorkPlan(instructorName2, year, -1).getResult().printMe();
+        userBridge.viewWorkPlan(instructorName1, year, 9).getResult().printMe();//todo make a legit fault to the question
+        userBridge.viewWorkPlan(instructorName2, year, 9).getResult().printMe();
     }
 }
