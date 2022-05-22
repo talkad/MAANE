@@ -120,6 +120,9 @@ public class UserController {
         if(phoneNumber.length() != 0 && !isValidPhoneNumber(phoneNumber))
             return new Response<>("", true, "invalid phone number");
 
+        if(!ServerContextInitializer.getInstance().isTestMode() && !isValidPassword(password))
+            return new Response<>("", true, "The password isn't strong enough");
+
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             if (!userDAO.userExists(userToRegister)){
@@ -530,6 +533,9 @@ public class UserController {
     }
 
     public Response<Boolean> changePasswordToUser(String currUser, String userToChangePassword, String newPassword, String confirmPassword){
+        if(!ServerContextInitializer.getInstance().isTestMode() && !isValidPassword(newPassword))
+            return new Response<>(false, true, "The password isn't strong enough");
+
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             if(newPassword.equals(confirmPassword)) {
