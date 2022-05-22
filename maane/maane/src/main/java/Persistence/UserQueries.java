@@ -178,7 +178,7 @@ public class UserQueries {
                     result = statement.executeQuery();
                     List<Integer> workPlansYears = new Vector<>();
                     while (result.next()) {
-                        workPlansYears.add(result.getInt(1));
+                        workPlansYears.add(result.getInt("year"));
                     }
                     userDBDTO.setWorkPlanYears(workPlansYears);
                 }
