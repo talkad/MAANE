@@ -1,20 +1,48 @@
 
-let selected_user_as_supervisor = {
-    username: "vivenna",
-    new_pwd: "colors!"
+let supervisor = {
+    username: 'ronit',
+    password: '1234abcd',
 }
 
-let current_user_password = 'kaladsphantoms'
+let selected_user_as_supervisor = {
+    username: "tal",
+    new_pwd: "areallynicepassword123"
+}
 
 describe('User management tests as a supervisor', () => {
     beforeEach(() => {
-        //TODO: format the db and log in as a supervisor
-        cy.visit('/user/home')
+        cy.request({
+            method: 'POST',
+            url: "http://localhost:8080/data/resetDB",
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }).then(() => {
 
-        cy.get(`#user_collapse_button_${selected_user_as_supervisor.username}`).click()
+            // visiting the login page
+            cy.visit('/user/login')
+
+            // filling the login form
+            cy.get('input[id=login_username]').type(supervisor.username)
+            cy.get('input[id=login_password]').type(supervisor.password)
+
+            // submitting
+            cy.get('[id=login_button]').click()
+
+            cy.url().should('include', '/user/home')
+
+            cy.get(`#user_collapse_button_${selected_user_as_supervisor.username}`).click()
+        })
     })
 
-    it('Successfully change password to user', () => {
+    afterEach(() => {
+        // logging out cause it clashes with the other tests
+        cy.get('[id=logout_button]').click()
+
+        cy.url().should('include', '/user/login')
+    })
+
+    it.only('Successfully change password to user', () => {
         // opening the change password dialog
         cy.get(`#change_password_${selected_user_as_supervisor.username}`).click()
 
@@ -25,7 +53,7 @@ describe('User management tests as a supervisor', () => {
         cy.get('#change_password_submit_button').click() // submitting
 
         // filling auth page form
-        cy.get('#auth_password').type(current_user_password)
+        cy.get('#auth_password').type(supervisor.password)
         cy.get('#auth_submit_button').click()
 
         // should expect a success snackbar alert to pop

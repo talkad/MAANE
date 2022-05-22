@@ -687,6 +687,20 @@ export default function UsersManagement(props){
             }
         }, 1000)
 
+        let timer = setTimeout(() => {
+            if(window.sessionStorage.getItem('auth_result')){
+                setOpenSnackbar(true)
+                setSnackbarSeverity(window.sessionStorage.getItem('auth_result'))
+                setSnackbarMessage(window.sessionStorage.getItem('auth_message'))
+
+                window.sessionStorage.removeItem('auth_result');
+                window.sessionStorage.removeItem('auth_message');
+            }
+        }, 1000)
+
+        return () => {
+            clearTimeout(timer)
+        }
     }, []);
 
 
@@ -830,8 +844,15 @@ export default function UsersManagement(props){
      */
     const userDeletionCallback = (data) => {
         props.setAuthAvailability(false);
-        console.log(data)
-        // TODO: do something
+
+        if(!data.failure){
+            window.sessionStorage.setItem('auth_result', "success");
+            window.sessionStorage.setItem('auth_message', "המשתמש נמחק בהצלחה");
+        }
+        else{
+            window.sessionStorage.setItem('auth_result', "error");
+            window.sessionStorage.setItem('auth_message', "אירעה שגיאה. אנא נסה/י שנית");
+        }
     }
 
     /**
@@ -839,11 +860,8 @@ export default function UsersManagement(props){
      * @param username the user to delete
      */
     const handleUserDeletion = (username) => {
-        console.log("please don't delete me");
-        console.log("aaaaaaaaaaaaaaaaaaaaaaa " + username)
-
         props.setAuthCallBack(() => () =>
-            new Connection().removeUser( username, userDeletionCallback) //todo aviad
+            new Connection().removeUser( username, userDeletionCallback)
         );
         props.setAuthAvailability(true);
         props.setAuthCalleePage('../home');
@@ -877,16 +895,13 @@ export default function UsersManagement(props){
      */
     const userChangePasswordCallback = (data) => {
         props.setAuthAvailability(false);
-        //TODO: doesn't work cause the page is not loaded when this part runs
         if (!data.failure){
-            setSnackbarSeverity('success');
-            setSnackbarMessage('הסיסמה שונתה בהצלחה');
-            setOpenSnackbar(true);
+            window.sessionStorage.setItem('auth_result', "success");
+            window.sessionStorage.setItem('auth_message', "הסיסמה שונתה בהצלחה");
         }
         else{
-            setSnackbarSeverity('error');
-            setSnackbarMessage('הסיסמה לא שונתה'); // todo: better error?
-            setOpenSnackbar(true);
+            window.sessionStorage.setItem('auth_result', "error");
+            window.sessionStorage.setItem('auth_message', 'הסיסמה לא שונתה');
         }
     }
 
@@ -917,9 +932,6 @@ export default function UsersManagement(props){
      * @param supervisorUsername the username of the selected supervisor
      */
     const handleOpenSupervisionTransferDialog = (name, username, supervisorName, supervisorUsername) => {
-        console.log('general kenobi')
-        console.log(username)
-        console.log(supervisorUsername)
         setOpenSupervisionTransferDialog(true);
         setSelectedUser(username);
         setSelectedName(name);
@@ -940,16 +952,14 @@ export default function UsersManagement(props){
      */
     const makeUserSupervisorCallback = (data) => {
         props.setAuthAvailability(false);
-        //TODO: doesn't work cause the page is not loaded when this part runs
         if (!data.failure){
-            setSnackbarSeverity('success');
-            setSnackbarMessage('הפעולה הסתיימה בהצלחה');
-            setOpenSnackbar(true);
+
+            window.sessionStorage.setItem('auth_result', "success");
+            window.sessionStorage.setItem('auth_message', "הפעולה הסתייה בהצלחה");
         }
         else{
-            setSnackbarSeverity('error');
-            setSnackbarMessage('הפעולה נכשלה. אנא נסה/י שוב');
-            setOpenSnackbar(true);
+            window.sessionStorage.setItem('auth_result', "error");
+            window.sessionStorage.setItem('auth_message', "הפעולה נכשלה. אנא נסה/י שוב");
         }
     }
 
@@ -960,9 +970,8 @@ export default function UsersManagement(props){
      */
     const handleMakeUserSupervisor = (currentSupervisor, newSupervisor) => {
         setOpenSupervisionTransferDialog(false);
-        // TODO: check it's working properly
         props.setAuthCallBack(() => () => new Connection().transferSupervisionToExistingUser(
-            currentSupervisor, newSupervisor, userChangePasswordCallback));
+            currentSupervisor, newSupervisor, makeUserSupervisorCallback));
         props.setAuthAvailability(true);
         props.setAuthCalleePage('../home');
         props.setAuthGoToPage('../home');
@@ -1004,7 +1013,7 @@ export default function UsersManagement(props){
         }
         else {
             setSnackbarSeverity('error');
-            setSnackbarMessage('הפעולה להוספת בית ספר למשתמש נכשלה'); // todo: better error?
+            setSnackbarMessage('הפעולה להוספת בית ספר למשתמש נכשלה');
             setOpenSnackbar(true);
 
         }
@@ -1017,8 +1026,6 @@ export default function UsersManagement(props){
      * @param schoolId the id of the school to assign to the selected user
      */
     const handleUserAddSchool = (username, schoolName, schoolId) => {
-        console.log('what was sent');
-        console.log(schoolId)
         new Connection().assignSchoolToUser(username, schoolId, userAddSchoolCallback)
     }
 
@@ -1036,7 +1043,7 @@ export default function UsersManagement(props){
         }
         else {
             setSnackbarSeverity('error');
-            setSnackbarMessage('הפעולה להסרת בית ספר ממשתמש נכשלה'); // todo: better error?
+            setSnackbarMessage('הפעולה להסרת בית ספר ממשתמש נכשלה');
             setOpenSnackbar(true);
         }
     }
