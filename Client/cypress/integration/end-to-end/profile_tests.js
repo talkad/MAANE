@@ -1,4 +1,9 @@
 
+let user = {
+    username: "tal",
+    password: "1234abcd",
+}
+
 let info_to_edit_to = {
     firstName: "obi-wan",
     lastName: "kenobi",
@@ -7,21 +12,66 @@ let info_to_edit_to = {
     city: "stewjon",
 }
 
-describe('Profile page tests for editing info', () => {
-    beforeEach(() => {
-        //TODO: format the db and log in
-        cy.visit('/user/profile')
+let prev_info = {
+    firstName: "tal",
+    lastName: "kad",
+    email: "tal@gmail.com",
+    phoneNumber: "055-555-5555",
+    city: "",
+}
 
-        // pressing the edit button
-        cy.get('#profile_edit_button').click()
+describe('Profile page tests for editing info', () => {
+
+    beforeEach(() => {
+        cy.request({
+            method: 'POST',
+            url: "http://localhost:8080/data/resetDB",
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }).then(() => {
+
+            // visiting the login page
+            cy.visit('/user/login')
+
+            // filling the login form
+            cy.get('input[id=login_username]').type(user.username)
+            cy.get('input[id=login_password]').type(user.password)
+
+            // submitting
+            cy.get('[id=login_button]').click()
+
+            cy.url().should('include', '/user/home')
+
+            cy.visit('/user/profile')
+
+            // pressing the edit button
+            cy.get('#profile_edit_button').click()
+        })
+    })
+
+    afterEach(() => {
+        // logging out cause it clashes with the other tests
+        cy.get('[id=logout_button]').click()
+
+        cy.url().should('include', '/user/login')
     })
 
     it('Successfully editing info', () => {
         // filling the form
+        cy.get('#profile_edit_first_name').clear()
         cy.get('#profile_edit_first_name').type(info_to_edit_to.firstName)
+
+        cy.get('#profile_edit_last_name').clear()
         cy.get('#profile_edit_last_name').type(info_to_edit_to.lastName)
+
+        cy.get('#profile_edit_email').clear()
         cy.get('#profile_edit_email').type(info_to_edit_to.email)
+
+        cy.get('#profile_edit_phone_number').clear()
         cy.get('#profile_edit_phone_number').type(info_to_edit_to.phoneNumber)
+
+        cy.get('#profile_edit_city').clear()
         cy.get('#profile_edit_city').type(info_to_edit_to.city)
 
         cy.get('#profile_edit_submit').click() // submitting
@@ -40,38 +90,20 @@ describe('Profile page tests for editing info', () => {
     })
 
     it('Editing but submitting with the first name field empty', () => {
-        let firstName = ''
-        let lastName = ''
-        let email = ''
-        let phoneNumber = ''
-        let city = ''
 
-        // getting the previous data
-        cy.get('#profile_edit_first_name')
-            .invoke('val')
-            .then(text => firstName = text)
+        // filling the form with the first name empty
+        cy.get('#profile_edit_first_name').clear()
 
-        cy.get('#profile_edit_last_name')
-            .invoke('val')
-            .then(text => lastName = text)
-
-        cy.get('#profile_edit_email')
-            .invoke('val')
-            .then(text => email = text)
-
-        cy.get('#profile_edit_phone_number')
-            .invoke('val')
-            .then(text => phoneNumber = text)
-
-        cy.get('#profile_edit_city')
-            .invoke('val')
-            .then(text => city = text)
-
-        // filling the form but leaving the first name empty
-        cy.get('#profile_edit_first_name').type('')
+        cy.get('#profile_edit_last_name').clear()
         cy.get('#profile_edit_last_name').type(info_to_edit_to.lastName)
+
+        cy.get('#profile_edit_email').clear()
         cy.get('#profile_edit_email').type(info_to_edit_to.email)
+
+        cy.get('#profile_edit_phone_number').clear()
         cy.get('#profile_edit_phone_number').type(info_to_edit_to.phoneNumber)
+
+        cy.get('#profile_edit_city').clear()
         cy.get('#profile_edit_city').type(info_to_edit_to.city)
 
         cy.get('#profile_edit_submit').click() // submitting
@@ -80,46 +112,30 @@ describe('Profile page tests for editing info', () => {
         cy.get('#profile_edit_alert').should('be.visible')
 
         // upon reload everything should remain as it had been
-        cy.get('#profile_edit_first_name').should('have.value', firstName)
-        cy.get('#profile_edit_last_name').should('have.value', lastName)
-        cy.get('#profile_edit_email').should('have.value', email)
-        cy.get('#profile_edit_phone_number').should('have.value', phoneNumber)
-        cy.get('#profile_edit_city').should('have.value', city)
+        cy.reload()
+
+        cy.get('#profile_edit_first_name').should('have.value', prev_info.firstName)
+        cy.get('#profile_edit_last_name').should('have.value', prev_info.lastName)
+        cy.get('#profile_edit_email').should('have.value', prev_info.email)
+        cy.get('#profile_edit_phone_number').should('have.value', prev_info.phoneNumber)
+        cy.get('#profile_edit_city').should('have.value', prev_info.city)
     })
 
     it('Editing but submitting with the last name field empty', () => {
-        let firstName = ''
-        let lastName = ''
-        let email = ''
-        let phoneNumber = ''
-        let city = ''
-
-        // getting the previous data
-        cy.get('#profile_edit_first_name')
-            .invoke('val')
-            .then(text => firstName = text)
-
-        cy.get('#profile_edit_last_name')
-            .invoke('val')
-            .then(text => lastName = text)
-
-        cy.get('#profile_edit_email')
-            .invoke('val')
-            .then(text => email = text)
-
-        cy.get('#profile_edit_phone_number')
-            .invoke('val')
-            .then(text => phoneNumber = text)
-
-        cy.get('#profile_edit_city')
-            .invoke('val')
-            .then(text => city = text)
 
         // filling the form but leaving the last name empty
+        cy.get('#profile_edit_first_name').clear()
         cy.get('#profile_edit_first_name').type(info_to_edit_to.firstName)
-        cy.get('#profile_edit_last_name').type('')
+
+        cy.get('#profile_edit_last_name').clear()
+
+        cy.get('#profile_edit_email').clear()
         cy.get('#profile_edit_email').type(info_to_edit_to.email)
+
+        cy.get('#profile_edit_phone_number').clear()
         cy.get('#profile_edit_phone_number').type(info_to_edit_to.phoneNumber)
+
+        cy.get('#profile_edit_city').clear()
         cy.get('#profile_edit_city').type(info_to_edit_to.city)
 
         cy.get('#profile_edit_submit').click() // submitting
@@ -127,47 +143,31 @@ describe('Profile page tests for editing info', () => {
         // an error alert should pop up
         cy.get('#profile_edit_alert').should('be.visible')
 
-        // upon reload everything should remain as it had been
-        cy.get('#profile_edit_first_name').should('have.value', firstName)
-        cy.get('#profile_edit_last_name').should('have.value', lastName)
-        cy.get('#profile_edit_email').should('have.value', email)
-        cy.get('#profile_edit_phone_number').should('have.value', phoneNumber)
-        cy.get('#profile_edit_city').should('have.value', city)
+        cy.reload()
+
+        cy.get('#profile_edit_first_name').should('have.value', prev_info.firstName)
+        cy.get('#profile_edit_last_name').should('have.value', prev_info.lastName)
+        cy.get('#profile_edit_email').should('have.value', prev_info.email)
+        cy.get('#profile_edit_phone_number').should('have.value', prev_info.phoneNumber)
+        cy.get('#profile_edit_city').should('have.value', prev_info.city)
     })
 
     it('Editing but submitting with an invalid email address', () => {
-        let firstName = ''
-        let lastName = ''
-        let email = ''
-        let phoneNumber = ''
-        let city = ''
-
-        // getting the previous data
-        cy.get('#profile_edit_first_name')
-            .invoke('val')
-            .then(text => firstName = text)
-
-        cy.get('#profile_edit_last_name')
-            .invoke('val')
-            .then(text => lastName = text)
-
-        cy.get('#profile_edit_email')
-            .invoke('val')
-            .then(text => email = text)
-
-        cy.get('#profile_edit_phone_number')
-            .invoke('val')
-            .then(text => phoneNumber = text)
-
-        cy.get('#profile_edit_city')
-            .invoke('val')
-            .then(text => city = text)
 
         // filling the form but entering an invalid email address
+        cy.get('#profile_edit_first_name').clear()
         cy.get('#profile_edit_first_name').type(info_to_edit_to.firstName)
-        cy.get('#profile_edit_last_name').type(info_to_edit_to.lastName)
-        cy.get('#profile_edit_email').type('masterkgmailcom')
+
+        cy.get('#profile_edit_last_name').clear()
+        cy.get('#profile_edit_first_name').type(info_to_edit_to.firstName)
+
+        cy.get('#profile_edit_email').clear()
+        cy.get('#profile_edit_email').type('hellotheregmailcom')
+
+        cy.get('#profile_edit_phone_number').clear()
         cy.get('#profile_edit_phone_number').type(info_to_edit_to.phoneNumber)
+
+        cy.get('#profile_edit_city').clear()
         cy.get('#profile_edit_city').type(info_to_edit_to.city)
 
         cy.get('#profile_edit_submit').click() // submitting
@@ -176,46 +176,31 @@ describe('Profile page tests for editing info', () => {
         cy.get('#profile_edit_alert').should('be.visible')
 
         // upon reload everything should remain as it had been
-        cy.get('#profile_edit_first_name').should('have.value', firstName)
-        cy.get('#profile_edit_last_name').should('have.value', lastName)
-        cy.get('#profile_edit_email').should('have.value', email)
-        cy.get('#profile_edit_phone_number').should('have.value', phoneNumber)
-        cy.get('#profile_edit_city').should('have.value', city)
+        cy.reload()
+
+        cy.get('#profile_edit_first_name').should('have.value', prev_info.firstName)
+        cy.get('#profile_edit_last_name').should('have.value', prev_info.lastName)
+        cy.get('#profile_edit_email').should('have.value', prev_info.email)
+        cy.get('#profile_edit_phone_number').should('have.value', prev_info.phoneNumber)
+        cy.get('#profile_edit_city').should('have.value', prev_info.city)
     })
 
     it('Editing but submitting with an invalid phone number', () => {
-        let firstName = ''
-        let lastName = ''
-        let email = ''
-        let phoneNumber = ''
-        let city = ''
-
-        // getting the previous data
-        cy.get('#profile_edit_first_name')
-            .invoke('val')
-            .then(text => firstName = text)
-
-        cy.get('#profile_edit_last_name')
-            .invoke('val')
-            .then(text => lastName = text)
-
-        cy.get('#profile_edit_email')
-            .invoke('val')
-            .then(text => email = text)
-
-        cy.get('#profile_edit_phone_number')
-            .invoke('val')
-            .then(text => phoneNumber = text)
-
-        cy.get('#profile_edit_city')
-            .invoke('val')
-            .then(text => city = text)
 
         // filling the form but entering an invalid email address
+        cy.get('#profile_edit_first_name').clear()
         cy.get('#profile_edit_first_name').type(info_to_edit_to.firstName)
-        cy.get('#profile_edit_last_name').type(info_to_edit_to.lastName)
+
+        cy.get('#profile_edit_last_name').clear()
+        cy.get('#profile_edit_first_name').type(info_to_edit_to.firstName)
+
+        cy.get('#profile_edit_email').clear()
         cy.get('#profile_edit_email').type(info_to_edit_to.email)
-        cy.get('#profile_edit_phone_number').type('a12')
+
+        cy.get('#profile_edit_phone_number').clear()
+        cy.get('#profile_edit_phone_number').type('aaa')
+
+        cy.get('#profile_edit_city').clear()
         cy.get('#profile_edit_city').type(info_to_edit_to.city)
 
         cy.get('#profile_edit_submit').click() // submitting
@@ -224,27 +209,61 @@ describe('Profile page tests for editing info', () => {
         cy.get('#profile_edit_alert').should('be.visible')
 
         // upon reload everything should remain as it had been
-        cy.get('#profile_edit_first_name').should('have.value', firstName)
-        cy.get('#profile_edit_last_name').should('have.value', lastName)
-        cy.get('#profile_edit_email').should('have.value', email)
-        cy.get('#profile_edit_phone_number').should('have.value', phoneNumber)
-        cy.get('#profile_edit_city').should('have.value', city)
+        cy.reload()
+
+        cy.get('#profile_edit_first_name').should('have.value', prev_info.firstName)
+        cy.get('#profile_edit_last_name').should('have.value', prev_info.lastName)
+        cy.get('#profile_edit_email').should('have.value', prev_info.email)
+        cy.get('#profile_edit_phone_number').should('have.value', prev_info.phoneNumber)
+        cy.get('#profile_edit_city').should('have.value', prev_info.city)
     })
 })
 
 let password_change_info = {
-    current_pwd: "kmaster123", //TODO: change to the real one
-    new_pwd: "anislayerB)",
-    confirm_pwd: "anislayerV)"
+    current_pwd: user.password,
+    new_pwd: "anislayer66", // TODO: bug on the server side "anislayerB)66" doesn't register
+    confirm_pwd: "anislayer66"
+}
+
+let supervisor = {
+    username: 'ronit',
+    password: '1234abcd'
 }
 
 describe('Profile page tests for security features', () => {
     beforeEach(() => {
-        //TODO: format the db and log in
-        cy.visit('/user/profile')
+        cy.request({
+            method: 'POST',
+            url: "http://localhost:8080/data/resetDB",
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }).then(() => {
 
-        // pressing the sucurity tab
-        cy.get('#vertical-tab-1').click()
+            // visiting the login page
+            cy.visit('/user/login')
+
+            // filling the login form
+            cy.get('input[id=login_username]').type(user.username)
+            cy.get('input[id=login_password]').type(user.password)
+
+            // submitting
+            cy.get('[id=login_button]').click()
+
+            cy.url().should('include', '/user/home')
+
+            cy.visit('/user/profile')
+
+            // pressing the sucurity tab
+            cy.get('#vertical-tab-1').click()
+        })
+    })
+
+    afterEach(() => {
+        // logging out cause it clashes with the other tests
+        cy.get('[id=logout_button]').click()
+
+        cy.url().should('include', '/user/login')
     })
 
     it('Successfully changing the password', () => {
@@ -259,10 +278,10 @@ describe('Profile page tests for security features', () => {
         cy.get('#snackbar_alert_success').should('be.visible')
 
         // logging out and checking if we can log in with the new password
-        cy.get('logout_button').click()
+        cy.get('#logout_button').click()
 
         // filling the login form
-        cy.get('#login_username').type("kenobi") // TODO: get the real one
+        cy.get('#login_username').type(user.username)
         cy.get('#login_password').type(password_change_info.new_pwd)
 
         // submitting
@@ -273,7 +292,7 @@ describe('Profile page tests for security features', () => {
 
     it('Changing the password but the current password is wrong', () => {
         // filling the form
-        cy.get('#change_password_current').type('123')
+        cy.get('#change_password_current').type(password_change_info.current_pwd + "1")
         cy.get('#change_password_new').type(password_change_info.new_pwd)
         cy.get('#change_password_confirm').type(password_change_info.confirm_pwd)
 
@@ -283,10 +302,10 @@ describe('Profile page tests for security features', () => {
         cy.get('#snackbar_alert_error').should('be.visible')
 
         // logging out and making sure we can't log in with the new password
-        cy.get('logout_button').click()
+        cy.get('#logout_button').click()
 
         // filling the login form
-        cy.get('#login_username').type("kenobi") // TODO: get the real one
+        cy.get('#login_username').type(user.username)
         cy.get('#login_password').type(password_change_info.new_pwd)
 
         // submitting
@@ -294,6 +313,16 @@ describe('Profile page tests for security features', () => {
 
         // should expect an alert error to appear
         cy.get('#login_alert').should('be.visible')
+
+        // logging in again so the next tests in line will work
+        cy.get('#login_username').clear()
+        cy.get('#login_username').type(user.username)
+
+        cy.get('#login_password').clear()
+        cy.get('#login_password').type(user.password)
+
+        // submitting
+        cy.get('#login_button').click()
     })
 
     it('Changing the password but the new and confirmed password does not match', () => {
@@ -308,10 +337,10 @@ describe('Profile page tests for security features', () => {
         cy.get('#snackbar_alert_error').should('be.visible')
 
         // logging out and making sure we can't log in with the new password
-        cy.get('logout_button').click()
+        cy.get('#logout_button').click()
 
         // filling the login form
-        cy.get('#login_username').type("kenobi") // TODO: get the real one
+        cy.get('#login_username').type(user.username)
         cy.get('#login_password').type(password_change_info.new_pwd)
 
         // submitting
@@ -319,6 +348,16 @@ describe('Profile page tests for security features', () => {
 
         // should expect an alert error to appear
         cy.get('#login_alert').should('be.visible')
+
+        // logging in again so the next tests in line will work
+        cy.get('#login_username').clear()
+        cy.get('#login_username').type(user.username)
+
+        cy.get('#login_password').clear()
+        cy.get('#login_password').type(user.password)
+
+        // submitting
+        cy.get('#login_button').click()
     })
 
     it('The new password is invalid', () => {
@@ -333,10 +372,10 @@ describe('Profile page tests for security features', () => {
         cy.get('#snackbar_alert_error').should('be.visible')
 
         // logging out and making sure we can't log in with the new password
-        cy.get('logout_button').click()
+        cy.get('#logout_button').click()
 
         // filling the form
-        cy.get('#login_username').type("kenobi") // TODO: get the real one
+        cy.get('#login_username').type(user.username)
         cy.get('#login_password').type("123")
 
         // submitting
@@ -344,10 +383,64 @@ describe('Profile page tests for security features', () => {
 
         // should expect an alert error to appear
         cy.get('#login_alert').should('be.visible')
+
+        // logging in again so the next tests in line will work
+        cy.get('#login_username').clear()
+        cy.get('#login_username').type(user.username)
+
+        cy.get('#login_password').clear()
+        cy.get('#login_password').type(user.password)
+
+        // submitting
+        cy.get('#login_button').click()
     })
 
     it("Changing the password while a supervisor changes the password to the user", () => {
-        // TODO: send the request through cy.request to change the password
+        // logging out
+        cy.get('[id=logout_button]').click()
+
+        cy.url().should('include', '/user/login')
+
+        // logging in as a supervisor
+        // filling the login form
+        cy.get('input[id=login_username]').type(supervisor.username)
+        cy.get('input[id=login_password]').type(supervisor.password)
+
+        // submitting
+        cy.get('[id=login_button]').click()
+
+        // opening the change password dialog
+        cy.get(`#user_collapse_button_${user.username}`).click()
+        cy.get(`#change_password_${user.username}`).click()
+
+        // filling the form
+        cy.get('#change_password_new').type(user.password + "123")
+        cy.get('#change_password_confirm').type(user.password + "123")
+
+        cy.get('#change_password_submit_button').click() // submitting
+
+        // filling auth page form
+        cy.get('#auth_password').type(supervisor.password)
+        cy.get('#auth_submit_button').click()
+
+        // logging out
+        cy.get('[id=logout_button]').click()
+
+        cy.url().should('include', '/user/login')
+
+        // filling the login form as the instructor
+        cy.get('input[id=login_username]').type(user.username)
+        cy.get('input[id=login_password]').type(user.password + "123")
+
+        // submitting
+        cy.get('[id=login_button]').click()
+
+        cy.url().should('include', '/user/home')
+
+        cy.visit('/user/profile')
+
+        // pressing the sucurity tab
+        cy.get('#vertical-tab-1').click()
 
         // filling the form
         cy.get('#change_password_current').type(password_change_info.current_pwd)
@@ -360,10 +453,10 @@ describe('Profile page tests for security features', () => {
         cy.get('#snackbar_alert_error').should('be.visible')
 
         // logging out and making sure we can't log in with the new password
-        cy.get('logout_button').click()
+        cy.get('#logout_button').click()
 
         // filling the login form
-        cy.get('#login_username').type("kenobi") // TODO: get the real one
+        cy.get('#login_username').type(user.username)
         cy.get('#login_password').type(password_change_info.new_pwd)
 
         // submitting
@@ -371,5 +464,15 @@ describe('Profile page tests for security features', () => {
 
         // should expect an alert error to appear
         cy.get('#login_alert').should('be.visible')
+
+        // logging in again so the next tests in line will work
+        cy.get('#login_username').clear()
+        cy.get('#login_username').type(user.username)
+
+        cy.get('#login_password').clear()
+        cy.get('#login_password').type(user.password + "123")
+
+        // submitting
+        cy.get('#login_button').click()
     })
 })

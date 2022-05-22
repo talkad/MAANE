@@ -69,7 +69,13 @@ public class SurveyServiceImpl implements SurveyService {
         if(!res.isFailure()) {
 
             for (RuleRequestDTO ruleRequestDTO : rulesDTO) {
-                //System.out.println(rulesDTO);
+
+                //check validity of rule
+                if(ruleRequestDTO.getGoalID() == null){
+                    res = new Response<>(false, true, "failed to parse goal id");
+                    break;
+                }
+
                 Rule rule = RuleConverter.getInstance().convertRule(ruleRequestDTO.getRuleDTO());
 
                 if (rule == null) {

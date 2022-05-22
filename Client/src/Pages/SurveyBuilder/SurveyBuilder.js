@@ -47,22 +47,22 @@ export default function SurveyBuilder(){
         }
 
 
-        function onCloseMessage(e) {
-
-            if(!surveyComplete){
-                var dialogText = 'temp';
-                e.preventDefault();
-                e.returnValue = dialogText;
-                return dialogText;
-            }
-        }
-
-
-        window.addEventListener('beforeunload', onCloseMessage); // todo: make this work
-
-        return () => {
-            window.removeEventListener('beforeunload', onCloseMessage);
-        }
+        // function onCloseMessage(e) {
+        //
+        //     if(!surveyComplete){
+        //         var dialogText = 'temp';
+        //         e.preventDefault();
+        //         e.returnValue = dialogText;
+        //         return dialogText;
+        //     }
+        // }
+        //
+        //
+        // window.addEventListener('beforeunload', onCloseMessage); // todo: make this work
+        //
+        // return () => {
+        //     window.removeEventListener('beforeunload', onCloseMessage);
+        // }
     }, []);
 
     /**

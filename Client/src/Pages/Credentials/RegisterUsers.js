@@ -166,8 +166,9 @@ export default function RegisterUsers(props){
      */
     const registerCallback = (data) => {
         if(data.failure){
-            setShowError(true);
-            setErrorMessage('ההרשמה נדחתה');
+            setOpenSnackbar(true);
+            setSnackbarSeverity('error');
+            setSnackbarMessage('ההרשמה נדחתה');
         }
         else{
            setValues({
@@ -468,7 +469,7 @@ export default function RegisterUsers(props){
                                         label={select_supervisor_label_string}
                                         onChange={handleSupervisorChoiceChange}
                                     >
-                                        {supervisors.map(x => <MenuItem value={x['currUser']}>{x['firstName'] + " " + x['lastName'] + "בתחום " + x['workField']}</MenuItem>)}
+                                        {supervisors.map(x => <MenuItem value={x['username']}>{x['firstName'] + " " + x['lastName'] + "בתחום " + x['workField']}</MenuItem>)}
                                     </Select>
                                     <FormHelperText>{select_supervisor_helper_text_string}</FormHelperText>
                                 </FormControl>}
@@ -494,9 +495,10 @@ export default function RegisterUsers(props){
                         <Grid item xs={12} sx={{marginRight: "3%", marginLeft: "3%"}}>
                             {/*optional select if the user is admin and want to register a user and make it a supervisor in the place of an existing one*/}
                             {(props.type === 'SYSTEM_MANAGER' && radioValue === "1") &&
-                                <FormControl error={showError && supervisorChoiceUsername === ''} id="register_supervisor_to_replace" color="secondary" sx={{ m: 1, minWidth: 120 }}>
+                                <FormControl error={showError && supervisorChoiceUsername === ''} color="secondary" sx={{ m: 1, minWidth: 120 }}>
                                     <InputLabel>{select_supervisor_label_string}</InputLabel>
                                     <Select
+                                        id="register_supervisor_to_replace"
                                         value={supervisorChoiceUsername}
                                         label={select_supervisor_label_string}
                                         onChange={handleSupervisorChoiceChange}

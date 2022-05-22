@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import {FormControl, FormControlLabel, FormHelperText, FormLabel, Grid, Paper, Radio, RadioGroup} from "@mui/material";
 import TextField from "@mui/material/TextField";
 
@@ -66,15 +66,15 @@ export default function SurveyQuestion(props){
                     {/*multiple-choice view for question of this kind*/}
                     {props.type === 'MULTIPLE_CHOICE' &&
                         <Grid item xs={12} sx={{margin: "1%"}}>
-                            <FormControl error={props.showError && props.answer.trim() === ''} variant="standard">
+                            <FormControl  error={props.showError && props.answer.trim() === ''} variant="standard">
                                 <FormLabel>{multiple_choice_label_string}</FormLabel>
                                 <RadioGroup
                                     value={props.answer}
                                     onChange={handleMultipleChoiceAnswerChange}
-                                    id={`submit_survey_multi_choice_${props.id}`}
+
                                 >
                                     {props.choices.map((element, index) =>
-                                        <FormControlLabel value={index.toString()} control={<Radio color="secondary"/>} label={element}/>)}
+                                        <FormControlLabel value={index.toString()} control={<Radio id={`submit_survey_multi_choice_${props.id}_${index}`}  color="secondary"/>} label={element}/>)}
                                 </RadioGroup>
                                 {props.showError && props.answer.trim() === '' && <FormHelperText>{multiple_choice_helper_text_string}</FormHelperText>}
                             </FormControl>
