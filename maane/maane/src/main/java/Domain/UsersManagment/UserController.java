@@ -1182,5 +1182,29 @@ public class UserController {
         }
         return res;
     }
+
+    public Response<Boolean> removeUserTester(String currUser, String userToRemove) {
+        User user = new User(userDAO.getFullUser(currUser).getResult());
+        Response<Boolean> response = user.removeUser(userToRemove);//todo verify connected user is dao updated
+            if(!response.isFailure()){
+                if(userDAO.userExists(userToRemove)){
+                    if(response.getResult()){
+                        findSupervisorAndRemoveAppointment(user, userToRemove);
+                    }
+                    else{
+                        userDAO.removeAppointment(currUser, userToRemove);
+                    }
+                    response = userDAO.removeUser(userToRemove);
+                    if(!response.isFailure()){
+                        connectedUsers.remove(userToRemove);
+                    }
+                    return response;
+                }
+                else{
+                    return new Response<>(null, true, "User is not in the system");
+                }
+            }
+            return response;
+    }
     //For test purposes only end
 }

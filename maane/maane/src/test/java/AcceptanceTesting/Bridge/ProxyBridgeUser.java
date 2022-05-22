@@ -293,6 +293,15 @@ public class ProxyBridgeUser implements UserService {
         return new Response<>(null, true, "not implemented");
     }
 
+    @Override
+    public Response<Boolean> removeUserTester(String currUser, String userToRemove) {
+        if (real != null) {
+            return real.removeUserTester(currUser, userToRemove);
+        }
+
+        return new Response<>(null, true, "not implemented");
+    }
+
     //for tests purposes only
     public void setMockDBAndTestMode() {
         if (real != null) {

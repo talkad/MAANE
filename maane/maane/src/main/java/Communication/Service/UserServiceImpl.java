@@ -384,4 +384,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public void resetDB() {
         UserController.getInstance().resetDB();
     }
+
+    @Override
+    public Response<Boolean> removeUserTester(String currUser, String userToRemove) {
+        Response<Boolean> res = UserController.getInstance().removeUserTester(currUser, userToRemove);
+
+        if (res.isFailure())
+            log.error("failed to remove {}'s  ", userToRemove);
+        else
+            log.info("removed {}'s", userToRemove);
+
+        return res;
+    }
 }
