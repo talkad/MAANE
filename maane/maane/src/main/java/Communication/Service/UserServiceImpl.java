@@ -380,4 +380,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return res;
     }
 
+    @Override
+    public void resetDB() {
+        UserController.getInstance().resetDB();
+    }
 }

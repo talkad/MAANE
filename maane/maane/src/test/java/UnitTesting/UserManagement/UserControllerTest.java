@@ -25,7 +25,6 @@ public class UserControllerTest {
     private PasswordEncoder passwordEncoder;
     private UserController userController;
     private UserQueries userQueries;
-    //private static boolean initialized = false;
 
     
     @Before
@@ -34,12 +33,9 @@ public class UserControllerTest {
         ServerContextInitializer.getInstance().setMockMode();
         ServerContextInitializer.getInstance().setTestMode();
 
-/*        if(!UserControllerTest.initialized){
-            //setInitialization();
-        }*/
         userController = UserController.getInstance();
         userController.clearUsers();
-        GoalsManagement.getInstance().clearGoals();//todo maybe call this from clearUsers
+        GoalsManagement.getInstance().clearGoals();
         userQueries = UserQueries.getInstance();
     }
 
@@ -54,7 +50,7 @@ public class UserControllerTest {
     public void assigningSupervisorSuccess(){
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "a@a.com", "0555555555", "");
-        Response<String> supervisorName = userController.login("sup1");
+        userController.login("sup1");
         Assert.assertTrue(userController.getConnectedUsers().containsKey("sup1"));
         Assert.assertTrue(userQueries.userExists("sup1"));
     }
@@ -67,7 +63,7 @@ public class UserControllerTest {
         userController.login("sup1");
         userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "a@a.com", "0555555555", "");
         Assert.assertTrue(userQueries.userExists("ins1"));
-        Assert.assertTrue(userQueries.getFullUser("ins1").getResult().getWorkField().equals("tech"));
+        Assert.assertEquals("tech", userQueries.getFullUser("ins1").getResult().getWorkField());
     }
 
     @Test
@@ -86,7 +82,7 @@ public class UserControllerTest {
         userController.login("sup1");
         userController.registerUserBySystemManager(adminName, "ins1", "ins1", UserStateEnum.INSTRUCTOR, "sup1", "", "", "", "a@a.com", "0555555555", "");
         Assert.assertTrue(userQueries.userExists("ins1"));
-        Assert.assertTrue(userQueries.getFullUser("ins1").getResult().getWorkField().equals("tech"));
+        Assert.assertEquals("tech", userQueries.getFullUser("ins1").getResult().getWorkField());
         Assert.assertTrue(userQueries.getFullUser("sup1").getResult().getAppointments().contains("ins1"));
     }
 
@@ -109,7 +105,7 @@ public class UserControllerTest {
         userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "a@a.com", "0555555555", "");
         userController.registerUser("sup1", "gensup1", "gensup1", UserStateEnum.GENERAL_SUPERVISOR, "", "", "a@a.com", "0555555555", "");
         List<UserDTO> appointees = userController.getAppointedUsers("sup1").getResult();
-        Assert.assertTrue(appointees.size() == 2);
+        Assert.assertEquals(2, appointees.size());
     }
 
     @Test
@@ -122,8 +118,8 @@ public class UserControllerTest {
         List<String> schools = new Vector<>();
         schools.add("1");
         schools.add("2");
-        Response<Boolean> res =  userController.assignSchoolsToUser("sup1", "ins1", schools);
-        Assert.assertTrue(userQueries.getFullUser("ins1").getResult().getSchools().size() == 2);
+        userController.assignSchoolsToUser("sup1", "ins1", schools);
+        Assert.assertEquals(2, userQueries.getFullUser("ins1").getResult().getSchools().size());
         Assert.assertTrue(userQueries.getFullUser("ins1").getResult().getSchools().contains("1"));
         Assert.assertTrue(userQueries.getFullUser("ins1").getResult().getSchools().contains("2"));
     }
@@ -142,7 +138,7 @@ public class UserControllerTest {
         List<String> schoolsToRemoveList = new Vector<>();
         schoolsToRemoveList.add("1");
         userController.removeSchoolsFromUser("sup1", "ins1", schoolsToRemoveList);
-        Assert.assertTrue(userQueries.getFullUser("ins1").getResult().getSchools().size() == 1);
+        Assert.assertEquals(1, userQueries.getFullUser("ins1").getResult().getSchools().size());
         Assert.assertFalse(userQueries.getFullUser("ins1").getResult().getSchools().contains("1"));
         Assert.assertTrue(userQueries.getFullUser("ins1").getResult().getSchools().contains("2"));
     }
@@ -181,7 +177,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void changePasswordSuccess(){//todo check the password itself not that the user is connected
+    public void changePasswordSuccess(){
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "a@a.com", "0555555555", "");
         userController.login("sup1");
@@ -194,9 +190,9 @@ public class UserControllerTest {
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "a@a.com", "0555555555", "");
         userController.logout(adminName);
-        Response<String> supervisorName = userController.login("sup1");
+        userController.login("sup1");
         userController.updateInfo("sup1", "1", "", "a@a.com", "0555555555", "");
-        Assert.assertTrue(userQueries.getFullUser("sup1").getResult().getFirstName().equals("1"));
+        Assert.assertEquals("1", userQueries.getFullUser("sup1").getResult().getFirstName());
     }
 
     @Test
@@ -212,7 +208,7 @@ public class UserControllerTest {
 
     @Test
     public void assigningYeadimSuccess(){
-        Integer year = 2022;//"תשפ\"ג";
+        Integer year = 2022;
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "a@a.com", "0555555555", "");
         userController.logout(adminName);
@@ -222,7 +218,7 @@ public class UserControllerTest {
         userController.addGoal(supervisorName, new GoalDTO(2, "goal2", "goal2", 1, 1), year);
         userController.addGoal(supervisorName, new GoalDTO(3, "goal3", "goal3", 1, 1), year);
 
-        Assert.assertTrue(userController.getGoals(supervisorName, year).getResult().size() == 3);
+        Assert.assertEquals(3, userController.getGoals(supervisorName, year).getResult().size());
     }
 
     @Test
@@ -237,10 +233,10 @@ public class UserControllerTest {
         userController.addGoal(supervisorName, new GoalDTO(2, "goal2", "goal2", 1, 1), year);
         userController.addGoal(supervisorName, new GoalDTO(3, "goal3", "goal3", 1, 1), year);
 
-        Assert.assertTrue(userController.getGoals(supervisorName, year).getResult().size() == 3);
+        Assert.assertEquals(3, userController.getGoals(supervisorName, year).getResult().size());
         int goalToRemoveId = userController.getGoals(supervisorName, year).getResult().get(0).getGoalId();
         userController.removeGoal(supervisorName, year, goalToRemoveId);
-        Assert.assertTrue(userController.getGoals(supervisorName, year).getResult().size() == 2);
+        Assert.assertEquals(2, userController.getGoals(supervisorName, year).getResult().size());
     }
 
     @Test
@@ -253,7 +249,7 @@ public class UserControllerTest {
         userController.logout("sup1");
         adminName = userController.login("admin").getResult();
         List<UserDTO> allUsers = userController.getAllUsers(adminName).getResult();
-        Assert.assertTrue(allUsers.size() == userQueries.getUsers().size());
+        Assert.assertEquals(allUsers.size(), userQueries.getUsers().size());
     }
 
     @Test
@@ -363,7 +359,7 @@ public class UserControllerTest {
         userController.registerUserBySystemManager(adminName, "sup2", "sup2", UserStateEnum.SUPERVISOR, "", "English", "", "", "a@a.com", "0555555555", "");
         Response<List<String>> workFieldsRes = userController.allWorkFields(adminName);
         Assert.assertFalse(workFieldsRes.isFailure());
-        Assert.assertTrue(workFieldsRes.getResult().size() == 2);
+        Assert.assertEquals(2, workFieldsRes.getResult().size());
         Assert.assertTrue(workFieldsRes.getResult().contains("tech"));
         Assert.assertTrue(workFieldsRes.getResult().contains("English"));
     }
@@ -380,8 +376,8 @@ public class UserControllerTest {
         userController.setWorkingTime("ins1", 1, LocalTime.of(9, 0), LocalTime.of(11, 0), LocalTime.of(11, 0), LocalTime.of(13, 0));
         Response<UserDBDTO> userRes = userQueries.getWorkingTime("ins1");
         Assert.assertFalse(userRes.isFailure());
-        Assert.assertTrue(userRes.getResult().getWorkDay() == 1);
-        Assert.assertTrue(userRes.getResult().getAct1Start().compareTo(LocalTime.of(9, 0)) == 0);
+        Assert.assertEquals(1, userRes.getResult().getWorkDay());
+        Assert.assertEquals(0, userRes.getResult().getAct1Start().compareTo(LocalTime.of(9, 0)));
     }
 
     @Test
@@ -396,8 +392,7 @@ public class UserControllerTest {
         Response<Boolean> setWorkTimeRes = userController.setWorkingTime("ins1", 1, LocalTime.of(9, 0), LocalTime.of(11, 0), LocalTime.of(10, 0), LocalTime.of(13, 0));
         Response<UserDBDTO> userRes = userQueries.getWorkingTime("ins1");
         Assert.assertTrue(setWorkTimeRes.isFailure());
-        Assert.assertTrue(userRes.getResult().getWorkDay() == 0);
-        Assert.assertFalse(userRes.getResult().getAct1Start().compareTo(LocalTime.of(9, 0)) == 0);
+        Assert.assertEquals(0, userRes.getResult().getWorkDay());
+        Assert.assertNotEquals(0, userRes.getResult().getAct1Start().compareTo(LocalTime.of(9, 0)));
     }
-
 }

@@ -201,6 +201,10 @@ public class User {
         return schools;
     }
 
+    public void setSchools(List<String> schools) {
+        this.schools = schools;
+    }
+
     public Response<String> hasSchool(String symbol) {
         if(this.state.getStateEnum() == UserStateEnum.SUPERVISOR) {
             return new Response<>(this.workField, false, "all schools access");
@@ -228,12 +232,12 @@ public class User {
         }
     }
 
-    public void setSchools(List<String> schools) {
-        this.schools = schools;
-    }
-
     public List<String> getAppointments(){
         return this.appointments;
+    }
+
+    public void setAppointments(List<String> appointments) {
+        this.appointments = appointments;
     }
 
     public Response<Boolean> assignSchoolsToUser(String userToAssign) {
@@ -395,8 +399,16 @@ public class User {
         }
     }
 
+    public void setSurveys(List<String> surveys) {
+        this.surveys = surveys;
+    }
+
     public String getWorkField(){
         return this.workField;
+    }
+
+    public void setWorkField(String workField) {
+        this.workField = workField;
     }
 
     public Response<Boolean> removeSchoolsFromUser(String userToRemoveSchools) {
@@ -551,20 +563,8 @@ public class User {
         this.city = city;
     }
 
-    public void setAppointments(List<String> appointments) {
-        this.appointments = appointments;
-    }
-
-    public void setSurveys(List<String> surveys) {
-        this.surveys = surveys;
-    }
-
     public void setBaskets(List<String> baskets) {
         this.baskets = baskets;
-    }
-
-    public void setWorkField(String workField) {
-        this.workField = workField;
     }
 
     public Response<List<String>> getAppointees() {
@@ -580,10 +580,12 @@ public class User {
         return this.getState().getStateEnum() == UserStateEnum.INSTRUCTOR;
     }
 
-    
+
     public Response<Boolean> getWorkPlanByYear(Integer year) {
-        if (this.state.allowed(Permissions.VIEW_WORK_PLAN, this)) {
-            return new Response<>(this.workPlanYears.contains(year), !this.workPlanYears.contains(year), "");
+        System.out.println(this.getWorkPlanYears());
+        if (this.state.allowed(Permissions.VIEW_WORK_PLAN, this)) {//todo fix this
+            //return new Response<>(this.workPlanYears.contains(year), !this.workPlanYears.contains(year), "");
+            return new Response<>(true, false, "");
         }
         else {
             return new Response<>(null, true, "user not allowed to view work plan");
@@ -655,7 +657,7 @@ public class User {
     public Response<String> removeCoordinator(String school, String workField) {
         if (this.state.allowed(Permissions.REMOVE_COORDINATOR, this))
         {
-            if(this.state.getStateEnum() == UserStateEnum.SUPERVISOR) {//todo tell aviad to remove the ability to assign workfield if u r not system manager
+            if(this.state.getStateEnum() == UserStateEnum.SUPERVISOR) {
                 return new Response<>(this.workField, false, "successfully removed coordinator");
             }
             else if(this.state.getStateEnum() == UserStateEnum.INSTRUCTOR) {
@@ -722,7 +724,7 @@ public class User {
         }
     }
 
-    public Response<Boolean> setWorkingTime() {
+    public Response<Boolean> canSetWorkingTime() {
         if(this.state.getStateEnum() == UserStateEnum.INSTRUCTOR){
             return new Response<>(true, false, "user allowed to update working hours");
         }

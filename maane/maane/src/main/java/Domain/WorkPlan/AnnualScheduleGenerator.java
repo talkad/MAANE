@@ -38,6 +38,7 @@ public class AnnualScheduleGenerator {
     public Response<Boolean> generateSchedule(String supervisor, String surveyId){
 
         Response<Integer> yearRes = surveyController.getSurveyYear(surveyId);
+        System.out.println(yearRes.getResult());
 
         if(yearRes.isFailure())
             return new Response<>(false, true, "survey does not exist");
@@ -51,7 +52,7 @@ public class AnnualScheduleGenerator {
                 workField = workFieldRes.getResult();
                 Response<List<Goal>> goalsRes = goalsManagement.getGoals(workField, yearRes.getResult());
                 if(!goalsRes.isFailure()){
-                    algorithm(supervisor, surveyId, workField, goalsRes.getResult(), yearRes.getResult());//todo
+                    algorithm(supervisor, surveyId, goalsRes.getResult(), yearRes.getResult());//todo
                 }
                 else{
                     return new Response<>(false, true, goalsRes.getErrMsg());
@@ -79,9 +80,9 @@ public class AnnualScheduleGenerator {
         return maxGoalIndex;
     }
 
-    public void algorithm(String supervisor, String surveyId, String workField, List<Goal> goals, Integer year) {
+    public void algorithm(String supervisor, String surveyId, List<Goal> goals, Integer year) {
         //1 - sort Goals by their weight (goal is per workfield)
-        //2 - for every instructors under workField:
+        //2 - for every instructors under supervisor:
         //3 - workDay = the work day of the current instructor
         //4 - listOfSchools = schools of this instructor
         //5 - init listOfSchoolsWithFault
@@ -110,7 +111,7 @@ public class AnnualScheduleGenerator {
             List<Integer> schoolFaults;
             List<Goal> schoolFaultsGoals;
 
-            for (String instructor : instructors) { //2 - for every instructors under workField:
+            for (String instructor : instructors) { //2 - for every instructors under supervisor:
 
                 schoolsOfInstructor = userController.getSchools(instructor).getResult();
                 schoolsAndFaults = new ConcurrentHashMap<>();
@@ -119,8 +120,8 @@ public class AnnualScheduleGenerator {
                     schoolFaultsGoals = new Vector<>();
 
                     Response<List<Integer>> schoolFaultsRes = surveyController.detectSchoolFault(supervisor, surveyId, school, year);
-                    System.out.println("school faults: " + schoolFaultsRes.getResult().toString());
-                    System.out.println("supervisor: " + supervisor + " surveyId: " + surveyId + " school: " + school + " year: " + year);
+                    //System.out.println("school faults: " + schoolFaultsRes.getResult().toString());
+                    //System.out.println("supervisor: " + supervisor + " surveyId: " + surveyId + " school: " + school + " year: " + year);
                     if(schoolFaultsRes.isFailure()) {
                         System.out.println("fail1");
                         return; //todo some error
@@ -173,36 +174,52 @@ public class AnnualScheduleGenerator {
                             goalsPriorityQueue.add(new Pair<>(maxSecond.getFirst(), instructorWithProblemsForSchools.get(instructor).get(maxSecond.getFirst()).remove(0)));
                             //System.out.println(instructorWithProblemsForSchools.get(instructor).get(maxSecond.getFirst()).get(0));
                         }
-                        workPlan.insertActivityEveryWeek(maxFirst, maxSecond);
+                        Response<Boolean> insertionResponse = workPlan.insertActivityEveryWeek(maxFirst, maxSecond);
+                        if(insertionResponse.isFailure()){
+                            break;
+                        }
                     }
                     else {
                         String lastSchool = goalsPriorityQueue.get(0).getFirst();
                         if(instructorWithProblemsForSchools.get(instructor).get(lastSchool).size() > 0) {
 
                             goalsPriorityQueue.add(new Pair<>(lastSchool, instructorWithProblemsForSchools.get(instructor).get(lastSchool).remove(0)));
-                            workPlan.insertActivityEveryWeek(goalsPriorityQueue.get(0), goalsPriorityQueue.get(1));
+                            Response<Boolean> insertionResponse = workPlan.insertActivityEveryWeek(goalsPriorityQueue.get(0), goalsPriorityQueue.get(1));
                             goalsPriorityQueue.remove(0);
                             goalsPriorityQueue.remove(0);
+                            if(insertionResponse.isFailure()){
+                                break;
+                            }
                         }
                         while(instructorWithProblemsForSchools.get(instructor).get(lastSchool).size() >= 2) {
                             goalsPriorityQueue.add(new Pair<>(lastSchool, instructorWithProblemsForSchools.get(instructor).get(lastSchool).remove(0)));
                             goalsPriorityQueue.add(new Pair<>(lastSchool, instructorWithProblemsForSchools.get(instructor).get(lastSchool).remove(0)));
-                            workPlan.insertActivityEveryWeek(goalsPriorityQueue.get(0), goalsPriorityQueue.get(1));
+                            Response<Boolean> insertionResponse = workPlan.insertActivityEveryWeek(goalsPriorityQueue.get(0), goalsPriorityQueue.get(1));
                             goalsPriorityQueue.remove(0);
                             goalsPriorityQueue.remove(0);
+                            if(insertionResponse.isFailure()){
+                                break;
+                            }
                         }
                         if (instructorWithProblemsForSchools.get(instructor).get(lastSchool).size() > 0) {
                             goalsPriorityQueue.add(new Pair<>(lastSchool, instructorWithProblemsForSchools.get(instructor).get(lastSchool).remove(0)));
-                            workPlan.insertActivityEveryWeek(goalsPriorityQueue.get(0));
+                            Response<Boolean> insertionResponse =  workPlan.insertActivityEveryWeek(goalsPriorityQueue.get(0));
                             goalsPriorityQueue.remove(0);
+                            if(insertionResponse.isFailure()){
+                                break;
+                            }
                         }
                         if (goalsPriorityQueue.size() > 0) {
-                            workPlan.insertActivityEveryWeek(goalsPriorityQueue.remove(0));
+                            Response<Boolean> insertionResponse = workPlan.insertActivityEveryWeek(goalsPriorityQueue.remove(0));
+                            if(insertionResponse.isFailure()){
+                                break;
+                            }
                         }
-                        //todo make sure you stop when you fill WorkPlan
                     }
                 }
+                workPlan.printMe();
                 WorkPlanDTO workPlanDTO = new WorkPlanDTO(workPlan);
+
                 Response<Boolean> res = WorkPlanQueries.getInstance().insertUserWorkPlan(instructor, workPlanDTO, year);
                 if(!res.isFailure()){
                     userController.assignWorkPlanYear(instructor, year);
@@ -211,7 +228,7 @@ public class AnnualScheduleGenerator {
         }
     }
 
-    public void algorithmMock(String supervisor, List<Pair<String, List<Integer>>> schoolFaultsMock, String workField, List<Goal> goals, Integer year) {
+    public void algorithmMock(String supervisor, List<Pair<String, List<Integer>>> schoolFaultsMock, List<Goal> goals, Integer year) {
         //1 - sort Goals by their weight (goal is per workfield)
         //2 - for every instructors under workField:
         //3 - workDay = the work day of the current instructor
@@ -294,32 +311,46 @@ public class AnnualScheduleGenerator {
                             goalsPriorityQueue.add(new Pair<>(maxSecond.getFirst(), instructorWithProblemsForSchools.get(instructor).get(maxSecond.getFirst()).remove(0)));
                             //System.out.println(instructorWithProblemsForSchools.get(instructor).get(maxSecond.getFirst()).get(0));
                         }
-                        workPlan.insertActivityEveryWeek(maxFirst, maxSecond);
+                        Response<Boolean> insertionResponse = workPlan.insertActivityEveryWeek(maxFirst, maxSecond);
+                        if(insertionResponse.isFailure()){
+                            break;
+                        }
                     }
                     else {
                         String lastSchool = goalsPriorityQueue.get(0).getFirst();
                         if(instructorWithProblemsForSchools.get(instructor).get(lastSchool).size() > 0) {
                             goalsPriorityQueue.add(new Pair<>(lastSchool, instructorWithProblemsForSchools.get(instructor).get(lastSchool).remove(0)));
-                            workPlan.insertActivityEveryWeek(goalsPriorityQueue.get(0), goalsPriorityQueue.get(1));
+                            Response<Boolean> insertionResponse = workPlan.insertActivityEveryWeek(goalsPriorityQueue.get(0), goalsPriorityQueue.get(1));
                             goalsPriorityQueue.remove(0);
                             goalsPriorityQueue.remove(0);
+                            if(insertionResponse.isFailure()){
+                                break;
+                            }
                         }
                         while(instructorWithProblemsForSchools.get(instructor).get(lastSchool).size() >= 2) {
                             goalsPriorityQueue.add(new Pair<>(lastSchool, instructorWithProblemsForSchools.get(instructor).get(lastSchool).remove(0)));
                             goalsPriorityQueue.add(new Pair<>(lastSchool, instructorWithProblemsForSchools.get(instructor).get(lastSchool).remove(0)));
-                            workPlan.insertActivityEveryWeek(goalsPriorityQueue.get(0), goalsPriorityQueue.get(1));
+                            Response<Boolean> insertionResponse = workPlan.insertActivityEveryWeek(goalsPriorityQueue.get(0), goalsPriorityQueue.get(1));
                             goalsPriorityQueue.remove(0);
                             goalsPriorityQueue.remove(0);
+                            if(insertionResponse.isFailure()){
+                                break;
+                            }
                         }
                         if (instructorWithProblemsForSchools.get(instructor).get(lastSchool).size() > 0) {
                             goalsPriorityQueue.add(new Pair<>(lastSchool, instructorWithProblemsForSchools.get(instructor).get(lastSchool).remove(0)));
-                            workPlan.insertActivityEveryWeek(goalsPriorityQueue.get(0));
+                            Response<Boolean> insertionResponse = workPlan.insertActivityEveryWeek(goalsPriorityQueue.get(0));
                             goalsPriorityQueue.remove(0);
+                            if(insertionResponse.isFailure()){
+                                break;
+                            }
                         }
                         if (goalsPriorityQueue.size() > 0) {
-                            workPlan.insertActivityEveryWeek(goalsPriorityQueue.remove(0));
+                            Response<Boolean> insertionResponse = workPlan.insertActivityEveryWeek(goalsPriorityQueue.remove(0));
+                            if(insertionResponse.isFailure()){
+                                break;
+                            }
                         }
-                        //todo make sure you stop when you fill WorkPlan
                     }
                 }
                 WorkPlanDTO workPlanDTO = new WorkPlanDTO(workPlan);

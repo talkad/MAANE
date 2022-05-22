@@ -71,4 +71,5 @@ public interface UserService {
 
     Response<Boolean> changePasswordTester(String currUser, String newPassword);
 
+    void resetDB();
 }
