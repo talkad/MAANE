@@ -296,9 +296,8 @@ function AddCoordinatorDialog(props){
      * @param event the elements' status
      */
     const handleSubmit = (event) => {
-        event.preventDefault();
 
-        if (values.firstName === '' || values.lastName === '' || values.email === '' || values.phoneNumber === ''){
+        if (values.firstName.trim() === '' || values.lastName.trim() === '' || values.email.trim() === '' || values.phoneNumber.trim() === ''){
             setError(true);
         }
         else{
@@ -317,13 +316,13 @@ function AddCoordinatorDialog(props){
         <Dialog fullWidth maxWidth="sm" onClose={props.onClose} open={props.open}>
             <DialogTitle><Typography variant="h5" align="center">{title_string} {props.schoolName} ({props.schoolID})</Typography></DialogTitle>
 
-            <Stack component="form" sx={{alignItems: "center"}} onSubmit={handleSubmit}>
+            <Collapse in={error}>
+                <Alert id={"add_coordinator_alert"} severity="error">{error_message_string}</Alert>
+            </Collapse>
+
+
+            <Stack sx={{alignItems: "center"}} onSubmit={handleSubmit}>
                 <Grid container spacing={1}>
-                    <Collapse in={error}>
-                        <Grid item xs={12} sx={{marginRight: "3%", marginLeft: "3%"}}>
-                            <Alert id={"add_coordinator_alert"} severity="error">{error_message_string}</Alert>
-                        </Grid>
-                    </Collapse>
 
                     <Grid item xs={12}  sx={{marginRight: "3%", marginLeft: "3%"}}>
                         <Grid container spacing={1}>
@@ -334,7 +333,7 @@ function AddCoordinatorDialog(props){
                                     value={values.lastName}
                                     onChange={handleTextFieldsChange("lastName")}
                                     label={last_name_label_string}
-                                    error={error}
+                                    error={error && values.lastName.trim() === ''}
                                     required
                                     fullWidth
                                 />
@@ -346,7 +345,7 @@ function AddCoordinatorDialog(props){
                                     value={values.firstName}
                                     onChange={handleTextFieldsChange("firstName")}
                                     label={first_name_label_string}
-                                    error={error}
+                                    error={error && values.firstName.trim() === ''}
                                     required
                                     fullWidth
                                 />
@@ -360,7 +359,7 @@ function AddCoordinatorDialog(props){
                             value={values.email}
                             onChange={handleTextFieldsChange("email")}
                             label={email_label_string}
-                            error={error}
+                            error={error && values.email.trim() === ''}
                             required
                             fullWidth
                         />
@@ -372,13 +371,13 @@ function AddCoordinatorDialog(props){
                             value={values.phoneNumber}
                             onChange={handleTextFieldsChange("phoneNumber")}
                             label={phone_number_label_string}
-                            error={error}
+                            error={error && values.phoneNumber.trim() === ''}
                             required
                             fullWidth
                         />
                     </Grid>
                 </Grid>
-                <Button id={"add_coordinator_submit_button"} type="submit" color="primary" variant="contained" sx={{width: "40%", marginBottom: "1%", marginTop: "1%"}}>{submit_button_string}</Button>
+                <Button id={"add_coordinator_submit_button"} onClick={() => handleSubmit()} type="submit" color="primary" variant="contained" sx={{width: "40%", marginBottom: "1%", marginTop: "1%"}}>{submit_button_string}</Button>
 
                 <Button id={"add_coordinator_cancel_button"} color="error" onClick={() => props.onClose()} variant="contained" sx={{width: "40%", marginBottom: "1%", marginTop: "1%"}}>{cancel_button_string}</Button>
             </Stack>
@@ -407,11 +406,11 @@ function RemoveCoordinatorDialog(props){
             <Grid container justifyContent="center" spacing={0}>
                 <Grid item align="center" xs={6}>
                     {/*the cancel button*/}
-                    <Button id={"remove_coordinator_submit_button"} onClick={() => props.onClose()} sx={{marginBottom: 1, width: "50%"}} variant="outlined">{cancel_string}</Button>
+                    <Button id={"remove_coordinator_cancel_button"} onClick={() => props.onClose()} sx={{marginBottom: 1, width: "50%"}} variant="outlined">{cancel_string}</Button>
                 </Grid>
                 <Grid item align="center" xs={6}>
                     {/*the delete button*/}
-                    <Button id={"remove_coordinator_cancel_button"} onClick={() => handleSubmitDeletion()} sx={{marginBottom: 1, width: "50%"}} color="error" variant="outlined">{delete_string}</Button>
+                    <Button id={"remove_coordinator_submit_button"} onClick={() => handleSubmitDeletion()} sx={{marginBottom: 1, width: "50%"}} color="error" variant="outlined">{delete_string}</Button>
                 </Grid>
             </Grid>
         </Dialog>
