@@ -6,7 +6,8 @@ public enum RuleType {
     IMPLY("IMPLY"),
     MULTIPLE_CHOICE("MULTIPLE_CHOICE"),
     NUMERIC("NUMERIC"),
-    OR("OR");
+    OR("OR"),
+    EMPTY("");
 
     private final String type;
 

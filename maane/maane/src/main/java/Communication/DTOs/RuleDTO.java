@@ -17,7 +17,7 @@ public class RuleDTO {
     private List<RuleDTO> subRules;
     private RuleType type;
     private Comparison comparison;
-    private int questionID;
+    private Integer questionID;
     private List<Integer> answers;
 
 }

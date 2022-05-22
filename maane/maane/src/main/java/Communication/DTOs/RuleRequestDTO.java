@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class RuleRequestDTO {
 
-    private int goalID;
+    private Integer goalID;
     private RuleDTO ruleDTO;
 
 }

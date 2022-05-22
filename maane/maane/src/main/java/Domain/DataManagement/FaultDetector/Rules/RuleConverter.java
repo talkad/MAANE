@@ -18,6 +18,11 @@ public class RuleConverter {
     public Rule convertRule(RuleDTO ruleDTO) {
         Rule rule;
 
+        // check validity of comparison
+        // check validity of questionID
+        if(ruleDTO.getType() == null || ruleDTO.getQuestionID() == null)
+            return null;
+
         switch (ruleDTO.getType()){
             case AND:
                 rule = ANDRuleConverter(ruleDTO);
@@ -102,6 +107,10 @@ public class RuleConverter {
 
         if(answers.size() != 1)
             return null;
+
+        // check if answers is empty
+        if(answers.get(0) == null)
+            return new NumericBaseRule(rule.getQuestionID(), rule.getComparison(), 0); // placeholder answer
 
         return new NumericBaseRule(rule.getQuestionID(), rule.getComparison(), answers.get(0));
     }
