@@ -48,7 +48,9 @@ create table "Surveys"
         constraint surveys_pk
             primary key,
     title       text not null,
-    description text
+    description text,
+    year integer,
+    submit boolean
 );
 
 alter table "Surveys"

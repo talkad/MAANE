@@ -50,13 +50,13 @@ public class AnnualScheduleGenerator {
             if(!workFieldRes.isFailure()){
 
                 workField = workFieldRes.getResult();
-                Response<List<Goal>> goalsRes = goalsManagement.getGoals(workField, yearRes.getResult());
-                if(!goalsRes.isFailure()){
-                    algorithm(supervisor, surveyId, goalsRes.getResult(), yearRes.getResult());//todo
-                }
-                else{
-                    return new Response<>(false, true, goalsRes.getErrMsg());
-                }
+//                Response<List<Goal>> goalsRes = goalsManagement.getGoals(workField, yearRes.getResult());
+//                if(!goalsRes.isFailure()){
+                    algorithm(supervisor, surveyId, null, yearRes.getResult());//todo
+//                }
+//                else{
+//                    return new Response<>(false, true, goalsRes.getErrMsg());
+//                }
             }
             else{
                 return new Response<>(false, true, workFieldRes.getErrMsg());

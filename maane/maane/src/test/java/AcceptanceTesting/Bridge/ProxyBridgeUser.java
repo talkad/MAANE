@@ -297,13 +297,14 @@ public class ProxyBridgeUser implements UserService {
     public void setMockDBAndTestMode() {
         if (real != null) {
             ServerContextInitializer.getInstance().setMockMode();
-            ServerContextInitializer.getInstance().setTestMode();
+//            ServerContextInitializer.getInstance().setTestMode();
         }
     }
 
     @Override
     public void resetDB(){
-        if (real != null && ServerContextInitializer.getInstance().isMockMode() && ServerContextInitializer.getInstance().isTestMode()) {
+//        if (real != null && ServerContextInitializer.getInstance().isMockMode() && ServerContextInitializer.getInstance().isTestMode()) {
+        if (real != null && ServerContextInitializer.getInstance().isMockMode()) {
             real.resetDB();
         }
     }

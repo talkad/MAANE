@@ -3,8 +3,7 @@ package AcceptanceTesting.Tests;
 import Communication.DTOs.*;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.AnswerState.AnswerType;
-import Domain.DataManagement.FaultDetector.Rules.Comparison;
-import Domain.DataManagement.FaultDetector.Rules.RuleType;
+import Domain.DataManagement.FaultDetector.Rules.*;
 import Domain.UsersManagment.UserStateEnum;
 import Persistence.DbDtos.SchoolDBDTO;
 import org.junit.Assert;
@@ -16,7 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 
-import static Domain.DataManagement.AnswerState.AnswerType.MULTIPLE_CHOICE;
+import static Domain.DataManagement.AnswerState.AnswerType.*;
 
 
 public class SupervisorTests extends AcceptanceTests{//todo reset the usercontroller db and the surveys db
@@ -25,6 +24,7 @@ public class SupervisorTests extends AcceptanceTests{//todo reset the usercontro
     private String instructorName1;
     private String instructorName2;
     private SurveyDTO surveyDTO;
+    private List<RuleRequestDTO> rulesDTO;
     private SurveyAnswersDTO answersDTO1, answersDTO2, answersDTO3, answersDTO4, answersDTO5, answersDTO6;
 
     @Before
@@ -57,13 +57,20 @@ public class SupervisorTests extends AcceptanceTests{//todo reset the usercontro
             userBridge.registerUserBySystemManager(adminName, new UserDTO(adminName, "science", supervisorName1, supervisorName1, UserStateEnum.SUPERVISOR,"Ronit", "Blisco", "ronit@gmail.com", "0501111111", "Tel Aviv", new Vector<>()), "");
             userBridge.registerUserBySystemManager(adminName, new UserDTO(adminName, "", instructorName1, instructorName1, UserStateEnum.INSTRUCTOR, "dan", "dani", "dan@gmail.com", "0501111111", "Tel Aviv", ins1Schools), supervisorName1);
             userBridge.registerUserBySystemManager(adminName, new UserDTO(adminName, "", instructorName2, instructorName2, UserStateEnum.INSTRUCTOR, "ben", "beni", "ben@gmail.com", "0501111111", "Tel Aviv", ins2Schools), supervisorName1);
+            userBridge.logout("admin");
             userBridge.login(supervisorName1);
 
             surveyDTO = new SurveyDTO();
 
-            List<String> questions = Arrays.asList("is there research performed in the school?", "does the school provide at least 4 private hours a week?", "is there maintenance every week?");
-            List<List<String>> possibleAnswers = Arrays.asList(Arrays.asList("No", "Yes"), Arrays.asList("No", "Yes"), Arrays.asList("No", "Yes"));
-            List<AnswerType> questionTypes = Arrays.asList(MULTIPLE_CHOICE, MULTIPLE_CHOICE, MULTIPLE_CHOICE);;
+            List<String> questions = Arrays.asList("symbol" ,"is there research performed in the school?", "does the school provide at least 4 private hours a week?", "is there maintenance every week?", "number of students in class");
+            List<List<String>> possibleAnswers = Arrays.asList(new LinkedList<>(), Arrays.asList("No", "Yes"), Arrays.asList("No", "Yes"), Arrays.asList("No", "Yes"), new LinkedList<>());
+            List<AnswerType> questionTypes = Arrays.asList(OPEN_ANSWER, MULTIPLE_CHOICE, MULTIPLE_CHOICE, MULTIPLE_CHOICE, NUMERIC_ANSWER);
+
+            rulesDTO = Arrays.asList(new RuleRequestDTO(1, new RuleDTO(null, RuleType.MULTIPLE_CHOICE, Comparison.NONE, 1, List.of(1))),
+                    new RuleRequestDTO(2, new RuleDTO(null, RuleType.MULTIPLE_CHOICE, Comparison.NONE, 2, List.of(1))),
+                    new RuleRequestDTO(3, new RuleDTO(null, RuleType.MULTIPLE_CHOICE, Comparison.NONE, 3, List.of(1))),
+                    new RuleRequestDTO(4, new RuleDTO(null, RuleType.NUMERIC, Comparison.GREATER_THAN, 4, List.of(30)))
+                    );
 
             surveyDTO.setId("");
             surveyDTO.setTitle("testing survey");
@@ -73,42 +80,40 @@ public class SupervisorTests extends AcceptanceTests{//todo reset the usercontro
             surveyDTO.setAnswers(possibleAnswers);
 
             answersDTO1 = new SurveyAnswersDTO();
-            List<String> answers1 = Arrays.asList("0", "0", "0");
+            List<String> answers1 = Arrays.asList("1", "0", "0", "0", "10");
             answersDTO1.setAnswers(answers1);
             answersDTO1.setTypes(questionTypes);
             answersDTO1.setId("");
 
-
             answersDTO2 = new SurveyAnswersDTO();
-            List<String> answers2 = Arrays.asList("1", "0", "1");
+            List<String> answers2 = Arrays.asList("2", "1", "0", "1", "20");
             answersDTO2.setAnswers(answers2);
             answersDTO2.setTypes(questionTypes);
             answersDTO2.setId("");
 
-
             answersDTO3 = new SurveyAnswersDTO();
-            List<String> answers3 = Arrays.asList("1", "0", "1");
+            List<String> answers3 = Arrays.asList("3", "1", "0", "1", "30");
             answersDTO3.setAnswers(answers3);
             answersDTO3.setTypes(questionTypes);
             answersDTO3.setId("");
 
 
             answersDTO4 = new SurveyAnswersDTO();
-            List<String> answers4 = Arrays.asList("0", "0", "1");
+            List<String> answers4 = Arrays.asList("4", "0", "0", "1", "40");
             answersDTO4.setAnswers(answers4);
             answersDTO4.setTypes(questionTypes);
             answersDTO4.setId("");
 
 
             answersDTO5 = new SurveyAnswersDTO();
-            List<String> answers5 = Arrays.asList("1", "1", "1");
+            List<String> answers5 = Arrays.asList("5", "1", "1", "1", "50");
             answersDTO5.setAnswers(answers5);
             answersDTO5.setTypes(questionTypes);
             answersDTO5.setId("");
 
 
             answersDTO6 = new SurveyAnswersDTO();
-            List<String> answers6 = Arrays.asList("1", "0", "1");
+            List<String> answers6 = Arrays.asList("6", "1", "0", "1", "60");
             answersDTO6.setAnswers(answers3);
             answersDTO6.setTypes(questionTypes);
             answersDTO6.setId("");
@@ -128,13 +133,22 @@ public class SupervisorTests extends AcceptanceTests{//todo reset the usercontro
 
     @Test
     public void workPlanTest(){
-        List<GoalDTO> goalDTOList = new Vector<>();
         Integer year = 2022;
+        userBridge.login(supervisorName1);
+        dataBridge.assignCoordinator(supervisorName1, "irrelevant", "coor1", "dinator1", "a@gmail.com", "0555555555", "1");
+        dataBridge.assignCoordinator(supervisorName1, "irrelevant", "coor2", "dinator2", "a@gmail.com", "0555555555", "2");
+        dataBridge.assignCoordinator(supervisorName1, "irrelevant", "coor3", "dinator3", "a@gmail.com", "0555555555", "3");
+        dataBridge.assignCoordinator(supervisorName1, "irrelevant", "coor4", "dinator4", "a@gmail.com", "0555555555", "4");
+        dataBridge.assignCoordinator(supervisorName1, "irrelevant", "coor5", "dinator5", "a@gmail.com", "0555555555", "5");
+        dataBridge.assignCoordinator(supervisorName1, "irrelevant", "coor6", "dinator6", "a@gmail.com", "0555555555", "6");
+
         userBridge.addGoal(supervisorName1, new GoalDTO(1, "research", "", 1, 3), year);
         userBridge.addGoal(supervisorName1, new GoalDTO(2, "private hours", "", 1, 2), year);
         userBridge.addGoal(supervisorName1, new GoalDTO(3, "maintenance", "", 1, 4), year);
+        userBridge.addGoal(supervisorName1, new GoalDTO(4, "teaching equipment", "", 1, 3), year);
 
         Response<String> res = surveyBridge.createSurvey(supervisorName1, surveyDTO);
+        surveyBridge.addRule(supervisorName1, res.getResult(), rulesDTO);
         surveyBridge.submitSurvey(supervisorName1, res.getResult());
         answersDTO1.setId(res.getResult());
         answersDTO2.setId(res.getResult());
@@ -149,13 +163,6 @@ public class SupervisorTests extends AcceptanceTests{//todo reset the usercontro
         surveyBridge.addAnswers(answersDTO4);
         surveyBridge.addAnswers(answersDTO5);
         surveyBridge.addAnswers(answersDTO6);
-
-        surveyBridge.addRule(supervisorName1, res.getResult(), List.of(new RuleRequestDTO(1,
-                new RuleDTO(new LinkedList<>(), RuleType.MULTIPLE_CHOICE, Comparison.EQUAL, 0, List.of(0)))));
-        surveyBridge.addRule(supervisorName1, res.getResult(), List.of(new RuleRequestDTO(2,
-                new RuleDTO(new LinkedList<>(), RuleType.MULTIPLE_CHOICE, Comparison.EQUAL, 1, List.of(0)))));
-        surveyBridge.addRule(supervisorName1, res.getResult(), List.of(new RuleRequestDTO(3,
-                new RuleDTO(new LinkedList<>(), RuleType.MULTIPLE_CHOICE, Comparison.EQUAL, 2, List.of(0)))));
 
 
         userBridge.login(instructorName1);
