@@ -44,10 +44,10 @@ describe('School management tests', () => {
     })
 
     afterEach(() => {
-        // // logging out cause it clashes with the other tests
-        // cy.get('[id=logout_button]').click()
-        //
-        // cy.url().should('include', '/user/login')
+        // logging out cause it clashes with the other tests
+        cy.get('[id=logout_button]').click()
+
+        cy.url().should('include', '/user/login')
     })
 
     it('Adding a coordinator to a school', () => {
@@ -231,7 +231,7 @@ describe('School management tests', () => {
         })
     })
 
-    it.only('Adding a coordinator to a school while someone else already added a different coordinator', () => {
+    it('Adding a coordinator to a school while someone else already added a different coordinator', () => {
         // searching up the school
         cy.get('#search-schools').type(coordinator_to_add.selected_school_id + "{downArrow}{enter}")
         cy.get('#search_school_button').click()

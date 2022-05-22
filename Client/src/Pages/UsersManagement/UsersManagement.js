@@ -510,6 +510,7 @@ function EditSchoolsDialog(props){
     const title_string = "עריכת בתי ספר תחת";
     const search_school_string = "חפש/י בית ספר";
     const add_school_button_string = "הוספת בית ספר";
+    const add_school_cancel_button_string = "סגירה";
 
     // tooltips' strings
     const delete_tooltip_string = "הסרת בית ספר";
@@ -535,6 +536,11 @@ function EditSchoolsDialog(props){
     return (
         <Dialog fullWidth maxWidth="sm" onClose={props.onClose} open={props.open}>
             <DialogTitle><Typography variant="h5" align="center">{title_string} {props.selectedName}</Typography></DialogTitle>
+
+            <Collapse in={searchError}>
+                <Alert id={'edit_schools_alert'} sx={{marginBottom: 1}} severity="error">{errorMessage}</Alert>
+            </Collapse>
+
             <Stack sx={{alignItems: "center"}}>
                 {/*a list of the current schools assigned to the user*/}
                 <List sx={{width: "50%"}}>
@@ -544,7 +550,7 @@ function EditSchoolsDialog(props){
                             <ListItem
                                 secondaryAction={
                                     <Tooltip title={delete_tooltip_string}>
-                                        <IconButton onClick={() => props.removeSchoolCallback(props.selectedUser, school.id)} edge="end">
+                                        <IconButton id={`remove_school_${school.id}`} onClick={() => props.removeSchoolCallback(props.selectedUser, school.id)} edge="end">
                                             <DeleteIcon />
                                         </IconButton>
                                     </Tooltip>
@@ -623,11 +629,12 @@ function EditSchoolsDialog(props){
                         {/*    renderInput={(params) => <TextField {...params} label={search_school_string} error={error} />}*/}
                         {/*/>*/}
                     </ListItem>
-                    <ListItem style={{display:'flex', justifyContent:'flex-end'}}>
-                        <Button onClick={addSchool} variant='contained'>{add_school_button_string}</Button>
-                    </ListItem>
                 </List>
-                {searchError && <Alert sx={{marginBottom: 1}} severity="error">{errorMessage}</Alert>}
+                <Button id={'edit_schools_add_school_button'} onClick={addSchool} variant='contained'>{add_school_button_string}</Button>
+
+                <Button id={'edit_schools_cancel_button'} sx={{margin: '1%'}} onClick={() => props.onClose()} variant={'contained'} color={'success'} >{add_school_cancel_button_string}</Button>
+
+
             </Stack>
         </Dialog>
     )

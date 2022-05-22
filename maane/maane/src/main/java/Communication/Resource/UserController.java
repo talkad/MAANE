@@ -302,7 +302,7 @@ public class UserController {
                 .body(service.changePasswordTester((String)body.get("currUser"), (String)body.get("newPassword")));
     }
 
-    @PostMapping(value = "/removeUserTester") //todo aviad
+    @PostMapping(value = "/removeUserTester")
     public ResponseEntity<Response<Boolean>> removeUserTester(@RequestBody Map<String, Object>  body){
         return ResponseEntity.ok()
                 .body(service.removeUserTester((String)body.get("currUser"), (String)body.get("userToRemove")));

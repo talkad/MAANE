@@ -734,7 +734,7 @@ export default function SchoolsManagement(props){
                 {/*the table presenting the schools*/}
 
                 <Collapse in={searchError}>
-                    <Alert severity={'error'} sx={{marginBottom: "2%"}}>{search_error_string}</Alert>
+                    <Alert id={'school-search-alert'} severity={'error'} sx={{marginBottom: "2%"}}>{search_error_string}</Alert>
                 </Collapse>
 
 
