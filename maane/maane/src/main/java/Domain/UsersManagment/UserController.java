@@ -5,6 +5,7 @@ import Communication.DTOs.UserDTO;
 import Communication.DTOs.WorkPlanDTO;
 import Communication.Initializer.ServerContextInitializer;
 import Domain.CommonClasses.Response;
+import Domain.DataManagement.DataController;
 import Domain.EmailManagement.EmailController;
 import Domain.UsersManagment.APIs.DTOs.UserActivityInfoDTO;
 import Domain.UsersManagment.APIs.DTOs.UserInfoDTO;
@@ -1097,10 +1098,20 @@ public class UserController {
      * @return positive result if the answers made by suitable coordinator
      */
     public Response<Boolean> isValidAnswer(String symbol, String surveyID) {
-
-        //todo: shaked implementation
-
-        return null;
+        Response<String> supervisorRes = userDAO.getSurveyCreator(surveyID);
+        if(!supervisorRes.isFailure()){
+            Response<UserDBDTO> userDBDTOResponse = userDAO.getFullUser(supervisorRes.getResult());//todo probably shouldnt pull full user, just work field
+            if (!userDBDTOResponse.isFailure()) {
+                Response<UserDBDTO> coordinatorRes = userDAO.getCoordinator(symbol, userDBDTOResponse.getResult().getWorkField());
+                if(!coordinatorRes.isFailure() && !(coordinatorRes.getResult() == null)){
+                    return new Response<>(true, false, coordinatorRes.getErrMsg());
+                }
+                else{
+                    return new Response<>(false, true, coordinatorRes.getErrMsg());
+                }
+            }
+        }
+        return new Response<>(false, true,"not allowed to answer");
     }
 
     //for test purposes only start

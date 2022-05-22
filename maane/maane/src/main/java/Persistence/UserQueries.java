@@ -20,6 +20,7 @@ public class UserQueries {
     private UserQueries() {
 
     }
+
     private static class CreateSafeThreadSingleton {
         private static final UserQueries INSTANCE = new UserQueries();
     }
@@ -899,5 +900,29 @@ public class UserQueries {
             throwables.printStackTrace();
         }
         return new Response<>(null, true, "failed to get user");
+    }
+
+    public Response<String> getSurveyCreator(String surveyId) {
+        Connect.createConnection();
+        String sql = "SELECT username FROM \"UsersSurveys\" WHERE surveyid = ?";
+        PreparedStatement statement;
+        try {
+            statement = Connect.conn.prepareStatement(sql);
+
+            statement.setString(1, surveyId);
+            ResultSet result = statement.executeQuery();
+            if (result.next()) {
+                String supervisor = result.getString("username");
+                Connect.closeConnection();
+                return new Response<>(supervisor, false, "acquired supervisor's name");
+            }
+            else{
+                Connect.closeConnection();
+                return new Response<>(null, true, "failed to acquire supervisor's name");
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return new Response<>(null, true, "failed to acquire supervisor's name");
     }
 }
