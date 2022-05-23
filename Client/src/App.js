@@ -21,8 +21,8 @@ import SurveyBuilder from "./Pages/SurveyBuilder/SurveyBuilder";
 // COMPONENTS
 import {
     AppBar, Backdrop, Box,
-    Button,
-    Drawer, IconButton,
+    Button, Dialog, DialogTitle, Divider,
+    Drawer, Grid, IconButton,
     List,
     ListItem,
     ListItemIcon,
@@ -47,14 +47,55 @@ import SchoolIcon from '@mui/icons-material/School';
 import SurveyRulesEditor from "./Pages/SurveyConstraints/SurveyRulesEditor";
 import SurveyGeneralResults from "./Pages/SurveyResults/SurveyGeneralResults";
 import SurveySchoolResults from "./Pages/SurveyResults/SurveySchoolResults";
+import HelpIcon from '@mui/icons-material/Help';
 
 // TODO: what to do if the request for info from the server to show fails?
-// TODO: prevent users from going through the site by entering paths in the url
 // TODO: currently saving everything in local storage but IT IS NOT SAFE
 // TODO: save the state of the user between refreshes
-// TODO: require better passwords on sign up and changing password
 
-// TODO: if there'll be time then add a loading animation to the different pages
+const help_text = {
+    'SYSTEM_MANAGER': [{title: "hi", description: "hello"}, {title: "hello", description: "there"}],
+    'SUPERVISOR': [],
+    'INSTRUCTOR': []
+}
+
+/**
+ * a dialog element for helping the user throughout the system
+ * @param props the properties the element gets
+ * @returns {JSX.Element} the element
+ */
+function HelpDialog(props){
+    const [helperText, setHelperText] = useState(help_text[props.userType])
+
+    useEffect(() => {
+        console.log('helper data')
+        console.log(props.userType)
+        console.log(helperText)
+    }, [])
+
+    const help_title_string = "עזרה";
+
+    return (
+        <Dialog titleStyle={{textAlign: "center"}} sx={{alignItems: "right"}} fullWidth maxWidth="sm" onClose={props.onClose} open={props.open}>
+            <DialogTitle><Typography variant="h4" align="center">{help_title_string}</Typography></DialogTitle>
+            <List
+                sx={{
+                    width: '80%',
+                    bgcolor: 'background.paper',
+                }}
+                >
+                {helperText.map((element) =>
+                    <div>
+                        <ListItem>
+                            <ListItemText primary={element.title} secondary={element.description} />
+
+                        </ListItem>
+                    </div>
+                    )}
+            </List>
+        </Dialog>
+    )
+}
 
 
 function App(){
@@ -68,8 +109,11 @@ function App(){
     // authentication related
     const [authAvailability, setAuthAvailability] = useState(false);
     const [authCallback, setAuthCallback] = useState(() => () => {console.log("not auth callback")});
-    const [authCalleePage, setAuthCalleePage] = useState(''); // todo: is there's a better way to do it? i do it that way cause i override the history stack and can't just go back
+    const [authCalleePage, setAuthCalleePage] = useState('');
     const [authGoToPage, setAuthGoToPage] = useState('');
+
+    // help dialog related
+    const [openHelpDialog, setOpenHelpDialog] = useState(false);
 
     let navigate = useNavigate();
 
@@ -78,7 +122,6 @@ function App(){
     const sidebarWidth = "15%";
     const page_does_not_exist_string = "דף זה אינו קיים";
     const logout_button_string = "יציאה";
-    // TODO: the greetings currently doesn't work well. but perhaps once TAL implements what i asked then it will (return the username with the response for the request)
     const greetings_string = "שלום " + name;
 
     useEffect(() => {
@@ -228,9 +271,20 @@ function App(){
         </Space.Fill>
     );
 
+    const handleCloseHelpDialog = () => {
+        setOpenHelpDialog(false);
+    }
+
     return (
         <div dir="rtl">
             <Space.ViewPort>
+                {/*help dialog*/}
+                <HelpDialog
+                    userType={type}
+                    open={openHelpDialog}
+                    onClose={handleCloseHelpDialog}
+                />
+
                 {/* app bar */}
                 {!hideBars && <Space.Top size={barWidth}>
                     <AppBar color="background" position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
@@ -282,6 +336,16 @@ function App(){
                             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                                 {greetings_string}
                             </Typography>
+                            <IconButton
+                                size="large"
+                                aria-controls="menu-appbar"
+                                aria-haspopup="true"
+                                color="inherit"
+                                onClick={() => setOpenHelpDialog(true)}
+                            >
+                                <HelpIcon/>
+                            </IconButton>
+
                             {/*logout button*/}
                             <Button id="logout_button" onClick={() => handleLogout()} color="inherit">{logout_button_string}</Button>
                         </Toolbar>
