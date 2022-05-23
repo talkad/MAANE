@@ -510,6 +510,7 @@ function EditSchoolsDialog(props){
     const title_string = "עריכת בתי ספר תחת";
     const search_school_string = "חפש/י בית ספר";
     const add_school_button_string = "הוספת בית ספר";
+    const add_school_cancel_button_string = "סגירה";
 
     // tooltips' strings
     const delete_tooltip_string = "הסרת בית ספר";
@@ -535,6 +536,11 @@ function EditSchoolsDialog(props){
     return (
         <Dialog fullWidth maxWidth="sm" onClose={props.onClose} open={props.open}>
             <DialogTitle><Typography variant="h5" align="center">{title_string} {props.selectedName}</Typography></DialogTitle>
+
+            <Collapse in={searchError}>
+                <Alert id={'edit_schools_alert'} sx={{marginBottom: 1}} severity="error">{errorMessage}</Alert>
+            </Collapse>
+
             <Stack sx={{alignItems: "center"}}>
                 {/*a list of the current schools assigned to the user*/}
                 <List sx={{width: "50%"}}>
@@ -544,7 +550,7 @@ function EditSchoolsDialog(props){
                             <ListItem
                                 secondaryAction={
                                     <Tooltip title={delete_tooltip_string}>
-                                        <IconButton onClick={() => props.removeSchoolCallback(props.selectedUser, school.id)} edge="end">
+                                        <IconButton id={`remove_school_${school.id}`} onClick={() => props.removeSchoolCallback(props.selectedUser, school.id)} edge="end">
                                             <DeleteIcon />
                                         </IconButton>
                                     </Tooltip>
@@ -623,11 +629,12 @@ function EditSchoolsDialog(props){
                         {/*    renderInput={(params) => <TextField {...params} label={search_school_string} error={error} />}*/}
                         {/*/>*/}
                     </ListItem>
-                    <ListItem style={{display:'flex', justifyContent:'flex-end'}}>
-                        <Button onClick={addSchool} variant='contained'>{add_school_button_string}</Button>
-                    </ListItem>
                 </List>
-                {searchError && <Alert sx={{marginBottom: 1}} severity="error">{errorMessage}</Alert>}
+                <Button id={'edit_schools_add_school_button'} onClick={addSchool} variant='contained'>{add_school_button_string}</Button>
+
+                <Button id={'edit_schools_cancel_button'} sx={{margin: '1%'}} onClick={() => props.onClose()} variant={'contained'} color={'success'} >{add_school_cancel_button_string}</Button>
+
+
             </Stack>
         </Dialog>
     )
@@ -687,6 +694,20 @@ export default function UsersManagement(props){
             }
         }, 1000)
 
+        let timer = setTimeout(() => {
+            if(window.sessionStorage.getItem('auth_result')){
+                setOpenSnackbar(true)
+                setSnackbarSeverity(window.sessionStorage.getItem('auth_result'))
+                setSnackbarMessage(window.sessionStorage.getItem('auth_message'))
+
+                window.sessionStorage.removeItem('auth_result');
+                window.sessionStorage.removeItem('auth_message');
+            }
+        }, 1000)
+
+        return () => {
+            clearTimeout(timer)
+        }
     }, []);
 
 
@@ -830,8 +851,15 @@ export default function UsersManagement(props){
      */
     const userDeletionCallback = (data) => {
         props.setAuthAvailability(false);
-        console.log(data)
-        // TODO: do something
+
+        if(!data.failure){
+            window.sessionStorage.setItem('auth_result', "success");
+            window.sessionStorage.setItem('auth_message', "המשתמש נמחק בהצלחה");
+        }
+        else{
+            window.sessionStorage.setItem('auth_result', "error");
+            window.sessionStorage.setItem('auth_message', "אירעה שגיאה. אנא נסה/י שנית");
+        }
     }
 
     /**
@@ -839,11 +867,8 @@ export default function UsersManagement(props){
      * @param username the user to delete
      */
     const handleUserDeletion = (username) => {
-        console.log("please don't delete me");
-        console.log("aaaaaaaaaaaaaaaaaaaaaaa " + username)
-
         props.setAuthCallBack(() => () =>
-            new Connection().removeUser( username, userDeletionCallback) //todo aviad
+            new Connection().removeUser( username, userDeletionCallback)
         );
         props.setAuthAvailability(true);
         props.setAuthCalleePage('../home');
@@ -877,16 +902,13 @@ export default function UsersManagement(props){
      */
     const userChangePasswordCallback = (data) => {
         props.setAuthAvailability(false);
-        //TODO: doesn't work cause the page is not loaded when this part runs
         if (!data.failure){
-            setSnackbarSeverity('success');
-            setSnackbarMessage('הסיסמה שונתה בהצלחה');
-            setOpenSnackbar(true);
+            window.sessionStorage.setItem('auth_result', "success");
+            window.sessionStorage.setItem('auth_message', "הסיסמה שונתה בהצלחה");
         }
         else{
-            setSnackbarSeverity('error');
-            setSnackbarMessage('הסיסמה לא שונתה'); // todo: better error?
-            setOpenSnackbar(true);
+            window.sessionStorage.setItem('auth_result', "error");
+            window.sessionStorage.setItem('auth_message', 'הסיסמה לא שונתה');
         }
     }
 
@@ -917,9 +939,6 @@ export default function UsersManagement(props){
      * @param supervisorUsername the username of the selected supervisor
      */
     const handleOpenSupervisionTransferDialog = (name, username, supervisorName, supervisorUsername) => {
-        console.log('general kenobi')
-        console.log(username)
-        console.log(supervisorUsername)
         setOpenSupervisionTransferDialog(true);
         setSelectedUser(username);
         setSelectedName(name);
@@ -940,16 +959,14 @@ export default function UsersManagement(props){
      */
     const makeUserSupervisorCallback = (data) => {
         props.setAuthAvailability(false);
-        //TODO: doesn't work cause the page is not loaded when this part runs
         if (!data.failure){
-            setSnackbarSeverity('success');
-            setSnackbarMessage('הפעולה הסתיימה בהצלחה');
-            setOpenSnackbar(true);
+
+            window.sessionStorage.setItem('auth_result', "success");
+            window.sessionStorage.setItem('auth_message', "הפעולה הסתייה בהצלחה");
         }
         else{
-            setSnackbarSeverity('error');
-            setSnackbarMessage('הפעולה נכשלה. אנא נסה/י שוב');
-            setOpenSnackbar(true);
+            window.sessionStorage.setItem('auth_result', "error");
+            window.sessionStorage.setItem('auth_message', "הפעולה נכשלה. אנא נסה/י שוב");
         }
     }
 
@@ -960,9 +977,8 @@ export default function UsersManagement(props){
      */
     const handleMakeUserSupervisor = (currentSupervisor, newSupervisor) => {
         setOpenSupervisionTransferDialog(false);
-        // TODO: check it's working properly
         props.setAuthCallBack(() => () => new Connection().transferSupervisionToExistingUser(
-            currentSupervisor, newSupervisor, userChangePasswordCallback));
+            currentSupervisor, newSupervisor, makeUserSupervisorCallback));
         props.setAuthAvailability(true);
         props.setAuthCalleePage('../home');
         props.setAuthGoToPage('../home');
@@ -1004,7 +1020,7 @@ export default function UsersManagement(props){
         }
         else {
             setSnackbarSeverity('error');
-            setSnackbarMessage('הפעולה להוספת בית ספר למשתמש נכשלה'); // todo: better error?
+            setSnackbarMessage('הפעולה להוספת בית ספר למשתמש נכשלה');
             setOpenSnackbar(true);
 
         }
@@ -1017,8 +1033,6 @@ export default function UsersManagement(props){
      * @param schoolId the id of the school to assign to the selected user
      */
     const handleUserAddSchool = (username, schoolName, schoolId) => {
-        console.log('what was sent');
-        console.log(schoolId)
         new Connection().assignSchoolToUser(username, schoolId, userAddSchoolCallback)
     }
 
@@ -1036,7 +1050,7 @@ export default function UsersManagement(props){
         }
         else {
             setSnackbarSeverity('error');
-            setSnackbarMessage('הפעולה להסרת בית ספר ממשתמש נכשלה'); // todo: better error?
+            setSnackbarMessage('הפעולה להסרת בית ספר ממשתמש נכשלה');
             setOpenSnackbar(true);
         }
     }

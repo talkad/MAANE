@@ -53,13 +53,13 @@ public class DataController {
                 .body(service.resetDB());
     }
 
-    @PostMapping(value = "/removeCoordinatorTester")//todo aviad
+    @PostMapping(value = "/removeCoordinatorTester")
     public ResponseEntity<Response<Boolean>> removeCoordinatorTester(@RequestBody Map<String, Object> body){
         return ResponseEntity.ok()
                 .body(service.removeCoordinatorTester((String)body.get("school")));
     }
 
-    @PostMapping(value = "/assignCoordinatorTester")//todo aviad
+    @PostMapping(value = "/assignCoordinatorTester")
     public ResponseEntity<Response<Boolean>> assignCoordinatorTester(@RequestBody Map<String, Object> body){
         return ResponseEntity.ok()
                 .body(service.assignCoordinatorTester((String)body.get("school")));

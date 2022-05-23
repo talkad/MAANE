@@ -1,7 +1,7 @@
 
 let admin = {
     username: 'admin',
-    password: 'admin',
+    password: 'admin123',
 }
 
 let supervisor = {

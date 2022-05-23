@@ -115,16 +115,23 @@ export default function SurveyMenu(props){
 
         new Connection().getCreatedSurveys(arrangeSurveys);
 
-        if(window.sessionStorage.getItem('auth_result')){
-            setOpenSnackbar(true);
-            setSnackbarSeverity(window.sessionStorage.getItem('auth_result'));
-            setSnackbarMessage(window.sessionStorage.getItem('auth_result_message'));
+        let timer = setTimeout(() => {
+            if(window.sessionStorage.getItem('auth_result')){
+                setOpenSnackbar(true);
+                setSnackbarSeverity(window.sessionStorage.getItem('auth_result'));
+                setSnackbarMessage(window.sessionStorage.getItem('auth_result_message'));
 
-            window.sessionStorage.removeItem('auth_result');
-            window.sessionStorage.removeItem('auth_result_message');
+                window.sessionStorage.removeItem('auth_result');
+                window.sessionStorage.removeItem('auth_result_message');
 
-            window.location.reload(); // refreshing the page for tal
+                window.location.reload(); // refreshing the page for tal
+            }
+        })
+
+        return () => {
+            clearTimeout(timer)
         }
+
     }, []);
 
     /**
