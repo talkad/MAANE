@@ -672,11 +672,13 @@ class Connection{
     // WORK REPORT
 
     /**
-     * sends a GET request to get the work report of the current user
+     * sends a GET request to get the work report of the current user in a given month and year
+     * @param month the month of the report
+     * @param year the year of the report
      * @param callback a callback function to call once there's a response
      */
-    getWorkReport(callback){
-        this.sendGET(`/report/getMonthlyReport`, callback)
+    getWorkReport(month, year, callback){
+        this.sendGET(`/report/getMonthlyReport/year=${year}&month=${month}`, callback)
     }
 
 }

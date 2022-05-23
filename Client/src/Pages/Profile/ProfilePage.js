@@ -23,6 +23,11 @@ import EditIcon from '@mui/icons-material/Edit';
 import EditOffIcon from '@mui/icons-material/EditOff';
 import WorkReport from "../WorkReport/WorkReport";
 
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { he } from "date-fns/locale";
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import {DesktopDatePicker} from "@mui/x-date-pickers";
+
 /**
  * tab viewer
  */
@@ -69,6 +74,8 @@ function InfoTabPanel(props){
 
     const [edit, setEdit] = useState(false);
 
+    const [pickedDate, setPickedDate] = useState(new Date())
+
     const [error, setError] = useState(false);
     const [errorSeverity, setErrorSeverity] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
@@ -80,8 +87,12 @@ function InfoTabPanel(props){
     const city_label_string = "עיר";
     const save_button_string = "שמירה";
 
+    const private_info_title_string = 'מידע אישי'
     const edit_string = 'עריכת פרטים';
+
+    const work_report_title_string = 'דו"ח עבודה'
     const download_report = `הורדת דו"ח עבודה`;
+    const year_and_month_label_string = "בחירת שנה וחודש";
 
     useEffect(() => {
         if (changes) {
@@ -160,112 +171,143 @@ function InfoTabPanel(props){
      * an handler for sending the request to download  the work report of the current user
      */
     const downloadReportHandler = () => {
-        new Connection().getWorkReport(downloadReportCallback)
+        new Connection().getWorkReport(pickedDate.getMonth()+1, pickedDate.getFullYear(), downloadReportCallback)
     }
 
     return (
-        <Grid container spacing={2} rowSpacing={4} sx={{paddingTop: 1}}>
-            <Grid item xs={6}>
-                <Button id={"download_report_button"} onClick={() => downloadReportHandler()} variant={"outlined"}>
-                    {download_report}
-                </Button>
-            </Grid>
+        <Space.Fill scrollable>
+            <Grid container spacing={2} rowSpacing={4} sx={{paddingTop: 1}}>
 
-            {/*edit button*/}
-            <Grid item xs={6}>
-                <Button id={"profile_edit_button"} onClick={() => setEdit(!edit)} variant={edit ? "outlined" : "contained"} startIcon={edit? <EditOffIcon />  : <EditIcon />}>
-                    {edit_string}
-                </Button>
-            </Grid>
-            <Grid item xs={8}/>
+                <Grid item xs={12}>
+                    <Typography  variant="h6">{private_info_title_string}</Typography>
+                </Grid>
 
-            <Grid item xs={12}>
-                <Collapse in={error}>
-                    <Alert id={"profile_edit_alert"} severity={errorSeverity}>
-                        {errorMessage}
-                    </Alert>
-                </Collapse>
-            </Grid>
+                {/*edit button*/}
+                <Grid item xs={6}>
+                    <Button id={"profile_edit_button"} onClick={() => setEdit(!edit)} variant={edit ? "outlined" : "contained"} startIcon={edit? <EditOffIcon />  : <EditIcon />}>
+                        {edit_string}
+                    </Button>
+                </Grid>
 
-            {/*first name*/}
-            <Grid item xs={6}>
-                <TextField
-                    id={"profile_edit_first_name"}
-                    value={values.firstName}
-                    onChange={handleChange('firstName')}
-                    label={first_name_label_string}
-                    inputProps={{
-                        readOnly: !edit,
-                    }}
-                    fullWidth
-                    required
-                    error={error && values.firstName.trim() === ''}
-                />
-            </Grid>
+                <Grid item xs={12}>
+                    <Collapse in={error}>
+                        <Alert id={"profile_edit_alert"} severity={errorSeverity}>
+                            {errorMessage}
+                        </Alert>
+                    </Collapse>
+                </Grid>
 
-            {/*last name*/}
-            <Grid item xs={6}>
-                <TextField
-                    id={"profile_edit_last_name"}
-                    value={values.lastName}
-                    onChange={handleChange('lastName')}
-                    label={last_name_label_string}
-                    inputProps={{
-                        readOnly: !edit,
-                    }}
-                    fullWidth
-                    required
-                    error={error && values.lastName.trim() === ''}
-                />
-            </Grid>
+                {/*first name*/}
+                <Grid item xs={6}>
+                    <TextField
+                        id={"profile_edit_first_name"}
+                        value={values.firstName}
+                        onChange={handleChange('firstName')}
+                        label={first_name_label_string}
+                        inputProps={{
+                            readOnly: !edit,
+                        }}
+                        fullWidth
+                        required
+                        error={error && values.firstName.trim() === ''}
+                    />
+                </Grid>
 
-            {/*email*/}
-            <Grid item xs={12}>
-                <TextField
-                    id={"profile_edit_email"}
-                    value={values.email}
-                    onChange={handleChange('email')}
-                    label={email_label_string}
-                    inputProps={{
-                        readOnly: !edit,
-                    }}
-                    fullWidth
-                />
-            </Grid>
+                {/*last name*/}
+                <Grid item xs={6}>
+                    <TextField
+                        id={"profile_edit_last_name"}
+                        value={values.lastName}
+                        onChange={handleChange('lastName')}
+                        label={last_name_label_string}
+                        inputProps={{
+                            readOnly: !edit,
+                        }}
+                        fullWidth
+                        required
+                        error={error && values.lastName.trim() === ''}
+                    />
+                </Grid>
 
-            {/*phone number*/}
-            <Grid item xs={12}>
-                <TextField
-                    id={"profile_edit_phone_number"}
-                    value={values.phoneNumber}
-                    onChange={handleChange('phoneNumber')}
-                    label={phone_number_label_string}
-                    inputProps={{
-                        readOnly: !edit,
-                    }}
-                    fullWidth
-                />
-            </Grid>
+                {/*email*/}
+                <Grid item xs={12}>
+                    <TextField
+                        id={"profile_edit_email"}
+                        value={values.email}
+                        onChange={handleChange('email')}
+                        label={email_label_string}
+                        inputProps={{
+                            readOnly: !edit,
+                        }}
+                        fullWidth
+                    />
+                </Grid>
 
-            {/*city*/}
-            <Grid item xs={12}>
-                <TextField
-                    id={"profile_edit_city"}
-                    value={values.city}
-                    onChange={handleChange('city')}
-                    label={city_label_string}
-                    inputProps={{
-                        readOnly: !edit,
-                    }}
-                    fullWidth
-                />
-            </Grid>
+                {/*phone number*/}
+                <Grid item xs={12}>
+                    <TextField
+                        id={"profile_edit_phone_number"}
+                        value={values.phoneNumber}
+                        onChange={handleChange('phoneNumber')}
+                        label={phone_number_label_string}
+                        inputProps={{
+                            readOnly: !edit,
+                        }}
+                        fullWidth
+                    />
+                </Grid>
 
-            {/*save button*/}
-            <Grid item xs={4}>
-                <Button id={"profile_edit_submit"} disabled={!edit} onClick={saveInfoHandler} variant="contained" fullWidth>{save_button_string}</Button>
+                {/*city*/}
+                <Grid item xs={12}>
+                    <TextField
+                        id={"profile_edit_city"}
+                        value={values.city}
+                        onChange={handleChange('city')}
+                        label={city_label_string}
+                        inputProps={{
+                            readOnly: !edit,
+                        }}
+                        fullWidth
+                    />
+                </Grid>
+
+                {/*save button*/}
+                <Grid item xs={4}>
+                    <Button id={"profile_edit_submit"} disabled={!edit} onClick={saveInfoHandler} variant="contained" fullWidth>{save_button_string}</Button>
+                </Grid>
+                <Grid item xs={12}/>
+
+                {/*work report title*/}
+                <Grid item xs={12}>
+                    <Typography variant={'h6'}>{work_report_title_string}</Typography>
+                </Grid>
+
+                {/*work report date picker*/}
+                <Grid item xs={6}>
+                    <LocalizationProvider locale={he} dateAdapter={AdapterDateFns}>
+                        <DesktopDatePicker
+                            displayStaticWrapperAs="desktop"
+                            inputFormat="yyyy-MM"
+                            views={['year', 'month']}
+                            label={year_and_month_label_string}
+                            openTo="year"
+                            value={pickedDate}
+                            onChange={(newValue) => {
+                                setPickedDate(newValue);
+                            }}
+                            renderInput={(params) => <TextField {...params} />}
+                        />
+                    </LocalizationProvider>
+                </Grid>
+
+                {/*work report button*/}
+                <Grid item xs={6}>
+                    <Button id={"download_report_button"} onClick={() => downloadReportHandler()} sx={{margin: '1%'}} variant={"contained"}>
+                        {download_report}
+                    </Button>
+                </Grid>
             </Grid>
-        </Grid>
+        </Space.Fill>
     )
 }
 
@@ -466,7 +508,9 @@ export default function ProfilePage(props){
 
     const profileInfoCallback = (data) => {
         if (data.failure){
-            // todo: raise error
+            setOpenSnackbar(true)
+            setSnackbarSeverity('error')
+            setSnackbarMessage('אירעה שגיאה בהצגת הפרטים');
         }
         else{
             setProfileInfo(data.result);
