@@ -55,8 +55,8 @@ import HelpIcon from '@mui/icons-material/Help';
 
 const help_text = {
     'SYSTEM_MANAGER': [{title: "hi", description: "hello"}, {title: "hello", description: "there"}],
-    'SUPERVISOR': [],
-    'INSTRUCTOR': []
+    'SUPERVISOR': [{title: "hi", description: "hello"}, {title: "hello", description: "there"}],
+    'INSTRUCTOR': [{title: "hi", description: "hello"}, {title: "hello", description: "there"}]
 }
 
 /**
@@ -65,13 +65,7 @@ const help_text = {
  * @returns {JSX.Element} the element
  */
 function HelpDialog(props){
-    const [helperText, setHelperText] = useState(help_text[props.userType])
-
-    useEffect(() => {
-        console.log('helper data')
-        console.log(props.userType)
-        console.log(helperText)
-    }, [])
+    const [helperText, setHelperText] = useState([])
 
     const help_title_string = "עזרה";
 
@@ -376,9 +370,8 @@ function App(){
 
                             {authAvailability && <Route path="auth" element={<PasswordAuthentication callback={authCallback} callee={authCalleePage} goto={authGoToPage} setHideBars={setHideBars}/>}/>}
 
-                            <Route path="profile" element={<ProfilePage/>}/>
+                            {(type !== "GUEST") && <Route path="profile" element={<ProfilePage userType={type}/>}/>}
 
-                            {/*todo: is this restriction ok?*/}
                             {(type !== "GUEST") && <Route path="schools" element={<SchoolsManagement userType={type}/>}/>}
 
                             {(type === "SUPERVISOR" || type === "INSTRUCTOR") &&
@@ -402,7 +395,6 @@ function App(){
                             {type === "GENERAL_SUPERVISOR" &&
                                 <Route path="home" element={<InfoViewer/>}/>}
 
-                        {/*TODO: maybe put survey inside user?*/}
                         </Route>
 
                         {type === "SUPERVISOR" &&

@@ -669,6 +669,34 @@ class Connection{
         this.sendGET(`/user/viewWorkPlan/year=${year}&month=${month}`, callback)
     }
 
+    /**
+     * sends a GET request to get work hours of the current user
+     * @param callback a callback function to call once there's a response
+     */
+    getWorkHours(callback){
+        this.sendGET(`/user/getWorkHours`, callback)
+    }
+
+    /**
+     * sends a POST request to update the work hours of the current user
+     * @param workDay the day of the week the user is working at
+     * @param act1Start the start hour of the first work time
+     * @param act1End the end hour of the first work time
+     * @param act2Start the start hour of the second work time
+     * @param act2End the end hour of the second work time
+     * @param callback a callback function to call once there's a response
+     */
+    setWorkHours(workDay, act1Start, act1End, act2Start, act2End, callback){
+        this.sendPOST('/user/setWorkingTime',{
+                workDay: workDay,
+                act1Start: act1Start,
+                act1End: act1End,
+                act2Start: act2Start,
+                act2End: act2End
+            },
+            callback)
+    }
+
     // WORK REPORT
 
     /**

@@ -4,10 +4,10 @@ import Connection from "../../Communication/Connection";
 import {
     Alert,
     Button,
-    Collapse,
+    Collapse, FormControl,
     Grid,
     IconButton,
-    InputAdornment,
+    InputAdornment, InputLabel, MenuItem, Select,
     Tab,
     Tabs,
     TextField,
@@ -26,7 +26,7 @@ import WorkReport from "../WorkReport/WorkReport";
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { he } from "date-fns/locale";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import {DesktopDatePicker} from "@mui/x-date-pickers";
+import {DesktopDatePicker, TimePicker} from "@mui/x-date-pickers";
 
 /**
  * tab viewer
@@ -76,6 +76,13 @@ function InfoTabPanel(props){
 
     const [pickedDate, setPickedDate] = useState(new Date())
 
+    const [pickedDayOfWeek, setPickedDayOfWeek] = useState(props.workHours.workDay);
+    const [firstActivityStart, setFirstActivityStart] = useState(Date.parse(props.workHours.act1Start))
+    const [firstActivityEnd, setFirstActivityEnd] = useState(props.workHours.act1End)
+    const [secondActivityStart, setSecondActivityStart] = useState(props.workHours.act2Start)
+    const [secondActivityEnd, setSecondActivityEnd] = useState(props.workHours.act2End)
+    const [workHoursError, setWorkHoursError] = useState(false)
+
     const [error, setError] = useState(false);
     const [errorSeverity, setErrorSeverity] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
@@ -93,6 +100,14 @@ function InfoTabPanel(props){
     const work_report_title_string = 'דו"ח עבודה'
     const download_report = `הורדת דו"ח עבודה`;
     const year_and_month_label_string = "בחירת שנה וחודש";
+
+    const work_hours_title_string = "שעות עבודה";
+    const work_hours_day_of_week = "בחירת יום עבודה:";
+    const work_hours_first_activity = "שעות פעילות ראשונה:";
+    const work_hours_second_activity = "שעות פעילות שנייה:";
+    const work_hours_save_button = "שמירת שעות עבודה";
+    const start_of_activity = "תחילת הפעילות";
+    const end_of_activity = "סוף הפעילות";
 
     useEffect(() => {
         if (changes) {
@@ -168,10 +183,43 @@ function InfoTabPanel(props){
     }
 
     /**
-     * an handler for sending the request to download  the work report of the current user
+     * a handler for sending the request to download  the work report of the current user
      */
     const downloadReportHandler = () => {
         new Connection().getWorkReport(pickedDate.getMonth()+1, pickedDate.getFullYear(), downloadReportCallback)
+    }
+
+    /**
+     * call back function for the response from the server regarding the request to save the work hours
+     * @param data the response from the server
+     */
+    const saveWorkHoursCallback = (data) => {
+        if(data.failure){
+            props.setOpenSnackbar(true)
+            props.setSnackbarSeverity('error')
+            props.setSnackbarMessage('אירעה שגיאה. שעות העבודה לא נשמרו')
+        }
+        else{
+            props.setOpenSnackbar(true)
+            props.setSnackbarSeverity('success')
+            props.setSnackbarMessage('שעות העבודה נשמרו בהצלחה')
+        }
+    }
+
+    /**
+     * handler for saving the work hours data
+     */
+    const saveWorkHoursHandler = () => {
+        if(pickedDayOfWeek === -1){
+            setWorkHoursError(true)
+            props.setOpenSnackbar(true)
+            props.setSnackbarSeverity('error')
+            props.setSnackbarMessage('נא לבחור יום עבודה');
+        }
+        else{
+            setWorkHoursError(false)
+            new Connection().setWorkHours(pickedDayOfWeek, firstActivityStart, firstActivityEnd, secondActivityStart, secondActivityEnd, saveWorkHoursCallback)
+        }
     }
 
     return (
@@ -275,15 +323,16 @@ function InfoTabPanel(props){
                 <Grid item xs={4}>
                     <Button id={"profile_edit_submit"} disabled={!edit} onClick={saveInfoHandler} variant="contained" fullWidth>{save_button_string}</Button>
                 </Grid>
-                <Grid item xs={12}/>
+
+                {props.userType === "INSTRUCTOR" && <Grid item xs={12}/>}
 
                 {/*work report title*/}
-                <Grid item xs={12}>
+                {props.userType === "INSTRUCTOR" && <Grid item xs={12}>
                     <Typography variant={'h6'}>{work_report_title_string}</Typography>
-                </Grid>
+                </Grid>}
 
                 {/*work report date picker*/}
-                <Grid item xs={6}>
+                {props.userType === "INSTRUCTOR" && <Grid item xs={6}>
                     <LocalizationProvider locale={he} dateAdapter={AdapterDateFns}>
                         <DesktopDatePicker
                             displayStaticWrapperAs="desktop"
@@ -298,14 +347,129 @@ function InfoTabPanel(props){
                             renderInput={(params) => <TextField {...params} />}
                         />
                     </LocalizationProvider>
-                </Grid>
+                </Grid>}
 
                 {/*work report button*/}
-                <Grid item xs={6}>
+                {props.userType === "INSTRUCTOR" && <Grid item xs={6}>
                     <Button id={"download_report_button"} onClick={() => downloadReportHandler()} sx={{margin: '1%'}} variant={"contained"}>
                         {download_report}
                     </Button>
-                </Grid>
+                </Grid>}
+
+                {props.userType === "INSTRUCTOR" && <Grid item xs={12}/>}
+
+                {/*work hours title*/}
+                {props.userType === "INSTRUCTOR" && <Grid item xs={12}>
+                    <Typography variant={'h6'}>{work_hours_title_string}</Typography>
+                </Grid>}
+
+                {props.userType === "INSTRUCTOR" && <Grid item xs={3}>
+                    <Typography>{work_hours_day_of_week}</Typography>
+                </Grid>}
+
+                {/*day of week menu*/}
+                {props.userType === "INSTRUCTOR" && <Grid item xs={3}>
+                    <FormControl error={workHoursError}>
+                        <Select
+                            value={pickedDayOfWeek}
+                            onChange={(event) => setPickedDayOfWeek(event.target.value)}
+                        >
+                            <MenuItem value={-1}>{'בחירת יום'}</MenuItem>
+                            <MenuItem value={0}>{'ראשון'}</MenuItem>
+                            <MenuItem value={1}>{'שני'}</MenuItem>
+                            <MenuItem value={2}>{'שלישי'}</MenuItem>
+                            <MenuItem value={3}>{'רביעי'}</MenuItem>
+                            <MenuItem value={4}>{'חמישי'}</MenuItem>
+                            <MenuItem value={5}>{'שישי'}</MenuItem>
+                        </Select>
+                    </FormControl>
+                </Grid>}
+
+                {props.userType === "INSTRUCTOR" && <Grid item xs={6}/>}
+
+                {props.userType === "INSTRUCTOR" && <Grid item xs={3}>
+                    <Typography>{work_hours_first_activity}</Typography>
+                </Grid>}
+
+                {/*first activity start*/}
+                {props.userType === "INSTRUCTOR" && <Grid item xs={4}>
+                    <LocalizationProvider locale={he} dateAdapter={AdapterDateFns}>
+                        <TimePicker
+                            label={start_of_activity}
+                            value={firstActivityStart}
+                            onChange={(newValue) => {
+                                setFirstActivityStart(newValue);
+                            }}
+                            renderInput={(params) => <TextField {...params} />}
+                        />
+                    </LocalizationProvider>
+                </Grid>}
+
+                {/*first activity end*/}
+                {props.userType === "INSTRUCTOR" && <Grid item xs={4}>
+                    <LocalizationProvider locale={he} dateAdapter={AdapterDateFns}>
+                        <TimePicker
+                            label={end_of_activity}
+                            value={firstActivityEnd}
+                            onChange={(newValue) => {
+                                setFirstActivityEnd(newValue);
+                            }}
+                            renderInput={(params) => <TextField {...params} />}
+                        />
+                    </LocalizationProvider>
+                </Grid>}
+
+                {props.userType === "INSTRUCTOR" && <Grid item xs={1}/>}
+
+                {props.userType === "INSTRUCTOR" && <Grid item xs={3}>
+                    <Typography>{work_hours_second_activity}</Typography>
+                </Grid>}
+
+                {/*second activity start*/}
+                {props.userType === "INSTRUCTOR" && <Grid item xs={4}>
+                    <LocalizationProvider locale={he} dateAdapter={AdapterDateFns}>
+                        <TimePicker
+                            label={start_of_activity}
+                            value={secondActivityStart}
+                            onChange={(newValue) => {
+                                setSecondActivityStart(newValue);
+                            }}
+                            renderInput={(params) => <TextField {...params} />}
+                        />
+                    </LocalizationProvider>
+                </Grid>}
+
+                {/*second activity end*/}
+                {props.userType === "INSTRUCTOR" && <Grid item xs={4}>
+                    <LocalizationProvider locale={he} dateAdapter={AdapterDateFns}>
+                        <TimePicker
+                            label={end_of_activity}
+                            value={secondActivityEnd}
+                            onChange={(newValue) => {
+                                setSecondActivityEnd(newValue);
+                            }}
+                            renderInput={(params) => <TextField {...params} />}
+                        />
+                    </LocalizationProvider>
+                </Grid>}
+
+                {props.userType === "INSTRUCTOR" && <Grid item xs={1}/>}
+
+                {/*save work hours button*/}
+                {props.userType === "INSTRUCTOR" && <Grid item xs={6}>
+                    <Button id={"save_work_hours_button"} onClick={() => saveWorkHoursHandler()} sx={{margin: '1%'}} variant={"contained"}>
+                        {work_hours_save_button}
+                    </Button>
+                </Grid>}
+
+                {/*margin at the end of the page*/}
+                <Grid item xs={12}/>
+                <Grid item xs={12}/>
+                <Grid item xs={12}/>
+                <Grid item xs={12}/>
+                <Grid item xs={12}/>
+
+
             </Grid>
         </Space.Fill>
     )
@@ -484,7 +648,8 @@ function SecurityTabPanel(props){
 export default function ProfilePage(props){
 
     const [tabPage, setTabPage] = useState(0);
-    const [loaded, setLoaded] = useState(false);
+    const [profileInfoLoaded, setProfileInfoLoaded] = useState(false);
+    const [hoursDataLoaded, setHoursDataLoaded] = useState(false);
     const [profileInfo, setProfileInfo] = useState({
         firstName: '',
         lastName: '',
@@ -492,6 +657,14 @@ export default function ProfilePage(props){
         phoneNumber: '',
         city: ''
     });
+
+    const [workHoursData, setWorkHoursData] = useState({
+        workDay: -1,
+        act1Start: new Date(),
+        act1End: new Date(),
+        act2Start: new Date(),
+        act2End: new Date(),
+    })
 
     // snackbar
     const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -504,18 +677,39 @@ export default function ProfilePage(props){
 
     useEffect(() => {
         new Connection().getProfileInfo(profileInfoCallback);
+        new Connection().getWorkHours(workHoursCallback);
     }, []);
 
+    /**
+     * callback for arranging the profile data
+     * @param data the data from the server
+     */
     const profileInfoCallback = (data) => {
         if (data.failure){
             setOpenSnackbar(true)
             setSnackbarSeverity('error')
-            setSnackbarMessage('אירעה שגיאה בהצגת הפרטים');
+            setSnackbarMessage('אירעה שגיאה בהצגת המידע האישי');
         }
         else{
-            setProfileInfo(data.result);
+            setProfileInfo(data.result)
         }
-        setLoaded(true);
+        setProfileInfoLoaded(true);
+    }
+
+    /**
+     * callback for arranging the work hours data
+     * @param data the data from the server
+     */
+    const workHoursCallback = (data) => {
+        if (data.failure){
+            setOpenSnackbar(true)
+            setSnackbarSeverity('error')
+            setSnackbarMessage('אירעה שגיאה בהצגת שעות העבודה');
+        }
+        else{
+            setWorkHoursData(data.result);
+        }
+        setHoursDataLoaded(true);
     }
 
     /**
@@ -538,7 +732,7 @@ export default function ProfilePage(props){
             </Space.Top>
 
             {/*tabs selection*/}
-            {loaded && <Space.Fill>
+            {profileInfoLoaded && hoursDataLoaded && <Space.Fill>
                 <Space.Right size="10%">
                     <Tabs
                         orientation="vertical"
@@ -562,9 +756,11 @@ export default function ProfilePage(props){
 
                                 <TabPanel value={tabPage} index={0}>
                                     <InfoTabPanel profileInfo={profileInfo}
+                                                  workHours={workHoursData}
                                                   setOpenSnackbar={setOpenSnackbar}
                                                   setSnackbarSeverity={setSnackbarSeverity}
-                                                  setSnackbarMessage={setSnackbarMessage}/>
+                                                  setSnackbarMessage={setSnackbarMessage}
+                                                  userType={props.userType}/>
                                 </TabPanel>
                                 <TabPanel value={tabPage} index={1}>
                                     <SecurityTabPanel setOpenSnackbar={setOpenSnackbar}
