@@ -253,7 +253,7 @@ public class User {
     }
 
     public Response<Boolean> removeUser(String username) {
-        if(this.state.getStateEnum() == UserStateEnum.SYSTEM_MANAGER){
+        if(this.state.getStateEnum() == UserStateEnum.SYSTEM_MANAGER && (!this.username.equals(username))){
             if (!appointments.contains(username)) {
                 return new Response<>(true, false, "removing a user by system manager");
             }
@@ -261,7 +261,7 @@ public class User {
                 return new Response<>(false, true, "cannot delete supervisor, try transferring supervision");
             }
         }
-        else if(this.state.allowed(Permissions.REMOVE_USER, this)) {
+        else if(this.state.allowed(Permissions.REMOVE_USER, this) && !this.username.equals(username)) {
             if (appointments.contains(username)) {
                 boolean res = appointments.remove(username);
                 if (res) {
@@ -733,8 +733,8 @@ public class User {
         }
     }
 
-    public Response<Boolean> editActivity(int year) {
-        if(this.state.getStateEnum() == UserStateEnum.INSTRUCTOR && this.getWorkPlanYears().contains(year)){
+    public Response<Boolean> editActivity() {
+        if(this.state.getStateEnum() == UserStateEnum.INSTRUCTOR){
             return new Response<>(true, false, "user allowed to update working hours");
         }
         else {

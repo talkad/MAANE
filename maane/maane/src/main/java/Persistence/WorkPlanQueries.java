@@ -136,10 +136,10 @@ public class WorkPlanQueries {
         return new ActivityDTO(schoolId, goalId, title, endActivity);
     }
 
-    public Response<Boolean> updateActivity(String username, LocalDateTime currActStart, Integer year, LocalDateTime newActStart, LocalDateTime newActEnd) { //todo find a way to block collision
+    public Response<Boolean> updateActivity(String username, LocalDateTime currActStart, LocalDateTime newActStart, LocalDateTime newActEnd) { //todo find a way to block collision
         Connect.createConnection();
         int rows = 0;
-        String sql = "UPDATE \"WorkPlans\" SET date = ?, endactivity = ? WHERE (username = ? AND (date = ? AND year = ?))";
+        String sql = "UPDATE \"WorkPlans\" SET date = ?, endactivity = ? WHERE (username = ? AND date = ?)";
         PreparedStatement preparedStatement;
         try {
             preparedStatement = Connect.conn.prepareStatement(sql);
@@ -148,7 +148,6 @@ public class WorkPlanQueries {
             preparedStatement.setTimestamp(2, Timestamp.valueOf(newActEnd));
             preparedStatement.setString(3, username);
             preparedStatement.setTimestamp(4, Timestamp.valueOf(currActStart));
-            preparedStatement.setInt(5, year);
 
             rows = preparedStatement.executeUpdate();
             Connect.closeConnection();

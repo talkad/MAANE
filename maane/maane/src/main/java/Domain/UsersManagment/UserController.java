@@ -5,7 +5,6 @@ import Communication.DTOs.UserDTO;
 import Communication.DTOs.WorkPlanDTO;
 import Communication.Initializer.ServerContextInitializer;
 import Domain.CommonClasses.Response;
-import Domain.DataManagement.DataController;
 import Domain.EmailManagement.EmailController;
 import Domain.UsersManagment.APIs.DTOs.UserActivityInfoDTO;
 import Domain.UsersManagment.APIs.DTOs.UserInfoDTO;
@@ -85,6 +84,11 @@ public class UserController {
         }
     }
 
+    /**
+     * logout a user from the system
+     * @param name user to be logged out username
+     * @return a response of the successfulness of the action containing @name upon success
+     */
     public Response<String> logout(String name) {
         Response<String> response;
         if(connectedUsers.containsKey(name)) {
@@ -101,8 +105,8 @@ public class UserController {
     }
 
     /**
-     * allow user to register another user (if user is supervisor or admin)
-     * @param currUser the user that trying to apply the registration
+     * allow user to register another user (if user is supervisor)
+     * @param currUser the user that is trying to register @userToRegister
      * @param userToRegister the user to be registered
      * @param password its future password
      * @param userStateEnum the role of the registered user
@@ -182,10 +186,30 @@ public class UserController {
         return phoneUtil.isValidNumber(israeliNumberProto);
     }
 
+    /**
+     * validate the password's strength must be at least 8 chars long and contain at least one letter and one number
+     * @param password the password
+     * @return true if the password is valid, false otherwise.
+     */
     private boolean isValidPassword(String password) {
         return password.length() >= 8 && password.matches("([A-Za-z]+[0-9]|[0-9]+[A-Za-z])[A-Za-z0-9]*");
     }
 
+    /**
+     * register a user in the system by the admin
+     * @param currUser admin's username
+     * @param userToRegister the new user's username
+     * @param password the new user's password
+     * @param userStateEnum the new user's state
+     * @param optionalSupervisor the new user's assigned supervisor given @userStateEnum isn't SUPERVISOR
+     * @param workField the new user's work field
+     * @param firstName the new user's first name
+     * @param lastName the new user's last name
+     * @param email the new user's email
+     * @param phoneNumber the new user's phone number
+     * @param city the new user's city
+     * @return a response of the successfulness of the action containing @userToRegister upon success
+     */
     public Response<String> registerUserBySystemManager(String currUser, String userToRegister, String password, UserStateEnum userStateEnum, String optionalSupervisor, String workField, String firstName, String lastName, String email, String phoneNumber, String city){
         if(!ServerContextInitializer.getInstance().isTestMode() && !isValidPassword(password))
             return new Response<>("", true, "The password isn't strong enough");
@@ -269,6 +293,11 @@ public class UserController {
         return true;
     }
 
+    /**
+     * view all supervisors in the system by the admin
+     * @param currUser the admin's username
+     * @return a list of objects representing all the supervisors in the system wrapped in a response
+     */
     public Response<List<UserDTO>> getSupervisors(String currUser){
         UserDBDTO userDB;
         if (connectedUsers.containsKey(currUser)) {
@@ -297,6 +326,16 @@ public class UserController {
         }
     }
 
+    /**
+     * update the user's details
+     * @param currUser the user's username
+     * @param firstName the user's new first name
+     * @param lastName the user's new last name
+     * @param email the user's new email
+     * @param phoneNumber the user's new phone number
+     * @param city the user's new city
+     * @return successful response upon success. failure otherwise
+     */
     public Response<Boolean> updateInfo(String currUser, String firstName, String lastName, String email, String phoneNumber, String city){
 
         if(email.length() != 0 && !isValidEmailAddress(email))
@@ -363,6 +402,11 @@ public class UserController {
         }
     }
 
+    /**
+     * find and remove the @userToRemove from the supervisor that appointed him appointments
+     * @param user the supervisor that appointed the user @userToRemove
+     * @param userToRemove the user to be removed username
+     */
     private void findSupervisorAndRemoveAppointment(User user, String userToRemove) {//todo maybe return bool and check in removeUser
         Response<List<String>> appointeesRes = user.getAppointees();
         String userToRemoveWorkField = userDAO.getFullUser(userToRemove).getResult().getWorkField();
@@ -385,6 +429,14 @@ public class UserController {
 
     /**
         successful response on success. failure otherwise.
+     *///todo like this or otherwise? ^
+
+    /**
+     * assign schools to a user
+     * @param currUser the user's username
+     * @param userToAssign the user to be assigned schools username
+     * @param schools the schools to be assigned to @userToAssign
+     * @return a response of the successfulness of the action
      */
     public Response<Boolean> assignSchoolsToUser(String currUser, String userToAssign, List<String> schools){
         Response<Boolean> response;
@@ -412,6 +464,13 @@ public class UserController {
         }
     }
 
+    /**
+     * remove schools assigned to the user
+     * @param currUser user's username
+     * @param userToRemoveSchoolsName the user to have his schools removed username
+     * @param schools a list of all the schools symbols to be removed from the user @userToRemoveSchoolsName
+     * @return a response of the successfulness of the action
+     */
     public Response<Boolean> removeSchoolsFromUser(String currUser, String userToRemoveSchoolsName, List<String> schools){
         Response<Boolean> response;
         if (connectedUsers.containsKey(currUser)) {
@@ -454,6 +513,11 @@ public class UserController {
         return new User(userDAO.getFullUser(username).getResult()).hasSchool(symbol);
     }
 
+    /**
+     * get the instructor's usernames appointed by the supervisor @currUser
+     * @param currUser supervisor's username
+     * @return a list of all the instructors usernames appointed by @currUser wrapped in a response
+     */
     public Response<List<String>> getAppointedInstructors(String currUser){
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
@@ -477,6 +541,11 @@ public class UserController {
         }
     }
 
+    /**
+     * get all the users appointed by @currUser
+     * @param currUser the user's username
+     * @return a list of all the users appointed by @currUser wrapped in a response
+     */
     public Response<List<UserDTO>> getAppointedUsers(String currUser){
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
@@ -497,6 +566,11 @@ public class UserController {
         }
     }
 
+    /**
+     * given a username generate the appropriate DTO
+     * @param username user's username
+     * @return the DTO object representing the user with the username @username
+     */
     private UserDTO createUserDTOS(String username){
         UserDTO userDTO = new UserDTO();
         User user = new User(userDAO.getFullUser(username).getResult());
@@ -512,6 +586,11 @@ public class UserController {
         return userDTO;
     }
 
+    /**
+     * get all the users in the system
+     * @param currUser admin's username
+     * @return a list of all the users in the system wrapped in a response
+     */
     public Response<List<UserDTO>> getAllUsers(String currUser){
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
@@ -532,6 +611,14 @@ public class UserController {
         }
     }
 
+    /**
+     * change password to another user (given that @currUser is an admin or a supervisor that appointed @userToChangePassword
+     * @param currUser the user wishing to change password to @userToChangePassword username
+     * @param userToChangePassword username of the user to have his password changed
+     * @param newPassword the user - @userToChangePassword new password
+     * @param confirmPassword the user - @userToChangePassword new password again
+     * @return a response of the successfulness of the action
+     */
     public Response<Boolean> changePasswordToUser(String currUser, String userToChangePassword, String newPassword, String confirmPassword){
         if(!ServerContextInitializer.getInstance().isTestMode() && !isValidPassword(newPassword))
             return new Response<>(false, true, "The password isn't strong enough");
@@ -559,6 +646,14 @@ public class UserController {
         }
     }
 
+    /**
+     * allows to change your own password
+     * @param currUser the user's username
+     * @param currPassword the user's current password
+     * @param newPassword the user's new password
+     * @param confirmPassword the user's new password again password
+     * @return a response of the successfulness of the action
+     */
     public Response<Boolean> changePassword(String currUser, String currPassword, String newPassword, String confirmPassword){
         if(!ServerContextInitializer.getInstance().isTestMode() && !isValidPassword(newPassword))
             return new Response<>(false, true, "The password isn't strong enough");
@@ -586,6 +681,12 @@ public class UserController {
         }
     }
 
+    /**
+     * verifies that the provided password matches the user
+     * @param currUser username
+     * @param password password
+     * @return a response whether the user's password is correct
+     */
     public Response<Boolean> verifyUser(String currUser, String password){
         if(connectedUsers.containsKey(currUser)) {
             boolean verify = passwordEncoder.matches(password, userDAO.getPassword(currUser).getResult());
@@ -601,6 +702,11 @@ public class UserController {
         userDAO.insertUser(new UserDBDTO(user, passwordEncoder.encode(password)));
     }
 
+    /**
+     * allows to view the user's details
+     * @param currUser the username of the user requesting the info
+     * @return an object representation of the user wrapped in a response
+     */
     public Response<UserDTO> getUserInfo(String currUser){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
@@ -627,6 +733,19 @@ public class UserController {
         }
     }
 
+    /**
+     * transfer supervision to a new user
+     * @param currUser the admin's username
+     * @param currSupervisor the current supervisor to be replaced
+     * @param newSupervisor the new supervisor's username
+     * @param password the new supervisor's password
+     * @param firstName the new supervisor's first name
+     * @param lastName the new supervisor's last name
+     * @param email the new supervisor's email
+     * @param phoneNumber the new supervisor's phone number
+     * @param city the new supervisor's city
+     * @return a response of the successfulness of the action
+     */
     public Response<Boolean> transferSupervision(String currUser, String currSupervisor, String newSupervisor, String password, String firstName, String lastName, String email, String phoneNumber, String city){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
@@ -667,6 +786,13 @@ public class UserController {
         }
     }
 
+    /**
+     * transfer supervision to an existing user
+     * @param currUser the admin's username
+     * @param currSupervisor the current supervisor to be replaced
+     * @param newSupervisor the new supervisor's username
+     * @return a response of the successfulness of the action
+     */
     public Response<Boolean> transferSupervisionToExistingUser(String currUser, String currSupervisor, String newSupervisor){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
@@ -747,6 +873,13 @@ public class UserController {
     //Basket end
 
     //Survey start
+
+    /**
+     *
+     * @param currUser supervisor's username
+     * @param surveyId the survey's id
+     * @return a response of the successfulness of the action
+     */
     public Response<Boolean> hasCreatedSurvey(String currUser, String surveyId) {
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
@@ -757,6 +890,12 @@ public class UserController {
         }
     }
 
+    /**
+     * adds the survey id to the supervisor's surveys list
+     * @param currUser the supervisor creating the survey
+     * @param surveyId the survey id
+     * @return a response of the successfulness of the action containing the created survey id if successful
+     */
     public Response<String> createSurvey(String currUser, String surveyId) {
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
@@ -773,6 +912,12 @@ public class UserController {
         }
     }
 
+    /**
+     * removes the survey id from the supervisor's surveys list
+     * @param currUser the supervisor's username
+     * @param surveyId the survey id of the survey
+     * @return a response of the successfulness of the action containing the removed survey id if successful
+     */
     public Response<String> removeSurvey(String currUser, String surveyId) {
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
@@ -783,6 +928,11 @@ public class UserController {
         }
     }
 
+    /**
+     * verifies if the user is allows to publish the survey and provides the survey link
+     * @param username the supervisor's username
+     * @param surveyToken the token for the survey link
+     */
     public void notifySurveyCreation(String username, String surveyToken) {
         if(connectedUsers.containsKey(username)) {
             User user = connectedUsers.get(username);
@@ -799,6 +949,11 @@ public class UserController {
         // http://localhot:8080/survey/getSurvey/surveyID={surveyToken}
     }
 
+    /**
+     * get the surveys created by the user
+     * @param currUser the supervisor's username
+     * @return all the surveys submitted by the supervisor
+     */
     public Response<List<String>> getSurveys(String currUser){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
@@ -811,6 +966,12 @@ public class UserController {
     //Survey end
 
     //Goals start
+    /**
+     * get all the goals of the provided year from the supervisor's work field
+     * @param currUser the supervisor's username
+     * @param year the goals year
+     * @return all goals from the supervisor's work field of that year wrapped in a response
+     */
     public Response<List<GoalDTO>> getGoals(String currUser, Integer year){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
@@ -827,6 +988,13 @@ public class UserController {
         }
     }
 
+    /**
+     * add a goal to the work field in a provided year
+     * @param currUser the supervisor wishing to add the goal
+     * @param goalDTO an object representing the goal
+     * @param year the goal assigned year
+     * @return a response of the successfulness of the action
+     */
     public Response<Boolean> addGoal(String currUser, GoalDTO goalDTO, Integer year){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
@@ -843,6 +1011,13 @@ public class UserController {
         }
     }
 
+    /**
+     * remove a goal from the work field in a provided year
+     * @param currUser the supervisor wishing to remove the goal
+     * @param year the goal year
+     * @param goalId the goal's id
+     * @return a response of the successfulness of the action
+     */
     public Response<Boolean> removeGoal(String currUser, Integer year, int goalId) {
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
@@ -866,6 +1041,17 @@ public class UserController {
         return base64Encoder.encodeToString(randomBytes);
     }
 
+    /**
+     * register and assign a coordinator to a school
+     * @param currUser the user calling the function
+     * @param workField the coordinator's work field in case of an admin otherwise irrelevant
+     * @param firstName coordinator's first name
+     * @param lastName coordinator's last name
+     * @param email coordinator's email
+     * @param phoneNumber coordinator's phone number
+     * @param school coordinator's school symbol
+     * @return a response of the successfulness of the action
+     */
     public Response<Boolean> assignCoordinator(String currUser, String workField, String firstName, String lastName, String email, String phoneNumber, String school){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
@@ -890,6 +1076,13 @@ public class UserController {
         }
     }
 
+    /**
+     * get coordinator's info
+     * @param currUser the user calling the function
+     * @param workField the coordinator's work field in case of an admin otherwise irrelevant
+     * @param symbol the school symbol of the coordinator
+     * @return an object representing the coordinator
+     */
     public Response<UserDBDTO> getCoordinator(String currUser, String workField, String symbol){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
@@ -911,6 +1104,13 @@ public class UserController {
         }
     }
 
+    /**
+     * remove a coordinator from the system and from the school
+     * @param currUser the user calling the function
+     * @param workField the coordinator's work field in case of an admin otherwise irrelevant
+     * @param school the school symbol of the coordinator
+     * @return a response of the successfulness of the action
+     */
     public Response<Boolean> removeCoordinator(String currUser, String workField, String school){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
@@ -927,7 +1127,13 @@ public class UserController {
         }
     }
 
-    public Response<Boolean> sendCoordinatorEmails(String currUser, String surveyLink) {
+    /**
+     * 
+     * @param currUser the supervisor sending the emails
+     * @param surveyLink a link to the survey published
+     * @return a response of the successfulness of the action
+     */
+    public Response<Boolean> sendCoordinatorEmails(String currUser, String surveyLink) {//todo probably remove this and keep survey notification
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             if(user.isSupervisor().getResult()){
@@ -951,6 +1157,13 @@ public class UserController {
         }
     }
 
+    /**
+     * view the work plan on that month and year
+     * @param currUser the instructor wishing to see the his work plan
+     * @param year the year of the work plan
+     * @param month the month of the work plan
+     * @return an object representing the work plan
+     */
     public Response<WorkPlanDTO> viewWorkPlan(String currUser, Integer year, Integer month){
         if(connectedUsers.containsKey(currUser)) {
             User user = new User(userDAO.getFullUser(currUser).getResult());
@@ -967,6 +1180,14 @@ public class UserController {
         }
     }
 
+    /**
+     * view an instructor's work plan by his supervisor on that month and year
+     * @param currUser the supervisor wishing to see the @instructor's work plan
+     * @param instructor the instructor's username
+     * @param year the year of the work plan
+     * @param month the month of the work plan
+     * @return an object representing the work plan
+     */
     public Response<WorkPlanDTO> viewInstructorWorkPlan(String currUser, String instructor, Integer year, Integer month) {//todo test it but should be fine
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
@@ -983,12 +1204,20 @@ public class UserController {
         }
     }
 
-    public Response<Boolean> editActivity(String currUser, LocalDateTime currActStart, Integer year, LocalDateTime newActStart, LocalDateTime newActEnd){ //todo test it
+    /**
+     * edit the activity's schedule
+     * @param currUser the instructor wishing to change the activity date
+     * @param currActStart current activity starting date
+     * @param newActStart updated activity starting date
+     * @param newActEnd updated activity ending date
+     * @return a response of the successfulness of the action
+     */
+    public Response<Boolean> editActivity(String currUser, LocalDateTime currActStart, LocalDateTime newActStart, LocalDateTime newActEnd){ //todo test it
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);//todo maybe verify the dao was generated
-            Response<Boolean> editActivityRes = user.editActivity(year);//todo change active user info
+            Response<Boolean> editActivityRes = user.editActivity();//todo change active user info
             if(!editActivityRes.isFailure()){
-                return workPlanDAO.updateActivity(currUser, currActStart, year, newActStart, newActEnd);
+                return workPlanDAO.updateActivity(currUser, currActStart, newActStart, newActEnd);
             }
             else{
                 return new Response<>(null, true, editActivityRes.getErrMsg() + " / colliding activity hours");
@@ -1000,9 +1229,9 @@ public class UserController {
     }
 
     /**
-     * generate schedule for all instructors under current user
-     * @param currUser the supervisor wish to generate schedules
-     * @return response contains the work field of current user
+     * verify if the user is allowed to generate a schedules
+     * @param currUser the supervisor wishing to generate schedules
+     * @return response containing the work field of current user
      */
     public Response<String> generateSchedule(String currUser) {
         if (connectedUsers.containsKey(currUser)) {
@@ -1016,6 +1245,12 @@ public class UserController {
     //WorkPlan end
 
     //Monthly Report start
+
+    /**
+     * verify if the user is allowed to generate a monthly report
+     * @param currUser username
+     * @return a response of the successfulness of the action
+     */
     public Response<Boolean> canGenerateReport(String currUser) {
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);//todo maybe verify the dao was generated
@@ -1026,6 +1261,11 @@ public class UserController {
         }
     }
 
+    /**
+     * get user details for the monthly report
+     * @param currUser user wishing to generate a monthly report
+     * @return an object representing the user's monthly report details wrapped in a response
+     */
     public Response<UserInfoDTO> getUserReportInfo(String currUser) {
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);//todo maybe verify the dao was generated
@@ -1042,6 +1282,13 @@ public class UserController {
         }
     }
 
+    /**
+     * get the user's activities for the monthly report
+     * @param currUser user's username
+     * @param year the requested year
+     * @param month the requested year
+     * @return a list of all the user's activities from that month wrapped in a response
+     */
     public Response<List<UserActivityInfoDTO>> getUserActivities(String currUser, int year, int month) {
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);//todo maybe verify the dao was generated
@@ -1059,6 +1306,16 @@ public class UserController {
     }
     //Monthly Report end
 
+    /**
+     * edit the user's work time
+     * @param currUser the user setting work time
+     * @param workDay the work day of the week
+     * @param act1Start the date and time of the beginning of the first activity
+     * @param act1End the date and time of the end of the first activity
+     * @param act2Start the date and time of the beginning of the second activity
+     * @param act2End the date and time of the end of the second activity
+     * @return a response of the successfulness of the action
+     */
     public Response<Boolean> setWorkingTime(String currUser, int workDay, LocalTime act1Start, LocalTime act1End, LocalTime act2Start, LocalTime act2End){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);//todo maybe verify the dao was generated
@@ -1089,6 +1346,11 @@ public class UserController {
                 && act2Start.isBefore(act2End);
     }
 
+    /**
+     * get the instructors work time related details (workDay, act1Start, act1End, act2Start, act2End)
+     * @param instructor instructor
+     * @return an object representing the user's work time related fields wrapped by a response
+     */
     public Response<UserDBDTO> getWorkHours(String instructor) {
         return userDAO.getWorkingTime(instructor);
     }

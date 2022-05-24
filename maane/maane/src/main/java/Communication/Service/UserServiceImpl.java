@@ -357,8 +357,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public Response<Boolean> editActivity(String currUser, LocalDateTime currActStart, Integer year, LocalDateTime newActStart, LocalDateTime newActEnd) {
-        Response<Boolean> res = UserController.getInstance().editActivity(currUser, currActStart, year, newActStart, newActEnd);
+    public Response<Boolean> editActivity(String currUser, LocalDateTime currActStart, LocalDateTime newActStart, LocalDateTime newActEnd) {
+        Response<Boolean> res = UserController.getInstance().editActivity(currUser, currActStart, newActStart, newActEnd);
 
         if (res.isFailure())
             log.error("failed to edit {}'s activity ", currUser);

@@ -67,7 +67,7 @@ public interface UserService {
 
     Response<UserDBDTO> getWorkHours(String instructor);
 
-    Response<Boolean> editActivity(String currUser, LocalDateTime currActStart, Integer year, LocalDateTime newActStart, LocalDateTime newActEnd);
+    Response<Boolean> editActivity(String currUser, LocalDateTime currActStart, LocalDateTime newActStart, LocalDateTime newActEnd);
 
     Response<Boolean> changePasswordTester(String currUser, String newPassword);
 
