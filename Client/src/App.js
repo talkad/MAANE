@@ -54,8 +54,36 @@ import HelpIcon from '@mui/icons-material/Help';
 // TODO: save the state of the user between refreshes
 
 const help_text = {
-    'SYSTEM_MANAGER': [{title: "hi", description: "hello"}, {title: "hello", description: "there"}],
+    'SYSTEM_MANAGER': [{title: "ניהול משתמשים", description: (".במסך זה מופיעים כלל המשתמשים במערכת, מכל תחומי ההוראה ומכל התפקידים השונים")
+            .concat("\n").concat(":בפרט להצגת פרטי המשתמשים ניתן לבצע מגוון פעולות").concat("\n")
+            .concat("\n").concat(" ליצור משתמש חדש במערכת - ").concat("\n")
+            .concat("\n").concat(":עבור מפקח ניתן לבצע את הפעולות הבאות")
+            .concat("\n").concat(" לשנות לו סיסמה - ")
+            .concat("\n").concat(" לערוך את בתי הספר אשר בתחום אחריותו - ")
+            .concat("\n").concat(" להציג את פרטי המדריכים והמפקחים הכלליים הממונים תחתיו - ")
+            .concat("\n").concat(" להסיר משתמש קיים מהמערכת - ").concat("\n")
+            .concat("\n").concat(":עבור מדריך ניתן לבצע את הפעולות הבאות")
+            .concat("\n").concat(" לשנות לו סיסמה - ")
+            .concat("\n").concat(" לערוך את בתי הספר אשר בתחום אחריותו - ")
+            .concat("\n").concat(" להציג את פרטי המדריכים והמפקחים הכלליים הממונים תחתיו - ")
+            .concat("\n").concat(" לקדם את המדריך למפקח - ")
+            .concat("\n").concat(" להסיר משתמש קיים מהמערכת - ")},
+        {title: "בתי ספר", description: (".כדי להגיע לתפריט בתי הספר יש ללחוץ על 'בתי הספר' בתפריט הראשי")
+                .concat("\n").concat(".בעמוד זה ניתן לראות את פרטי בתי הספר הקיימים במערכת ולראות את אודותיו ").concat("\n")
+                .concat("\n").concat(":בפרט עמוד זה מכיל ")
+                .concat("\n").concat("מידע אדמיניסטרטיבי (שם המנהל, מיקום בית הספר ופרטי יצירת קשר) - ")
+                .concat("\n").concat("מידע חינוכי (מספר תלמידים, סוג בית הספר וסוג הפיקוח) - ")
+                .concat("\n").concat("רכזי בית הספר (שמם של הרכזים ופרטי יצירת קשר) - ")},
+        {title: "סלי הדרכה (בפיתוח)", description: (".כדי להגיע אל סלי ההדרכה יש ללחוץ על 'סלי ההדרכה' בתפריט הראשי")
+                .concat("\n").concat(".בעמוד זה ניתן לראות סלי הדרכה שונים במגוון רחב של תחומי למידה ").concat("\n")
+                .concat("\n").concat(".משתמשי המערכת יכולים לעלות חומרי הדרכה ולשתף אותם עם שאר המשתמשים ")
+                .concat("\n").concat(".ניתן לחפש סלי הדרכה על ידי שימוש בשורת החיפוש, אשר תניב את סלי ההדרכה המתאימים ביותר והפופולאריים ביותר ")
+                .concat("\n").concat(".המשתמשים יכולים לדרג את סלי ההדרכה השונים ולהוסיף ביקורת ובכך לתרום למשתמשים אחרים").concat("\n")
+                .concat("\n").concat("  :) עמוד זה נמצא בשלבי פיתוח מתקדמים - יש למה לחכות")}
+    ],
+
     'SUPERVISOR': [{title: "hi", description: "hello"}, {title: "hello", description: "there"}],
+
     'INSTRUCTOR': [{title: "ניהול לוח העבודה", description: (".במסך זה מופיע לוח שנה המכיל את הפעילויות שעליך לבצע")
             .concat("\n").concat(".'ניתן לראות את הפעילויות בחודשים השונים ע''י לחיצה על 'הקודם' או 'הבא ")
             .concat("\n").concat(".'בנוסף, ניתן לראות את שעות הפעילות על ידי לחיצה על כפתור 'היום ").concat("\n")
@@ -84,7 +112,6 @@ const help_text = {
                 .concat("\n").concat(".ניתן לחפש סלי הדרכה על ידי שימוש בשורת החיפוש, אשר תניב את סלי ההדרכה המתאימים ביותר והפופולאריים ביותר ")
                 .concat("\n").concat(".המשתמשים יכולים לדרג את סלי ההדרכה השונים ולהוסיף ביקורת ובכך לתרום למשתמשים אחרים").concat("\n")
                 .concat("\n").concat("  :) עמוד זה נמצא בשלבי פיתוח מתקדמים - יש למה לחכות")}
-
         ]
 }
 
@@ -94,7 +121,9 @@ const help_text = {
  * @returns {JSX.Element} the element
  */
 function HelpDialog(props){
-    const [helperText, setHelperText] = useState(help_text[window.sessionStorage.getItem('permission')])
+    const permission = window.sessionStorage.getItem('permission')
+
+    const [helperText, setHelperText] = useState(permission==null ? [] : help_text[permission])
 
     const help_title_string = "עזרה";
 
