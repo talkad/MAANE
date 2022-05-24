@@ -56,7 +56,36 @@ import HelpIcon from '@mui/icons-material/Help';
 const help_text = {
     'SYSTEM_MANAGER': [{title: "hi", description: "hello"}, {title: "hello", description: "there"}],
     'SUPERVISOR': [{title: "hi", description: "hello"}, {title: "hello", description: "there"}],
-    'INSTRUCTOR': [{title: "hi", description: "hello"}, {title: "hello", description: "there"}]
+    'INSTRUCTOR': [{title: "ניהול לוח העבודה", description: (".במסך זה מופיע לוח שנה המכיל את הפעילויות שעליך לבצע")
+            .concat("\n").concat(".'ניתן לראות את הפעילויות בחודשים השונים ע''י לחיצה על 'הקודם' או 'הבא ")
+            .concat("\n").concat(".'בנוסף, ניתן לראות את שעות הפעילות על ידי לחיצה על כפתור 'היום ").concat("\n")
+            .concat("\n").concat(":את לוח השנה אתה יכול לארגן כראות עיניך במספר דרכים שונות")
+            .concat("\n").concat("על ידי גרירת הפעילות באמצעות העכבר לחלון הזמן הרצוי - ")
+            .concat("\n").concat("על ידי לחיצה על כפתור 'עדכון לוח העבודה' וליצור פעילות חדשה - ")
+            .concat("\n").concat("על ידי לחיצה על כפתור 'עדכון לוח העבודה' והסרת פעילות קיימת - ")},
+        {title: "ניהול פרטים אישיים", description: (".כדי להגיע לאיזור האישי יש ללחוץ על 'פרופיל' בתפריט הראשי")
+                .concat("\n").concat(":בעמוד זה ניתן לעדכן את פרטיכם האישיים לרבות ").concat("\n")
+                .concat("\n").concat("שם פרטי ושם משפחה - ")
+                .concat("\n").concat("כתובת מייל אלקטרוני - ")
+                .concat("\n").concat("מספר טלפון - ")
+                .concat("\n").concat("עיר מגורים - ")
+                .concat("\n").concat("יום העבודה ושעות הפעילות - ")
+                .concat("\n").concat("סיסמה - ").concat("\n")
+                .concat("\n").concat(".בנוסף ניתן להוריד את דו''ח העבודה החודשי בהינתן שנה וחודש ")},
+        {title: "בתי ספר", description: (".כדי להגיע לתפריט בתי הספר יש ללחוץ על 'בתי הספר' בתפריט הראשי")
+                .concat("\n").concat(".בעמוד זה ניתן לראות את פרטי בתי הספר הקיימים במערכת ולראות את אודותיו ").concat("\n")
+                .concat("\n").concat(":בפרט עמוד זה מכיל ")
+                .concat("\n").concat("מידע אדמיניסטרטיבי (שם המנהל, מיקום בית הספר ופרטי יצירת קשר) - ")
+                .concat("\n").concat("מידע חינוכי (מספר תלמידים, סוג בית הספר וסוג הפיקוח) - ")
+                .concat("\n").concat("רכזי בית הספר (שמם של הרכזים ופרטי יצירת קשר) - ")},
+        {title: "סלי הדרכה (בפיתוח)", description: (".כדי להגיע אל סלי ההדרכה יש ללחוץ על 'סלי ההדרכה' בתפריט הראשי")
+                .concat("\n").concat(".בעמוד זה ניתן לראות סלי הדרכה שונים במגוון רחב של תחומי למידה ").concat("\n")
+                .concat("\n").concat(".משתמשי המערכת יכולים לעלות חומרי הדרכה ולשתף אותם עם שאר המשתמשים ")
+                .concat("\n").concat(".ניתן לחפש סלי הדרכה על ידי שימוש בשורת החיפוש, אשר תניב את סלי ההדרכה המתאימים ביותר והפופולאריים ביותר ")
+                .concat("\n").concat(".המשתמשים יכולים לדרג את סלי ההדרכה השונים ולהוסיף ביקורת ובכך לתרום למשתמשים אחרים").concat("\n")
+                .concat("\n").concat("  :) עמוד זה נמצא בשלבי פיתוח מתקדמים - יש למה לחכות")}
+
+        ]
 }
 
 /**
@@ -65,9 +94,10 @@ const help_text = {
  * @returns {JSX.Element} the element
  */
 function HelpDialog(props){
-    const [helperText, setHelperText] = useState([])
+    const [helperText, setHelperText] = useState(help_text[window.sessionStorage.getItem('permission')])
 
     const help_title_string = "עזרה";
+
 
     return (
         <Dialog titleStyle={{textAlign: "center"}} sx={{alignItems: "right"}} fullWidth maxWidth="sm" onClose={props.onClose} open={props.open}>
@@ -81,7 +111,8 @@ function HelpDialog(props){
                 {helperText.map((element) =>
                     <div>
                         <ListItem>
-                            <ListItemText primary={element.title} secondary={element.description} />
+                            <ListItemText primary={element.title}  primaryTypographyProps={{ style: { textAlign:"right",  fontWeight:"bold"} }}
+                                          secondary={element.description} secondaryTypographyProps={{ style: { textAlign:"right", whiteSpace: "pre-line" } }}/>
 
                         </ListItem>
                     </div>
