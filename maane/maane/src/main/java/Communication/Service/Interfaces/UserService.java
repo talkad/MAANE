@@ -57,8 +57,6 @@ public interface UserService {
 
     Response<Boolean> transferSupervisionToExistingUser(String currUser, String currSupervisor, String newSupervisor);
 
-    Response<WorkPlanDTO> getWorkPlan(String username, int month);
-
     Response<UserDBDTO> getCoordinator(String currUser, String workField, String symbol);
 
     Response<List<String>> allWorkFields(String currUser);

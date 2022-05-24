@@ -260,12 +260,6 @@ public class UserController {
                 .body(service.transferSupervisionToExistingUser(sessionHandler.getUsernameByToken(token).getResult(), (String)body.get("currSupervisor"), (String)body.get("newSupervisor")));
     }
 
-    @GetMapping(value="/getWorkPlan/month={month}")
-    public ResponseEntity<Response<WorkPlanDTO>> getWorkPlan(@RequestHeader(value = "Authorization") String token, @PathVariable("month") Integer month){
-        return ResponseEntity.ok()
-                .body(service.getWorkPlan(sessionHandler.getUsernameByToken(token).getResult(), month));
-    }
-
     @GetMapping(value="/getCoordinator/workfield={workfield}&symbol={symbol}")
     public ResponseEntity<Response<UserDBDTO>> getCoordinator(@RequestHeader(value = "Authorization") String token, @PathVariable("workfield") String workfield, @PathVariable("symbol") String symbol){
         return ResponseEntity.ok()

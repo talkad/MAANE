@@ -304,11 +304,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public Response<WorkPlanDTO> getWorkPlan(String username, int month) {
-        return null;
-    }
-
-    @Override
     public Response<UserDBDTO> getCoordinator(String currUser, String workField, String symbol) {
         Response<UserDBDTO> res = UserController.getInstance().getCoordinator(currUser, workField, symbol);
 

@@ -230,15 +230,6 @@ public class ProxyBridgeUser implements UserService {
     }
 
     @Override
-    public Response<WorkPlanDTO> getWorkPlan(String username, int month) {
-        if (real != null) {
-            return real.getWorkPlan(username, month);
-        }
-
-        return new Response<>(null, true, "not implemented");
-    }
-
-    @Override
     public Response<UserDBDTO> getCoordinator(String currUser, String workField, String symbol) {
         if (real != null) {
             return real.getCoordinator(currUser, workField, symbol);

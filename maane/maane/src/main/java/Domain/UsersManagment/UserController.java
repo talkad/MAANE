@@ -1128,7 +1128,7 @@ public class UserController {
     }
 
     /**
-     * 
+     *
      * @param currUser the supervisor sending the emails
      * @param surveyLink a link to the survey published
      * @return a response of the successfulness of the action
