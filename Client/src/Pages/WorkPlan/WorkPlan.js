@@ -43,13 +43,19 @@ const localizer = momentLocalizer(moment); // localizer to represent the data ac
 //     }
 // ]
 
+
 const myEventsList = [
     {
-        title: "בטיחות במעבדה",
-        start: new Date(),
-        end: new Date(),
+        title: "dunno",
+        start: new Date(2022, 4, 13, 8, 0, 0), // that's how you do it
+        end: new Date(2022, 4, 13, 10, 0, 0),
         allDay: false,
         resource: "https://momentjs.com/",
+    },
+    {
+        title: "בטיחות במעבדה",
+        start: new Date(2022, 4, 13, 13, 0, 0), // that's how you do it
+        end: new Date(2022, 4, 13, 14, 0, 0),
     },
 ]
 
@@ -65,6 +71,8 @@ const messages = {
 }
 
 export default function WorkPlan(){
+    const [dataDate, setDataDate] = useState(new Date())
+    const [viewingDate, setViewingDate] = useState(new Date())
     const [eventList, setEventList] = useState(myEventsList)
 
     const page_title = "לוח העבודה שלי";
@@ -73,8 +81,9 @@ export default function WorkPlan(){
      * sends a request to the server to get work plan of the current user
      */
     useEffect(() => {
-        let currentYear = new Date().getFullYear();
-        let currentMonth = new Date().getMonth();//todo aviad fit to given date by the calendar
+        console.log(new Date())
+        let currentYear = dataDate.getFullYear();
+        let currentMonth = dataDate.getMonth();
 
         new Connection().getWorkPlan(currentYear, currentMonth, arrangeActivities);
     }, []);
@@ -98,6 +107,29 @@ export default function WorkPlan(){
         }
     }
 
+    /**
+     * onNavigate handler for when the user changes the viewed dates
+     * @param newDate
+     */
+    const onNavigate = (newDate) => {
+        if (newDate.getMonth() !== dataDate.getMonth()){
+            setDataDate(newDate)
+
+            // calling for new data to view
+            new Connection().getWorkPlan(newDate.getFullYear(), newDate.getMonth(), arrangeActivities);
+        }
+
+        setViewingDate(newDate)
+    }
+
+    const moveEvent = (event, start, end) => {
+        console.log(event)
+    }
+
+    const resizeEvent = (event, start, end) => {
+
+    }
+
     return (
         // all the spaces around are for placing the calendar
         <Space.Fill>
@@ -106,15 +138,18 @@ export default function WorkPlan(){
                 <Space.Left size="5%"/>
                 <Space.Fill>
                     {/* the calendar */}
+                    {/*todo: for some reason when dragging on month view it's inverted*/}
                     <h1>{page_title}</h1>
                     <DnDCalendar
+                        date={viewingDate}
+                        events={eventList}
                         messages={messages}
                         localizer={localizer}
-                        events={eventList}
-                        resizeable={false}
-                        draggableAccessor={(event) => true}
-                        startAccessor="start"
-                        endAccessor="end"
+                        onNavigate={onNavigate}
+                        onEventDrop={moveEvent}
+                        onEventResize={resizeEvent}
+                        popup
+                        resizable
                         rtl={true}
                     />
                 </Space.Fill>
