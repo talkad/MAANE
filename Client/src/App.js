@@ -215,7 +215,7 @@ const help_text = {
 function HelpDialog(props){
     const permission = window.sessionStorage.getItem('permission')
 
-    const [helperText, setHelperText] = useState(permission==null ? [] : help_text[permission])
+    const [helperText, setHelperText] = useState(props.userType === null ? [] : help_text[props.userType])
 
     const help_title_string = "עזרה";
 

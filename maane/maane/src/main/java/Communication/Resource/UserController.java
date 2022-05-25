@@ -284,7 +284,7 @@ public class UserController {
                 .body(service.setWorkingTime(sessionHandler.getUsernameByToken(token).getResult(), (int)body.get("workDay"), (LocalTime) body.get("act1Start"), (LocalTime) body.get("act1End"), (LocalTime) body.get("act2Start"), (LocalTime) body.get("act2End")));
     }
 
-    @GetMapping(value="/getWorkHours") //todo aviad
+    @GetMapping(value="/getWorkHours")
     public ResponseEntity<Response<UserDBDTO>> getWorkHours(@RequestHeader(value = "Authorization") String token){
         return ResponseEntity.ok()
                 .body(service.getWorkHours(sessionHandler.getUsernameByToken(token).getResult()));

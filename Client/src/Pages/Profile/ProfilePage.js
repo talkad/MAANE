@@ -77,10 +77,10 @@ function InfoTabPanel(props){
     const [pickedDate, setPickedDate] = useState(new Date())
 
     const [pickedDayOfWeek, setPickedDayOfWeek] = useState(props.workHours.workDay);
-    const [firstActivityStart, setFirstActivityStart] = useState(Date.parse(props.workHours.act1Start))
-    const [firstActivityEnd, setFirstActivityEnd] = useState(props.workHours.act1End)
-    const [secondActivityStart, setSecondActivityStart] = useState(props.workHours.act2Start)
-    const [secondActivityEnd, setSecondActivityEnd] = useState(props.workHours.act2End)
+    const [firstActivityStart, setFirstActivityStart] = useState(new Date(`2011-10-10T${props.workHours.act1Start}`)) // no use for the date only the time here
+    const [firstActivityEnd, setFirstActivityEnd] = useState(new Date(`2011-10-10T${props.workHours.act1End}`))
+    const [secondActivityStart, setSecondActivityStart] = useState(new Date(`2011-10-10T${props.workHours.act2Start}`))
+    const [secondActivityEnd, setSecondActivityEnd] = useState(new Date(`2011-10-10T${props.workHours.act2End}`))
     const [workHoursError, setWorkHoursError] = useState(false)
 
     const [error, setError] = useState(false);
@@ -218,7 +218,9 @@ function InfoTabPanel(props){
         }
         else{
             setWorkHoursError(false)
-            new Connection().setWorkHours(pickedDayOfWeek, firstActivityStart, firstActivityEnd, secondActivityStart, secondActivityEnd, saveWorkHoursCallback)
+            new Connection().setWorkHours(pickedDayOfWeek, firstActivityStart.toLocaleTimeString('en-GB'),
+                firstActivityEnd.toLocaleTimeString('en-GB'), secondActivityStart.toLocaleTimeString('en-GB'),
+                secondActivityEnd.toLocaleTimeString('en-GB'), saveWorkHoursCallback)
         }
     }
 
