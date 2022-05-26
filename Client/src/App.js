@@ -516,8 +516,8 @@ function App(){
 
                             {(type !== "GUEST") && <Route path="schools" element={<SchoolsManagement userType={type}/>}/>}
 
-                            {(type === "SUPERVISOR" || type === "INSTRUCTOR") &&
-                                <Route path="guidingBasketsSearch" element={<GuidingBaskets/>}/>}
+                            {(type === 'SYSTEM_MANAGER' || type === "SUPERVISOR" || type === "INSTRUCTOR") &&
+                                <Route path="guidingBasketsSearch" element={<GuidingBaskets />}/>}
 
                             {(type === "SUPERVISOR" || type === "INSTRUCTOR") &&
                                 <Route path="workReport" element={<WorkReport/>}/>}
