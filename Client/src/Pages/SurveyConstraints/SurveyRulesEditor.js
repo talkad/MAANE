@@ -117,12 +117,10 @@ export default function SurveyRulesEditor(){
      */
     const arrangeGoalsData = (data) => {
         if(!data.failure){
-
             for (const row of data.result){
                 setGoals(goals => [...goals, {value: row.goalId, description: row.title}]);
             }
         }
-
     }
 
     /**

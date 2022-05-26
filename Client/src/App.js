@@ -250,6 +250,7 @@ function App(){
     const [hideBars, setHideBars] = useState(false);
     const [openBackdrop, setOpenBackdrop] = useState(false);
     const [name, setName] = useState('');
+    const [schools, setSchools] = useState([])
 
     // authentication related
     const [authAvailability, setAuthAvailability] = useState(false);
@@ -281,7 +282,9 @@ function App(){
                 new Connection().getUserSchools(arrangeSchools)
             }
         }
-
+        else{
+            setSchools(JSON.parse(window.sessionStorage.getItem('schools')))
+        }
 
 
     }, [type])
@@ -297,6 +300,7 @@ function App(){
             }
 
             let schools_data = data.result.map(mapFunc);
+            setSchools(schools_data)
             window.sessionStorage.setItem('schools', JSON.stringify(schools_data));
         }
     }
@@ -538,10 +542,10 @@ function App(){
                                 <Route path="goalsManagement" element={<GoalsManagement/>}/>}
 
                             {(type === "SUPERVISOR" || type === "SYSTEM_MANAGER") &&
-                                <Route path="home" element={<UsersManagement userType={type} setAuthAvailability={setAuthAvailability} setAuthCallBack={setAuthCallback} setAuthCalleePage={setAuthCalleePage} setAuthGoToPage={setAuthGoToPage} setHideBars={setHideBars}/>}/>}
+                                <Route path="home" element={<UsersManagement userType={type} schools={schools} setAuthAvailability={setAuthAvailability} setAuthCallBack={setAuthCallback} setAuthCalleePage={setAuthCalleePage} setAuthGoToPage={setAuthGoToPage} setHideBars={setHideBars}/>}/>}
 
                             {type === "INSTRUCTOR" &&
-                                <Route path="home" element={<WorkPlan/>}/>}
+                                <Route path="home" element={<WorkPlan schools={schools}/>}/>}
 
                             {type === "GENERAL_SUPERVISOR" &&
                                 <Route path="home" element={<InfoViewer/>}/>}

@@ -500,7 +500,7 @@ function EditSchoolsDialog(props){
     const [searchError, setSearchError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
 
-    const [schoolsToSearch] = useState(JSON.parse(window.sessionStorage.getItem('schools')))
+    const [schoolsToSearch] = useState(props.schools)
     const [selectedSchoolSearchID, setSelectedSchoolSearchID] = useState('');
     const [searchText, setSearchText] = useState('');
 
@@ -1144,6 +1144,7 @@ export default function UsersManagement(props){
                     selectedUser={selectedUser}
                     selectedName={selectedName}
                     selectedSchools={selectedSchools}
+                    schools={props.schools}
                     open={openEditSchoolsDialog}
                     onClose={handleCloseEditSchoolsDialog}
                     addSchoolCallback={handleUserAddSchool}

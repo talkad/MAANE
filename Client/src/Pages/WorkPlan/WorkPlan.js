@@ -12,10 +12,232 @@ import 'react-big-calendar/lib/addons/dragAndDrop/styles.css'
 
 import 'moment/locale/he'
 import NotificationSnackbar from "../../CommonComponents/NotificationSnackbar";
+import {
+    Alert, Autocomplete,
+    Box,
+    Button,
+    Collapse, Dialog, DialogTitle,
+    FormControl, Grid,
+    InputLabel, MenuItem,
+    Paper, Select,
+    Stack,
+    TextField,
+    Typography
+} from "@mui/material";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
+import {DateTimePicker, StaticDateTimePicker} from "@mui/x-date-pickers";
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { he } from "date-fns/locale";
 
 const DnDCalendar = withDragAndDrop(Calendar)
 
 const localizer = momentLocalizer(moment); // localizer to represent the data according to our location (israel)
+
+function NewActivityForm(props) {
+    const [title, setTitle] = useState('');
+    const [selectedGoal, setSelectedGoal] = useState(-1)
+    const [selectedSchoolSearchID, setSelectedSchoolSearchID] = useState(-1)
+    const [searchText, setSearchText] = useState('')
+    const [activityStart, setActivityStart] = useState(new Date())
+    const [activityEnd, setActivityEnd] = useState(new Date())
+
+
+    const [goals, setGoals] = useState([])
+
+    // errors
+    const [error, setError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+
+    // snackbar
+    const [openSnackbar, setOpenSnackbar] = useState(false)
+
+    const form_title_string = "הוספת פעילות חדשה";
+    const form_title_field_label_string = "כותרת הפעילות";
+    const form_choose_goal_string = "בחירת יעד";
+    const form_goal_string = "יעד";
+    const search_school_string = "חיפוש בתי ספר";
+    const activity_start_label_string = "תאריך ושעת התחלה";
+    const activity_end_label_string = "תאריך ושעת סיום";
+    const form_add_button_string = "הוספ/י פעילות";
+
+    useEffect(() => {
+        let currentYear = new Date().getFullYear();
+        // TODO: instructor can't get goals
+        new Connection().getGoals(currentYear, arrangeGoalsData) // getting the goals
+    }, []);
+
+    /**
+     * arranges the data received from the server regarding the goals
+     * @param data the data from the server
+     */
+    const arrangeGoalsData = (data) => {
+        if(!data.failure){
+            for (const row of data.result){
+                setGoals(goals => [...goals, {value: row.goalId, description: row.title}]);
+            }
+        }
+    }
+
+    /**
+     * handles the submission of the add goal form (collecting and sending the data of the form)
+     * @param event
+     */
+    const handleSubmit = (event) => {
+        event.preventDefault();
+
+        if(title.trim() === '' || selectedGoal === -1 || selectedSchoolSearchID === -1){
+            setError(true);
+            setErrorMessage("נא למלא את כל השדות");
+        }
+        else{
+            setError(false);
+            props.callback(title, selectedGoal, selectedSchoolSearchID, activityStart, activityEnd)
+        }
+    }
+
+    return (
+        <Paper sx={{marginTop: "1%"}} elevation={2}>
+
+            <Stack
+                component="form"
+                onSubmit={handleSubmit}
+                spacing={2}
+                sx={{
+                    '& .MuiTextField-root': { width: '100%' },
+                    paddingBottom: "1%",
+                    paddingTop: "1%",
+                    paddingLeft: "1%",
+                    paddingRight: "1%"
+                }}
+                noValidate
+                autoComplete="off">
+
+                <Typography sx={{paddingLeft: "1%"}} variant="h5">{form_title_string}</Typography>
+
+                {/*alert*/}
+                <Collapse in={error}>
+                    <Alert id={"add_activity_alert"} severity="error">{errorMessage}</Alert>
+                </Collapse>
+
+                {/*form title*/}
+                <TextField
+                    id={"add_activity_title"}
+                    name="title"
+                    value={title}
+                    onChange={(event) => setTitle(event.target.value)}
+                    label={form_title_field_label_string}
+                    error={error && title.trim() === ''}
+                />
+
+                {/*form goal select*/}
+                <FormControl error={error && selectedGoal === -1} sx={{width: "40%"}}>
+                    <InputLabel>{form_goal_string}</InputLabel>
+                    <Select
+                        id={"add_activity_goal_selection"}
+                        value={selectedGoal}
+                        label={form_goal_string}
+                        onChange={(event) => setSelectedGoal(event.traget.value)}
+                    >
+                        <MenuItem value={-1}>{form_choose_goal_string}</MenuItem>
+                        {goals.map(goal => <MenuItem value={goal.value}>{goal.description}</MenuItem>)}
+                    </Select>
+                </FormControl>
+
+                {/*school search*/}
+                <Autocomplete
+                    freeSolo
+                    id="search-schools"
+                    disableClearable
+                    onChange={(event, newValue) => {
+                        setSelectedSchoolSearchID(newValue.id)
+                    }}
+                    onInputChange={(event, newInputValue) => {
+                        setSearchText(newInputValue);
+                    }}
+                    options={props.schools}
+                    renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            label={search_school_string}
+                            InputProps={{
+                                ...params.InputProps,
+                                type: 'search',
+                            }}
+                            error={error && selectedSchoolSearchID === -1}
+                            sx={{marginBottom: "2%"}}
+                        />
+                    )}
+                    fullWidth
+                />
+
+                {/*activity start*/}
+                <LocalizationProvider locale={he} dateAdapter={AdapterDateFns}>
+                    <DateTimePicker
+                        displayStaticWrapperAs="desktop"
+                        openTo="year"
+                        label={activity_start_label_string}
+                        value={activityStart}
+                        onChange={(newValue) => {
+                            setActivityStart(newValue);
+                        }}
+                        renderInput={(params) => <TextField {...params} />}
+                    />
+                </LocalizationProvider>
+
+                {/*activity start*/}
+                <LocalizationProvider locale={he} dateAdapter={AdapterDateFns}>
+                    <DateTimePicker
+                        displayStaticWrapperAs="desktop"
+                        openTo="year"
+                        label={activity_end_label_string}
+                        value={activityEnd}
+                        onChange={(newValue) => {
+                            setActivityEnd(newValue);
+                        }}
+                        renderInput={(params) => <TextField {...params} />}
+                    />
+                </LocalizationProvider>
+
+                {/*form submit button*/}
+                <Button id={"add_activity_submit_button"} type="submit" variant={"contained"} sx={{width: "20%", marginBottom: "1%"}}>{form_add_button_string}</Button>
+            </Stack>
+            {/*notification snackbar*/}
+            <NotificationSnackbar
+                open={openSnackbar}
+                setOpen={setOpenSnackbar}
+                severity={'error'}
+                message={errorMessage}/>
+        </Paper>
+    );
+}
+
+function RemoveActivityDialog(props){
+    const title_string = "האם את/ה בטוח/ה שהינך רוצה למחוק את הפעילות";
+    const delete_string = "מחק/י";
+    const cancel_string = "ביטול";
+
+    const handleSubmitDeletion = () => {
+        props.callback(props.activityStart);
+    }
+
+    return (
+        <Dialog id={"remove_activity_dialog"} titleStyle={{textAlign: "center"}} sx={{alignItems: "right"}} fullWidth maxWidth="sm" onClose={props.onClose} open={props.open}>
+            <DialogTitle><Typography variant="h5" align="center">?{title_string}</Typography></DialogTitle>
+            <Grid container justifyContent="center" spacing={0}>
+                <Grid item align="center" xs={6}>
+                    {/*the cancel button*/}
+                    <Button id={"remove_activity_cancel"} onClick={() => props.onClose()} sx={{marginBottom: 1, width: "50%"}} variant="outlined">{cancel_string}</Button>
+                </Grid>
+                <Grid item align="center" xs={6}>
+                    {/*the delete button*/}
+                    <Button id={"remove_activity_submit"} onClick={() => handleSubmitDeletion()} sx={{marginBottom: 1, width: "50%"}} color="error" variant="outlined">{delete_string}</Button>
+                </Grid>
+            </Grid>
+        </Dialog>
+    )
+}
 
 // dummy data for offline testing
 // const myEventsList = [
@@ -43,6 +265,7 @@ const localizer = momentLocalizer(moment); // localizer to represent the data ac
 //         resource: "https://momentjs.com/",
 //     }
 // ]
+
 
 // TODO: agree on date format
 
@@ -72,10 +295,18 @@ const messages = {
     agenda: "אג'נדה",
 }
 
-export default function WorkPlan(){
+export default function WorkPlan(props){
     const [dataDate, setDataDate] = useState(new Date())
     const [viewingDate, setViewingDate] = useState(new Date())
     const [eventList, setEventList] = useState(myEventsList)
+
+    // add activity data
+    const [addButtonPressed, setAddButtonPressed] = useState(false)
+    const [showNewActivityForm, setShowNewActivityForm] = useState(false)
+
+    // remove activity data
+    const [openRemoveDialog, setOpenRemoveDialog] = useState(false);
+    const [selectedActivityStart, setSelectedActivityStart] = useState('');
 
     // snackbar data
     const [openSnackbar, setOpenSnackbar] = useState(false)
@@ -83,6 +314,7 @@ export default function WorkPlan(){
     const [snackbarMessage, setSnackbarMessage] = useState('')
 
     const page_title = "לוח העבודה שלי";
+    const add_activity_button_string = 'הוספת פעילות';
 
     /**
      * sends a request to the server to get work plan of the current user
@@ -170,6 +402,38 @@ export default function WorkPlan(){
     }
 
     /**
+     * a callback function for the request to add a new activity
+     * @param data the response from the server
+     */
+    const addActivityCallback = (data) => {
+        if(data.failure){
+            setOpenSnackbar(true)
+            setSnackbarSeverity('error')
+            snackbarMessage('אירעה שגיאה. הפעילות לא הוספה')
+        }
+        else{
+            setOpenSnackbar(true)
+            setSnackbarSeverity('success')
+            snackbarMessage('הפעילות הוספה בהצלחה')
+
+            // calling for new data to view
+            new Connection().getWorkPlan(dataDate.getFullYear(), dataDate.getMonth(), arrangeActivities);
+        }
+    }
+
+    /**
+     * handler for adding a new activity
+     * @param title the title of the activity
+     * @param goalID the goal to which the activity is related
+     * @param schoolID the school to which the activity is related
+     * @param startDate the start date and time of the activity
+     * @param endDate the end date and time of the activity
+     */
+    const handleAddActivity = (title, goalID, schoolID, startDate, endDate) => {
+        new Connection().addActivity(startDate, schoolID, goalID, title, endDate, addActivityCallback)
+    }
+
+    /**
      * a callback function for the request to remove an event
      * @param data the response from the server about the request
      */
@@ -190,11 +454,20 @@ export default function WorkPlan(){
     }
 
     /**
+     * handler for removing an activity
+     * @param activityStart the start date and time of the activity to remove
+     */
+    const handleRemoveActivity = (activityStart) => {
+        new Connection().removeActivity(activityStart, eventRemoveCallback)
+    }
+
+    /**
      * onDoubleClick on event handler. used for removing an activity
      * @param event the doubled clicked event
      */
     const onDoubleClickEvent = (event) => {
-        new Connection().removeActivity(event.start, eventRemoveCallback)
+        setOpenRemoveDialog(true)
+        setSelectedActivityStart(event.start)
     }
 
     return (
@@ -203,10 +476,21 @@ export default function WorkPlan(){
             <Space.Top size="5%"/>
             <Space.Fill>
                 <Space.Left size="5%"/>
-                <Space.Fill>
+                <Space.Fill scrollable>
+
+                    <h1>{page_title}</h1>
+                    <Box sx={{width: '80%', marginBottom: '1%'}}>
+                        <Button id={"work_plan_add_activity_collapse_button"} onClick={function () {setShowNewActivityForm(!showNewActivityForm); setAddButtonPressed(!addButtonPressed)}}
+                                variant={addButtonPressed ? "outlined" : "contained"} startIcon={addButtonPressed ? <ExpandLessIcon/> : <ExpandMoreIcon/>}>
+                            {add_activity_button_string}</Button>
+                        {/*collapsed new goal form*/}
+                        <Collapse sx={{width: "40%"}} in={showNewActivityForm}>
+                            <NewActivityForm schools={props.schools} callback={handleAddActivity}/>
+                        </Collapse>
+                    </Box>
+
                     {/* the calendar */}
                     {/*todo: for some reason when dragging on month view it's inverted*/}
-                    <h1>{page_title}</h1>
                     <DnDCalendar
                         date={viewingDate}
                         events={eventList}
@@ -219,6 +503,14 @@ export default function WorkPlan(){
                         popup
                         resizable
                         rtl={true}
+                    />
+
+                    {/*remove activity dialog*/}
+                    <RemoveActivityDialog
+                        open={openRemoveDialog}
+                        activityStart={selectedActivityStart}
+                        onClose={() => setOpenRemoveDialog(false)}
+                        callback={handleRemoveActivity}
                     />
 
                     {/*notification snackbar*/}
