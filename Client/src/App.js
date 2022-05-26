@@ -330,7 +330,6 @@ function App(){
     const drawer = (
         <Space.Fill>
             <Toolbar />
-            {/*TODO: show buttons based on permissions*/}
             <List>
                 {/*home button*/}
                 <ListItem button onClick={
@@ -345,7 +344,7 @@ function App(){
                     <ListItemText primary="בית"/>
                 </ListItem>
                 {/*profile button*/}
-                <ListItem button onClick={
+                {(type === 'SUPERVISOR' || type === 'INSTRUCTOR') && <ListItem button onClick={
                     function () {
                         navigate(`user/profile`, {replace: false});
                         setOpenSidebar(false);
@@ -355,9 +354,21 @@ function App(){
                         <AccountBoxIcon/>
                     </ListItemIcon>
                     <ListItemText primary="פרופיל"/>
-                </ListItem>
+                </ListItem>}
+                {/*goals management button*/}
+                {(type === 'SUPERVISOR' || type === 'SYSTEM_MANAGER') && <ListItem button onClick={
+                    function () {
+                        navigate(`user/goalsManagement`, {replace: false});
+                        setOpenSidebar(false);
+                        setOpenBackdrop(false);
+                    }}>
+                    <ListItemIcon>
+                        <TaskIcon/>
+                    </ListItemIcon>
+                    <ListItemText primary='ניהול יעדים'/>
+                </ListItem>}
                 {/*survey button*/}
-                <ListItem button onClick={
+                {(type === 'SUPERVISOR' || type === 'SYSTEM_MANAGER') &&<ListItem button onClick={
                     function () {
                         navigate(`survey/menu`, {replace: false});
                         setOpenSidebar(false);
@@ -367,6 +378,18 @@ function App(){
                         <PollIcon/>
                     </ListItemIcon>
                     <ListItemText primary="סקרים"/>
+                </ListItem>}
+                {/*schools button*/}
+                <ListItem button onClick={
+                    function () {
+                        navigate(`user/schools`, {replace: false});
+                        setOpenSidebar(false);
+                        setOpenBackdrop(false);
+                    }}>
+                    <ListItemIcon>
+                        <SchoolIcon/>
+                    </ListItemIcon>
+                    <ListItemText primary="בתי ספר"/>
                 </ListItem>
                 {/*guiding baskets button*/}
                 <ListItem button onClick={
@@ -379,42 +402,6 @@ function App(){
                         <ShoppingBasketIcon/>
                     </ListItemIcon>
                     <ListItemText primary="סלי הדרכה"/>
-                </ListItem>
-                {/*work report button*/}
-                <ListItem button onClick={
-                    function () {
-                        navigate(`user/workReport`, {replace: false});
-                        setOpenSidebar(false);
-                        setOpenBackdrop(false);
-                    }}>
-                    <ListItemIcon>
-                        <SummarizeIcon/>
-                    </ListItemIcon>
-                    <ListItemText primary='דו"ח עבודה'/>
-                </ListItem>
-                {/*goals management button*/}
-                <ListItem button onClick={
-                    function () {
-                        navigate(`user/goalsManagement`, {replace: false});
-                        setOpenSidebar(false);
-                        setOpenBackdrop(false);
-                    }}>
-                    <ListItemIcon>
-                        <TaskIcon/>
-                    </ListItemIcon>
-                    <ListItemText primary='ניהול יעדים'/>
-                </ListItem>
-                {/*schools button*/}
-                <ListItem button onClick={
-                    function () {
-                        navigate(`user/schools`, {replace: false});
-                        setOpenSidebar(false);
-                        setOpenBackdrop(false);
-                    }}>
-                    <ListItemIcon>
-                        <SchoolIcon/>
-                    </ListItemIcon>
-                    <ListItemText primary="בתי ספר"/>
                 </ListItem>
             </List>
         </Space.Fill>
