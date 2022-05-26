@@ -1,5 +1,6 @@
 package Communication.Service;
 
+import Communication.DTOs.ActivityDTO;
 import Communication.DTOs.GoalDTO;
 import Communication.DTOs.UserDTO;
 import Communication.DTOs.WorkPlanDTO;
@@ -354,6 +355,30 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public Response<Boolean> editActivity(String currUser, LocalDateTime currActStart, LocalDateTime newActStart, LocalDateTime newActEnd) {
         Response<Boolean> res = UserController.getInstance().editActivity(currUser, currActStart, newActStart, newActEnd);
+
+        if (res.isFailure())
+            log.error("failed to edit {}'s activity ", currUser);
+        else
+            log.info("edited {}'s activity", currUser);
+
+        return res;
+    }
+
+    @Override
+    public Response<Boolean> addActivity(String currUser, LocalDateTime startAct, ActivityDTO activity) {
+        Response<Boolean> res = UserController.getInstance().addActivity(currUser, startAct, activity);
+
+        if (res.isFailure())
+            log.error("failed to edit {}'s activity ", currUser);
+        else
+            log.info("edited {}'s activity", currUser);
+
+        return res;
+    }
+
+    @Override
+    public Response<Boolean> removeActivity(String currUser, LocalDateTime startAct) {
+        Response<Boolean> res = UserController.getInstance().removeActivity(currUser, startAct);
 
         if (res.isFailure())
             log.error("failed to edit {}'s activity ", currUser);

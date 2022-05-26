@@ -17,6 +17,7 @@ import java.util.TimeZone;
 
 @Repository
 public class WorkPlanQueries {
+
     private static class CreateSafeThreadSingleton {
         private static final WorkPlanQueries INSTANCE = new WorkPlanQueries();
     }
@@ -62,34 +63,6 @@ public class WorkPlanQueries {
         if (activity == null) return "";
         return activity.getSchoolId() + " " + activity.getGoalId().toString() + " " + activity.getTitle();
     }
-
-/*    public Response<WorkPlanDTO> getUserWorkPlanByYear(String username, Integer year)  {
-        Connect.createConnection();
-        String sql = "SELECT * FROM \"WorkPlans\" WHERE username = ? AND year = ?";
-        PreparedStatement statement;
-        WorkPlanDTO workPlanDTO;
-        try {
-            statement = Connect.conn.prepareStatement(sql);
-            statement.setString(1, username);
-            statement.setInt(2, year);
-            ResultSet result = statement.executeQuery();
-
-            List<Pair<LocalDateTime, ActivityDTO>> calendar = new LinkedList<>();
-            while(result.next()) {
-                LocalDateTime date = result.getTimestamp("date").toInstant().atZone(TimeZone.getTimeZone("Asia/Jerusalem").toZoneId()).toLocalDateTime();
-
-                String activities = result.getString("activities");
-                ActivityDTO activityDTO = StringToActivities(activities);
-                Pair<LocalDateTime, ActivityDTO> toAdd = new Pair<>(date, activityDTO);
-                calendar.add(toAdd);
-            }
-            workPlanDTO = new WorkPlanDTO(calendar);
-
-            Connect.closeConnection();
-            return new Response<>(workPlanDTO, false, "successfully got work plans");
-        } catch (SQLException throwables) {throwables.printStackTrace();}
-        return new Response<>(null, true, "failed to get work plans");
-    }*/
 
     public Response<WorkPlanDTO> getUserWorkPlanByYearAndMonth(String username, Integer year, Integer month){
         Connect.createConnection();
@@ -157,5 +130,49 @@ public class WorkPlanQueries {
         }
         return rows > 0 ? new Response<>(true, false, "") :
                 new Response<>(false, true, "failed to write to db");
+    }
+
+    public Response<Boolean> addActivity(String username, LocalDateTime startAct, ActivityDTO activity, int year) {
+        Connect.createConnection();
+        int rows = 0;
+        String sql = "INSERT INTO \"WorkPlans\" (username, year, date, activities, endactivity) VALUES (?, ?, ?, ?, ?)";
+        PreparedStatement preparedStatement;
+        try {
+            preparedStatement = Connect.conn.prepareStatement(sql);
+            String activities = ActivitiesToString(activity);
+            preparedStatement.setString(1, username);
+            preparedStatement.setInt(2, year);
+            preparedStatement.setTimestamp(3, Timestamp.valueOf(startAct));
+            preparedStatement.setString(4, activities);
+            preparedStatement.setTimestamp(5, Timestamp.valueOf(activity.getEndActivity()));
+            rows = preparedStatement.executeUpdate();
+
+
+            Connect.closeConnection();
+        } catch (SQLException e) {e.printStackTrace();}//todo if collides will be caught here
+
+        return rows > 0 ? new Response<>(true, false, "") :
+                new Response<>(false, true, "bad Db writing");
+    }
+
+    public Response<Boolean> removeActivity(String username, LocalDateTime startAct) {
+        Connect.createConnection();
+        int rows = 0;
+        String sql = "DELETE FROM \"WorkPlans\" WHERE username = ? AND date = ?";
+        PreparedStatement preparedStatement;
+        try {
+            preparedStatement = Connect.conn.prepareStatement(sql);
+            preparedStatement.setString(1, username);
+            preparedStatement.setTimestamp(2, Timestamp.valueOf(startAct));
+
+            rows = preparedStatement.executeUpdate();
+
+            Connect.closeConnection();
+        }
+        catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return rows > 0 ? new Response<>(true, false, "") :
+                new Response<>(false, true, "bad Db writing");
     }
 }

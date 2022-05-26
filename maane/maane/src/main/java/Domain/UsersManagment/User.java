@@ -4,6 +4,8 @@ import Communication.DTOs.UserDTO;
 import Domain.CommonClasses.Response;
 import Persistence.DbDtos.UserDBDTO;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.LinkedList;
 import java.util.List;
@@ -733,8 +735,8 @@ public class User {
         }
     }
 
-    public Response<Boolean> editActivity() {
-        if(this.state.getStateEnum() == UserStateEnum.INSTRUCTOR){
+    public Response<Boolean> editActivity(LocalDateTime date) {
+        if(this.state.getStateEnum() == UserStateEnum.INSTRUCTOR && this.workPlanYears.contains(extractProperYear(date))){//todo verify it works
             return new Response<>(true, false, "user allowed to update working hours");
         }
         else {
@@ -754,6 +756,34 @@ public class User {
     public void assignWorkPlanYear(Integer year) {
         if(!this.workPlanYears.contains(year)){
             workPlanYears.add(year);
+        }
+    }
+
+    public Response<Integer> addActivity(LocalDateTime startAct, String school) {
+        int extractedYear = extractProperYear(startAct);
+        if(this.state.getStateEnum() == UserStateEnum.INSTRUCTOR && this.workPlanYears.contains(extractedYear) && this.schools.contains(school)){
+            return new Response<>(extractedYear, false, "user allowed to add activity");
+        }
+        else {
+            return new Response<>(null, true, "user not allowed to add activity");
+        }
+    }
+
+    public Response<Boolean> removeActivity(LocalDateTime startAct) {
+        if(this.state.getStateEnum() == UserStateEnum.INSTRUCTOR && this.workPlanYears.contains(extractProperYear(startAct))){
+            return new Response<>(true, false, "user allowed to add activity");
+        }
+        else {
+            return new Response<>(null, true, "user not allowed to add activity");
+        }
+    }
+
+    private int extractProperYear(LocalDateTime date){ /* 5/9/2022 --- 4/4/2023 */
+        if(date.getMonth().getValue() <= 6){
+            return date.getYear() - 1;
+        }
+        else{
+            return date.getYear();
         }
     }
 }

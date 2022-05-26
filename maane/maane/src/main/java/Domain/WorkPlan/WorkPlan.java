@@ -8,7 +8,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 import java.util.Vector;
 import java.util.stream.Collectors;
@@ -139,33 +138,6 @@ public class WorkPlan {
             }
         }
     }
-
-    /*//returns the schedule from month {input} till the end of year
-    public Map<LocalDateTime, List<Activity>> getScheduleFromMonth(String input) {
-        return null; //todo eh?
-//        final String month = addZeroIfNeeded(input); //need to work with "01","02" etc
-//        Map <LocalDateTime, List<Activity>> output = new TreeMap<>();
-
-
-//        int intMonth = Integer.parseInt(month);
-//        if (intMonth >= 9){
-//            for (int i=9; i <= intMonth; i++){
-//                final String finalI = addZeroIfNeeded(i+"");
-//                output.entrySet().removeIf(e -> whatMonthIsIt(e.getKey()).equals(finalI));
-//            }
-//        }
-//        else {
-//            for (int i=1; i <= intMonth; i++){
-//                final String finalI = addZeroIfNeeded(i+"");
-//                output.entrySet().removeIf(e -> whatMonthIsIt(e.getKey()).equals(finalI));
-//            }
-//            for (int i=9; i <= 12; i++){
-//                final String finalI = addZeroIfNeeded(i+"");
-//                output.entrySet().removeIf(e -> whatMonthIsIt(e.getKey()).equals(finalI));
-//            }
-//        }
-//        return output;
-    }*/
 
     private String addZeroIfNeeded(String number) {
         return number.length() == 1 ? "0" + number : number;

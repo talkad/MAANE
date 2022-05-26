@@ -1,5 +1,6 @@
 package Communication.Service.Interfaces;
 
+import Communication.DTOs.ActivityDTO;
 import Communication.DTOs.GoalDTO;
 import Communication.DTOs.UserDTO;
 import Communication.DTOs.WorkPlanDTO;
@@ -66,6 +67,10 @@ public interface UserService {
     Response<UserDBDTO> getWorkHours(String instructor);
 
     Response<Boolean> editActivity(String currUser, LocalDateTime currActStart, LocalDateTime newActStart, LocalDateTime newActEnd);
+
+    Response<Boolean> addActivity(String currUser, LocalDateTime startAct, ActivityDTO activity);
+
+    Response<Boolean> removeActivity(String currUser, LocalDateTime startAct);
 
     Response<Boolean> changePasswordTester(String currUser, String newPassword);
 

@@ -1,5 +1,6 @@
 package AcceptanceTesting.Bridge;
 
+import Communication.DTOs.ActivityDTO;
 import Communication.DTOs.GoalDTO;
 import Communication.DTOs.UserDTO;
 import Communication.DTOs.WorkPlanDTO;
@@ -273,6 +274,22 @@ public class ProxyBridgeUser implements UserService {
 
         return new Response<>(null, true, "not implemented");
     }
+
+    @Override
+    public Response<Boolean> addActivity(String currUser, LocalDateTime startAct, ActivityDTO activity) {
+        if (real != null) {
+            return real.addActivity(currUser, startAct, activity);
+        }
+
+        return new Response<>(null, true, "not implemented");    }
+
+    @Override
+    public Response<Boolean> removeActivity(String currUser, LocalDateTime startAct) {
+        if (real != null) {
+            return real.removeActivity(currUser, startAct);
+        }
+
+        return new Response<>(null, true, "not implemented");    }
 
     //for tests purposes only
     @Override

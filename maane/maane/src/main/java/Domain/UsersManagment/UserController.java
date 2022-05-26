@@ -1,5 +1,6 @@
 package Domain.UsersManagment;
 
+import Communication.DTOs.ActivityDTO;
 import Communication.DTOs.GoalDTO;
 import Communication.DTOs.UserDTO;
 import Communication.DTOs.WorkPlanDTO;
@@ -1215,12 +1216,43 @@ public class UserController {
     public Response<Boolean> editActivity(String currUser, LocalDateTime currActStart, LocalDateTime newActStart, LocalDateTime newActEnd){ //todo test it
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);//todo maybe verify the dao was generated
-            Response<Boolean> editActivityRes = user.editActivity();//todo change active user info
+            Response<Boolean> editActivityRes = user.editActivity(currActStart);//todo change active user info
             if(!editActivityRes.isFailure()){
                 return workPlanDAO.updateActivity(currUser, currActStart, newActStart, newActEnd);
             }
             else{
                 return new Response<>(null, true, editActivityRes.getErrMsg() + " / colliding activity hours");
+            }
+        }
+        else {
+            return new Response<>(null, true, "User not connected");
+        }
+    }
+
+    public Response<Boolean> addActivity(String currUser, LocalDateTime startAct, ActivityDTO activity) {
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);//todo maybe verify the dao was generated
+            Response<Integer> addActivityRes = user.addActivity(startAct, activity.getSchoolId());//todo change active user info
+            if(!addActivityRes.isFailure()){
+                return workPlanDAO.addActivity(currUser, startAct, activity, addActivityRes.getResult());
+            }
+            else{
+                return new Response<>(null, true, addActivityRes.getErrMsg() + " / colliding activity hours");
+            }
+        }
+        else {
+            return new Response<>(null, true, "User not connected");
+        }    }
+
+    public Response<Boolean> removeActivity(String currUser, LocalDateTime startAct) {
+        if(connectedUsers.containsKey(currUser)) {
+            User user = connectedUsers.get(currUser);//todo maybe verify the dao was generated
+            Response<Boolean> removeActivityRes = user.removeActivity(startAct);//todo change active user info
+            if(!removeActivityRes.isFailure()){
+                return workPlanDAO.removeActivity(currUser, startAct);
+            }
+            else{
+                return new Response<>(null, true, removeActivityRes.getErrMsg() + " / colliding activity hours");
             }
         }
         else {

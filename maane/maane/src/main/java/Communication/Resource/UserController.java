@@ -1,9 +1,6 @@
 package Communication.Resource;
 
-import Communication.DTOs.GoalDTO;
-import Communication.DTOs.SchoolManagementDTO;
-import Communication.DTOs.UserDTO;
-import Communication.DTOs.WorkPlanDTO;
+import Communication.DTOs.*;
 import Communication.Security.KeyLoader;
 import Communication.Service.AnnualScheduleGeneratorServiceImpl;
 import Communication.Service.UserServiceImpl;
@@ -288,6 +285,18 @@ public class UserController {
     public ResponseEntity<Response<Boolean>> editActivity(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object> body){
         return ResponseEntity.ok()
                 .body(service.editActivity(sessionHandler.getUsernameByToken(token).getResult(), (LocalDateTime)body.get("currActStart"), (LocalDateTime) body.get("newActStart"), (LocalDateTime) body.get("newActEnd")));
+    }
+
+    @PostMapping(value = "/addActivity") //todo aviad
+    public ResponseEntity<Response<Boolean>> addActivity(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object>  body){
+        return ResponseEntity.ok()
+                .body(service.addActivity(sessionHandler.getUsernameByToken(token).getResult(), (LocalDateTime) body.get("startAct"), (ActivityDTO) body.get("activity")));
+    }
+
+    @PostMapping(value = "/removeActivity") //todo aviad
+    public ResponseEntity<Response<Boolean>> removeActivity(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object>  body){
+        return ResponseEntity.ok()
+                .body(service.removeActivity(sessionHandler.getUsernameByToken(token).getResult(), (LocalDateTime) body.get("startAct")));
     }
 
     @PostMapping(value = "/changePasswordTester") //todo aviad
