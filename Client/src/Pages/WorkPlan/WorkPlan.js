@@ -94,6 +94,14 @@ function NewActivityForm(props) {
         else{
             setError(false);
             props.callback(title, selectedGoal, selectedSchoolSearchID, activityStart, activityEnd)
+
+            // resetting the data
+            setTitle('')
+            setSelectedGoal(-1)
+            setSelectedSchoolSearchID(-1)
+            setSearchText('')
+            setActivityStart(new Date())
+            setActivityEnd(new Date())
         }
     }
 
@@ -203,12 +211,6 @@ function NewActivityForm(props) {
                 {/*form submit button*/}
                 <Button id={"add_activity_submit_button"} type="submit" variant={"contained"} sx={{width: "20%", marginBottom: "1%"}}>{form_add_button_string}</Button>
             </Stack>
-            {/*notification snackbar*/}
-            <NotificationSnackbar
-                open={openSnackbar}
-                setOpen={setOpenSnackbar}
-                severity={'error'}
-                message={errorMessage}/>
         </Paper>
     );
 }
@@ -299,6 +301,7 @@ export default function WorkPlan(props){
     const [dataDate, setDataDate] = useState(new Date())
     const [viewingDate, setViewingDate] = useState(new Date())
     const [eventList, setEventList] = useState(myEventsList)
+    const [currentInstructor, setCurrentInstructor] = useState('')
 
     // add activity data
     const [addButtonPressed, setAddButtonPressed] = useState(false)
@@ -320,11 +323,19 @@ export default function WorkPlan(props){
      * sends a request to the server to get work plan of the current user
      */
     useEffect(() => {
-        console.log(new Date())
         let currentYear = dataDate.getFullYear();
         let currentMonth = dataDate.getMonth();
 
-        new Connection().getWorkPlan(currentYear, currentMonth, arrangeActivities);
+        if(props.userType === 'SUPERVISOR' || props.userType === "SYSTEM_MANAGER"){
+            var url = new URL(window.location.href);
+            var instructor = url.searchParams.get("instructor");
+            setCurrentInstructor(instructor)
+            new Connection().getWorkPlanOfInstructor(instructor, currentYear, currentMonth, arrangeActivities)
+        }
+
+        if(props.userType === 'INSTRUCTOR'){
+            new Connection().getWorkPlan(currentYear, currentMonth, arrangeActivities);
+        }
     }, []);
 
     /**
@@ -355,7 +366,14 @@ export default function WorkPlan(props){
             setDataDate(newDate)
 
             // calling for new data to view
-            new Connection().getWorkPlan(newDate.getFullYear(), newDate.getMonth(), arrangeActivities);
+
+            if(currentInstructor === ''){
+                new Connection().getWorkPlan(newDate.getFullYear(), newDate.getMonth(), arrangeActivities);
+            }
+            else{
+                new Connection().getWorkPlanOfInstructor(currentInstructor, newDate.getFullYear(),
+                    newDate.getMonth(), arrangeActivities)
+            }
         }
 
         setViewingDate(newDate)
@@ -431,6 +449,7 @@ export default function WorkPlan(props){
      */
     const handleAddActivity = (title, goalID, schoolID, startDate, endDate) => {
         new Connection().addActivity(startDate, schoolID, goalID, title, endDate, addActivityCallback)
+        setShowNewActivityForm(false);
     }
 
     /**
@@ -479,7 +498,7 @@ export default function WorkPlan(props){
                 <Space.Fill scrollable>
 
                     <h1>{page_title}</h1>
-                    <Box sx={{width: '80%', marginBottom: '1%'}}>
+                    {props.userType === "INSTRUCTOR" && <Box sx={{width: '80%', marginBottom: '1%'}}>
                         <Button id={"work_plan_add_activity_collapse_button"} onClick={function () {setShowNewActivityForm(!showNewActivityForm); setAddButtonPressed(!addButtonPressed)}}
                                 variant={addButtonPressed ? "outlined" : "contained"} startIcon={addButtonPressed ? <ExpandLessIcon/> : <ExpandMoreIcon/>}>
                             {add_activity_button_string}</Button>
@@ -487,11 +506,11 @@ export default function WorkPlan(props){
                         <Collapse sx={{width: "40%"}} in={showNewActivityForm}>
                             <NewActivityForm schools={props.schools} callback={handleAddActivity}/>
                         </Collapse>
-                    </Box>
+                    </Box>}
 
-                    {/* the calendar */}
+                    {/* the calendar for instructors (drag and drop*/}
                     {/*todo: for some reason when dragging on month view it's inverted*/}
-                    <DnDCalendar
+                    {props.userType === 'INSTRUCTOR' && <DnDCalendar
                         date={viewingDate}
                         events={eventList}
                         messages={messages}
@@ -503,7 +522,18 @@ export default function WorkPlan(props){
                         popup
                         resizable
                         rtl={true}
-                    />
+                    />}
+
+                    {/*the calendar for the system manager and supervisors (view only)*/}
+                    {(props.userType === 'SYSTEM_MANAGER' || props.userType === 'SUPERVISOR') &&
+                    <Calendar
+                        date={viewingDate}
+                        events={eventList}
+                        messages={messages}
+                        localizer={localizer}
+                        onNavigate={onNavigate}
+                        rtl={true}
+                    />}
 
                     {/*remove activity dialog*/}
                     <RemoveActivityDialog

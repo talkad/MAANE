@@ -32,6 +32,7 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Visibility from "@mui/icons-material/Visibility";
 import NotificationSnackbar from "../../CommonComponents/NotificationSnackbar";
 import DeleteIcon from '@mui/icons-material/Delete';
+import {navigate} from "react-big-calendar/lib/utils/constants";
 
 /**
  * a function to return an object of the data the tables accepts
@@ -71,6 +72,7 @@ function Row(props) {
     const delete_user_button_string = 'מחיקת משתמש';
     const change_password_button_string = 'שינוי סיסמה';
     const edit_schools_button_string = 'עריכת בתי ספר';
+    const view_work_plan_button_string = 'צפייה בלוח עבודה';
     const make_supervisor_button_string = "הפיכה למפקח/ת";
 
     // data
@@ -79,6 +81,8 @@ function Row(props) {
     const city = 'עיר';
     const schools = 'בתי ספר';
     const actions = 'פעולות:';
+
+    let navigate = useNavigate();
 
     return (
         <React.Fragment>
@@ -141,6 +145,7 @@ function Row(props) {
                                 {/*editing actions*/}
                                 <Grid item xs={1.5}><Button id={`change_password_${row.username}`} fullWidth onClick={() => props.handleOpenCPDialog(row.username, row.name)} color="secondary" variant="outlined">{change_password_button_string}</Button></Grid>
                                 <Grid item xs={1.5}><Button id={`edit_schools_${row.username}`} fullWidth onClick={() => props.handleOpenEditSchoolsDialog(row.username, row.name, row.schools)} color="secondary" variant="outlined">{edit_schools_button_string}</Button></Grid>
+                                <Grid item xs={1.5}><Button id={`view_work_plan_${row.username}`} fullWidth onClick={() => navigate(`../viewWorkPlan?instructor=${row.username}`, {replace: false})} color="secondary" variant="outlined">{view_work_plan_button_string}</Button></Grid>
                                 {props.supervisor !== undefined && <Grid item xs={1.5}>
                                     <Button id={`transfer_supervision_to_${row.username}`} fullWidth onClick={() => props.handleOpenTransferSuperDialog(row.name, row.username, props.supervisorName, props.supervisor)} color="secondary" variant="outlined">{make_supervisor_button_string}</Button>
                                 </Grid>}

@@ -670,6 +670,17 @@ class Connection{
     }
 
     /**
+     * sends a GET request to get the work plan of a given instructor as a system manager or supervisor
+     * @param instructor the instructor we want to view the work plan of
+     * @param year the year to view
+     * @param month the month to view
+     * @param callback a callback function to call once there's a response
+     */
+    getWorkPlanOfInstructor(instructor, year, month, callback){
+        this.sendGET(`/user/viewInstructorWorkPlan/instructor=${instructor}&year=${year}&month=${month}`, callback)
+    }
+
+    /**
      * sends a GET request to get work hours of the current user
      * @param callback a callback function to call once there's a response
      */

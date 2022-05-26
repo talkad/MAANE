@@ -544,8 +544,11 @@ function App(){
                             {(type === "SUPERVISOR" || type === "SYSTEM_MANAGER") &&
                                 <Route path="home" element={<UsersManagement userType={type} schools={schools} setAuthAvailability={setAuthAvailability} setAuthCallBack={setAuthCallback} setAuthCalleePage={setAuthCalleePage} setAuthGoToPage={setAuthGoToPage} setHideBars={setHideBars}/>}/>}
 
+                            {(type === "SUPERVISOR" || type === "SYSTEM_MANAGER") &&
+                                <Route path='viewWorkPlan' element={<WorkPlan userType={type} schools={schools}/>}/>}
+
                             {type === "INSTRUCTOR" &&
-                                <Route path="home" element={<WorkPlan schools={schools}/>}/>}
+                                <Route path="home" element={<WorkPlan userType={type} schools={schools}/>}/>}
 
                             {type === "GENERAL_SUPERVISOR" &&
                                 <Route path="home" element={<InfoViewer/>}/>}
