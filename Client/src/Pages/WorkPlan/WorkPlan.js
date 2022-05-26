@@ -11,6 +11,7 @@ import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop'
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css'
 
 import 'moment/locale/he'
+import NotificationSnackbar from "../../CommonComponents/NotificationSnackbar";
 
 const DnDCalendar = withDragAndDrop(Calendar)
 
@@ -43,6 +44,7 @@ const localizer = momentLocalizer(moment); // localizer to represent the data ac
 //     }
 // ]
 
+// TODO: agree on date format
 
 const myEventsList = [
     {
@@ -74,6 +76,11 @@ export default function WorkPlan(){
     const [dataDate, setDataDate] = useState(new Date())
     const [viewingDate, setViewingDate] = useState(new Date())
     const [eventList, setEventList] = useState(myEventsList)
+
+    // snackbar data
+    const [openSnackbar, setOpenSnackbar] = useState(false)
+    const [snackbarSeverity, setSnackbarSeverity] = useState('')
+    const [snackbarMessage, setSnackbarMessage] = useState('')
 
     const page_title = "לוח העבודה שלי";
 
@@ -122,12 +129,44 @@ export default function WorkPlan(){
         setViewingDate(newDate)
     }
 
-    const moveEvent = (event, start, end) => {
-        console.log(event)
+    /**
+     * call back function for the various event editing requests
+     * @param data
+     */
+    const eventUpdateCallback = (data) => {
+        if(data.failure){
+            setOpenSnackbar(true)
+            setSnackbarSeverity('error')
+            snackbarMessage('אירעה שגיאה. הפעילות לא התעדכנה')
+        }
+        else{
+            setOpenSnackbar(true)
+            setSnackbarSeverity('success')
+            snackbarMessage('הפעילות התעדכנה בהצלחה')
+
+            // calling for new data to view
+            new Connection().getWorkPlan(dataDate.getFullYear(), dataDate.getMonth(), arrangeActivities);
+        }
     }
 
-    const resizeEvent = (event, start, end) => {
+    /**
+     * onMoveEvent handler which updates the times of the moved event
+     * @param event
+     * @param start
+     * @param end
+     */
+    const moveEvent = ({event, start, end}) => {
+        new Connection().editActivity(event.start, start, end, eventUpdateCallback)
+    }
 
+    /**
+     * onResizeEvent handler which updates the times of the resized event
+     * @param event
+     * @param start
+     * @param end
+     */
+    const resizeEvent = ({event, start, end}) => {
+        new Connection().editActivity(event.start, start, end, eventUpdateCallback)
     }
 
     return (
@@ -152,6 +191,13 @@ export default function WorkPlan(){
                         resizable
                         rtl={true}
                     />
+
+                    {/*notification snackbar*/}
+                    <NotificationSnackbar
+                        open={openSnackbar}
+                        setOpen={setOpenSnackbar}
+                        severity={snackbarSeverity}
+                        message={snackbarMessage}/>
                 </Space.Fill>
                 <Space.Right size="5%"/>
             </Space.Fill>

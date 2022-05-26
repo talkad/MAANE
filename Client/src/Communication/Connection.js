@@ -697,6 +697,21 @@ class Connection{
             callback)
     }
 
+    /**
+     * sends a POST request to update the times of the given activity
+     * @param currActStart the start of the activity to update
+     * @param newActStart the start date and time of the new activity
+     * @param newActEnd the end date and time of the new activity
+     * @param callback a callback function to call once there's a response
+     */
+    editActivity(currActStart, newActStart, newActEnd, callback){
+        this.sendPOST('/user/editActivity', {
+            currActStart: currActStart,
+            newActStart: newActStart,
+            newActEnd: newActEnd
+        }, callback)
+    }
+
     // WORK REPORT
 
     /**
