@@ -712,6 +712,28 @@ class Connection{
         }, callback)
     }
 
+    /**
+     * sends a POST request to add a new activity
+     * @param actStart the start date and time of the activity
+     * @param schoolId the school to which the activity is related
+     * @param goalId the goal to which the activity is related
+     * @param title the title of the activity
+     * @param endActivity the end date and time of the activity
+     * @param callback a callback function to call once there's a response
+     */
+    addActivity(actStart, schoolId, goalId, title, endActivity, callback){
+        // TODO: implement
+    }
+
+    /**
+     * sends a POST request to remove a given activity
+     * @param actStart the start date and time of the activity to remove
+     * @param callback a callback function to call once there's a response
+     */
+    removeActivity(actStart, callback){
+        // TODO: implement
+    }
+
     // WORK REPORT
 
     /**

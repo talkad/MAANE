@@ -51,7 +51,6 @@ import HelpIcon from '@mui/icons-material/Help';
 
 // TODO: what to do if the request for info from the server to show fails?
 // TODO: currently saving everything in local storage but IT IS NOT SAFE
-// TODO: save the state of the user between refreshes
 
 const help_text = {
     'SYSTEM_MANAGER': [{title: "ניהול משתמשים", description: (".במסך זה מופיעים כלל המשתמשים במערכת, מכל תחומי ההוראה ומכל התפקידים השונים")
@@ -178,7 +177,7 @@ const help_text = {
             .concat("\n").concat(":את לוח השנה אתה יכול לארגן כראות עיניך במספר דרכים שונות")
             .concat("\n").concat("על ידי גרירת הפעילות באמצעות העכבר לחלון הזמן הרצוי - ")
             .concat("\n").concat("על ידי לחיצה על כפתור 'עדכון לוח העבודה' וליצור פעילות חדשה - ")
-            .concat("\n").concat("על ידי לחיצה על כפתור 'עדכון לוח העבודה' והסרת פעילות קיימת - ")},
+            .concat("\n").concat("על ידי לחיצה כפולה על פעילות בכדי למחוק אותה - ")},
         {title: "ניהול פרטים אישיים", description: (".כדי להגיע לאיזור האישי יש ללחוץ על 'פרופיל' בתפריט הראשי")
                 .concat("\n").concat(":בעמוד זה ניתן לעדכן את פרטיכם האישיים לרבות ").concat("\n")
                 .concat("\n").concat("שם פרטי ושם משפחה - ")

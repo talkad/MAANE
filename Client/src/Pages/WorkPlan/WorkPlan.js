@@ -116,7 +116,7 @@ export default function WorkPlan(){
 
     /**
      * onNavigate handler for when the user changes the viewed dates
-     * @param newDate
+     * @param newDate the new date presented on the calendar
      */
     const onNavigate = (newDate) => {
         if (newDate.getMonth() !== dataDate.getMonth()){
@@ -131,7 +131,7 @@ export default function WorkPlan(){
 
     /**
      * call back function for the various event editing requests
-     * @param data
+     * @param data the data from the server
      */
     const eventUpdateCallback = (data) => {
         if(data.failure){
@@ -151,9 +151,9 @@ export default function WorkPlan(){
 
     /**
      * onMoveEvent handler which updates the times of the moved event
-     * @param event
-     * @param start
-     * @param end
+     * @param event the event which has been moved
+     * @param start the new start date and time
+     * @param end the new end date and time
      */
     const moveEvent = ({event, start, end}) => {
         new Connection().editActivity(event.start, start, end, eventUpdateCallback)
@@ -161,12 +161,40 @@ export default function WorkPlan(){
 
     /**
      * onResizeEvent handler which updates the times of the resized event
-     * @param event
-     * @param start
-     * @param end
+     * @param event the event which has been resized
+     * @param start the new start date and time
+     * @param end the new end date and time
      */
     const resizeEvent = ({event, start, end}) => {
         new Connection().editActivity(event.start, start, end, eventUpdateCallback)
+    }
+
+    /**
+     * a callback function for the request to remove an event
+     * @param data the response from the server about the request
+     */
+    const eventRemoveCallback = (data) => {
+        if(data.failure){
+            setOpenSnackbar(true)
+            setSnackbarSeverity('error')
+            snackbarMessage('אירעה שגיאה. הפעילות לא נמחקה')
+        }
+        else{
+            setOpenSnackbar(true)
+            setSnackbarSeverity('success')
+            snackbarMessage('הפעילות נמחקה בהצלחה')
+
+            // calling for new data to view
+            new Connection().getWorkPlan(dataDate.getFullYear(), dataDate.getMonth(), arrangeActivities);
+        }
+    }
+
+    /**
+     * onDoubleClick on event handler. used for removing an activity
+     * @param event the doubled clicked event
+     */
+    const onDoubleClickEvent = (event) => {
+        new Connection().removeActivity(event.start, eventRemoveCallback)
     }
 
     return (
@@ -187,6 +215,7 @@ export default function WorkPlan(){
                         onNavigate={onNavigate}
                         onEventDrop={moveEvent}
                         onEventResize={resizeEvent}
+                        onDoubleClickEvent={onDoubleClickEvent}
                         popup
                         resizable
                         rtl={true}
