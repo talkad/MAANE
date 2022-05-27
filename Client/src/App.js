@@ -21,8 +21,8 @@ import SurveyBuilder from "./Pages/SurveyBuilder/SurveyBuilder";
 // COMPONENTS
 import {
     AppBar, Backdrop, Box,
-    Button,
-    Drawer, IconButton,
+    Button, Dialog, DialogTitle, Divider,
+    Drawer, Grid, IconButton,
     List,
     ListItem,
     ListItemIcon,
@@ -47,14 +47,201 @@ import SchoolIcon from '@mui/icons-material/School';
 import SurveyRulesEditor from "./Pages/SurveyConstraints/SurveyRulesEditor";
 import SurveyGeneralResults from "./Pages/SurveyResults/SurveyGeneralResults";
 import SurveySchoolResults from "./Pages/SurveyResults/SurveySchoolResults";
+import HelpIcon from '@mui/icons-material/Help';
 
 // TODO: what to do if the request for info from the server to show fails?
-// TODO: prevent users from going through the site by entering paths in the url
 // TODO: currently saving everything in local storage but IT IS NOT SAFE
 // TODO: save the state of the user between refreshes
-// TODO: require better passwords on sign up and changing password
 
-// TODO: if there'll be time then add a loading animation to the different pages
+const help_text = {
+    'SYSTEM_MANAGER': [{title: "ניהול משתמשים", description: (".במסך זה מופיעים כלל המשתמשים במערכת, מכל תחומי ההוראה ומכל התפקידים השונים")
+            .concat("\n").concat(":בפרט להצגת פרטי המשתמשים ניתן לבצע מגוון פעולות").concat("\n")
+            .concat("\n").concat(" ליצור משתמש חדש במערכת - ").concat("\n")
+            .concat("\n").concat(":עבור מפקח ניתן לבצע את הפעולות הבאות")
+            .concat("\n").concat(" לשנות לו סיסמה - ")
+            .concat("\n").concat(" לערוך את בתי הספר אשר בתחום אחריותו - ")
+            .concat("\n").concat(" להציג את פרטי המדריכים והמפקחים הכלליים הממונים תחתיו - ")
+            .concat("\n").concat(" להסיר משתמש קיים מהמערכת - ").concat("\n")
+            .concat("\n").concat(":עבור מדריך ניתן לבצע את הפעולות הבאות")
+            .concat("\n").concat(" לשנות לו סיסמה - ")
+            .concat("\n").concat(" לערוך את בתי הספר אשר בתחום אחריותו - ")
+            .concat("\n").concat(" להציג את פרטי המדריכים והמפקחים הכלליים הממונים תחתיו - ")
+            .concat("\n").concat(" לקדם את המדריך למפקח - ")
+            .concat("\n").concat(" להסיר משתמש קיים מהמערכת - ")},
+        {title: "בתי ספר", description: (".כדי להגיע לתפריט בתי הספר יש ללחוץ על 'בתי הספר' בתפריט הראשי")
+                .concat("\n").concat("בעמוד זה ניתן לראות את פרטי בתי הספר הקיימים במערכת ולראות")
+                .concat("\n").concat(".את אודותיו ").concat("\n")
+                .concat("\n").concat(":בפרט עמוד זה מכיל ")
+                .concat("\n").concat("מידע אדמיניסטרטיבי (שם המנהל, מיקום בית הספר ופרטי יצירת קשר) - ")
+                .concat("\n").concat("מידע חינוכי (מספר תלמידים, סוג בית הספר וסוג הפיקוח) - ")
+                .concat("\n").concat("רכזי בית הספר (שמם של הרכזים ופרטי יצירת קשר) - ")},
+        {title: "סלי הדרכה (בפיתוח)", description: (".כדי להגיע אל סלי ההדרכה יש ללחוץ על 'סלי ההדרכה' בתפריט הראשי")
+                .concat("\n").concat(".בעמוד זה ניתן לראות סלי הדרכה שונים במגוון רחב של תחומי למידה ").concat("\n")
+                .concat("\n").concat("משתמשי המערכת יכולים להעלות חומרי הדרכה ולשתף אותם")
+                .concat("\n").concat(".עם שאר המשתמשים ")
+                .concat("\n").concat("ניתן לחפש סלי הדרכה על ידי שימוש בשורת החיפוש, אשר תניב")
+                .concat("\n").concat(".את סלי ההדרכה המתאימים ביותר והפופולאריים ביותר ")
+                .concat("\n").concat("המשתמשים יכולים לדרג את סלי ההדרכה השונים ולהוסיף ביקורת")
+                .concat("\n").concat(".ובכך לתרום למשתמשים אחרים").concat("\n")
+                .concat("\n").concat("  :) עמוד זה נמצא בשלבי פיתוח מתקדמים - יש למה לחכות")}
+    ],
+
+    'SUPERVISOR': [{title: "ניהול משתמשים", description: (".במסך זה מופיעים המדריכים אשר בתחום אחריותך")
+            .concat("\n").concat(":בפרט להצגת פרטי המדריכים ניתן לבצע את הפעולות הבאות").concat("\n")
+            .concat("\n").concat(" לשנות לו סיסמה - ")
+            .concat("\n").concat(" לערוך את בתי הספר אשר בתחום אחריותו - ")
+            .concat("\n").concat(" להסיר את המדריך מהמערכת - ")},
+        {title: "ניהול סקרים", description: (".כדי להגיע לניהול הסקרים יש ללחוץ על 'ניהול סקרים' בתפריט הראשי")
+                .concat("\n").concat(":בעמוד זה ניתן לבצע מגוון פעולות המהוות את איסוף המידע וניתוחו ").concat("\n")
+                .concat("\n").concat(":יצירת סקר")
+                .concat("\n").concat(".'לעמוד זה ניתן להגיע על ידי לחיצה על כפתור 'יצירת סקר")
+                .concat("\n").concat("בעמוד זה ניתן לבנות סקר, להגדיר לו כותרת ותיאור מתאימים וליצור שאלות")
+                .concat("\n").concat(":'מסוגים שונים על ידי לחיצה על כפתור 'הוסף שאלה")
+                .concat("\n").concat("שאלה פתוחה (מללל חופשי) - ")
+                .concat("\n").concat("שאלה מספרית - ")
+                .concat("\n").concat("שאלת בחירה מרובה - ").concat("\n")
+
+                .concat("\n").concat("בסיום יצירת הסקר ניתן ללחוץ על 'סיום ושמירת הסקר' אשר ישמור ")
+                .concat("\n").concat(".את המצב הנוכחי של הסקר במערכת").concat("\n")
+
+                .concat("\n").concat(":עריכת סקר")
+                .concat("\n").concat("על ידי לחיצה על הכפתור 'עריכת סקר' עבור הסקר הרלוונטי ניתן להוסיף או")
+                .concat("\n").concat(".להסיר שאלות על ידי לחיצה על הכפתורים 'הוסף' או 'הסר' בהתאמה").concat("\n")
+
+                .concat("\n").concat(":עריכת חוקים")
+                .concat("\n").concat("על ידי לחיצה על הכפתור 'עריכת חוקים' עבור הסקר הרלוונטי ניתן להוסיף או")
+                .concat("\n").concat(".להסיר חוקים על ידי לחיצה על הכפתורים 'הוסף' או 'הסר' בהתאמה")
+
+                .concat("\n").concat(":הוספת חוק")
+                .concat("\n").concat("בהינתן יעד ניתן להגדיר אילוץ המגדיר תשובות שאינן חוקיות לסקר זה")
+                .concat("\n").concat(":ומהוות בעיה")
+                .concat("\n").concat("חוק בחירה מרובה - ניתן לבחור מהאופציות הקיימות לשאלה מספר - ")
+                .concat("\n").concat("אפשרויות שאינן תשובות תקינות")
+                .concat("\n").concat("חוק מספרי - ניתן להגדיר אי שיוויון הקובע באיזה תחום מספרי - ")
+                .concat("\n").concat(" התשובות אינן תקינות")
+                .concat("\n").concat("חוק מורכב 'וגם' - חוק בו כל תתי החוקים צריכים להתקיים כדי שהביטוי  - ")
+                .concat("\n").concat("כולו יתקיים")
+                .concat("\n").concat("חוק מורכב 'או' - חוק בו לפחות תת חוק אחד מתקיים כדי שהביטוי - ")
+                .concat("\n").concat("כולו יתקיים")
+                .concat("\n").concat(":דוגמא לחוק - יעד בטיחות במעבדה")
+                .concat("\n").concat("גם (חוק מספרי - מספר התלמידים גדול מ-30) וגם (חוק בחירה מרובה - קיים הציוד הדרוש כאשר התשובה שאינה תקינה היא לא)").concat("\n")
+
+                .concat("\n").concat(":פרסום הסקר")
+                .concat("\n").concat(".על ידי לחיצה על הכפתור 'שגר סקר' עבור הסקר הרלוונטי תישלח הודעת מייל עם קישור אל הסקר אל הרכזים השייכים לבתי הספר אשר בתחום אחריותך")
+
+                .concat("\n")
+                .concat("\n").concat(":צפייה בשובות")
+                .concat("\n").concat("על ידי לחיצה על הכפתור 'צפייה בתשובות' עבור הסקר הרלוונטי יהיה ניתן")
+                .concat("\n").concat(":לצפות בסטטיסטיקות שונות אודות התשובות שנענו")
+                .concat("\n").concat("עבור שאלה מספרית תוצג התשובה הממוצעת - ")
+                .concat("\n").concat("עבור שאלה מרובת ערכים תוצג היסטוגרמה התציג את התפלגות התשובות - ")
+                .concat("\n").concat("בטבלה העליונה על ידי לחיצה על סמל בית ספר מסויים ניתן לראות את התשובות שנענו על הסקר")
+
+                .concat("\n")
+                .concat("\n").concat(":בניית תוכנית עבודה")
+                .concat("\n").concat(".על ידי לחיצה על הכפתור 'בניית תוכנית עבודה לפי סקר' עבור הסקר הרלוונטי המערכת תיצור עבור כל מדריך אשר בתחום אחריותך מערכת שעות שנוצרה")
+                .concat("\n").concat(":על ידי שיקלול מספר רכיבים")
+                .concat("\n").concat("ימי ושעות הפעילות של המדריך - ")
+                .concat("\n").concat("יעדי משרד החינוך - ")
+                .concat("\n").concat("תשובות שנאספו ונותחו - ")
+                .concat("\n").concat("אילוצי זמן כמו חגים - ")
+
+        },
+        {title: "ניהול יעדים", description: (".כדי להגיע לניהול היעדים יש ללחוץ על 'ניהול יעדים' בתפריט הראשי")
+                .concat("\n").concat(".בעמוד זה ניתן לצפות ביעדים משרד החינוך בהינתן שנה ")
+                .concat("\n").concat("בנוסף על ידי לחיצה על הכפתור 'יצירת יעד' ניתן ליצור יעד חדש בהינתן ").concat("\n")
+                .concat("\n").concat("כותרת ותיאור היעד - ")
+                .concat("\n").concat("משקל היעד (מדד 1-10 המסמל את חשיבותו) - ")
+                .concat("\n").concat("בחירת הרבעון שיש לסיים עד אליו את היעד - ")
+                .concat("\n").concat("שנת הלימודים אליה היעד שייך - ")},
+        {title: "בתי ספר", description: (".כדי להגיע לתפריט בתי הספר יש ללחוץ על 'בתי הספר' בתפריט הראשי")
+                .concat("\n").concat("בעמוד זה ניתן לראות את פרטי בתי הספר הקיימים במערכת ולראות")
+                .concat("\n").concat(".את אודותיו ").concat("\n")
+                .concat("\n").concat(":בפרט עמוד זה מכיל ")
+                .concat("\n").concat("מידע אדמיניסטרטיבי (שם המנהל, מיקום בית הספר ופרטי יצירת קשר) - ")
+                .concat("\n").concat("מידע חינוכי (מספר תלמידים, סוג בית הספר וסוג הפיקוח) - ")
+                .concat("\n").concat("רכזי בית הספר (שמם של הרכזים ופרטי יצירת קשר) - ")},
+        {title: "סלי הדרכה (בפיתוח)", description: (".כדי להגיע אל סלי ההדרכה יש ללחוץ על 'סלי ההדרכה' בתפריט הראשי")
+                .concat("\n").concat(".בעמוד זה ניתן לראות סלי הדרכה שונים במגוון רחב של תחומי למידה ").concat("\n")
+                .concat("\n").concat("משתמשי המערכת יכולים להעלות חומרי הדרכה ולשתף אותם")
+                .concat("\n").concat(".עם שאר המשתמשים ")
+                .concat("\n").concat("ניתן לחפש סלי הדרכה על ידי שימוש בשורת החיפוש, אשר תניב")
+                .concat("\n").concat(".את סלי ההדרכה המתאימים ביותר והפופולאריים ביותר ")
+                .concat("\n").concat("המשתמשים יכולים לדרג את סלי ההדרכה השונים ולהוסיף ביקורת")
+                .concat("\n").concat(".ובכך לתרום למשתמשים אחרים").concat("\n")
+                .concat("\n").concat("  :) עמוד זה נמצא בשלבי פיתוח מתקדמים - יש למה לחכות")}
+    ],
+
+    'INSTRUCTOR': [{title: "ניהול לוח העבודה", description: (".במסך זה מופיע לוח שנה המכיל את הפעילויות שעליך לבצע")
+            .concat("\n").concat(".'ניתן לראות את הפעילויות בחודשים השונים ע''י לחיצה על 'הקודם' או 'הבא ")
+            .concat("\n").concat(".'בנוסף, ניתן לראות את שעות הפעילות על ידי לחיצה על כפתור 'היום ").concat("\n")
+            .concat("\n").concat(":את לוח השנה אתה יכול לארגן כראות עיניך במספר דרכים שונות")
+            .concat("\n").concat("על ידי גרירת הפעילות באמצעות העכבר לחלון הזמן הרצוי - ")
+            .concat("\n").concat("על ידי לחיצה על כפתור 'עדכון לוח העבודה' וליצור פעילות חדשה - ")
+            .concat("\n").concat("על ידי לחיצה על כפתור 'עדכון לוח העבודה' והסרת פעילות קיימת - ")},
+        {title: "ניהול פרטים אישיים", description: (".כדי להגיע לאיזור האישי יש ללחוץ על 'פרופיל' בתפריט הראשי")
+                .concat("\n").concat(":בעמוד זה ניתן לעדכן את פרטיכם האישיים לרבות ").concat("\n")
+                .concat("\n").concat("שם פרטי ושם משפחה - ")
+                .concat("\n").concat("כתובת מייל אלקטרוני - ")
+                .concat("\n").concat("מספר טלפון - ")
+                .concat("\n").concat("עיר מגורים - ")
+                .concat("\n").concat("יום העבודה ושעות הפעילות - ")
+                .concat("\n").concat("סיסמה - ").concat("\n")
+                .concat("\n").concat(".בנוסף ניתן להוריד את דו''ח העבודה החודשי בהינתן שנה וחודש ")},
+        {title: "בתי ספר", description: (".כדי להגיע לתפריט בתי הספר יש ללחוץ על 'בתי הספר' בתפריט הראשי")
+                .concat("\n").concat("בעמוד זה ניתן לראות את פרטי בתי הספר הקיימים במערכת ולראות")
+                .concat("\n").concat(".את אודותיו ").concat("\n")
+                .concat("\n").concat(":בפרט עמוד זה מכיל ")
+                .concat("\n").concat("מידע אדמיניסטרטיבי (שם המנהל, מיקום בית הספר ופרטי יצירת קשר) - ")
+                .concat("\n").concat("מידע חינוכי (מספר תלמידים, סוג בית הספר וסוג הפיקוח) - ")
+                .concat("\n").concat("רכזי בית הספר (שמם של הרכזים ופרטי יצירת קשר) - ")},
+        {title: "סלי הדרכה (בפיתוח)", description: (".כדי להגיע אל סלי ההדרכה יש ללחוץ על 'סלי ההדרכה' בתפריט הראשי")
+                .concat("\n").concat(".בעמוד זה ניתן לראות סלי הדרכה שונים במגוון רחב של תחומי למידה ").concat("\n")
+                .concat("\n").concat("משתמשי המערכת יכולים להעלות חומרי הדרכה ולשתף אותם")
+                .concat("\n").concat(".עם שאר המשתמשים ")
+                .concat("\n").concat("ניתן לחפש סלי הדרכה על ידי שימוש בשורת החיפוש, אשר תניב")
+                .concat("\n").concat(".את סלי ההדרכה המתאימים ביותר והפופולאריים ביותר ")
+                .concat("\n").concat("המשתמשים יכולים לדרג את סלי ההדרכה השונים ולהוסיף ביקורת")
+                .concat("\n").concat(".ובכך לתרום למשתמשים אחרים").concat("\n")
+                .concat("\n").concat("  :) עמוד זה נמצא בשלבי פיתוח מתקדמים - יש למה לחכות")}
+        ]
+}
+
+/**
+ * a dialog element for helping the user throughout the system
+ * @param props the properties the element gets
+ * @returns {JSX.Element} the element
+ */
+function HelpDialog(props){
+    const permission = window.sessionStorage.getItem('permission')
+
+    const [helperText, setHelperText] = useState(permission==null ? [] : help_text[permission])
+
+    const help_title_string = "עזרה";
+
+
+    return (
+        <Dialog titleStyle={{textAlign: "center"}} sx={{alignItems: "right"}} fullWidth maxWidth="sm" onClose={props.onClose} open={props.open}>
+            <DialogTitle><Typography variant="h4" align="center">{help_title_string}</Typography></DialogTitle>
+            <List
+                sx={{
+                    width: '80%',
+                    bgcolor: 'background.paper',
+                }}
+                >
+                {helperText.map((element) =>
+                    <div>
+                        <ListItem>
+                            <ListItemText primary={element.title}  primaryTypographyProps={{ style: { textAlign:"right",  fontWeight:"bold"} }}
+                                          secondary={element.description} secondaryTypographyProps={{ style: { textAlign:"right", whiteSpace: "pre-line" } }}/>
+
+                        </ListItem>
+                    </div>
+                    )}
+            </List>
+        </Dialog>
+    )
+}
 
 
 function App(){
@@ -68,8 +255,11 @@ function App(){
     // authentication related
     const [authAvailability, setAuthAvailability] = useState(false);
     const [authCallback, setAuthCallback] = useState(() => () => {console.log("not auth callback")});
-    const [authCalleePage, setAuthCalleePage] = useState(''); // todo: is there's a better way to do it? i do it that way cause i override the history stack and can't just go back
+    const [authCalleePage, setAuthCalleePage] = useState('');
     const [authGoToPage, setAuthGoToPage] = useState('');
+
+    // help dialog related
+    const [openHelpDialog, setOpenHelpDialog] = useState(false);
 
     let navigate = useNavigate();
 
@@ -78,7 +268,6 @@ function App(){
     const sidebarWidth = "15%";
     const page_does_not_exist_string = "דף זה אינו קיים";
     const logout_button_string = "יציאה";
-    // TODO: the greetings currently doesn't work well. but perhaps once TAL implements what i asked then it will (return the username with the response for the request)
     const greetings_string = "שלום " + name;
 
     useEffect(() => {
@@ -228,9 +417,20 @@ function App(){
         </Space.Fill>
     );
 
+    const handleCloseHelpDialog = () => {
+        setOpenHelpDialog(false);
+    }
+
     return (
         <div dir="rtl">
             <Space.ViewPort>
+                {/*help dialog*/}
+                <HelpDialog
+                    userType={type}
+                    open={openHelpDialog}
+                    onClose={handleCloseHelpDialog}
+                />
+
                 {/* app bar */}
                 {!hideBars && <Space.Top size={barWidth}>
                     <AppBar color="background" position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
@@ -282,6 +482,16 @@ function App(){
                             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                                 {greetings_string}
                             </Typography>
+                            <IconButton
+                                size="large"
+                                aria-controls="menu-appbar"
+                                aria-haspopup="true"
+                                color="inherit"
+                                onClick={() => setOpenHelpDialog(true)}
+                            >
+                                <HelpIcon/>
+                            </IconButton>
+
                             {/*logout button*/}
                             <Button id="logout_button" onClick={() => handleLogout()} color="inherit">{logout_button_string}</Button>
                         </Toolbar>
@@ -312,9 +522,8 @@ function App(){
 
                             {authAvailability && <Route path="auth" element={<PasswordAuthentication callback={authCallback} callee={authCalleePage} goto={authGoToPage} setHideBars={setHideBars}/>}/>}
 
-                            <Route path="profile" element={<ProfilePage/>}/>
+                            {(type !== "GUEST") && <Route path="profile" element={<ProfilePage userType={type}/>}/>}
 
-                            {/*todo: is this restriction ok?*/}
                             {(type !== "GUEST") && <Route path="schools" element={<SchoolsManagement userType={type}/>}/>}
 
                             {(type === "SUPERVISOR" || type === "INSTRUCTOR") &&
@@ -338,7 +547,6 @@ function App(){
                             {type === "GENERAL_SUPERVISOR" &&
                                 <Route path="home" element={<InfoViewer/>}/>}
 
-                        {/*TODO: maybe put survey inside user?*/}
                         </Route>
 
                         {type === "SUPERVISOR" &&

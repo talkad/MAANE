@@ -7,40 +7,65 @@ import * as Space from 'react-spaces';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment'
 import Connection from "../../Communication/Connection";
+import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop'
+import 'react-big-calendar/lib/addons/dragAndDrop/styles.css'
 
 import 'moment/locale/he'
+
+const DnDCalendar = withDragAndDrop(Calendar)
 
 const localizer = momentLocalizer(moment); // localizer to represent the data according to our location (israel)
 
 // dummy data for offline testing
+// const myEventsList = [
+//     {
+//         title: "בטיחות במעבדה",
+//         start: "May 6th 2022, 13:00:00 pm",
+//         end: "May 6th 2022, 15:00:00 pm",
+//         allDay: false,
+//         resource: "https://momentjs.com/",
+//     },
+//
+//     // {
+//     //     title: "קידום תלמידים",
+//     //     start: "7/5/2022",
+//     //     end: "7/5/2022",
+//     //     allDay: false,
+//     //     resource: "https://momentjs.com/",
+//     // },
+//
+//     {
+//         title: "שעות פרטניות",
+//         start: "1/10/2022",
+//         end: "1/10/2022",
+//         allDay: false,
+//         resource: "https://momentjs.com/",
+//     }
+// ]
+
 const myEventsList = [
     {
         title: "בטיחות במעבדה",
-        start: "May 6th 2022, 13:00:00 pm",
-        end: "May 6th 2022, 15:00:00 pm",
+        start: new Date(),
+        end: new Date(),
         allDay: false,
-        resource: "https://momentjs.com/", // TODO: what the heck is the resource???
+        resource: "https://momentjs.com/",
     },
-
-    // {
-    //     title: "קידום תלמידים",
-    //     start: "7/5/2022",
-    //     end: "7/5/2022",
-    //     allDay: false,
-    //     resource: "https://momentjs.com/", // TODO: what the heck is the resource???
-    // },
-
-    {
-        title: "שעות פרטניות",
-        start: "1/10/2022",
-        end: "1/10/2022",
-        allDay: false,
-        resource: "https://momentjs.com/", // TODO: what the heck is the resource???
-    }
 ]
 
+const messages = {
+    week: 'שבוע',
+    work_week: 'שבוע עבודה',
+    day: 'יום',
+    month: 'חודש',
+    previous: 'הקודם',
+    next: 'הבא',
+    today: 'היום',
+    agenda: "אג'נדה",
+}
+
 export default function WorkPlan(){
-    const [eventList, setEventList] = useState([])
+    const [eventList, setEventList] = useState(myEventsList)
 
     const page_title = "לוח העבודה שלי";
 
@@ -81,14 +106,16 @@ export default function WorkPlan(){
                 <Space.Left size="5%"/>
                 <Space.Fill>
                     {/* the calendar */}
-                    {/* TODO: for some reason when changing the calendar to weekly/daily/agenda it shows nothing*/}
-                    {/* TODO: the toolbar of the calendar is in english. need to change it to hebrew */}
                     <h1>{page_title}</h1>
-                    <Calendar
+                    <DnDCalendar
+                        messages={messages}
                         localizer={localizer}
                         events={eventList}
+                        resizeable={false}
+                        draggableAccessor={(event) => true}
                         startAccessor="start"
                         endAccessor="end"
+                        rtl={true}
                     />
                 </Space.Fill>
                 <Space.Right size="5%"/>

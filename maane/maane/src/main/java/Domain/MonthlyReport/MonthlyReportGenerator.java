@@ -81,7 +81,7 @@ public class MonthlyReportGenerator {
             activity.setUserCity(userInfo.getCity());
 
         // create the document
-        reportRes = writerService.createDoc("maane\\src\\main\\resources\\monthlyReport_" + username + ".docx", userInfo, activities, date, year, month);
+        reportRes = writerService.createDoc(".\\src\\main\\resources\\monthlyReport_" + username + ".docx", userInfo, activities, date, year, month);
         file = reportRes.getResult();
 
         if(!reportRes.isFailure()) {

@@ -49,7 +49,6 @@ public class UserController {
         secureRandom = new SecureRandom();
         base64Encoder = Base64.getUrlEncoder();
         if(!userDAO.userExists("admin")){
-            System.out.println("here");
             adminBoot("admin", "admin123");//todo need to hide password in db also note the if query helps the tests
         }
     }
