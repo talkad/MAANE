@@ -11,7 +11,6 @@ import java.sql.SQLException;
 
 public class ExcelFormatter {
 
-
     private static class CreateSafeThreadSingleton {
         private static final ExcelFormatter INSTANCE = new ExcelFormatter();
     }
@@ -28,8 +27,6 @@ public class ExcelFormatter {
         workbook.close();
         return sheet.getPhysicalNumberOfRows();
     }
-
-
 
     public Response<Boolean> SchoolExcelToDb() {
         int rowCount;
