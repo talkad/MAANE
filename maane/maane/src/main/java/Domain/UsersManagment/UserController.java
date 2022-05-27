@@ -5,6 +5,7 @@ import Communication.DTOs.GoalDTO;
 import Communication.DTOs.UserDTO;
 import Communication.DTOs.WorkPlanDTO;
 import Communication.Initializer.ServerContextInitializer;
+import Communication.Security.KeyLoader;
 import Domain.CommonClasses.Response;
 import Domain.EmailManagement.EmailController;
 import Domain.UsersManagment.APIs.DTOs.UserActivityInfoDTO;
@@ -49,7 +50,7 @@ public class UserController {
         secureRandom = new SecureRandom();
         base64Encoder = Base64.getUrlEncoder();
         if(!userDAO.userExists("admin")){
-            adminBoot("admin", "admin123");//todo need to hide password in db also note the if query helps the tests
+            adminBoot("admin", KeyLoader.getInstance().getAdminPassword());
         }
     }
 

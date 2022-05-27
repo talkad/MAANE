@@ -37,14 +37,11 @@ import java.util.Vector;
 @SpringBootApplication
 public class MaaneApplication {
 
-	public static void main(String[] args) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeySpecException {
+	public static void main(String[] args) {
 
-		KeyLoader.getInstance().storeKey("auth_key", KeyLoader.getInstance().generateKey());
-		System.out.println(KeyLoader.getInstance().getMailPassword());
+		ServerContextInitializer.getInstance().setMockMode();
 
-//		ServerContextInitializer.getInstance().setMockMode();
-//
-//		SpringApplication.run(MaaneApplication.class, args);
+		SpringApplication.run(MaaneApplication.class, args);
 	}
 
 	@Bean

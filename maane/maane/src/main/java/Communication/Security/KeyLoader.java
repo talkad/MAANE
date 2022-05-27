@@ -11,6 +11,7 @@ import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
+import java.util.Arrays;
 import java.util.Base64;
 
 
@@ -78,7 +79,7 @@ public class KeyLoader {
         }
     }
 
-    public SecretKey generateKey(){
+    private SecretKey generateKey(){
         try {
             KeyGenerator generator = KeyGenerator.getInstance("AES");
             return generator.generateKey();
@@ -133,19 +134,32 @@ public class KeyLoader {
 
     }
 
-    public String getMailPassword() throws NoSuchPaddingException, NoSuchAlgorithmException {
+    public String getAdminPassword() {
         SecretKey key = KeyLoader.getInstance().readKey("auth_key");
+        byte[] encodedPassword = {-123, -26, 68, 117, -59, -44, 119, -15, -27, -10, 79, 57, 73, -78, -75, -120};
 
-        byte[] a = KeyLoader.getInstance().encryptKey("1234abcd", key, Cipher.getInstance("AES"));
-        return new String(KeyLoader.getInstance().decryptKey(a, key, Cipher.getInstance("AES")), StandardCharsets.UTF_8);
+        try {
+            return new String(KeyLoader.getInstance().decryptKey(encodedPassword, key, Cipher.getInstance("AES")), StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return "";
     }
 
-    public String getMailPassword() throws NoSuchPaddingException, NoSuchAlgorithmException {
+    public String getMailPassword()  {
         SecretKey key = KeyLoader.getInstance().readKey("auth_key");
         byte[] encodedPassword = {44, -126, -20, -44, -18, 24, -68, 105, -40, -60, 101, -81, 117, -42, -1, 100};
 
-        return new String(KeyLoader.getInstance().decryptKey(encodedPassword, key, Cipher.getInstance("AES")), StandardCharsets.UTF_8);
+        try {
+            return new String(KeyLoader.getInstance().decryptKey(encodedPassword, key, Cipher.getInstance("AES")), StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return "";
     }
+
 
 
 

@@ -1,6 +1,7 @@
 package Domain.EmailManagement;
 
 
+import Communication.Security.KeyLoader;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.DataController;
 
@@ -15,8 +16,8 @@ public class EmailController {
     private final DataController dataController;
 
     private EmailController(){
-        prop.put("mail.smtp.username", "maane@hityash.org");//todo hide actual password
-        prop.put("mail.smtp.password", "maruhdrrsomuulzn");
+        prop.put("mail.smtp.username", "maane@hityash.org");
+        prop.put("mail.smtp.password", KeyLoader.getInstance().getMailPassword());
         prop.put("mail.smtp.host", "smtp.gmail.com");
         prop.put("mail.smtp.port", "587");
         prop.put("mail.smtp.auth", "true");
