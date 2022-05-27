@@ -275,13 +275,13 @@ public class UserController {
                 .body(service.setWorkingTime(sessionHandler.getUsernameByToken(token).getResult(), (int)body.get("workDay"), (LocalTime) body.get("act1Start"), (LocalTime) body.get("act1End"), (LocalTime) body.get("act2Start"), (LocalTime) body.get("act2End")));
     }
 
-    @GetMapping(value="/getWorkHours") //todo aviad
+    @GetMapping(value="/getWorkHours")
     public ResponseEntity<Response<UserDBDTO>> getWorkHours(@RequestHeader(value = "Authorization") String token){
         return ResponseEntity.ok()
                 .body(service.getWorkHours(sessionHandler.getUsernameByToken(token).getResult()));
     }
 
-    @PostMapping(value = "/editActivity") //todo aviad
+    @PostMapping(value = "/editActivity") //    todo aviad
     public ResponseEntity<Response<Boolean>> editActivity(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object> body){
         return ResponseEntity.ok()
                 .body(service.editActivity(sessionHandler.getUsernameByToken(token).getResult(), (LocalDateTime)body.get("currActStart"), (LocalDateTime) body.get("newActStart"), (LocalDateTime) body.get("newActEnd")));

@@ -51,7 +51,6 @@ import HelpIcon from '@mui/icons-material/Help';
 
 // TODO: what to do if the request for info from the server to show fails?
 // TODO: currently saving everything in local storage but IT IS NOT SAFE
-// TODO: save the state of the user between refreshes
 
 const help_text = {
     'SYSTEM_MANAGER': [{title: "ניהול משתמשים", description: (".במסך זה מופיעים כלל המשתמשים במערכת, מכל תחומי ההוראה ומכל התפקידים השונים")
@@ -178,7 +177,7 @@ const help_text = {
             .concat("\n").concat(":את לוח השנה אתה יכול לארגן כראות עיניך במספר דרכים שונות")
             .concat("\n").concat("על ידי גרירת הפעילות באמצעות העכבר לחלון הזמן הרצוי - ")
             .concat("\n").concat("על ידי לחיצה על כפתור 'עדכון לוח העבודה' וליצור פעילות חדשה - ")
-            .concat("\n").concat("על ידי לחיצה על כפתור 'עדכון לוח העבודה' והסרת פעילות קיימת - ")},
+            .concat("\n").concat("על ידי לחיצה כפולה על פעילות בכדי למחוק אותה - ")},
         {title: "ניהול פרטים אישיים", description: (".כדי להגיע לאיזור האישי יש ללחוץ על 'פרופיל' בתפריט הראשי")
                 .concat("\n").concat(":בעמוד זה ניתן לעדכן את פרטיכם האישיים לרבות ").concat("\n")
                 .concat("\n").concat("שם פרטי ושם משפחה - ")
@@ -215,7 +214,7 @@ const help_text = {
 function HelpDialog(props){
     const permission = window.sessionStorage.getItem('permission')
 
-    const [helperText, setHelperText] = useState(permission==null ? [] : help_text[permission])
+    const [helperText, setHelperText] = useState(props.userType === null ? [] : help_text[props.userType])
 
     const help_title_string = "עזרה";
 
@@ -251,6 +250,7 @@ function App(){
     const [hideBars, setHideBars] = useState(false);
     const [openBackdrop, setOpenBackdrop] = useState(false);
     const [name, setName] = useState('');
+    const [schools, setSchools] = useState([])
 
     // authentication related
     const [authAvailability, setAuthAvailability] = useState(false);
@@ -282,7 +282,9 @@ function App(){
                 new Connection().getUserSchools(arrangeSchools)
             }
         }
-
+        else{
+            setSchools(JSON.parse(window.sessionStorage.getItem('schools')))
+        }
 
 
     }, [type])
@@ -298,6 +300,7 @@ function App(){
             }
 
             let schools_data = data.result.map(mapFunc);
+            setSchools(schools_data)
             window.sessionStorage.setItem('schools', JSON.stringify(schools_data));
         }
     }
@@ -327,7 +330,6 @@ function App(){
     const drawer = (
         <Space.Fill>
             <Toolbar />
-            {/*TODO: show buttons based on permissions*/}
             <List>
                 {/*home button*/}
                 <ListItem button onClick={
@@ -342,7 +344,7 @@ function App(){
                     <ListItemText primary="בית"/>
                 </ListItem>
                 {/*profile button*/}
-                <ListItem button onClick={
+                {(type === 'SUPERVISOR' || type === 'INSTRUCTOR') && <ListItem button onClick={
                     function () {
                         navigate(`user/profile`, {replace: false});
                         setOpenSidebar(false);
@@ -352,9 +354,21 @@ function App(){
                         <AccountBoxIcon/>
                     </ListItemIcon>
                     <ListItemText primary="פרופיל"/>
-                </ListItem>
+                </ListItem>}
+                {/*goals management button*/}
+                {(type === 'SUPERVISOR' || type === 'SYSTEM_MANAGER') && <ListItem button onClick={
+                    function () {
+                        navigate(`user/goalsManagement`, {replace: false});
+                        setOpenSidebar(false);
+                        setOpenBackdrop(false);
+                    }}>
+                    <ListItemIcon>
+                        <TaskIcon/>
+                    </ListItemIcon>
+                    <ListItemText primary='ניהול יעדים'/>
+                </ListItem>}
                 {/*survey button*/}
-                <ListItem button onClick={
+                {(type === 'SUPERVISOR' || type === 'SYSTEM_MANAGER') &&<ListItem button onClick={
                     function () {
                         navigate(`survey/menu`, {replace: false});
                         setOpenSidebar(false);
@@ -364,6 +378,18 @@ function App(){
                         <PollIcon/>
                     </ListItemIcon>
                     <ListItemText primary="סקרים"/>
+                </ListItem>}
+                {/*schools button*/}
+                <ListItem button onClick={
+                    function () {
+                        navigate(`user/schools`, {replace: false});
+                        setOpenSidebar(false);
+                        setOpenBackdrop(false);
+                    }}>
+                    <ListItemIcon>
+                        <SchoolIcon/>
+                    </ListItemIcon>
+                    <ListItemText primary="בתי ספר"/>
                 </ListItem>
                 {/*guiding baskets button*/}
                 <ListItem button onClick={
@@ -376,42 +402,6 @@ function App(){
                         <ShoppingBasketIcon/>
                     </ListItemIcon>
                     <ListItemText primary="סלי הדרכה"/>
-                </ListItem>
-                {/*work report button*/}
-                <ListItem button onClick={
-                    function () {
-                        navigate(`user/workReport`, {replace: false});
-                        setOpenSidebar(false);
-                        setOpenBackdrop(false);
-                    }}>
-                    <ListItemIcon>
-                        <SummarizeIcon/>
-                    </ListItemIcon>
-                    <ListItemText primary='דו"ח עבודה'/>
-                </ListItem>
-                {/*goals management button*/}
-                <ListItem button onClick={
-                    function () {
-                        navigate(`user/goalsManagement`, {replace: false});
-                        setOpenSidebar(false);
-                        setOpenBackdrop(false);
-                    }}>
-                    <ListItemIcon>
-                        <TaskIcon/>
-                    </ListItemIcon>
-                    <ListItemText primary='ניהול יעדים'/>
-                </ListItem>
-                {/*schools button*/}
-                <ListItem button onClick={
-                    function () {
-                        navigate(`user/schools`, {replace: false});
-                        setOpenSidebar(false);
-                        setOpenBackdrop(false);
-                    }}>
-                    <ListItemIcon>
-                        <SchoolIcon/>
-                    </ListItemIcon>
-                    <ListItemText primary="בתי ספר"/>
                 </ListItem>
             </List>
         </Space.Fill>
@@ -526,8 +516,8 @@ function App(){
 
                             {(type !== "GUEST") && <Route path="schools" element={<SchoolsManagement userType={type}/>}/>}
 
-                            {(type === "SUPERVISOR" || type === "INSTRUCTOR") &&
-                                <Route path="guidingBasketsSearch" element={<GuidingBaskets/>}/>}
+                            {(type === 'SYSTEM_MANAGER' || type === "SUPERVISOR" || type === "INSTRUCTOR") &&
+                                <Route path="guidingBasketsSearch" element={<GuidingBaskets />}/>}
 
                             {(type === "SUPERVISOR" || type === "INSTRUCTOR") &&
                                 <Route path="workReport" element={<WorkReport/>}/>}
@@ -539,10 +529,13 @@ function App(){
                                 <Route path="goalsManagement" element={<GoalsManagement/>}/>}
 
                             {(type === "SUPERVISOR" || type === "SYSTEM_MANAGER") &&
-                                <Route path="home" element={<UsersManagement userType={type} setAuthAvailability={setAuthAvailability} setAuthCallBack={setAuthCallback} setAuthCalleePage={setAuthCalleePage} setAuthGoToPage={setAuthGoToPage} setHideBars={setHideBars}/>}/>}
+                                <Route path="home" element={<UsersManagement userType={type} schools={schools} setAuthAvailability={setAuthAvailability} setAuthCallBack={setAuthCallback} setAuthCalleePage={setAuthCalleePage} setAuthGoToPage={setAuthGoToPage} setHideBars={setHideBars}/>}/>}
+
+                            {(type === "SUPERVISOR" || type === "SYSTEM_MANAGER") &&
+                                <Route path='viewWorkPlan' element={<WorkPlan userType={type} schools={schools}/>}/>}
 
                             {type === "INSTRUCTOR" &&
-                                <Route path="home" element={<WorkPlan/>}/>}
+                                <Route path="home" element={<WorkPlan userType={type} schools={schools}/>}/>}
 
                             {type === "GENERAL_SUPERVISOR" &&
                                 <Route path="home" element={<InfoViewer/>}/>}

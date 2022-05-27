@@ -670,6 +670,17 @@ class Connection{
     }
 
     /**
+     * sends a GET request to get the work plan of a given instructor as a system manager or supervisor
+     * @param instructor the instructor we want to view the work plan of
+     * @param year the year to view
+     * @param month the month to view
+     * @param callback a callback function to call once there's a response
+     */
+    getWorkPlanOfInstructor(instructor, year, month, callback){
+        this.sendGET(`/user/viewInstructorWorkPlan/instructor=${instructor}&year=${year}&month=${month}`, callback)
+    }
+
+    /**
      * sends a GET request to get work hours of the current user
      * @param callback a callback function to call once there's a response
      */
@@ -695,6 +706,43 @@ class Connection{
                 act2End: act2End
             },
             callback)
+    }
+
+    /**
+     * sends a POST request to update the times of the given activity
+     * @param currActStart the start of the activity to update
+     * @param newActStart the start date and time of the new activity
+     * @param newActEnd the end date and time of the new activity
+     * @param callback a callback function to call once there's a response
+     */
+    editActivity(currActStart, newActStart, newActEnd, callback){
+        this.sendPOST('/user/editActivity', {
+            currActStart: currActStart,
+            newActStart: newActStart,
+            newActEnd: newActEnd
+        }, callback)
+    }
+
+    /**
+     * sends a POST request to add a new activity
+     * @param actStart the start date and time of the activity
+     * @param schoolId the school to which the activity is related
+     * @param goalId the goal to which the activity is related
+     * @param title the title of the activity
+     * @param endActivity the end date and time of the activity
+     * @param callback a callback function to call once there's a response
+     */
+    addActivity(actStart, schoolId, goalId, title, endActivity, callback){
+        // TODO: implement
+    }
+
+    /**
+     * sends a POST request to remove a given activity
+     * @param actStart the start date and time of the activity to remove
+     * @param callback a callback function to call once there's a response
+     */
+    removeActivity(actStart, callback){
+        // TODO: implement
     }
 
     // WORK REPORT
