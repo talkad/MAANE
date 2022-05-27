@@ -249,7 +249,7 @@ public class ProxyBridgeUser implements UserService {
     }
 
     @Override
-    public Response<Boolean> setWorkingTime(String currUser, int workDay, LocalTime act1Start, LocalTime act1End, LocalTime act2Start, LocalTime act2End) {
+    public Response<Boolean> setWorkingTime(String currUser, int workDay, String act1Start, String act1End, String act2Start, String act2End) {
         if (real != null) {
             return real.setWorkingTime(currUser, workDay, act1Start, act1End, act2Start, act2End);
         }
@@ -267,7 +267,7 @@ public class ProxyBridgeUser implements UserService {
     }
 
     @Override
-    public Response<Boolean> editActivity(String currUser, LocalDateTime currActStart, LocalDateTime newActStart, LocalDateTime newActEnd) {
+    public Response<Boolean> editActivity(String currUser, String currActStart, String newActStart, String newActEnd) {
         if (real != null) {
             return real.editActivity(currUser, currActStart, newActStart, newActEnd);
         }
@@ -276,15 +276,15 @@ public class ProxyBridgeUser implements UserService {
     }
 
     @Override
-    public Response<Boolean> addActivity(String currUser, LocalDateTime startAct, ActivityDTO activity) {
+    public Response<Boolean> addActivity(String currUser, String startAct, String schoolId, int goalId, String title, String endAct) {
         if (real != null) {
-            return real.addActivity(currUser, startAct, activity);
+            return real.addActivity(currUser, startAct, schoolId, goalId, title, endAct);
         }
 
         return new Response<>(null, true, "not implemented");    }
 
     @Override
-    public Response<Boolean> removeActivity(String currUser, LocalDateTime startAct) {
+    public Response<Boolean> removeActivity(String currUser, String startAct) {
         if (real != null) {
             return real.removeActivity(currUser, startAct);
         }

@@ -197,11 +197,11 @@ public class DataController {
         userController.logout("ronit");
 
         userController.login("tal");
-        userController.setWorkingTime("tal", 0, LocalTime.of(8, 30), LocalTime.of(10, 30), LocalTime.of(11, 0), LocalTime.of(13, 0));
+        userController.setWorkingTime("tal", 0, LocalTime.of(8, 30).toString(), LocalTime.of(10, 30).toString(), LocalTime.of(11, 0).toString(), LocalTime.of(13, 0).toString());
         userController.logout("tal");
 
         userController.login("shaked");
-        userController.setWorkingTime("shaked", 3, LocalTime.of(10, 0), LocalTime.of(12, 0), LocalTime.of(13, 0), LocalTime.of(15, 0));
+        userController.setWorkingTime("shaked", 3, LocalTime.of(10, 0).toString(), LocalTime.of(12, 0).toString(), LocalTime.of(13, 0).toString(), LocalTime.of(15, 0).toString());
         userController.logout("shaked");
 
         return new Response<>(true, false, "reset db");

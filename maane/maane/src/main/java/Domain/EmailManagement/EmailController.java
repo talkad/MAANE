@@ -18,6 +18,7 @@ public class EmailController {
     private EmailController(){
         prop.put("mail.smtp.username", "maane@hityash.org");
         prop.put("mail.smtp.password", KeyLoader.getInstance().getMailPassword());
+
         prop.put("mail.smtp.host", "smtp.gmail.com");
         prop.put("mail.smtp.port", "587");
         prop.put("mail.smtp.auth", "true");

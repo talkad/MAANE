@@ -373,7 +373,7 @@ public class UserControllerTest {
         userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "a@a.com", "0555555555", "");
         userController.logout("sup1");
         userController.login("ins1");
-        userController.setWorkingTime("ins1", 1, LocalTime.of(9, 0), LocalTime.of(11, 0), LocalTime.of(11, 0), LocalTime.of(13, 0));
+        userController.setWorkingTime("ins1", 1, LocalTime.of(9, 0).toString(), LocalTime.of(11, 0).toString(), LocalTime.of(11, 0).toString(), LocalTime.of(13, 0).toString());
         Response<UserDBDTO> userRes = userQueries.getWorkingTime("ins1");
         Assert.assertFalse(userRes.isFailure());
         Assert.assertEquals(1, userRes.getResult().getWorkDay());
@@ -389,7 +389,7 @@ public class UserControllerTest {
         userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "a@a.com", "0555555555", "");
         userController.logout("sup1");
         userController.login("ins1");
-        Response<Boolean> setWorkTimeRes = userController.setWorkingTime("ins1", 1, LocalTime.of(9, 0), LocalTime.of(11, 0), LocalTime.of(10, 0), LocalTime.of(13, 0));
+        Response<Boolean> setWorkTimeRes = userController.setWorkingTime("ins1", 1, LocalTime.of(9, 0).toString(), LocalTime.of(11, 0).toString(), LocalTime.of(10, 0).toString(), LocalTime.of(13, 0).toString());
         Response<UserDBDTO> userRes = userQueries.getWorkingTime("ins1");
         Assert.assertTrue(setWorkTimeRes.isFailure());
         Assert.assertEquals(0, userRes.getResult().getWorkDay());

@@ -733,7 +733,13 @@ class Connection{
      * @param callback a callback function to call once there's a response
      */
     addActivity(actStart, schoolId, goalId, title, endActivity, callback){
-        // TODO: implement
+        this.sendPOST('/user/addActivity', {
+            startActivity: actStart,
+            schoolId: schoolId,
+            goalId: goalId,
+            title: title,
+            endActivity: endActivity,
+        }, callback)
     }
 
     /**
@@ -742,7 +748,9 @@ class Connection{
      * @param callback a callback function to call once there's a response
      */
     removeActivity(actStart, callback){
-        // TODO: implement
+        this.sendPOST('/user/removeActivity', {
+            startAct: actStart
+        }, callback)
     }
 
     // WORK REPORT

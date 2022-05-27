@@ -62,15 +62,15 @@ public interface UserService {
 
     Response<List<String>> allWorkFields(String currUser);
 
-    Response<Boolean> setWorkingTime(String currUser, int workDay, LocalTime act1Start, LocalTime act1End, LocalTime act2Start, LocalTime act2End);
+    Response<Boolean> setWorkingTime(String currUser, int workDay, String act1Start, String act1End, String act2Start, String act2End);
 
     Response<UserDBDTO> getWorkHours(String instructor);
 
-    Response<Boolean> editActivity(String currUser, LocalDateTime currActStart, LocalDateTime newActStart, LocalDateTime newActEnd);
+    Response<Boolean> editActivity(String currUser, String currActStart, String newActStart, String newActEnd);
 
-    Response<Boolean> addActivity(String currUser, LocalDateTime startAct, ActivityDTO activity);
+    Response<Boolean> addActivity(String currUser, String startAct, String schoolId, int goalId, String title, String endAct);
 
-    Response<Boolean> removeActivity(String currUser, LocalDateTime startAct);
+    Response<Boolean> removeActivity(String currUser, String startAct);
 
     Response<Boolean> changePasswordTester(String currUser, String newPassword);
 

@@ -1,7 +1,7 @@
 import * as Space from 'react-spaces';
 import {useEffect, useState} from "react";
 import Connection from "../../Communication/Connection";
-import {Button, Collapse, Typography} from "@mui/material";
+import {Button, Collapse, FormControl, InputLabel, MenuItem, Select, Typography} from "@mui/material";
 import SurveyRule from "./SurveyRule";
 
 import gematriya from "gematriya";
@@ -27,6 +27,8 @@ export default function SurveyRulesEditor(){
     const [rules, setRules] = useState([]);
     const [ruleID, setRuleID] = useState(1);
 
+    const [years, setYears] = useState([])
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
     const [goals, setGoals] = useState([]);
     const [questions, setQuestions] = useState([]);
 
@@ -38,6 +40,7 @@ export default function SurveyRulesEditor(){
 
     const add_rules_button_string = "הוספת חוק";
     const submit_rules_button_string = "סיום ושמירה";
+    const form_year_label_string = 'בחירת שנה של היעדים להצגה'
 
     useEffect(() => {
         var url = new URL(window.location.href);
@@ -52,6 +55,15 @@ export default function SurveyRulesEditor(){
         let currentYear = new Date().getFullYear();
         new Connection().getGoals(currentYear, arrangeGoalsData) // getting the goals
 
+        let years_range = [];
+        let delta = -7;
+
+        while (delta <= 7) { // calculating up to 7 previous and ahead years
+            years_range.push(currentYear + delta);
+            delta++;
+        }
+
+        setYears(years_range);
     }, []);
 
     /**
@@ -116,7 +128,17 @@ export default function SurveyRulesEditor(){
      * @param data the data from the server
      */
     const arrangeGoalsData = (data) => {
+
+
         if(!data.failure){
+            setGoals([])
+
+            const rulesMap = (element) => {
+                return {id: element.id, goalSelection: '', children: element.children}
+            }
+
+            setRules((rules) => rules.map(rulesMap))
+
             for (const row of data.result){
                 setGoals(goals => [...goals, {value: row.goalId, description: row.title}]);
             }
@@ -200,8 +222,6 @@ export default function SurveyRulesEditor(){
      * @param trace the trace of the cell to remove
      */
     const removeCell = (id, trace) => {
-        // TODO: add a warning that it's going to delete everything in that cell
-        //console.log(`the trace of id ${id} is ${trace}`)
         let temp_trace = [...trace];
 
         const find_and_remove = function(cell) {
@@ -279,8 +299,6 @@ export default function SurveyRulesEditor(){
 
                 const temp_cell = {...cell};
 
-                // TODO: currently we are removing all the children if going from AND or OR to a question.
-                // TOOD: should we do it? and if so, should we raise an error?
                 if((value !== "AND" && value !== "OR") &&
                     (temp_cell.questionSelection === "AND" || temp_cell.questionSelection === "OR" || temp_cell.questionSelection === "")){
 
@@ -448,9 +466,17 @@ export default function SurveyRulesEditor(){
             children: [{id: 5, questionSelection: '', children: [], constraint: {type: '', value: ''}}], constraint: {type: '', value: ''}}]},
         {id: 2, goalSelection: 2, children: []}];
 
-    const submitRules = () => {
-        // TODO: checking everything is correct
+    /**
+     * on change handler for selecting a new year
+     * @param event the element on which the on change happened
+     */
+    const yearChange = (event) => {
+        setSelectedYear(event.target.value)
 
+        new Connection().getGoals(event.target.value, arrangeGoalsData) // getting the new goals
+    }
+
+    const submitRules = () => {
 
         const generateRules = function(rule){
 
@@ -498,9 +524,23 @@ export default function SurveyRulesEditor(){
                 {/*title*/}
                 <h1>חוקים עבור {surveyTitle}</h1>
 
+                {/*form year select*/}
+                <FormControl  sx={{width: "40%", marginBottom: '2%'}}>
+                    <InputLabel>{form_year_label_string}</InputLabel>
+                    <Select
+                        value={selectedYear}
+                        label={form_year_label_string}
+                        onChange={yearChange}
+                    >
+                        {years.map(year => <MenuItem value={year}>{year}</MenuItem>)}
+                    </Select>
+                </FormControl>
+
                 <Collapse in={rules.length === 0}>
-                    <Typography id={'no-rules-message'} variant={'h5'} sx={{margin: "1%"}}>{no_rules_exist_string}</Typography>
+                    <Typography id={'no-rules-message'} variant={'h5'} sx={{marginBottom: "2%"}}>{no_rules_exist_string}</Typography>
                 </Collapse>
+
+
 
                 {/*the rules*/}
                 {rules.map((rule) =>
@@ -512,7 +552,7 @@ export default function SurveyRulesEditor(){
                                 handleNumericalConstraintChange={handleNumericalConstraintChange}/>)}
 
                 {/*add rule button*/}
-                <Button id={'survey_rules_add_rule_button'} onClick={() => addRule()} variant={'contained'}>{add_rules_button_string}</Button>
+                <Button id={'survey_rules_add_rule_button'} sx={{marginTop: '1%'}} onClick={() => addRule()} variant={'contained'}>{add_rules_button_string}</Button>
                 <Button id={'survey_rules_submit_rules_button'} onClick={() => submitRules()} variant={'contained'} color={'success'} sx={{marginTop: 1}}>{submit_rules_button_string}</Button>
                 
                 {/* notification alert */}
