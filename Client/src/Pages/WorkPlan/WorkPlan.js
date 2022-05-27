@@ -87,9 +87,11 @@ function NewActivityForm(props) {
      * @param data the data from the server
      */
     const arrangeGoalsData = (data) => {
-        setSelectedGoal(-1);
-        setGoals([])
+
         if(!data.failure){
+            setSelectedGoal(-1);
+            setGoals([])
+
             for (const row of data.result){
                 setGoals(goals => [...goals, {value: row.goalId, description: row.title}]);
             }
@@ -98,7 +100,7 @@ function NewActivityForm(props) {
 
     /**
      * on change handler for selecting a new year
-     * @param event
+     * @param event the element on which the on change happened
      */
     const yearChange = (event) => {
         setSelectedYear(event.target.value)
