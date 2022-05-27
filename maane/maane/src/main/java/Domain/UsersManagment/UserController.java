@@ -193,7 +193,8 @@ public class UserController {
      * @return true if the password is valid, false otherwise.
      */
     private boolean isValidPassword(String password) {
-        return password.length() >= 8 && password.matches("([A-Za-z]+[0-9]|[0-9]+[A-Za-z])[A-Za-z0-9]*");
+//        return password.length() >= 8 && password.matches("([A-Za-z]+[0-9]|[0-9]+[A-Za-z])[A-Za-z0-9]*");
+        return password.length() >= 8 && password.matches("(.*)[a-zA-Z](.*)") && password.matches("(.*)[0-9](.*)");
     }
 
     /**
@@ -656,7 +657,7 @@ public class UserController {
      * @return a response of the successfulness of the action
      */
     public Response<Boolean> changePassword(String currUser, String currPassword, String newPassword, String confirmPassword){
-        if(!ServerContextInitializer.getInstance().isTestMode() && !isValidPassword(newPassword))
+        if(!isValidPassword(newPassword))
             return new Response<>(false, true, "The password isn't strong enough");
 
         if(connectedUsers.containsKey(currUser)) {
@@ -1054,6 +1055,12 @@ public class UserController {
      * @return a response of the successfulness of the action
      */
     public Response<Boolean> assignCoordinator(String currUser, String workField, String firstName, String lastName, String email, String phoneNumber, String school){
+        if(email.length() != 0 && !isValidEmailAddress(email))
+            return new Response<>(false, true, "invalid email address");
+
+        if(phoneNumber.length() != 0 && !isValidPhoneNumber(phoneNumber))
+            return new Response<>(false, true, "invalid phone number");
+
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             Response<User> result = user.assignCoordinator(createToken(), workField, school, firstName, lastName, email, phoneNumber);

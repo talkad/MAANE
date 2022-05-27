@@ -221,8 +221,8 @@ describe('Profile page tests for editing info', () => {
 
 let password_change_info = {
     current_pwd: user.password,
-    new_pwd: "anislayer66", // TODO: bug on the server side "anislayerB)66" doesn't register
-    confirm_pwd: "anislayer66"
+    new_pwd: "anislayerB)66",
+    confirm_pwd: "anislayerB)66"
 }
 
 let supervisor = {

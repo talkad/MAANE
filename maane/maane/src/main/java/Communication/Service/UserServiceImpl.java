@@ -82,7 +82,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public Response<String> registerUser(String currUser, UserDTO user) {
         Response<String> res = UserController.getInstance().registerUser(currUser,
-                user.getUserToRegister(), passwordEncoder.encode(user.getPassword()), user.getUserStateEnum(), user.getFirstName(),
+                user.getUserToRegister(), user.getPassword(), user.getUserStateEnum(), user.getFirstName(),
                 user.getLastName(), user.getEmail(), user.getPhoneNumber(), user.getCity());
 
         if (res.isFailure())

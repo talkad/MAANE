@@ -111,66 +111,61 @@ describe('School management tests', () => {
     })
 
     it('Adding a coordinator to a school with an invalid email address', () => {
-        // todo: not passing because of server side
-        // // searching up the school
-        // cy.get('#search-schools').type(coordinator_to_add.selected_school_id + "{downArrow}{enter}")
-        // cy.get('#search_school_button').click()
-        //
-        // // popping up the add coordinator dialog
-        // cy.get(`#school_add_coordinator_button`).click()
-        //
-        // // filling the form but missing the first name
-        // cy.get('#add_coordinator_first_name').type(coordinator_to_add.first_name)
-        // cy.get('#add_coordinator_last_name').type(coordinator_to_add.last_name)
-        // cy.get('#add_coordinator_email').type("iloveanigmailcom")
-        // cy.get('#add_coordinator_phone_number').type(coordinator_to_add.phone_number)
-        //
-        // cy.get('#add_coordinator_submit_button').click() // submitting
-        //
-        // // an error snackbar alert should appear
-        // cy.get('#snackbar_alert_error').should('be.visible')
-        //
-        // // checking if we can find the coordinator in the table under the selected school (should not)
-        // cy.reload()
-        //
-        // // search up the school again
-        // cy.get('#search-schools').type(coordinator_to_add.selected_school_id + "{downArrow}{enter}")
-        // cy.get('#search_school_button').click()
-        //
-        // cy.contains(coordinator_to_add.first_name).should('not.exist')
+        // searching up the school
+        cy.get('#search-schools').type(coordinator_to_add.selected_school_id + "{downArrow}{enter}")
+        cy.get('#search_school_button').click()
+
+        // popping up the add coordinator dialog
+        cy.get(`#school_add_coordinator_button`).click()
+
+        // filling the form but missing the first name
+        cy.get('#add_coordinator_first_name').type(coordinator_to_add.first_name)
+        cy.get('#add_coordinator_last_name').type(coordinator_to_add.last_name)
+        cy.get('#add_coordinator_email').type("iloveanigmailcom")
+        cy.get('#add_coordinator_phone_number').type(coordinator_to_add.phone_number)
+
+        cy.get('#add_coordinator_submit_button').click() // submitting
+
+        // an error snackbar alert should appear
+        cy.get('#snackbar_alert_error').should('be.visible')
+
+        // checking if we can find the coordinator in the table under the selected school (should not)
+        cy.reload()
+
+        // search up the school again
+        cy.get('#search-schools').type(coordinator_to_add.selected_school_id + "{downArrow}{enter}")
+        cy.get('#search_school_button').click()
+
+        cy.contains(coordinator_to_add.first_name).should('not.exist')
     })
 
     it('Adding a coordinator to a school with an invalid phone number', () => {
-        // TODO: not passing because of server side
-        // // searching up the school
-        // cy.get('#search-schools').type(coordinator_to_add.selected_school_id + "{downArrow}{enter}")
-        // cy.get('#search_school_button').click()
-        //
-        // // popping up the add coordinator dialog
-        // cy.get(`#school_add_coordinator_button`).click()
-        //
-        // // filling the form but missing the first name
-        //
-        // cy.get('#add_coordinator_first_name').type(coordinator_to_add.first_name)
-        // cy.get('#add_coordinator_last_name').type(coordinator_to_add.last_name)
-        // cy.get('#add_coordinator_email').type(coordinator_to_add.email)
-        // cy.get('#add_coordinator_phone_number').type('050')
-        //
-        // cy.get('#add_coordinator_submit_button').click() // submitting
-        //
-        // // an error alert should pop up
-        // cy.get('#add_coordinator_alert').should('be.visible')
-        //
-        // // checking if we can find the coordinator in the table under the selected school (should not)
-        // cy.get('#add_coordinator_cancel_button').click() // cancel
-        //
-        // cy.reload()
-        //
-        // // search up the school again
-        // cy.get('#search-schools').type(coordinator_to_add.selected_school_id + "{downArrow}{enter}")
-        // cy.get('#search_school_button').click()
-        //
-        // cy.contains(coordinator_to_add.first_name).should('not.exist')
+        // searching up the school
+        cy.get('#search-schools').type(coordinator_to_add.selected_school_id + "{downArrow}{enter}")
+        cy.get('#search_school_button').click()
+
+        // popping up the add coordinator dialog
+        cy.get(`#school_add_coordinator_button`).click()
+
+        // filling the form but missing the first name
+
+        cy.get('#add_coordinator_first_name').type(coordinator_to_add.first_name)
+        cy.get('#add_coordinator_last_name').type(coordinator_to_add.last_name)
+        cy.get('#add_coordinator_email').type(coordinator_to_add.email)
+        cy.get('#add_coordinator_phone_number').type('050')
+
+        cy.get('#add_coordinator_submit_button').click() // submitting
+
+        // an error alert should pop up
+        cy.get('#snackbar_alert_error').should('be.visible')
+
+        cy.reload()
+
+        // search up the school again
+        cy.get('#search-schools').type(coordinator_to_add.selected_school_id + "{downArrow}{enter}")
+        cy.get('#search_school_button').click()
+
+        cy.contains(coordinator_to_add.first_name).should('not.exist')
     })
 
     it('Removing a coordinator from a school', () => {
