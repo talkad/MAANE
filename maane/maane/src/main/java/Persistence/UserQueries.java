@@ -305,19 +305,16 @@ public class UserQueries {
         catch (SQLException throwables) {throwables.printStackTrace();}
     }
 
-    public Response<Boolean> assignSchoolsToUser(String username, List<String> schools){
+    public Response<Boolean> assignSchoolToUser(String username, String school){
         Connect.createConnection();
         int rows = 0;
         String sql = "INSERT INTO \"UsersSchools\"(username, school) VALUES (?, ?)";
         PreparedStatement preparedStatement;
         try {//todo check user actually exists
             preparedStatement = Connect.conn.prepareStatement(sql);
-            for (String school: schools) {
-                preparedStatement.setString(1, username);
-                preparedStatement.setString(2, school);
-                rows = preparedStatement.executeUpdate();
-            }
-
+            preparedStatement.setString(1, username);
+            preparedStatement.setString(2, school);
+            rows = preparedStatement.executeUpdate();
             Connect.closeConnection();
         }
         catch (SQLException throwables) {
@@ -327,18 +324,16 @@ public class UserQueries {
                 new Response<>(false, true, "bad Db writing");
     }
 
-    public Response<Boolean> removeSchoolsFromUser(String username, List<String> schools){
+    public Response<Boolean> removeSchoolsFromUser(String username, String school){
         Connect.createConnection();
         int rows = 0;
         String sql = "DELETE FROM \"UsersSchools\" WHERE username = ? AND school = ?";
         PreparedStatement preparedStatement;
         try {//todo check user actually exists
             preparedStatement = Connect.conn.prepareStatement(sql);
-            for (String school: schools) {
-                preparedStatement.setString(1, username);
-                preparedStatement.setString(2, school);
-                rows = preparedStatement.executeUpdate();
-            }
+            preparedStatement.setString(1, username);
+            preparedStatement.setString(2, school);
+            rows = preparedStatement.executeUpdate();
 
             Connect.closeConnection();
         }

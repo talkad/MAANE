@@ -215,16 +215,16 @@ public class UserController {
                 .body(service.getAllUsers(sessionHandler.getUsernameByToken(token).getResult()));
     }
 
-    @PostMapping(value = "/assignSchoolsToUser")
-    public ResponseEntity<Response<Boolean>> assignSchoolsToUser(@RequestHeader(value = "Authorization") String token, @RequestBody SchoolManagementDTO schoolManagementDTO){
+    @PostMapping(value = "/assignSchoolToUser")
+    public ResponseEntity<Response<Boolean>> assignSchoolToUser(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object>  body){//todo aviad
         return ResponseEntity.ok()
-                .body(service.assignSchoolsToUser(sessionHandler.getUsernameByToken(token).getResult(), schoolManagementDTO.getAffectedUser(), schoolManagementDTO.getSchools()));
+                .body(service.assignSchoolToUser(sessionHandler.getUsernameByToken(token).getResult(), (String) body.get("affectedUser"), (String) body.get("school")));
     }
 
-    @PostMapping(value = "/removeSchoolsFromUser")
-    public ResponseEntity<Response<Boolean>> removeSchoolsFromUser(@RequestHeader(value = "Authorization") String token, @RequestBody SchoolManagementDTO schoolManagementDTO){
+    @PostMapping(value = "/removeSchoolFromUser")
+    public ResponseEntity<Response<Boolean>> removeSchoolFromUser(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object>  body){//todo aviad
         return ResponseEntity.ok()
-                .body(service.removeSchoolsFromUser(sessionHandler.getUsernameByToken(token).getResult(), schoolManagementDTO.getAffectedUser(), schoolManagementDTO.getSchools()));
+                .body(service.removeSchoolFromUser(sessionHandler.getUsernameByToken(token).getResult(), (String) body.get("affectedUser"), (String) body.get("school")));
     }
 
     @GetMapping(value = "/getUserInfo")

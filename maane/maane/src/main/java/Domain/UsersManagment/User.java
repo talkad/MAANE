@@ -4,7 +4,6 @@ import Communication.DTOs.UserDTO;
 import Domain.CommonClasses.Response;
 import Persistence.DbDtos.UserDBDTO;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.LinkedList;
@@ -205,6 +204,12 @@ public class User {
 
     public void setSchools(List<String> schools) {
         this.schools = schools;
+    }
+
+    public void addSchool(String school) {
+        if(!this.schools.contains(school)){
+            this.schools.add(school);
+        }
     }
 
     public Response<String> hasSchool(String symbol) {
@@ -413,7 +418,7 @@ public class User {
         this.workField = workField;
     }
 
-    public Response<Boolean> removeSchoolsFromUser(String userToRemoveSchools) {
+    public Response<Boolean> allowedToRemoveSchool(String userToRemoveSchools) {
         if(this.state.allowed(Permissions.REMOVE_SCHOOLS_FROM_USER, this)) {
             if (appointments.contains(userToRemoveSchools)) {
                 return new Response<>(true, false, "successfully removed school assignment");
@@ -425,19 +430,24 @@ public class User {
         else return new Response<>(false, true, "user not allowed to remove schools from users");
     }
 
-    public void removeSchools(List<String> schools) {
-        for (String schoolId: schools) {
-            this.schools.remove(schoolId);
+    public Response<Boolean> removeSchool(String school) {
+        if(this.schools != null){
+            boolean removed = schools.remove(school);
+            return new Response<>(removed, !removed , removed ? "successfully removed the school" : "tried to remove school that wasn't assigned to the user");
+        }
+        return new Response<>(null, true, "bad initialization of schools");
+    }
+
+    public Response<Boolean> canAddSchool(String school) {
+        if(this.schools.contains(school)){
+            return new Response<>(false, true, "user was already assigned to the school");
+        }
+        else{
+            return new Response<>(true, false, "user was allowed to be assigned to the school");
         }
     }
 
-    public void addSchools(List<String> schools) {
-        for (String school: schools) {
-            if(!this.schools.contains(school)){
-                this.schools.add(school);
-            }
-        }
-    }
+
 
     public Response<String> getGoals() {
         if(this.state.allowed(Permissions.GET_GOALS, this)){
@@ -583,11 +593,10 @@ public class User {
     }
 
 
-    public Response<Boolean> getWorkPlanByYear(Integer year) {
-        System.out.println(this.getWorkPlanYears());
+    public Response<Integer> getWorkPlanByYear(Integer year , Integer month) {
         if (this.state.allowed(Permissions.VIEW_WORK_PLAN, this)) {//todo fix this
             //return new Response<>(this.workPlanYears.contains(year), !this.workPlanYears.contains(year), "");
-            return new Response<>(true, false, "");
+            return new Response<>(extractProperYear(LocalDateTime.of(year, month, 1, 0, 0)), false, "");
         }
         else {
             return new Response<>(null, true, "user not allowed to view work plan");

@@ -2,7 +2,6 @@ package Communication;
 
 import Communication.DTOs.*;
 import Communication.Initializer.ServerContextInitializer;
-import Communication.Security.KeyLoader;
 import Communication.Service.UserServiceImpl;
 import Domain.DataManagement.AnswerState.AnswerType;
 import Domain.DataManagement.DataController;
@@ -22,12 +21,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 
-import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -81,24 +74,19 @@ public class MaaneApplication {
 
 				DataController.getInstance().insertSchool(new SchoolDBDTO("3333333", "testing school3", "beer sheva", "", "", "", "", "", "", "", "", 1000000, "", "", "", "", 32));
 
-
 				DataController.getInstance().assignCoordinator("admin", "tech", "aviad", "shal", "aviad@gmail.com", "0555555555", "1111111");
 
 				userController.logout("admin");
 
 				userController.login("ronit");
 
-				List<String> school1 = new Vector<>();
-				List<String> school2 = new Vector<>();
-				List<String> school3 = new Vector<>();
-				school1.add("1111111");
-				school2.add("2222222");
-				school3.add("33333333");
+				String school1 = "1111111";
+				String school2 = "2222222";
+				String school3 = "33333333";
 
-				userController.assignSchoolsToUser("ronit", "tal", school1);
-				userController.assignSchoolsToUser("ronit", "shaked", school2);
-				userController.assignSchoolsToUser("ronit", "shaked", school3);
-
+				userController.assignSchoolToUser("ronit", "tal", school1);
+				userController.assignSchoolToUser("ronit", "shaked", school2);
+				userController.assignSchoolToUser("ronit", "shaked", school3);
 
 				// create survey
 				SurveyDTO surveyDTO = new SurveyDTO(false, "1111", "survey1", "description",

@@ -1,6 +1,5 @@
 package Communication.Service.Interfaces;
 
-import Communication.DTOs.ActivityDTO;
 import Communication.DTOs.GoalDTO;
 import Communication.DTOs.UserDTO;
 import Communication.DTOs.WorkPlanDTO;
@@ -8,8 +7,7 @@ import Domain.CommonClasses.Response;
 import Domain.UsersManagment.User;
 import Persistence.DbDtos.UserDBDTO;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+
 import java.util.List;
 
 public interface UserService {
@@ -36,7 +34,9 @@ public interface UserService {
 
     Response<User> getUserRes(String username); //for testing purposes only
 
-    Response<Boolean> assignSchoolsToUser(String currUser, String userToAssignName, List<String> schools);
+    Response<Boolean> assignSchoolToUser(String currUser, String userToAssignName, String school);
+
+    Response<Boolean> removeSchoolFromUser(String currUser, String userToAssignName, String school);
 
     Response<Boolean> verifyUser(String currUser, String password);
 

@@ -137,16 +137,13 @@ public class DataController {
         userController.logout("admin");
         userController.login("ronit");
 
-        List<String> school1 = new Vector<>();
-        List<String> school2 = new Vector<>();
-        List<String> school3 = new Vector<>();
-        school1.add("1111111");
-        school2.add("2222222");
-        school3.add("33333333");
+        String school1 = "1111111";
+        String school2 = "2222222";
+        String school3 = "33333333";
 
-        userController.assignSchoolsToUser("ronit", "tal", school1);
-        userController.assignSchoolsToUser("ronit", "shaked", school2);
-        userController.assignSchoolsToUser("ronit", "shaked", school3);
+        userController.assignSchoolToUser("ronit", "tal", school1);
+        userController.assignSchoolToUser("ronit", "shaked", school2);
+        userController.assignSchoolToUser("ronit", "shaked", school3);
 
         // create survey
         SurveyDTO surveyDTO = new SurveyDTO(false, "1111", "survey1", "description",

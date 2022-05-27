@@ -438,10 +438,10 @@ public class UserController {
      * assign schools to a user
      * @param currUser the user's username
      * @param userToAssign the user to be assigned schools username
-     * @param schools the schools to be assigned to @userToAssign
+     * @param school the school to be assigned to @userToAssign
      * @return a response of the successfulness of the action
      */
-    public Response<Boolean> assignSchoolsToUser(String currUser, String userToAssign, List<String> schools){
+    public Response<Boolean> assignSchoolToUser(String currUser, String userToAssign, String school){
         Response<Boolean> response;
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
@@ -449,11 +449,16 @@ public class UserController {
                 response = user.assignSchoolsToUser(userToAssign);
                 if(!response.isFailure()){
                     User userToAssignSchools = new User(userDAO.getFullUser(userToAssign).getResult());
-                    userToAssignSchools.addSchools(schools);
-                    userDAO.assignSchoolsToUser(userToAssign, schools);
-                    if(connectedUsers.containsKey(userToAssign)){
-                        userToAssignSchools = connectedUsers.get(userToAssign);
-                        userToAssignSchools.addSchools(schools);
+                    Response<Boolean> hasSchoolRes = userToAssignSchools.canAddSchool(school);
+                    if(!hasSchoolRes.isFailure()) {
+                        userDAO.assignSchoolToUser(userToAssign, school);
+                        if (connectedUsers.containsKey(userToAssign)) {
+                            userToAssignSchools = connectedUsers.get(userToAssign);
+                            userToAssignSchools.addSchool(school);
+                        }
+                    }
+                    else {
+                        return hasSchoolRes;
                     }
                 }
                 return response;
@@ -471,24 +476,27 @@ public class UserController {
      * remove schools assigned to the user
      * @param currUser user's username
      * @param userToRemoveSchoolsName the user to have his schools removed username
-     * @param schools a list of all the schools symbols to be removed from the user @userToRemoveSchoolsName
+     * @param school a the school symbol to be removed from the user @userToRemoveSchoolsName
      * @return a response of the successfulness of the action
      */
-    public Response<Boolean> removeSchoolsFromUser(String currUser, String userToRemoveSchoolsName, List<String> schools){
+    public Response<Boolean> removeSchoolFromUser(String currUser, String userToRemoveSchoolsName, String school){
         Response<Boolean> response;
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             if(userDAO.userExists(userToRemoveSchoolsName)) {
-                response = user.removeSchoolsFromUser(userToRemoveSchoolsName);
+                response = user.allowedToRemoveSchool(userToRemoveSchoolsName);
                 if(!response.isFailure()){
                    User userToRemoveSchools = new User(userDAO.getFullUser(userToRemoveSchoolsName).getResult());
-                   userToRemoveSchools.removeSchools(schools);
-                   userDAO.removeSchoolsFromUser(userToRemoveSchoolsName, schools);
-                   if(connectedUsers.containsKey(userToRemoveSchoolsName)){
-                       userToRemoveSchools = connectedUsers.get(userToRemoveSchoolsName);
-                       for (String schoolId: schools) {
-                           userToRemoveSchools.schools.remove(schoolId);
+                   Response<Boolean> removeSchoolRes = userToRemoveSchools.removeSchool(school);
+                   if(!removeSchoolRes.isFailure()){
+                       userDAO.removeSchoolsFromUser(userToRemoveSchoolsName, school);
+                       if(connectedUsers.containsKey(userToRemoveSchoolsName)){
+                           userToRemoveSchools = connectedUsers.get(userToRemoveSchoolsName);
+                           userToRemoveSchools.schools.remove(school);
                        }
+                   }
+                   else{
+                       return removeSchoolRes;
                    }
                 }
                 return response;
@@ -658,7 +666,7 @@ public class UserController {
      * @return a response of the successfulness of the action
      */
     public Response<Boolean> changePassword(String currUser, String currPassword, String newPassword, String confirmPassword){
-        if(!isValidPassword(newPassword))
+        if(!isValidPassword(newPassword) && !ServerContextInitializer.getInstance().isTestMode())
             return new Response<>(false, true, "The password isn't strong enough");
 
         if(connectedUsers.containsKey(currUser)) {
@@ -1069,7 +1077,7 @@ public class UserController {
                 Response<UserDBDTO> isCoordinatorAssignedRes = userDAO.getCoordinator(school, result.getResult().getWorkField());
                 if(!isCoordinatorAssignedRes.isFailure() && isCoordinatorAssignedRes.getResult() == null){
                     userDAO.insertUser(new UserDBDTO(result.getResult(), null));
-                    userDAO.assignSchoolsToUser(result.getResult().getUsername(), result.getResult().getSchools());
+                    userDAO.assignSchoolToUser(result.getResult().getUsername(), result.getResult().getSchools().get(0));
                     return new Response<>(true, false, "assigned coordinator");
                 }
                 else{
@@ -1176,9 +1184,9 @@ public class UserController {
     public Response<WorkPlanDTO> viewWorkPlan(String currUser, Integer year, Integer month){
         if(connectedUsers.containsKey(currUser)) {
             User user = new User(userDAO.getFullUser(currUser).getResult());
-            Response<Boolean> workPlanResponse = user.getWorkPlanByYear(year);//todo causes problem
+            Response<Integer> workPlanResponse = user.getWorkPlanByYear(year, month);//todo causes problem
             if(!workPlanResponse.isFailure()){
-                return workPlanDAO.getUserWorkPlanByYearAndMonth(currUser, year, month);
+                return workPlanDAO.getUserWorkPlanByYearAndMonth(currUser, workPlanResponse.getResult(), month);
             }
             else{
                 return new Response<>(null, true, workPlanResponse.getErrMsg());
@@ -1246,6 +1254,16 @@ public class UserController {
         }
     }
 
+    /**
+     * allows an instructor to add an activity to his schedule
+     * @param currUser the user wishing to add the activity
+     * @param startAct the activity beginning date
+     * @param schoolId the school symbol in which the activity will occur
+     * @param goalId the goal's id
+     * @param title the goal's title
+     * @param endAct the activity ending date
+     * @return a response of the successfulness of the action
+     */
     public Response<Boolean> addActivity(String currUser, String startAct, String schoolId, int goalId, String title, String endAct) {
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);//todo maybe verify the dao was generated
@@ -1267,6 +1285,12 @@ public class UserController {
             return new Response<>(null, true, "User not connected");
         }    }
 
+    /**
+     * allows an instructor to remove an activity from his schedule
+     * @param currUser the user wishing to remove the activity
+     * @param startAct the activity's beginning date
+     * @return a response of the successfulness of the action
+     */
     public Response<Boolean> removeActivity(String currUser, String startAct) {
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);//todo maybe verify the dao was generated
@@ -1488,7 +1512,7 @@ public class UserController {
             Response<UserDBDTO> isCoordinatorAssignedRes = userDAO.getCoordinator(school, result.getResult().getWorkField());
             if(!isCoordinatorAssignedRes.isFailure() && isCoordinatorAssignedRes.getResult() == null){
                 userDAO.insertUser(new UserDBDTO(result.getResult(), null));
-                userDAO.assignSchoolsToUser(result.getResult().getUsername(), result.getResult().getSchools());
+                userDAO.assignSchoolToUser(result.getResult().getUsername(), school);
                 return new Response<>(true, false, "assigned coordinator");
             }
             else{

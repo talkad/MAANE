@@ -34,7 +34,7 @@ public class DataControllerTests {
         userController.logout(adminName);
         userController.login("sup1");
         userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "email@gmail.com", "0555555555", "");
-        Response<Boolean> res = dataController.assignCoordinator(supervisorName, "irrelevant", "coordinator", "1", "email@gmail.com", "5555555555", "1");
+        Response<Boolean> res = dataController.assignCoordinator(supervisorName, "irrelevant", "coordinator", "1", "email@gmail.com", "0555555555", "1");
         Assert.assertFalse(res.isFailure());
         Assert.assertEquals("coordinator", UserController.getInstance().getCoordinator("sup1", "tech", "1").getResult().getFirstName());
     }
@@ -47,8 +47,8 @@ public class DataControllerTests {
         userController.logout(adminName);
         userController.login("sup1");
         userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "email@gmail.com", "0555555555", "");
-        Response<Boolean> res1 = dataController.assignCoordinator(supervisorName, "irrelevant", "coordinator", "1", "email@gmail.com", "5555555555", "1");
-        Response<Boolean> res2 = dataController.assignCoordinator(supervisorName, "irrelevant", "coordinator2", "2", "email@gmail.com", "5555555555", "1");
+        Response<Boolean> res1 = dataController.assignCoordinator(supervisorName, "irrelevant", "coordinator", "1", "email@gmail.com", "0555555555", "1");
+        Response<Boolean> res2 = dataController.assignCoordinator(supervisorName, "irrelevant", "coordinator2", "2", "email@gmail.com", "0555555555", "1");
 
         Assert.assertFalse(res1.isFailure());
         Assert.assertTrue(res2.isFailure());
@@ -64,7 +64,7 @@ public class DataControllerTests {
         userController.logout(adminName);
         userController.login("sup1");
         userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "email@gmail.com", "0555555555", "");
-        Response<Boolean> res = dataController.assignCoordinator(supervisorName, "irrelevant", "coordinator", "1", "email@gmail.com", "5555555555", "1");
+        Response<Boolean> res = dataController.assignCoordinator(supervisorName, "irrelevant", "coordinator", "1", "email@gmail.com", "0555555555", "1");
         Assert.assertFalse(res.isFailure());
         Assert.assertEquals("coordinator", UserController.getInstance().getCoordinator("sup1", "tech", "1").getResult().getFirstName());
         Response<Boolean> res2 = dataController.removeCoordinator(supervisorName, "irrelevant", "1");

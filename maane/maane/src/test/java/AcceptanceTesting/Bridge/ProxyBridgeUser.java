@@ -135,9 +135,18 @@ public class ProxyBridgeUser implements UserService {
     }
 
     @Override
-    public Response<Boolean> assignSchoolsToUser(String currUser, String userToAssignName, List<String> schools) {
+    public Response<Boolean> assignSchoolToUser(String currUser, String userToAssignName, String school) {
         if (real != null) {
-            return real.assignSchoolsToUser(currUser, userToAssignName, schools);
+            return real.assignSchoolToUser(currUser, userToAssignName, school);
+        }
+
+        return new Response<>(null, true, "not implemented");
+    }
+
+    @Override
+    public Response<Boolean> removeSchoolFromUser(String currUser, String userToAssignName, String school) {
+        if (real != null) {
+            return real.removeSchoolFromUser(currUser, userToAssignName, school);
         }
 
         return new Response<>(null, true, "not implemented");

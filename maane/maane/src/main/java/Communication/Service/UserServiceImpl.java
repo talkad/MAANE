@@ -1,6 +1,5 @@
 package Communication.Service;
 
-import Communication.DTOs.ActivityDTO;
 import Communication.DTOs.GoalDTO;
 import Communication.DTOs.UserDTO;
 import Communication.DTOs.WorkPlanDTO;
@@ -20,8 +19,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -158,8 +155,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public Response<Boolean> assignSchoolsToUser(String currUser, String userToAssignName, List<String> schools) {
-        Response<Boolean> res = UserController.getInstance().assignSchoolsToUser(currUser, userToAssignName, schools);
+    public Response<Boolean> assignSchoolToUser(String currUser, String userToAssignName, String school) {
+        Response<Boolean> res = UserController.getInstance().assignSchoolToUser(currUser, userToAssignName, school);
 
         if (res.isFailure())
             log.error("failed to assign schools for the user {} by the user {}", userToAssignName, currUser);
@@ -265,8 +262,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return res;
     }
 
-    public Response<Boolean> removeSchoolsFromUser(String currUser, String userToRemoveSchoolsName, List<String> schools) {
-        Response<Boolean> res = UserController.getInstance().removeSchoolsFromUser(currUser, userToRemoveSchoolsName, schools);
+    public Response<Boolean> removeSchoolFromUser(String currUser, String userToRemoveSchoolsName, String school) {
+        Response<Boolean> res = UserController.getInstance().removeSchoolFromUser(currUser, userToRemoveSchoolsName, school);
         if (res.isFailure())
             log.error("failed to remove school from user by {}", currUser);
         else
