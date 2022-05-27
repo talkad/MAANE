@@ -68,7 +68,7 @@ public interface UserService {
 
     Response<Boolean> editActivity(String currUser, LocalDateTime currActStart, LocalDateTime newActStart, LocalDateTime newActEnd);
 
-    Response<Boolean> addActivity(String currUser, LocalDateTime startAct, ActivityDTO activity);
+    Response<Boolean> addActivity(String currUser, String startAct, String schoolId, int goalId, String title, String endAct);
 
     Response<Boolean> removeActivity(String currUser, LocalDateTime startAct);
 

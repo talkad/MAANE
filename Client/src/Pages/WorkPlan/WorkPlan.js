@@ -37,6 +37,8 @@ const localizer = momentLocalizer(moment); // localizer to represent the data ac
 
 function NewActivityForm(props) {
     const [title, setTitle] = useState('');
+    const [years, setYears] = useState([])
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
     const [selectedGoal, setSelectedGoal] = useState(-1)
     const [selectedSchoolSearchID, setSelectedSchoolSearchID] = useState(-1)
     const [searchText, setSearchText] = useState('')
@@ -55,6 +57,7 @@ function NewActivityForm(props) {
 
     const form_title_string = "הוספת פעילות חדשה";
     const form_title_field_label_string = "כותרת הפעילות";
+    const form_year_label_string = 'בחירת שנת היעדים';
     const form_choose_goal_string = "בחירת יעד";
     const form_goal_string = "יעד";
     const search_school_string = "חיפוש בתי ספר";
@@ -63,9 +66,20 @@ function NewActivityForm(props) {
     const form_add_button_string = "הוספ/י פעילות";
 
     useEffect(() => {
+        new Connection().getGoals(selectedYear, arrangeGoalsData) // getting the goals
+
+        let years_range = [];
         let currentYear = new Date().getFullYear();
-        // TODO: instructor can't get goals
-        new Connection().getGoals(currentYear, arrangeGoalsData) // getting the goals
+
+        let delta = -7;
+
+        while (delta <= 7) { // calculating up to 7 previous and ahead years
+            years_range.push(currentYear + delta);
+            delta++;
+        }
+
+        //setHebrewYear(gematriya(currentYear + 3760, {punctuate: true, limit: 3}))
+        setYears(years_range);
     }, []);
 
     /**
@@ -73,11 +87,23 @@ function NewActivityForm(props) {
      * @param data the data from the server
      */
     const arrangeGoalsData = (data) => {
+        setSelectedGoal(-1);
+        setGoals([])
         if(!data.failure){
             for (const row of data.result){
                 setGoals(goals => [...goals, {value: row.goalId, description: row.title}]);
             }
         }
+    }
+
+    /**
+     * on change handler for selecting a new year
+     * @param event
+     */
+    const yearChange = (event) => {
+        setSelectedYear(event.target.value)
+
+        new Connection().getGoals(event.target.value, arrangeGoalsData) // getting the new goals
     }
 
     /**
@@ -139,6 +165,18 @@ function NewActivityForm(props) {
                     error={error && title.trim() === ''}
                 />
 
+                {/*form year select*/}
+                <FormControl  sx={{width: "40%"}}>
+                    <InputLabel>{form_year_label_string}</InputLabel>
+                    <Select
+                        value={selectedYear}
+                        label={form_year_label_string}
+                        onChange={yearChange}
+                    >
+                        {years.map(year => <MenuItem value={year}>{year}</MenuItem>)}
+                    </Select>
+                </FormControl>
+
                 {/*form goal select*/}
                 <FormControl error={error && selectedGoal === -1} sx={{width: "40%"}}>
                     <InputLabel>{form_goal_string}</InputLabel>
@@ -146,7 +184,7 @@ function NewActivityForm(props) {
                         id={"add_activity_goal_selection"}
                         value={selectedGoal}
                         label={form_goal_string}
-                        onChange={(event) => setSelectedGoal(event.traget.value)}
+                        onChange={(event) => setSelectedGoal(event.target.value)}
                     >
                         <MenuItem value={-1}>{form_choose_goal_string}</MenuItem>
                         {goals.map(goal => <MenuItem value={goal.value}>{goal.description}</MenuItem>)}
@@ -387,12 +425,12 @@ export default function WorkPlan(props){
         if(data.failure){
             setOpenSnackbar(true)
             setSnackbarSeverity('error')
-            snackbarMessage('אירעה שגיאה. הפעילות לא התעדכנה')
+            setSnackbarMessage('אירעה שגיאה. הפעילות לא התעדכנה')
         }
         else{
             setOpenSnackbar(true)
             setSnackbarSeverity('success')
-            snackbarMessage('הפעילות התעדכנה בהצלחה')
+            setSnackbarMessage('הפעילות התעדכנה בהצלחה')
 
             // calling for new data to view
             new Connection().getWorkPlan(dataDate.getFullYear(), dataDate.getMonth(), arrangeActivities);
@@ -427,12 +465,12 @@ export default function WorkPlan(props){
         if(data.failure){
             setOpenSnackbar(true)
             setSnackbarSeverity('error')
-            snackbarMessage('אירעה שגיאה. הפעילות לא הוספה')
+            setSnackbarMessage('אירעה שגיאה. הפעילות לא הוספה')
         }
         else{
             setOpenSnackbar(true)
             setSnackbarSeverity('success')
-            snackbarMessage('הפעילות הוספה בהצלחה')
+            setSnackbarMessage('הפעילות הוספה בהצלחה')
 
             // calling for new data to view
             new Connection().getWorkPlan(dataDate.getFullYear(), dataDate.getMonth(), arrangeActivities);
@@ -448,8 +486,9 @@ export default function WorkPlan(props){
      * @param endDate the end date and time of the activity
      */
     const handleAddActivity = (title, goalID, schoolID, startDate, endDate) => {
-        new Connection().addActivity(startDate, schoolID, goalID, title, endDate, addActivityCallback)
+        new Connection().addActivity(startDate.toISOString().split('.')[0], schoolID, goalID, title, endDate.toISOString().split('.')[0], addActivityCallback)
         setShowNewActivityForm(false);
+        setAddButtonPressed(false);
     }
 
     /**
@@ -460,12 +499,12 @@ export default function WorkPlan(props){
         if(data.failure){
             setOpenSnackbar(true)
             setSnackbarSeverity('error')
-            snackbarMessage('אירעה שגיאה. הפעילות לא נמחקה')
+            setSnackbarMessage('אירעה שגיאה. הפעילות לא נמחקה')
         }
         else{
             setOpenSnackbar(true)
             setSnackbarSeverity('success')
-            snackbarMessage('הפעילות נמחקה בהצלחה')
+            setSnackbarMessage('הפעילות נמחקה בהצלחה')
 
             // calling for new data to view
             new Connection().getWorkPlan(dataDate.getFullYear(), dataDate.getMonth(), arrangeActivities);

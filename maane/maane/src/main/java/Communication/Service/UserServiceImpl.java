@@ -365,8 +365,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public Response<Boolean> addActivity(String currUser, LocalDateTime startAct, ActivityDTO activity) {
-        Response<Boolean> res = UserController.getInstance().addActivity(currUser, startAct, activity);
+    public Response<Boolean> addActivity(String currUser, String startAct, String schoolId, int goalId, String title, String endAct) {
+        Response<Boolean> res = UserController.getInstance().addActivity(currUser, startAct, schoolId, goalId, title, endAct);
 
         if (res.isFailure())
             log.error("failed to edit {}'s activity ", currUser);

@@ -51,7 +51,7 @@ public class GoalsQueries {
         return new Response<>(null, true, "failed to get goal");
     }
 
-    public Response<List<GoalDTO>> getGoals(String workField, Integer year) {//todo remove it later potentially
+    public Response<List<GoalDTO>> getGoals(String workField, Integer year) {
         Connect.createConnection();
         String sql = "SELECT * FROM \"Goals\" WHERE workfield = ? AND goalyear = ?";
         PreparedStatement statement;

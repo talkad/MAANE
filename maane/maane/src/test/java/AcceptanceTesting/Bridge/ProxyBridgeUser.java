@@ -276,9 +276,9 @@ public class ProxyBridgeUser implements UserService {
     }
 
     @Override
-    public Response<Boolean> addActivity(String currUser, LocalDateTime startAct, ActivityDTO activity) {
+    public Response<Boolean> addActivity(String currUser, String startAct, String schoolId, int goalId, String title, String endAct) {
         if (real != null) {
-            return real.addActivity(currUser, startAct, activity);
+            return real.addActivity(currUser, startAct, schoolId, goalId, title, endAct);
         }
 
         return new Response<>(null, true, "not implemented");    }

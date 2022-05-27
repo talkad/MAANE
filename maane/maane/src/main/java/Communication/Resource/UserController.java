@@ -288,9 +288,9 @@ public class UserController {
     }
 
     @PostMapping(value = "/addActivity") //todo aviad
-    public ResponseEntity<Response<Boolean>> addActivity(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object>  body){
+    public ResponseEntity<Response<Boolean>> addActivity(@RequestHeader(value = "Authorization") String token, @RequestBody ActivityManageDTO activityManageDTO){
         return ResponseEntity.ok()
-                .body(service.addActivity(sessionHandler.getUsernameByToken(token).getResult(), (LocalDateTime) body.get("startAct"), (ActivityDTO) body.get("activity")));
+                .body(service.addActivity(sessionHandler.getUsernameByToken(token).getResult(), (String) activityManageDTO.getStartActivity(), (String) activityManageDTO.getSchoolId(), (int) activityManageDTO.getGoalId(), (String) activityManageDTO.getTitle(), (String) activityManageDTO.getEndActivity()));
     }
 
     @PostMapping(value = "/removeActivity") //todo aviad

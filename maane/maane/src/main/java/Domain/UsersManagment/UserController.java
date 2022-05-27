@@ -1228,12 +1228,17 @@ public class UserController {
         }
     }
 
-    public Response<Boolean> addActivity(String currUser, LocalDateTime startAct, ActivityDTO activity) {
+    public Response<Boolean> addActivity(String currUser, String startAct, String schoolId, int goalId, String title, String endAct) {
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);//todo maybe verify the dao was generated
-            Response<Integer> addActivityRes = user.addActivity(startAct, activity.getSchoolId());//todo change active user info
+            System.out.println(startAct);
+            LocalDateTime startActDate = LocalDateTime.parse(startAct);
+            LocalDateTime endActDate = LocalDateTime.parse(endAct);//todo verify legal date
+            ActivityDTO activity = new ActivityDTO(schoolId, goalId, title, endActDate);
+            activity.setEndActivity(endActDate);
+            Response<Integer> addActivityRes = user.addActivity(startActDate, activity.getSchoolId());//todo change active user info
             if(!addActivityRes.isFailure()){
-                return workPlanDAO.addActivity(currUser, startAct, activity, addActivityRes.getResult());
+                return workPlanDAO.addActivity(currUser, startActDate, activity, addActivityRes.getResult());
             }
             else{
                 return new Response<>(null, true, addActivityRes.getErrMsg() + " / colliding activity hours");
