@@ -149,6 +149,12 @@ public class MaaneApplication {
 				userController.setWorkingTime("shaked", 3, LocalTime.of(10, 0), LocalTime.of(12, 0), LocalTime.of(13, 0), LocalTime.of(15, 0));
 				userController.logout("shaked");
 			}
+			else {
+				System.out.println("The server is running!");
+
+				// UserQueries.getInstance().clearDB();
+				DataController.getInstance().loadSchoolsToDB();
+			}
 		};
 	}
 

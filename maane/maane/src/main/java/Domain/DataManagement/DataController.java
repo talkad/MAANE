@@ -13,6 +13,7 @@ import Domain.UsersManagment.UserStateEnum;
 import Domain.WorkPlan.GoalsManagement;
 import Persistence.DbDtos.SchoolDBDTO;
 import Persistence.DbDtos.UserDBDTO;
+import Persistence.ExcelFormatter;
 import Persistence.SchoolQueries;
 import Persistence.UserQueries;
 
@@ -36,6 +37,18 @@ public class DataController {
 
     public static DataController getInstance() {
         return CreateSafeThreadSingleton.INSTANCE;
+    }
+
+    public Response<Boolean> loadSchoolsToDB() {
+        Response<Boolean> emptyTable = ExcelFormatter.getInstance().isEmpty();
+
+        if(emptyTable.isFailure())
+            return emptyTable;
+
+        if(emptyTable.getResult())
+            return ExcelFormatter.getInstance().SchoolExcelToDb();
+
+        return new Response<>(false, false, "Schools table is not empty");
     }
 
     public Response<List<String>> getCoordinatorsEmails(String workField){

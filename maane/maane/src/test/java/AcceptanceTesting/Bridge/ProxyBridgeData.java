@@ -7,7 +7,7 @@ import Persistence.DbDtos.SchoolDBDTO;
 
 import java.util.List;
 
-public class ProxyBridgeData implements DataService {//todo tests for this class
+public class ProxyBridgeData implements DataService {
     private DataService real;
 
     public ProxyBridgeData(){
@@ -101,6 +101,15 @@ public class ProxyBridgeData implements DataService {//todo tests for this class
     public Response<Boolean> assignCoordinatorTester(String school) {
         if (real != null){
             return real.assignCoordinatorTester(school);
+        }
+
+        return new Response<>(null, true, "not implemented");
+    }
+
+    @Override
+    public Response<Boolean> loadSchoolsToDB() {
+        if (real != null){
+            return real.loadSchoolsToDB();
         }
 
         return new Response<>(null, true, "not implemented");
