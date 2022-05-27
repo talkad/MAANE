@@ -42,7 +42,7 @@ function NewActivityForm(props) {
     const [years, setYears] = useState([])
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
     const [selectedGoal, setSelectedGoal] = useState(-1)
-    const [selectedSchoolSearchID, setSelectedSchoolSearchID] = useState(-1)
+    const [selectedSchoolSearchID, setSelectedSchoolSearchID] = useState('')
     const [searchText, setSearchText] = useState('')
     const [activityStart, setActivityStart] = useState(new Date())
     const [activityEnd, setActivityEnd] = useState(new Date())
@@ -200,6 +200,7 @@ function NewActivityForm(props) {
                     freeSolo
                     id="search-schools"
                     disableClearable
+                    value={searchText}
                     onChange={(event, newValue) => {
                         setSelectedSchoolSearchID(newValue.id)
                     }}
