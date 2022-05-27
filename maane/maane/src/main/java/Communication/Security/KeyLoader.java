@@ -2,12 +2,17 @@ package Communication.Security;
 
 import lombok.extern.slf4j.Slf4j;
 
-import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
+import javax.crypto.*;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
+import java.util.Arrays;
+import java.util.Base64;
 
 
 @Slf4j
@@ -25,11 +30,10 @@ public class KeyLoader {
         password = "1234";
 
         //filepath = ".\\src\\main\\resources\\store.keystore"; // other's path
-//        filepath = "C:\\MAANE\\maane\\maane\\src\\main\\resources\\store.keystore";
+        filepath = "C:\\MAANE\\maane\\maane\\src\\main\\resources\\store.keystore";
 
 
-        filepath = "maane\\src\\main\\resources\\store.keystore"; // other's path
-        //filepath = "C:\\MAANE\\maane\\maane\\src\\main\\resources\\store.keystore";
+//        filepath = "maane\\src\\main\\resources\\store.keystore"; // other's path
 
         encryptedText = "354132168465432";
     }
@@ -39,35 +43,34 @@ public class KeyLoader {
     }
 
 
-    public void storeKey() {
+    public void storeKey(String key, SecretKey secretKey) {
         try {
             File file = new File(filepath);
-            SecretKey secretKey = KeyLoader.getInstance().generateKey();
             KeyStore keystore = KeyStore.getInstance("JCEKS");
 
             if (!file.exists()) {
                 keystore.load(null, null);
             }
 
-            keystore.setKeyEntry("auth_key", secretKey, password.toCharArray(), null);
+            keystore.setKeyEntry(key, secretKey, password.toCharArray(), null);
             OutputStream writeStream = new FileOutputStream(filepath);
             keystore.store(writeStream, password.toCharArray());
 
             log.info("key store created");
 
-        }catch(Exception e){
+        } catch(Exception e){
             log.error("storing key failed");
             log.error(e.getMessage());
         }
     }
 
-    private SecretKey readKey(){
+    private SecretKey readKey(String key){
         try{
             KeyStore keystore = KeyStore.getInstance("JCEKS");
             InputStream readStream = new FileInputStream(filepath);
             keystore.load(readStream, password.toCharArray());
 
-            return (SecretKey) keystore.getKey("auth_key", password.toCharArray());
+            return (SecretKey) keystore.getKey(key, password.toCharArray());
 
         }catch(Exception e){
             log.error("key from {} didn't load\n error: {}", filepath, e.getMessage());
@@ -87,7 +90,7 @@ public class KeyLoader {
 
     }
 
-    private byte[] encryptKey(String toEncrypt, SecretKey key, Cipher cipher){
+    public byte[] encryptKey(String toEncrypt, SecretKey key, Cipher cipher){
         try{
             byte[] text = toEncrypt.getBytes(StandardCharsets.UTF_8);
             cipher.init(Cipher.ENCRYPT_MODE, key);
@@ -101,7 +104,7 @@ public class KeyLoader {
 
     }
 
-    private byte[] decryptKey(byte[] enc, SecretKey key, Cipher cipher) {
+    public byte[] decryptKey(byte[] enc, SecretKey key, Cipher cipher) {
         try{
             cipher.init(Cipher.DECRYPT_MODE, key);
 
@@ -114,8 +117,8 @@ public class KeyLoader {
 
     }
 
-    public byte[] getEncryptionKey() {
-        SecretKey key = KeyLoader.getInstance().readKey();
+    public byte[] getEncryptionKey(String keyStr) {
+        SecretKey key = KeyLoader.getInstance().readKey(keyStr);
 
         try {
             Cipher cipher = Cipher.getInstance("AES");
@@ -129,5 +132,34 @@ public class KeyLoader {
         }
 
     }
+
+    public String getAdminPassword() {
+        SecretKey key = KeyLoader.getInstance().readKey("auth_key");
+        byte[] encodedPassword = {-123, -26, 68, 117, -59, -44, 119, -15, -27, -10, 79, 57, 73, -78, -75, -120};
+
+        try {
+            return new String(KeyLoader.getInstance().decryptKey(encodedPassword, key, Cipher.getInstance("AES")), StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return "";
+    }
+
+    public String getMailPassword()  {
+        SecretKey key = KeyLoader.getInstance().readKey("auth_key");
+        byte[] encodedPassword = {44, -126, -20, -44, -18, 24, -68, 105, -40, -60, 101, -81, 117, -42, -1, 100};
+
+        try {
+            return new String(KeyLoader.getInstance().decryptKey(encodedPassword, key, Cipher.getInstance("AES")), StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return "";
+    }
+
+
+
 
 }

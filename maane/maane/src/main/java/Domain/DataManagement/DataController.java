@@ -13,6 +13,7 @@ import Domain.UsersManagment.UserStateEnum;
 import Domain.WorkPlan.GoalsManagement;
 import Persistence.DbDtos.SchoolDBDTO;
 import Persistence.DbDtos.UserDBDTO;
+import Persistence.ExcelFormatter;
 import Persistence.SchoolQueries;
 import Persistence.UserQueries;
 
@@ -36,6 +37,18 @@ public class DataController {
 
     public static DataController getInstance() {
         return CreateSafeThreadSingleton.INSTANCE;
+    }
+
+    public Response<Boolean> loadSchoolsToDB() {
+        Response<Boolean> emptyTable = ExcelFormatter.getInstance().isEmpty();
+
+        if(emptyTable.isFailure())
+            return emptyTable;
+
+        if(emptyTable.getResult())
+            return ExcelFormatter.getInstance().SchoolExcelToDb();
+
+        return new Response<>(false, false, "Schools table is not empty");
     }
 
     public Response<List<String>> getCoordinatorsEmails(String workField){
@@ -124,16 +137,13 @@ public class DataController {
         userController.logout("admin");
         userController.login("ronit");
 
-        List<String> school1 = new Vector<>();
-        List<String> school2 = new Vector<>();
-        List<String> school3 = new Vector<>();
-        school1.add("1111111");
-        school2.add("2222222");
-        school3.add("33333333");
+        String school1 = "1111111";
+        String school2 = "2222222";
+        String school3 = "33333333";
 
-        userController.assignSchoolsToUser("ronit", "tal", school1);
-        userController.assignSchoolsToUser("ronit", "shaked", school2);
-        userController.assignSchoolsToUser("ronit", "shaked", school3);
+        userController.assignSchoolToUser("ronit", "tal", school1);
+        userController.assignSchoolToUser("ronit", "shaked", school2);
+        userController.assignSchoolToUser("ronit", "shaked", school3);
 
         // create survey
         SurveyDTO surveyDTO = new SurveyDTO(false, "1111", "survey1", "description",
@@ -184,11 +194,11 @@ public class DataController {
         userController.logout("ronit");
 
         userController.login("tal");
-        userController.setWorkingTime("tal", 0, LocalTime.of(8, 30), LocalTime.of(10, 30), LocalTime.of(11, 0), LocalTime.of(13, 0));
+        userController.setWorkingTime("tal", 0, LocalTime.of(8, 30).toString(), LocalTime.of(10, 30).toString(), LocalTime.of(11, 0).toString(), LocalTime.of(13, 0).toString());
         userController.logout("tal");
 
         userController.login("shaked");
-        userController.setWorkingTime("shaked", 3, LocalTime.of(10, 0), LocalTime.of(12, 0), LocalTime.of(13, 0), LocalTime.of(15, 0));
+        userController.setWorkingTime("shaked", 3, LocalTime.of(10, 0).toString(), LocalTime.of(12, 0).toString(), LocalTime.of(13, 0).toString(), LocalTime.of(15, 0).toString());
         userController.logout("shaked");
 
         return new Response<>(true, false, "reset db");

@@ -17,7 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Vector;
 
 
 public class UserControllerTest {
@@ -115,10 +114,8 @@ public class UserControllerTest {
         userController.logout(adminName);
         userController.login("sup1");
         userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "a@a.com", "0555555555", "");
-        List<String> schools = new Vector<>();
-        schools.add("1");
-        schools.add("2");
-        userController.assignSchoolsToUser("sup1", "ins1", schools);
+        userController.assignSchoolToUser("sup1", "ins1", "1");
+        userController.assignSchoolToUser("sup1", "ins1", "2");
         Assert.assertEquals(2, userQueries.getFullUser("ins1").getResult().getSchools().size());
         Assert.assertTrue(userQueries.getFullUser("ins1").getResult().getSchools().contains("1"));
         Assert.assertTrue(userQueries.getFullUser("ins1").getResult().getSchools().contains("2"));
@@ -131,13 +128,10 @@ public class UserControllerTest {
         userController.logout(adminName);
         userController.login("sup1");
         userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "a@a.com", "0555555555", "");
-        List<String> schools = new Vector<>();
-        schools.add("1");
-        schools.add("2");
-        userController.assignSchoolsToUser("sup1", "ins1", schools);
-        List<String> schoolsToRemoveList = new Vector<>();
-        schoolsToRemoveList.add("1");
-        userController.removeSchoolsFromUser("sup1", "ins1", schoolsToRemoveList);
+        userController.assignSchoolToUser("sup1", "ins1", "1");
+        userController.assignSchoolToUser("sup1", "ins1", "2");
+
+        userController.removeSchoolFromUser("sup1", "ins1", "1");
         Assert.assertEquals(1, userQueries.getFullUser("ins1").getResult().getSchools().size());
         Assert.assertFalse(userQueries.getFullUser("ins1").getResult().getSchools().contains("1"));
         Assert.assertTrue(userQueries.getFullUser("ins1").getResult().getSchools().contains("2"));
@@ -150,10 +144,9 @@ public class UserControllerTest {
         userController.logout(adminName);
         userController.login("sup1");
         userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "a@a.com", "0555555555", "");
-        List<String> schools = new Vector<>();
-        schools.add("1");
-        schools.add("2");
-        userController.assignSchoolsToUser("sup1", "ins1", schools);
+        userController.assignSchoolToUser("sup1", "ins1", "1");
+        userController.assignSchoolToUser("sup1", "ins1", "2");
+
         userQueries.getFullUser("sup1");
         userController.removeUser("sup1", "ins1");
         Assert.assertFalse(userQueries.userExists("ins1"));
@@ -373,7 +366,7 @@ public class UserControllerTest {
         userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "a@a.com", "0555555555", "");
         userController.logout("sup1");
         userController.login("ins1");
-        userController.setWorkingTime("ins1", 1, LocalTime.of(9, 0), LocalTime.of(11, 0), LocalTime.of(11, 0), LocalTime.of(13, 0));
+        userController.setWorkingTime("ins1", 1, LocalTime.of(9, 0).toString(), LocalTime.of(11, 0).toString(), LocalTime.of(11, 0).toString(), LocalTime.of(13, 0).toString());
         Response<UserDBDTO> userRes = userQueries.getWorkingTime("ins1");
         Assert.assertFalse(userRes.isFailure());
         Assert.assertEquals(1, userRes.getResult().getWorkDay());
@@ -389,7 +382,7 @@ public class UserControllerTest {
         userController.registerUser("sup1", "ins1", "ins1", UserStateEnum.INSTRUCTOR, "", "", "a@a.com", "0555555555", "");
         userController.logout("sup1");
         userController.login("ins1");
-        Response<Boolean> setWorkTimeRes = userController.setWorkingTime("ins1", 1, LocalTime.of(9, 0), LocalTime.of(11, 0), LocalTime.of(10, 0), LocalTime.of(13, 0));
+        Response<Boolean> setWorkTimeRes = userController.setWorkingTime("ins1", 1, LocalTime.of(9, 0).toString(), LocalTime.of(11, 0).toString(), LocalTime.of(10, 0).toString(), LocalTime.of(13, 0).toString());
         Response<UserDBDTO> userRes = userQueries.getWorkingTime("ins1");
         Assert.assertTrue(setWorkTimeRes.isFailure());
         Assert.assertEquals(0, userRes.getResult().getWorkDay());

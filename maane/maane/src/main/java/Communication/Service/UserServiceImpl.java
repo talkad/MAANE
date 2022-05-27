@@ -1,6 +1,5 @@
 package Communication.Service;
 
-import Communication.DTOs.ActivityDTO;
 import Communication.DTOs.GoalDTO;
 import Communication.DTOs.UserDTO;
 import Communication.DTOs.WorkPlanDTO;
@@ -20,8 +19,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -82,7 +79,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public Response<String> registerUser(String currUser, UserDTO user) {
         Response<String> res = UserController.getInstance().registerUser(currUser,
-                user.getUserToRegister(), passwordEncoder.encode(user.getPassword()), user.getUserStateEnum(), user.getFirstName(),
+                user.getUserToRegister(), user.getPassword(), user.getUserStateEnum(), user.getFirstName(),
                 user.getLastName(), user.getEmail(), user.getPhoneNumber(), user.getCity());
 
         if (res.isFailure())
@@ -158,8 +155,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public Response<Boolean> assignSchoolsToUser(String currUser, String userToAssignName, List<String> schools) {
-        Response<Boolean> res = UserController.getInstance().assignSchoolsToUser(currUser, userToAssignName, schools);
+    public Response<Boolean> assignSchoolToUser(String currUser, String userToAssignName, String school) {
+        Response<Boolean> res = UserController.getInstance().assignSchoolToUser(currUser, userToAssignName, school);
 
         if (res.isFailure())
             log.error("failed to assign schools for the user {} by the user {}", userToAssignName, currUser);
@@ -265,8 +262,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return res;
     }
 
-    public Response<Boolean> removeSchoolsFromUser(String currUser, String userToRemoveSchoolsName, List<String> schools) {
-        Response<Boolean> res = UserController.getInstance().removeSchoolsFromUser(currUser, userToRemoveSchoolsName, schools);
+    public Response<Boolean> removeSchoolFromUser(String currUser, String userToRemoveSchoolsName, String school) {
+        Response<Boolean> res = UserController.getInstance().removeSchoolFromUser(currUser, userToRemoveSchoolsName, school);
         if (res.isFailure())
             log.error("failed to remove school from user by {}", currUser);
         else
@@ -329,7 +326,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public Response<Boolean> setWorkingTime(String currUser, int workDay, LocalTime act1Start, LocalTime act1End, LocalTime act2Start, LocalTime act2End){
+    public Response<Boolean> setWorkingTime(String currUser, int workDay, String act1Start, String act1End, String act2Start, String act2End){
         Response<Boolean> res = UserController.getInstance().setWorkingTime(currUser, workDay, act1Start, act1End, act2Start, act2End);
 
         if (res.isFailure())
@@ -353,7 +350,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public Response<Boolean> editActivity(String currUser, LocalDateTime currActStart, LocalDateTime newActStart, LocalDateTime newActEnd) {
+    public Response<Boolean> editActivity(String currUser, String currActStart, String newActStart, String newActEnd) {
         Response<Boolean> res = UserController.getInstance().editActivity(currUser, currActStart, newActStart, newActEnd);
 
         if (res.isFailure())
@@ -365,25 +362,26 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public Response<Boolean> addActivity(String currUser, LocalDateTime startAct, ActivityDTO activity) {
-        Response<Boolean> res = UserController.getInstance().addActivity(currUser, startAct, activity);
+    public Response<Boolean> addActivity(String currUser, String startAct, String schoolId, int goalId, String title, String endAct) {
+        Response<Boolean> res = UserController.getInstance().addActivity(currUser, startAct, schoolId, goalId, title, endAct);
 
-        if (res.isFailure())
-            log.error("failed to edit {}'s activity ", currUser);
+        if (res.isFailure()){
+            log.error("{} failed to add the activity because {}", currUser, res.getErrMsg());
+        }
         else
-            log.info("edited {}'s activity", currUser);
+            log.info("{} successfully added activity", currUser);
 
         return res;
     }
 
     @Override
-    public Response<Boolean> removeActivity(String currUser, LocalDateTime startAct) {
+    public Response<Boolean> removeActivity(String currUser, String startAct) {
         Response<Boolean> res = UserController.getInstance().removeActivity(currUser, startAct);
 
         if (res.isFailure())
-            log.error("failed to edit {}'s activity ", currUser);
+            log.error("{} failed to remove the activity", currUser);
         else
-            log.info("edited {}'s activity", currUser);
+            log.info("{} successfully removed activity", currUser);
 
         return res;
     }

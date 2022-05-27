@@ -142,4 +142,16 @@ public class DataServiceImpl implements DataService {
         return res;
     }
 
+    @Override
+    public Response<Boolean> loadSchoolsToDB() {
+        Response<Boolean> res = DataController.getInstance().loadSchoolsToDB();
+
+        if (res.isFailure())
+            log.error(res.getErrMsg());
+        else
+            log.info(res.getErrMsg());
+
+        return res;
+    }
+
 }

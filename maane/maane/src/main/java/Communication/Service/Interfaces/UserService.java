@@ -1,6 +1,5 @@
 package Communication.Service.Interfaces;
 
-import Communication.DTOs.ActivityDTO;
 import Communication.DTOs.GoalDTO;
 import Communication.DTOs.UserDTO;
 import Communication.DTOs.WorkPlanDTO;
@@ -8,8 +7,7 @@ import Domain.CommonClasses.Response;
 import Domain.UsersManagment.User;
 import Persistence.DbDtos.UserDBDTO;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+
 import java.util.List;
 
 public interface UserService {
@@ -36,7 +34,9 @@ public interface UserService {
 
     Response<User> getUserRes(String username); //for testing purposes only
 
-    Response<Boolean> assignSchoolsToUser(String currUser, String userToAssignName, List<String> schools);
+    Response<Boolean> assignSchoolToUser(String currUser, String userToAssignName, String school);
+
+    Response<Boolean> removeSchoolFromUser(String currUser, String userToAssignName, String school);
 
     Response<Boolean> verifyUser(String currUser, String password);
 
@@ -62,15 +62,15 @@ public interface UserService {
 
     Response<List<String>> allWorkFields(String currUser);
 
-    Response<Boolean> setWorkingTime(String currUser, int workDay, LocalTime act1Start, LocalTime act1End, LocalTime act2Start, LocalTime act2End);
+    Response<Boolean> setWorkingTime(String currUser, int workDay, String act1Start, String act1End, String act2Start, String act2End);
 
     Response<UserDBDTO> getWorkHours(String instructor);
 
-    Response<Boolean> editActivity(String currUser, LocalDateTime currActStart, LocalDateTime newActStart, LocalDateTime newActEnd);
+    Response<Boolean> editActivity(String currUser, String currActStart, String newActStart, String newActEnd);
 
-    Response<Boolean> addActivity(String currUser, LocalDateTime startAct, ActivityDTO activity);
+    Response<Boolean> addActivity(String currUser, String startAct, String schoolId, int goalId, String title, String endAct);
 
-    Response<Boolean> removeActivity(String currUser, LocalDateTime startAct);
+    Response<Boolean> removeActivity(String currUser, String startAct);
 
     Response<Boolean> changePasswordTester(String currUser, String newPassword);
 

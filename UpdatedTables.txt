@@ -22,7 +22,7 @@ create table "Goals"
     quarterly   integer,
     weight      integer,
     workfield   text,
-    goalyear    text
+    goalyear    integer
 );
 
 alter table "Goals"

@@ -163,48 +163,47 @@ describe('User management tests as a supervisor', () => {
     })
 
     it('Changing the password of a user but submitting a weak password', () => {
-        // TODO: not passign because of server side
-        // // opening the change password dialog
-        // cy.get(`#change_password_${selected_user_as_supervisor.username}`).click()
-        //
-        // // filling the form
-        // cy.get('#change_password_new').type("123")
-        // cy.get('#change_password_confirm').type("123")
-        //
-        // cy.get('#change_password_submit_button').click() // submitting
-        //
-        // // filling auth page form
-        // cy.get('#auth_password').type(supervisor.password)
-        // cy.get('#auth_submit_button').click()
-        //
-        // // an error snackbar alert should appear
-        // cy.get('#snackbar_alert_error').should('be.visible')
-        //
-        // // making sure we can't log in with the new password
-        //
-        // cy.get('#logout_button').click()
-        //
-        // // filling the form
-        // cy.get('#login_username').type(selected_user_as_supervisor.username)
-        // cy.get('#login_password').type(selected_user_as_supervisor.new_pwd)
-        //
-        // // submitting
-        // cy.get('#login_button').click()
-        //
-        // // should expect an alert error to appear
-        // cy.get('#login_alert').should('be.visible')
-        //
-        // // checking we remained in the same url
-        // cy.url().should('include', '/user/login')
-        //
-        // // logging in again so the tests won't break
-        // // filling the form
-        // cy.get('#login_username').clear().type(supervisor.username)
-        // cy.get('#login_password').clear().type(supervisor.password)
-        //
-        // // submitting
-        // cy.get('#login_button').click()
-        // cy.url().should('contain', '/user/home')
+        // opening the change password dialog
+        cy.get(`#change_password_${selected_user_as_supervisor.username}`).click()
+
+        // filling the form
+        cy.get('#change_password_new').type("123")
+        cy.get('#change_password_confirm').type("123")
+
+        cy.get('#change_password_submit_button').click() // submitting
+
+        // filling auth page form
+        cy.get('#auth_password').type(supervisor.password)
+        cy.get('#auth_submit_button').click()
+
+        // an error snackbar alert should appear
+        cy.get('#snackbar_alert_error').should('be.visible')
+
+        // making sure we can't log in with the new password
+
+        cy.get('#logout_button').click()
+
+        // filling the form
+        cy.get('#login_username').type(selected_user_as_supervisor.username)
+        cy.get('#login_password').type(selected_user_as_supervisor.new_pwd)
+
+        // submitting
+        cy.get('#login_button').click()
+
+        // should expect an alert error to appear
+        cy.get('#login_alert').should('be.visible')
+
+        // checking we remained in the same url
+        cy.url().should('include', '/user/login')
+
+        // logging in again so the tests won't break
+        // filling the form
+        cy.get('#login_username').clear().type(supervisor.username)
+        cy.get('#login_password').clear().type(supervisor.password)
+
+        // submitting
+        cy.get('#login_button').click()
+        cy.url().should('contain', '/user/home')
     })
 
     it('Removing a user', () => {
@@ -289,25 +288,24 @@ describe('User management tests as a supervisor', () => {
         cy.get('#school-search-alert').should('not.be.visible')
     })
 
-    it('Adding a school which is already assigned to the user', () => {
+    it.only('Adding a school which is already assigned to the user', () => {
         // TODO: not passing because of server
-        // // waiting for the schools to load
-        // cy.wait(5000)
-        //
-        // cy.reload()
-        // cy.get(`#user_collapse_button_${selected_user_as_supervisor.username}`).click()
-        //
-        // cy.get(`#edit_schools_${selected_user_as_supervisor.username}`).click()
-        //
-        // // searching and selecting the desired school to add
-        // cy.get('#search-schools').type(selected_user_as_supervisor.school_to_remove + "{downArrow}{enter}")
-        // cy.get('#edit_schools_add_school_button').click()
-        //
-        // // a success error should pop up
-        // cy.get('#snackbar_alert_error').should('be.visible')
+        // waiting for the schools to load
+        cy.wait(1000)
+
+        cy.get(`#user_collapse_button_${selected_user_as_supervisor.username}`).click()
+
+        cy.get(`#edit_schools_${selected_user_as_supervisor.username}`).click()
+
+        // searching and selecting the desired school to add
+        cy.get('#search-schools').type(selected_user_as_supervisor.school_to_remove + "{downArrow}{enter}")
+        cy.get('#edit_schools_add_school_button').click()
+
+        // a success error should pop up
+        cy.get('#snackbar_alert_error').should('be.visible')
     })
 
-    it.only('Adding a school which does not exist', () => {
+    it('Adding a school which does not exist', () => {
         // waiting for the schools to load
         cy.wait(5000)
 

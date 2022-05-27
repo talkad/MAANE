@@ -5,6 +5,7 @@ import Communication.DTOs.GoalDTO;
 import Communication.DTOs.UserDTO;
 import Communication.DTOs.WorkPlanDTO;
 import Communication.Initializer.ServerContextInitializer;
+import Communication.Security.KeyLoader;
 import Domain.CommonClasses.Response;
 import Domain.EmailManagement.EmailController;
 import Domain.UsersManagment.APIs.DTOs.UserActivityInfoDTO;
@@ -23,6 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import java.security.SecureRandom;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
@@ -49,7 +51,7 @@ public class UserController {
         secureRandom = new SecureRandom();
         base64Encoder = Base64.getUrlEncoder();
         if(!userDAO.userExists("admin")){
-            adminBoot("admin", "admin123");//todo need to hide password in db also note the if query helps the tests
+            adminBoot("admin", KeyLoader.getInstance().getAdminPassword());
         }
     }
 
@@ -192,7 +194,8 @@ public class UserController {
      * @return true if the password is valid, false otherwise.
      */
     private boolean isValidPassword(String password) {
-        return password.length() >= 8 && password.matches("([A-Za-z]+[0-9]|[0-9]+[A-Za-z])[A-Za-z0-9]*");
+//        return password.length() >= 8 && password.matches("([A-Za-z]+[0-9]|[0-9]+[A-Za-z])[A-Za-z0-9]*");
+        return password.length() >= 8 && password.matches("(.*)[a-zA-Z](.*)") && password.matches("(.*)[0-9](.*)");
     }
 
     /**
@@ -435,10 +438,10 @@ public class UserController {
      * assign schools to a user
      * @param currUser the user's username
      * @param userToAssign the user to be assigned schools username
-     * @param schools the schools to be assigned to @userToAssign
+     * @param school the school to be assigned to @userToAssign
      * @return a response of the successfulness of the action
      */
-    public Response<Boolean> assignSchoolsToUser(String currUser, String userToAssign, List<String> schools){
+    public Response<Boolean> assignSchoolToUser(String currUser, String userToAssign, String school){
         Response<Boolean> response;
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
@@ -446,11 +449,16 @@ public class UserController {
                 response = user.assignSchoolsToUser(userToAssign);
                 if(!response.isFailure()){
                     User userToAssignSchools = new User(userDAO.getFullUser(userToAssign).getResult());
-                    userToAssignSchools.addSchools(schools);
-                    userDAO.assignSchoolsToUser(userToAssign, schools);
-                    if(connectedUsers.containsKey(userToAssign)){
-                        userToAssignSchools = connectedUsers.get(userToAssign);
-                        userToAssignSchools.addSchools(schools);
+                    Response<Boolean> hasSchoolRes = userToAssignSchools.canAddSchool(school);
+                    if(!hasSchoolRes.isFailure()) {
+                        userDAO.assignSchoolToUser(userToAssign, school);
+                        if (connectedUsers.containsKey(userToAssign)) {
+                            userToAssignSchools = connectedUsers.get(userToAssign);
+                            userToAssignSchools.addSchool(school);
+                        }
+                    }
+                    else {
+                        return hasSchoolRes;
                     }
                 }
                 return response;
@@ -468,24 +476,27 @@ public class UserController {
      * remove schools assigned to the user
      * @param currUser user's username
      * @param userToRemoveSchoolsName the user to have his schools removed username
-     * @param schools a list of all the schools symbols to be removed from the user @userToRemoveSchoolsName
+     * @param school a the school symbol to be removed from the user @userToRemoveSchoolsName
      * @return a response of the successfulness of the action
      */
-    public Response<Boolean> removeSchoolsFromUser(String currUser, String userToRemoveSchoolsName, List<String> schools){
+    public Response<Boolean> removeSchoolFromUser(String currUser, String userToRemoveSchoolsName, String school){
         Response<Boolean> response;
         if (connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             if(userDAO.userExists(userToRemoveSchoolsName)) {
-                response = user.removeSchoolsFromUser(userToRemoveSchoolsName);
+                response = user.allowedToRemoveSchool(userToRemoveSchoolsName);
                 if(!response.isFailure()){
                    User userToRemoveSchools = new User(userDAO.getFullUser(userToRemoveSchoolsName).getResult());
-                   userToRemoveSchools.removeSchools(schools);
-                   userDAO.removeSchoolsFromUser(userToRemoveSchoolsName, schools);
-                   if(connectedUsers.containsKey(userToRemoveSchoolsName)){
-                       userToRemoveSchools = connectedUsers.get(userToRemoveSchoolsName);
-                       for (String schoolId: schools) {
-                           userToRemoveSchools.schools.remove(schoolId);
+                   Response<Boolean> removeSchoolRes = userToRemoveSchools.removeSchool(school);
+                   if(!removeSchoolRes.isFailure()){
+                       userDAO.removeSchoolsFromUser(userToRemoveSchoolsName, school);
+                       if(connectedUsers.containsKey(userToRemoveSchoolsName)){
+                           userToRemoveSchools = connectedUsers.get(userToRemoveSchoolsName);
+                           userToRemoveSchools.schools.remove(school);
                        }
+                   }
+                   else{
+                       return removeSchoolRes;
                    }
                 }
                 return response;
@@ -655,7 +666,7 @@ public class UserController {
      * @return a response of the successfulness of the action
      */
     public Response<Boolean> changePassword(String currUser, String currPassword, String newPassword, String confirmPassword){
-        if(!ServerContextInitializer.getInstance().isTestMode() && !isValidPassword(newPassword))
+        if(!isValidPassword(newPassword) && !ServerContextInitializer.getInstance().isTestMode())
             return new Response<>(false, true, "The password isn't strong enough");
 
         if(connectedUsers.containsKey(currUser)) {
@@ -1053,6 +1064,12 @@ public class UserController {
      * @return a response of the successfulness of the action
      */
     public Response<Boolean> assignCoordinator(String currUser, String workField, String firstName, String lastName, String email, String phoneNumber, String school){
+        if(email.length() != 0 && !isValidEmailAddress(email))
+            return new Response<>(false, true, "invalid email address");
+
+        if(phoneNumber.length() != 0 && !isValidPhoneNumber(phoneNumber))
+            return new Response<>(false, true, "invalid phone number");
+
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
             Response<User> result = user.assignCoordinator(createToken(), workField, school, firstName, lastName, email, phoneNumber);
@@ -1060,7 +1077,7 @@ public class UserController {
                 Response<UserDBDTO> isCoordinatorAssignedRes = userDAO.getCoordinator(school, result.getResult().getWorkField());
                 if(!isCoordinatorAssignedRes.isFailure() && isCoordinatorAssignedRes.getResult() == null){
                     userDAO.insertUser(new UserDBDTO(result.getResult(), null));
-                    userDAO.assignSchoolsToUser(result.getResult().getUsername(), result.getResult().getSchools());
+                    userDAO.assignSchoolToUser(result.getResult().getUsername(), result.getResult().getSchools().get(0));
                     return new Response<>(true, false, "assigned coordinator");
                 }
                 else{
@@ -1167,9 +1184,9 @@ public class UserController {
     public Response<WorkPlanDTO> viewWorkPlan(String currUser, Integer year, Integer month){
         if(connectedUsers.containsKey(currUser)) {
             User user = new User(userDAO.getFullUser(currUser).getResult());
-            Response<Boolean> workPlanResponse = user.getWorkPlanByYear(year);//todo causes problem
+            Response<Integer> workPlanResponse = user.getWorkPlanByYear(year, month);//todo causes problem
             if(!workPlanResponse.isFailure()){
-                return workPlanDAO.getUserWorkPlanByYearAndMonth(currUser, year, month);
+                return workPlanDAO.getUserWorkPlanByYearAndMonth(currUser, workPlanResponse.getResult(), month);
             }
             else{
                 return new Response<>(null, true, workPlanResponse.getErrMsg());
@@ -1204,6 +1221,11 @@ public class UserController {
         }
     }
 
+    private LocalDateTime stringToDate(String dateString){
+        String[] dateArr = dateString.split("T");
+        return LocalDate.parse(dateArr[0]).atTime(LocalTime.parse(dateArr[1]));
+    }
+
     /**
      * edit the activity's schedule
      * @param currUser the instructor wishing to change the activity date
@@ -1212,12 +1234,16 @@ public class UserController {
      * @param newActEnd updated activity ending date
      * @return a response of the successfulness of the action
      */
-    public Response<Boolean> editActivity(String currUser, LocalDateTime currActStart, LocalDateTime newActStart, LocalDateTime newActEnd){ //todo test it
+    public Response<Boolean> editActivity(String currUser, String currActStart, String newActStart, String newActEnd){ //todo test it
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);//todo maybe verify the dao was generated
-            Response<Boolean> editActivityRes = user.editActivity(currActStart);//todo change active user info
+            LocalDateTime currActStartDate = stringToDate(currActStart);
+            LocalDateTime newActStartDate = stringToDate(newActStart);
+            LocalDateTime newActEndDate = stringToDate(newActEnd);
+
+            Response<Boolean> editActivityRes = user.editActivity(currActStartDate);//todo change active user info
             if(!editActivityRes.isFailure()){
-                return workPlanDAO.updateActivity(currUser, currActStart, newActStart, newActEnd);
+                return workPlanDAO.updateActivity(currUser, currActStartDate, newActStartDate, newActEndDate);
             }
             else{
                 return new Response<>(null, true, editActivityRes.getErrMsg() + " / colliding activity hours");
@@ -1228,12 +1254,28 @@ public class UserController {
         }
     }
 
-    public Response<Boolean> addActivity(String currUser, LocalDateTime startAct, ActivityDTO activity) {
+    /**
+     * allows an instructor to add an activity to his schedule
+     * @param currUser the user wishing to add the activity
+     * @param startAct the activity beginning date
+     * @param schoolId the school symbol in which the activity will occur
+     * @param goalId the goal's id
+     * @param title the goal's title
+     * @param endAct the activity ending date
+     * @return a response of the successfulness of the action
+     */
+    public Response<Boolean> addActivity(String currUser, String startAct, String schoolId, int goalId, String title, String endAct) {
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);//todo maybe verify the dao was generated
-            Response<Integer> addActivityRes = user.addActivity(startAct, activity.getSchoolId());//todo change active user info
+            System.out.println(startAct);
+
+            LocalDateTime startActDate = stringToDate(startAct);
+            LocalDateTime endActDate = stringToDate(endAct);
+
+            ActivityDTO activity = new ActivityDTO(schoolId, goalId, title, endActDate);
+            Response<Integer> addActivityRes = user.addActivity(startActDate, activity.getSchoolId());//todo change active user info
             if(!addActivityRes.isFailure()){
-                return workPlanDAO.addActivity(currUser, startAct, activity, addActivityRes.getResult());
+                return workPlanDAO.addActivity(currUser, startActDate, activity, addActivityRes.getResult());
             }
             else{
                 return new Response<>(null, true, addActivityRes.getErrMsg() + " / colliding activity hours");
@@ -1243,12 +1285,19 @@ public class UserController {
             return new Response<>(null, true, "User not connected");
         }    }
 
-    public Response<Boolean> removeActivity(String currUser, LocalDateTime startAct) {
+    /**
+     * allows an instructor to remove an activity from his schedule
+     * @param currUser the user wishing to remove the activity
+     * @param startAct the activity's beginning date
+     * @return a response of the successfulness of the action
+     */
+    public Response<Boolean> removeActivity(String currUser, String startAct) {
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);//todo maybe verify the dao was generated
-            Response<Boolean> removeActivityRes = user.removeActivity(startAct);//todo change active user info
+            LocalDateTime startActDate = stringToDate(startAct);
+            Response<Boolean> removeActivityRes = user.removeActivity(startActDate);//todo change active user info
             if(!removeActivityRes.isFailure()){
-                return workPlanDAO.removeActivity(currUser, startAct);
+                return workPlanDAO.removeActivity(currUser, startActDate);
             }
             else{
                 return new Response<>(null, true, removeActivityRes.getErrMsg() + " / colliding activity hours");
@@ -1347,18 +1396,23 @@ public class UserController {
      * @param act2End the date and time of the end of the second activity
      * @return a response of the successfulness of the action
      */
-    public Response<Boolean> setWorkingTime(String currUser, int workDay, LocalTime act1Start, LocalTime act1End, LocalTime act2Start, LocalTime act2End){
+    public Response<Boolean> setWorkingTime(String currUser, int workDay, String act1Start, String act1End, String act2Start, String act2End){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);//todo maybe verify the dao was generated
+            LocalTime act1StartTime = LocalTime.parse(act1Start);
+            LocalTime act1EndTime = LocalTime.parse(act1End);
+            LocalTime act2StartTime = LocalTime.parse(act2Start);
+            LocalTime act2EndTime = LocalTime.parse(act2End);
+
             Response<Boolean> changeWorkTime = user.canSetWorkingTime();
-            if(workDay >= 0 && workDay <= 6 && noActivityCollision(act1Start, act1End, act2Start, act2End) && !changeWorkTime.isFailure()){
-                Response<Boolean> setWorkingTimeRes = userDAO.setWorkingTime(currUser, workDay, act1Start, act1End, act2Start, act2End);
+            if(workDay >= 0 && workDay <= 6 && noActivityCollision(act1StartTime, act1EndTime, act2StartTime, act2EndTime) && !changeWorkTime.isFailure()){
+                Response<Boolean> setWorkingTimeRes = userDAO.setWorkingTime(currUser, workDay, act1StartTime, act1EndTime, act2StartTime, act2EndTime);
                 if(!setWorkingTimeRes.isFailure()){
                     user.setWorkDay(workDay);
-                    user.setAct1Start(act1Start);
-                    user.setAct1End(act1End);
-                    user.setAct2Start(act2Start);
-                    user.setAct2End(act2End);
+                    user.setAct1Start(act1StartTime);
+                    user.setAct1End(act1EndTime);
+                    user.setAct2Start(act2StartTime);
+                    user.setAct2End(act2EndTime);
                 }
                 return setWorkingTimeRes;
             }
@@ -1458,7 +1512,7 @@ public class UserController {
             Response<UserDBDTO> isCoordinatorAssignedRes = userDAO.getCoordinator(school, result.getResult().getWorkField());
             if(!isCoordinatorAssignedRes.isFailure() && isCoordinatorAssignedRes.getResult() == null){
                 userDAO.insertUser(new UserDBDTO(result.getResult(), null));
-                userDAO.assignSchoolsToUser(result.getResult().getUsername(), result.getResult().getSchools());
+                userDAO.assignSchoolToUser(result.getResult().getUsername(), school);
                 return new Response<>(true, false, "assigned coordinator");
             }
             else{

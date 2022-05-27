@@ -74,24 +74,19 @@ public class MaaneApplication {
 
 				DataController.getInstance().insertSchool(new SchoolDBDTO("3333333", "testing school3", "beer sheva", "", "", "", "", "", "", "", "", 1000000, "", "", "", "", 32));
 
-
 				DataController.getInstance().assignCoordinator("admin", "tech", "aviad", "shal", "aviad@gmail.com", "0555555555", "1111111");
 
 				userController.logout("admin");
 
 				userController.login("ronit");
 
-				List<String> school1 = new Vector<>();
-				List<String> school2 = new Vector<>();
-				List<String> school3 = new Vector<>();
-				school1.add("1111111");
-				school2.add("2222222");
-				school3.add("33333333");
+				String school1 = "1111111";
+				String school2 = "2222222";
+				String school3 = "33333333";
 
-				userController.assignSchoolsToUser("ronit", "tal", school1);
-				userController.assignSchoolsToUser("ronit", "shaked", school2);
-				userController.assignSchoolsToUser("ronit", "shaked", school3);
-
+				userController.assignSchoolToUser("ronit", "tal", school1);
+				userController.assignSchoolToUser("ronit", "shaked", school2);
+				userController.assignSchoolToUser("ronit", "shaked", school3);
 
 				// create survey
 				SurveyDTO surveyDTO = new SurveyDTO(false, "1111", "survey1", "description",
@@ -142,12 +137,18 @@ public class MaaneApplication {
 				userController.logout("ronit");
 
 				userController.login("tal");
-				userController.setWorkingTime("tal", 0, LocalTime.of(8, 30), LocalTime.of(10, 30), LocalTime.of(11, 0), LocalTime.of(13, 0));
+				userController.setWorkingTime("tal", 0, LocalTime.of(8, 30).toString(), LocalTime.of(10, 30).toString(), LocalTime.of(11, 0).toString(), LocalTime.of(13, 0).toString());
 				userController.logout("tal");
 
 				userController.login("shaked");
-				userController.setWorkingTime("shaked", 3, LocalTime.of(10, 0), LocalTime.of(12, 0), LocalTime.of(13, 0), LocalTime.of(15, 0));
+				userController.setWorkingTime("shaked", 3, LocalTime.of(10, 0).toString(), LocalTime.of(12, 0).toString(), LocalTime.of(13, 0).toString(), LocalTime.of(15, 0).toString());
 				userController.logout("shaked");
+			}
+			else {
+				System.out.println("The server is running!");
+
+				// UserQueries.getInstance().clearDB();
+				DataController.getInstance().loadSchoolsToDB();
 			}
 		};
 	}

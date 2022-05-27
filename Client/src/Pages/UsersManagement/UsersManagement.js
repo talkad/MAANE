@@ -523,7 +523,7 @@ function EditSchoolsDialog(props){
 
     const addSchool = () => {
         const findInSchools = (label) => {
-            return schoolsToSearch.find((ele) => ele.label === label) !== undefined
+            return props.schools.find((ele) => ele.label === label) !== undefined
         }
 
         if (!findInSchools(searchText)){
@@ -533,7 +533,8 @@ function EditSchoolsDialog(props){
         else{
             setSearchError(false);
             setSchoolSearchValue('');
-            setSelectedSchoolId('');
+            setSearchText('')
+            setSelectedSchoolId(-1);
             props.addSchoolCallback(props.selectedUser, schoolSearchValue, selectedSchoolSearchID);
         }
     }
@@ -595,13 +596,14 @@ function EditSchoolsDialog(props){
                             freeSolo
                             id="search-schools"
                             disableClearable
+                            value={searchText}
                             onChange={(event, newValue) => {
                                 setSelectedSchoolSearchID(newValue.id)
                             }}
                             onInputChange={(event, newInputValue) => {
                                 setSearchText(newInputValue);
                             }}
-                            options={schoolsToSearch}
+                            options={props.schools}
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
