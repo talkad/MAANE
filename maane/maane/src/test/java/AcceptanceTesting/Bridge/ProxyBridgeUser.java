@@ -249,7 +249,7 @@ public class ProxyBridgeUser implements UserService {
     }
 
     @Override
-    public Response<Boolean> setWorkingTime(String currUser, int workDay, LocalTime act1Start, LocalTime act1End, LocalTime act2Start, LocalTime act2End) {
+    public Response<Boolean> setWorkingTime(String currUser, int workDay, String act1Start, String act1End, String act2Start, String act2End) {
         if (real != null) {
             return real.setWorkingTime(currUser, workDay, act1Start, act1End, act2Start, act2End);
         }

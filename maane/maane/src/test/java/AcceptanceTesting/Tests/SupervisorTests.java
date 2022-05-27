@@ -169,8 +169,8 @@ public class SupervisorTests extends AcceptanceTests{
         userBridge.assignSchoolsToUser(supervisorName1, instructorName1, Arrays.asList("1", "2", "3"));
         userBridge.assignSchoolsToUser(supervisorName1, instructorName2, Arrays.asList("4", "5", "6"));
 
-        userBridge.setWorkingTime(instructorName1, 1, LocalTime.of(10, 0), LocalTime.of(12, 0),
-                LocalTime.of(12, 0), LocalTime.of(14, 0));
+        userBridge.setWorkingTime(instructorName1, 1, LocalTime.of(10, 0).toString(), LocalTime.of(12, 0).toString(),
+                LocalTime.of(12, 0).toString(), LocalTime.of(14, 0).toString());
 
         scheduleBridge.generateSchedule(supervisorName1, res.getResult());
 

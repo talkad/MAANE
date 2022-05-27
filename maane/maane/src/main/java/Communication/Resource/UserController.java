@@ -272,7 +272,7 @@ public class UserController {
     @PostMapping(value = "/setWorkingTime") //todo aviad
     public ResponseEntity<Response<Boolean>> setWorkingTime(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object>  body){
         return ResponseEntity.ok()
-                .body(service.setWorkingTime(sessionHandler.getUsernameByToken(token).getResult(), (int)body.get("workDay"), (LocalTime) body.get("act1Start"), (LocalTime) body.get("act1End"), (LocalTime) body.get("act2Start"), (LocalTime) body.get("act2End")));
+                .body(service.setWorkingTime(sessionHandler.getUsernameByToken(token).getResult(), (int)body.get("workDay"), (String) body.get("act1Start"), (String) body.get("act1End"), (String) body.get("act2Start"), (String) body.get("act2End")));
     }
 
     @GetMapping(value="/getWorkHours")

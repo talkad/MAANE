@@ -1364,18 +1364,23 @@ public class UserController {
      * @param act2End the date and time of the end of the second activity
      * @return a response of the successfulness of the action
      */
-    public Response<Boolean> setWorkingTime(String currUser, int workDay, LocalTime act1Start, LocalTime act1End, LocalTime act2Start, LocalTime act2End){
+    public Response<Boolean> setWorkingTime(String currUser, int workDay, String act1Start, String act1End, String act2Start, String act2End){
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);//todo maybe verify the dao was generated
+            LocalTime act1StartTime = LocalTime.parse(act1Start);
+            LocalTime act1EndTime = LocalTime.parse(act1End);
+            LocalTime act2StartTime = LocalTime.parse(act2Start);
+            LocalTime act2EndTime = LocalTime.parse(act2End);
+
             Response<Boolean> changeWorkTime = user.canSetWorkingTime();
-            if(workDay >= 0 && workDay <= 6 && noActivityCollision(act1Start, act1End, act2Start, act2End) && !changeWorkTime.isFailure()){
-                Response<Boolean> setWorkingTimeRes = userDAO.setWorkingTime(currUser, workDay, act1Start, act1End, act2Start, act2End);
+            if(workDay >= 0 && workDay <= 6 && noActivityCollision(act1StartTime, act1EndTime, act2StartTime, act2EndTime) && !changeWorkTime.isFailure()){
+                Response<Boolean> setWorkingTimeRes = userDAO.setWorkingTime(currUser, workDay, act1StartTime, act1EndTime, act2StartTime, act2EndTime);
                 if(!setWorkingTimeRes.isFailure()){
                     user.setWorkDay(workDay);
-                    user.setAct1Start(act1Start);
-                    user.setAct1End(act1End);
-                    user.setAct2Start(act2Start);
-                    user.setAct2End(act2End);
+                    user.setAct1Start(act1StartTime);
+                    user.setAct1End(act1EndTime);
+                    user.setAct2Start(act2StartTime);
+                    user.setAct2End(act2EndTime);
                 }
                 return setWorkingTimeRes;
             }

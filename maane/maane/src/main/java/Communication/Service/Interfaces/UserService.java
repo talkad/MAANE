@@ -62,7 +62,7 @@ public interface UserService {
 
     Response<List<String>> allWorkFields(String currUser);
 
-    Response<Boolean> setWorkingTime(String currUser, int workDay, LocalTime act1Start, LocalTime act1End, LocalTime act2Start, LocalTime act2End);
+    Response<Boolean> setWorkingTime(String currUser, int workDay, String act1Start, String act1End, String act2Start, String act2End);
 
     Response<UserDBDTO> getWorkHours(String instructor);
 
