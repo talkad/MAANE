@@ -290,7 +290,7 @@ public class UserController {
     @PostMapping(value = "/addActivity") //todo aviad
     public ResponseEntity<Response<Boolean>> addActivity(@RequestHeader(value = "Authorization") String token, @RequestBody ActivityManageDTO activityManageDTO){
         return ResponseEntity.ok()
-                .body(service.addActivity(sessionHandler.getUsernameByToken(token).getResult(), (String) activityManageDTO.getStartActivity(), (String) activityManageDTO.getSchoolId(), (int) activityManageDTO.getGoalId(), (String) activityManageDTO.getTitle(), (String) activityManageDTO.getEndActivity()));
+                .body(service.addActivity(sessionHandler.getUsernameByToken(token).getResult(), activityManageDTO.getStartActivity(), activityManageDTO.getSchoolId(), activityManageDTO.getGoalId(), activityManageDTO.getTitle(), activityManageDTO.getEndActivity()));
     }
 
     @PostMapping(value = "/removeActivity") //todo aviad

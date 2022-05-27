@@ -23,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import java.security.SecureRandom;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
@@ -1232,8 +1233,11 @@ public class UserController {
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);//todo maybe verify the dao was generated
             System.out.println(startAct);
-            LocalDateTime startActDate = LocalDateTime.parse(startAct);
-            LocalDateTime endActDate = LocalDateTime.parse(endAct);//todo verify legal date
+            String[] startActArr = startAct.split("T");
+            String[] endActArr = endAct.split("T");
+            LocalDateTime startActDate = LocalDate.parse(startActArr[0]).atTime(LocalTime.parse(startActArr[1]));
+            LocalDateTime endActDate = LocalDate.parse(endActArr[0]).atTime(LocalTime.parse(endActArr[1]));
+
             ActivityDTO activity = new ActivityDTO(schoolId, goalId, title, endActDate);
             activity.setEndActivity(endActDate);
             Response<Integer> addActivityRes = user.addActivity(startActDate, activity.getSchoolId());//todo change active user info

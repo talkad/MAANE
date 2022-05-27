@@ -368,10 +368,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public Response<Boolean> addActivity(String currUser, String startAct, String schoolId, int goalId, String title, String endAct) {
         Response<Boolean> res = UserController.getInstance().addActivity(currUser, startAct, schoolId, goalId, title, endAct);
 
-        if (res.isFailure())
-            log.error("failed to edit {}'s activity ", currUser);
+        if (res.isFailure()){
+            log.error("{} failed to add the activity because {}", currUser, res.getErrMsg());
+        }
         else
-            log.info("edited {}'s activity", currUser);
+            log.info("{} successfully added activity", currUser);
 
         return res;
     }
@@ -381,9 +382,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         Response<Boolean> res = UserController.getInstance().removeActivity(currUser, startAct);
 
         if (res.isFailure())
-            log.error("failed to edit {}'s activity ", currUser);
+            log.error("{} failed to remove the activity", currUser);
         else
-            log.info("edited {}'s activity", currUser);
+            log.info("{} successfully removed activity", currUser);
 
         return res;
     }
