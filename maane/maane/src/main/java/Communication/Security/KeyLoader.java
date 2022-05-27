@@ -39,35 +39,34 @@ public class KeyLoader {
     }
 
 
-    public void storeKey() {
+    public void storeKey(String key, SecretKey secretKey) {
         try {
             File file = new File(filepath);
-            SecretKey secretKey = KeyLoader.getInstance().generateKey();
             KeyStore keystore = KeyStore.getInstance("JCEKS");
 
             if (!file.exists()) {
                 keystore.load(null, null);
             }
 
-            keystore.setKeyEntry("auth_key", secretKey, password.toCharArray(), null);
+            keystore.setKeyEntry(key, secretKey, password.toCharArray(), null);
             OutputStream writeStream = new FileOutputStream(filepath);
             keystore.store(writeStream, password.toCharArray());
 
             log.info("key store created");
 
-        }catch(Exception e){
+        } catch(Exception e){
             log.error("storing key failed");
             log.error(e.getMessage());
         }
     }
 
-    private SecretKey readKey(){
+    private SecretKey readKey(String key){
         try{
             KeyStore keystore = KeyStore.getInstance("JCEKS");
             InputStream readStream = new FileInputStream(filepath);
             keystore.load(readStream, password.toCharArray());
 
-            return (SecretKey) keystore.getKey("auth_key", password.toCharArray());
+            return (SecretKey) keystore.getKey(key, password.toCharArray());
 
         }catch(Exception e){
             log.error("key from {} didn't load\n error: {}", filepath, e.getMessage());
@@ -75,7 +74,7 @@ public class KeyLoader {
         }
     }
 
-    private SecretKey generateKey(){
+    public SecretKey generateKey(){
         try {
             KeyGenerator generator = KeyGenerator.getInstance("AES");
             return generator.generateKey();
@@ -114,8 +113,8 @@ public class KeyLoader {
 
     }
 
-    public byte[] getEncryptionKey() {
-        SecretKey key = KeyLoader.getInstance().readKey();
+    public byte[] getEncryptionKey(String keyStr) {
+        SecretKey key = KeyLoader.getInstance().readKey(keyStr);
 
         try {
             Cipher cipher = Cipher.getInstance("AES");

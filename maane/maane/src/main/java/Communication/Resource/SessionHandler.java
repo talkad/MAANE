@@ -21,7 +21,7 @@ public class SessionHandler {
             return new Response<>("", true, "username not found");
 
         String token = header.substring("Bearer ".length());
-        Algorithm algorithm = Algorithm.HMAC256(KeyLoader.getInstance().getEncryptionKey());
+        Algorithm algorithm = Algorithm.HMAC256(KeyLoader.getInstance().getEncryptionKey("auth_key"));
         JWTVerifier verifier = JWT.require(algorithm).build();
 
         DecodedJWT decodedJWT = verifier.verify(token);
