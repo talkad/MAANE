@@ -506,7 +506,6 @@ function App(){
                 <Space.Fill>
                     {/* routes to the different screens */}
                     <Routes>
-                        {/*TODO: find a more elegant way for the permissions*/}
                         <Route path="user">
                             <Route path="login" element={<Login type={type} setType={setType} setName={setName} setHideBars={setHideBars}/>}/>
 

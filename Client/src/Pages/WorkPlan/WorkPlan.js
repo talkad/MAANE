@@ -398,7 +398,12 @@ export default function WorkPlan(props){
                 let endAct = new Date(parsedEndDate.getFullYear(), parsedEndDate.getMonth(), parsedEndDate.getDate(),
                     parsedEndDate.getHours(), parsedEndDate.getMinutes(), parsedEndDate.getSeconds())
 
-                setEventList(eventList => [...eventList, {title: date.second.title, start: startAct, end: endAct}])
+                console.log("THE SCHOOLS")
+                console.log(props.schools)
+                let schoolName = props.schools.filter((element => `${element.id}` === date.second.schoolId))[0].label
+                console.log(schoolName)
+
+                setEventList(eventList => [...eventList, {title: `${date.second.title} [${schoolName}]`, start: startAct, end: endAct}])
             }
 
         }
