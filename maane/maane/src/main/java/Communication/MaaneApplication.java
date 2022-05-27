@@ -22,7 +22,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 
+import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -32,12 +37,10 @@ import java.util.Vector;
 @SpringBootApplication
 public class MaaneApplication {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeySpecException {
 
-		SecretKey secretKey = KeyLoader.getInstance().generateKey();
-		KeyLoader.getInstance().storeKey("auth_key", secretKey);
-		System.out.println(KeyLoader.getInstance().getEncryptionKey("auth_key"));
-
+		KeyLoader.getInstance().storeKey("auth_key", KeyLoader.getInstance().generateKey());
+		System.out.println(KeyLoader.getInstance().getMailPassword());
 
 //		ServerContextInitializer.getInstance().setMockMode();
 //

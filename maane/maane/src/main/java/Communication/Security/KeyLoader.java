@@ -2,12 +2,16 @@ package Communication.Security;
 
 import lombok.extern.slf4j.Slf4j;
 
-import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
+import javax.crypto.*;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
+import java.util.Base64;
 
 
 @Slf4j
@@ -86,7 +90,7 @@ public class KeyLoader {
 
     }
 
-    private byte[] encryptKey(String toEncrypt, SecretKey key, Cipher cipher){
+    public byte[] encryptKey(String toEncrypt, SecretKey key, Cipher cipher){
         try{
             byte[] text = toEncrypt.getBytes(StandardCharsets.UTF_8);
             cipher.init(Cipher.ENCRYPT_MODE, key);
@@ -100,7 +104,7 @@ public class KeyLoader {
 
     }
 
-    private byte[] decryptKey(byte[] enc, SecretKey key, Cipher cipher) {
+    public byte[] decryptKey(byte[] enc, SecretKey key, Cipher cipher) {
         try{
             cipher.init(Cipher.DECRYPT_MODE, key);
 
@@ -128,5 +132,21 @@ public class KeyLoader {
         }
 
     }
+
+    public String getMailPassword() throws NoSuchPaddingException, NoSuchAlgorithmException {
+        SecretKey key = KeyLoader.getInstance().readKey("auth_key");
+
+        byte[] a = KeyLoader.getInstance().encryptKey("1234abcd", key, Cipher.getInstance("AES"));
+        return new String(KeyLoader.getInstance().decryptKey(a, key, Cipher.getInstance("AES")), StandardCharsets.UTF_8);
+    }
+
+    public String getMailPassword() throws NoSuchPaddingException, NoSuchAlgorithmException {
+        SecretKey key = KeyLoader.getInstance().readKey("auth_key");
+        byte[] encodedPassword = {44, -126, -20, -44, -18, 24, -68, 105, -40, -60, 101, -81, 117, -42, -1, 100};
+
+        return new String(KeyLoader.getInstance().decryptKey(encodedPassword, key, Cipher.getInstance("AES")), StandardCharsets.UTF_8);
+    }
+
+
 
 }
