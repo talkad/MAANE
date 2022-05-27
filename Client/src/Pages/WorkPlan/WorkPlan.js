@@ -35,6 +35,8 @@ const DnDCalendar = withDragAndDrop(Calendar)
 
 const localizer = momentLocalizer(moment); // localizer to represent the data according to our location (israel)
 
+const timezoneOffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
+
 function NewActivityForm(props) {
     const [title, setTitle] = useState('');
     const [years, setYears] = useState([])
@@ -224,13 +226,13 @@ function NewActivityForm(props) {
                 <LocalizationProvider locale={he} dateAdapter={AdapterDateFns}>
                     <DateTimePicker
                         displayStaticWrapperAs="desktop"
-                        openTo="year"
                         label={activity_start_label_string}
                         value={activityStart}
                         onChange={(newValue) => {
                             setActivityStart(newValue);
                         }}
                         renderInput={(params) => <TextField {...params} />}
+                        inputFormat="dd/MM/yyyy hh:mm a"
                     />
                 </LocalizationProvider>
 
@@ -238,13 +240,13 @@ function NewActivityForm(props) {
                 <LocalizationProvider locale={he} dateAdapter={AdapterDateFns}>
                     <DateTimePicker
                         displayStaticWrapperAs="desktop"
-                        openTo="year"
                         label={activity_end_label_string}
                         value={activityEnd}
                         onChange={(newValue) => {
                             setActivityEnd(newValue);
                         }}
                         renderInput={(params) => <TextField {...params} />}
+                        inputFormat="dd/MM/yyyy hh:mm a"
                     />
                 </LocalizationProvider>
 
@@ -308,9 +310,6 @@ function RemoveActivityDialog(props){
 //     }
 // ]
 
-
-// TODO: agree on date format
-
 const myEventsList = [
     {
         title: "dunno",
@@ -340,7 +339,7 @@ const messages = {
 export default function WorkPlan(props){
     const [dataDate, setDataDate] = useState(new Date())
     const [viewingDate, setViewingDate] = useState(new Date())
-    const [eventList, setEventList] = useState(myEventsList)
+    const [eventList, setEventList] = useState([])
     const [currentInstructor, setCurrentInstructor] = useState('')
 
     // add activity data
@@ -383,17 +382,24 @@ export default function WorkPlan(props){
      */
     const arrangeActivities = (data) => {
         if(!data.failure){
+
             console.log('parsing dates')
+            setEventList([])
+
             let dates = data.result.calendar
             for(const date of dates){
-                let parsedDate = new Date(date.first);
-                console.log(parsedDate)
-                
-                let endDate = parsedDate;
-                endDate.setHours(endDate.getHours() + 2)
+                let parsedStartDate = new Date(date.first);
+                let parsedEndDate = new Date(date.second.endActivity)
 
-                setEventList(eventList => [...eventList, {title: date.second.title, start: parsedDate, end: endDate, allDay: false, resource: "https://momentjs.com/"}])
+                let startAct = new Date(parsedStartDate.getFullYear(), parsedStartDate.getMonth(), parsedStartDate.getDate(),
+                    parsedStartDate.getHours(), parsedStartDate.getMinutes(), parsedStartDate.getSeconds())
+
+                let endAct = new Date(parsedEndDate.getFullYear(), parsedEndDate.getMonth(), parsedEndDate.getDate(),
+                    parsedEndDate.getHours(), parsedEndDate.getMinutes(), parsedEndDate.getSeconds())
+
+                setEventList(eventList => [...eventList, {title: date.second.title, start: startAct, end: endAct}])
             }
+
         }
     }
 
@@ -404,15 +410,16 @@ export default function WorkPlan(props){
     const onNavigate = (newDate) => {
         if (newDate.getMonth() !== dataDate.getMonth()){
             setDataDate(newDate)
+            setEventList([])
 
             // calling for new data to view
 
             if(currentInstructor === ''){
-                new Connection().getWorkPlan(newDate.getFullYear(), newDate.getMonth(), arrangeActivities);
+                new Connection().getWorkPlan(newDate.getFullYear(), newDate.getMonth()+1, arrangeActivities);
             }
             else{
                 new Connection().getWorkPlanOfInstructor(currentInstructor, newDate.getFullYear(),
-                    newDate.getMonth(), arrangeActivities)
+                    newDate.getMonth()+1, arrangeActivities)
             }
         }
 
@@ -435,7 +442,7 @@ export default function WorkPlan(props){
             setSnackbarMessage('הפעילות התעדכנה בהצלחה')
 
             // calling for new data to view
-            new Connection().getWorkPlan(dataDate.getFullYear(), dataDate.getMonth(), arrangeActivities);
+            new Connection().getWorkPlan(dataDate.getFullYear(), dataDate.getMonth()+1, arrangeActivities);
         }
     }
 
@@ -446,7 +453,9 @@ export default function WorkPlan(props){
      * @param end the new end date and time
      */
     const moveEvent = ({event, start, end}) => {
-        new Connection().editActivity(event.start, start, end, eventUpdateCallback)
+        new Connection().editActivity(new Date(event.start - timezoneOffset).toISOString().split('.')[0],
+            new Date(start - timezoneOffset).toISOString().split('.')[0],
+            new Date(end - timezoneOffset).toISOString().split('.')[0], eventUpdateCallback)
     }
 
     /**
@@ -456,7 +465,9 @@ export default function WorkPlan(props){
      * @param end the new end date and time
      */
     const resizeEvent = ({event, start, end}) => {
-        new Connection().editActivity(event.start, start, end, eventUpdateCallback)
+        new Connection().editActivity(new Date(event.start - timezoneOffset).toISOString().split('.')[0],
+            new Date(start - timezoneOffset).toISOString().split('.')[0],
+            new Date(end - timezoneOffset).toISOString().split('.')[0], eventUpdateCallback)
     }
 
     /**
@@ -474,8 +485,9 @@ export default function WorkPlan(props){
             setSnackbarSeverity('success')
             setSnackbarMessage('הפעילות הוספה בהצלחה')
 
+            setEventList([])
             // calling for new data to view
-            new Connection().getWorkPlan(dataDate.getFullYear(), dataDate.getMonth(), arrangeActivities);
+            new Connection().getWorkPlan(dataDate.getFullYear(), dataDate.getMonth()+1, arrangeActivities);
         }
     }
 
@@ -488,7 +500,8 @@ export default function WorkPlan(props){
      * @param endDate the end date and time of the activity
      */
     const handleAddActivity = (title, goalID, schoolID, startDate, endDate) => {
-        new Connection().addActivity(startDate.toISOString().split('.')[0], schoolID, goalID, title, endDate.toISOString().split('.')[0], addActivityCallback)
+        new Connection().addActivity(new Date(startDate - timezoneOffset).toISOString().split('.')[0],
+            schoolID, goalID, title, new Date(endDate - timezoneOffset).toISOString().split('.')[0], addActivityCallback)
         setShowNewActivityForm(false);
         setAddButtonPressed(false);
     }
@@ -508,8 +521,9 @@ export default function WorkPlan(props){
             setSnackbarSeverity('success')
             setSnackbarMessage('הפעילות נמחקה בהצלחה')
 
+            setEventList([])
             // calling for new data to view
-            new Connection().getWorkPlan(dataDate.getFullYear(), dataDate.getMonth(), arrangeActivities);
+            new Connection().getWorkPlan(dataDate.getFullYear(), dataDate.getMonth()+1, arrangeActivities);
         }
     }
 
@@ -518,7 +532,9 @@ export default function WorkPlan(props){
      * @param activityStart the start date and time of the activity to remove
      */
     const handleRemoveActivity = (activityStart) => {
-        new Connection().removeActivity(activityStart, eventRemoveCallback)
+
+        new Connection().removeActivity(new Date(activityStart - timezoneOffset).toISOString().split('.')[0], eventRemoveCallback)
+        setOpenRemoveDialog(false)
     }
 
     /**

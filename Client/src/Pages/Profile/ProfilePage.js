@@ -679,7 +679,13 @@ export default function ProfilePage(props){
 
     useEffect(() => {
         new Connection().getProfileInfo(profileInfoCallback);
-        new Connection().getWorkHours(workHoursCallback);
+
+        if (props.userType === 'INSTRUCTOR'){
+            new Connection().getWorkHours(workHoursCallback);
+        }
+        else{
+            setHoursDataLoaded(true)
+        }
     }, []);
 
     /**
