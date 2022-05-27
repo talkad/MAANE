@@ -83,4 +83,20 @@ public class HolidaysQueries {
         return false;
     }
 
+    public void clearHolidays(){
+        Connect.createConnection();
+        String sql = "TRUNCATE \"Holidays\"";
+
+        PreparedStatement preparedStatement;
+        try {
+            preparedStatement = Connect.conn.prepareStatement(sql);
+            preparedStatement.executeUpdate();
+
+            Connect.closeConnection();
+        }
+        catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
 }

@@ -11,7 +11,8 @@ import java.sql.SQLException;
 public class   ExcelFormatter {
 
     private static int getRowCount() throws IOException {
-        String projDir = System.getProperty("user.dir") + "\\maane";
+//        String projDir = System.getProperty("user.dir") + "\\maane";
+        String projDir = System.getProperty("user.dir");
         String exelPath = projDir + "\\Mosad.xlsx";
         XSSFWorkbook workbook = new XSSFWorkbook(exelPath);
         XSSFSheet sheet = workbook.getSheet("Mosad");
@@ -20,7 +21,8 @@ public class   ExcelFormatter {
     }
 
     public static void MosadExcelToDb() throws IOException, SQLException {
-        String projDir = System.getProperty("user.dir") + "\\maane";
+//        String projDir = System.getProperty("user.dir") + "\\maane";
+        String projDir = System.getProperty("user.dir");
         String exelPath = projDir + "\\Mosad.xlsx";
         XSSFWorkbook workbook = new XSSFWorkbook(exelPath);
         XSSFSheet sheet = workbook.getSheet("Mosad");

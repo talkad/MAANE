@@ -1,17 +1,12 @@
 package Domain.WorkPlan;
 
-import Persistence.Connect;
 import Persistence.HolidaysQueries;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -22,9 +17,9 @@ public class HolidaysHandler {
     String informationStringYear2;
     ArrayList<String[]> informationArray;
 
-    public HolidaysHandler (int year){
+    public HolidaysHandler(int year){
         this.year = year;
-        informationArray = new ArrayList<>();
+        this.informationArray = new ArrayList<>();
         init(year);
     }
 
@@ -78,11 +73,19 @@ public class HolidaysHandler {
             String title = jsonArray.get(i).getAsJsonObject().get("title").getAsString();
             String date = jsonArray.get(i).getAsJsonObject().get("date").getAsString();
             String category = jsonArray.get(i).getAsJsonObject().get("category").getAsString();
-            if (!title.startsWith("Havdalah") && !category.equals("candles")){
-                String [] column = { title, date, category };
-                informationArray.add(column);
+            if (!isSpecificHoliday(title) && !category.equals("candles")){
+                this.informationArray.add(new String[]{title, date, category});
             }
         }
+    }
+
+    private boolean isSpecificHoliday(String title){
+        return title.startsWith("Havdalah") || title.startsWith("Yom HaAliyah") ||
+                title.startsWith("Yom HaShoah") || title.startsWith("Yom Yerushalayim") ||
+                title.startsWith("Fast begins") | title.startsWith("Erev Tish'a B'Av") || title.startsWith("Tish'a B'Av (observed)") ||
+                title.startsWith("Fast ends") || title.startsWith("Shmini Atzeret") ||
+                title.startsWith("Sigd");//title.startsWith("Yom HaAliyah School Observance") |
+
     }
 
     private void writeToDb(){
@@ -108,7 +111,7 @@ public class HolidaysHandler {
         return HolidaysQueries.getInstance().holidaysForYearExists(year);
     }
 
-    public boolean dateHasHoliday (LocalDateTime localDateTime){
+    public boolean isHoliday(LocalDateTime localDateTime){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String formattedDateTime = localDateTime.format(formatter);
         for (String [] entry : informationArray) {
@@ -119,6 +122,4 @@ public class HolidaysHandler {
         }
         return false;
     }
-
-
 }

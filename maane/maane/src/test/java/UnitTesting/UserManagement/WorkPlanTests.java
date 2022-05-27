@@ -44,12 +44,6 @@ public class WorkPlanTests {
         Assert.assertFalse(res.isFailure());
     }
 
-/*    @Test
-    public void getFromMonthSuccess(){
-        Map<LocalDateTime, List<Activity>> result = workPlan.getScheduleFromMonth("4");
-        Assert.assertTrue(result.size()==51);
-    }*/
-
     @Test
     public void EveryWeeksSuccess(){
         workPlan = new WorkPlan(2022, 4, LocalTime.of(0, 0), LocalTime.of(2, 0), LocalTime.of(2, 0), LocalTime.of(4, 0));

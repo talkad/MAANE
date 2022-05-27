@@ -111,8 +111,8 @@ public class WorkPlan {
     }*/
 
     private void insertActivity(LocalDateTime date, Activity activity) {
-        if(!holidaysHandler.dateHasHoliday(date))
-            this.calendar.put(date, activity);
+        //if(!holidaysHandler.dateHasHoliday(date))
+        this.calendar.put(date, activity);
     }
 
     // find the next avaliable date
@@ -220,6 +220,12 @@ public class WorkPlan {
         if (lastDay.isBefore(currDateToInsert)) //no free date
             return new Response<>(false, true, "no free days");//todo not actually failed check its ok
 
+        while(holidaysHandler.isHoliday(currDateToInsert)){
+            currDateToInsert = currDateToInsert.plusWeeks(1);
+            if (lastDay.isBefore(currDateToInsert)) { //no free date
+                return new Response<>(false, true, "no free days");//todo not actually failed check its ok
+            }
+        }
         activity.setEndActivity(currDateToInsert.toLocalDate().atTime(this.act1End));
         insertActivity(currDateToInsert, activity);
         currDateToInsert = currDateToInsert.plusWeeks(1);
@@ -234,6 +240,14 @@ public class WorkPlan {
         if (lastDay.isBefore(currDateToInsert)) { //no free date
             return new Response<>(false, true, "no free days");//todo not actually failed check its ok
         }
+
+        while(holidaysHandler.isHoliday(currDateToInsert)){
+            currDateToInsert = currDateToInsert.plusWeeks(1);
+            if (lastDay.isBefore(currDateToInsert)) { //no free date
+                return new Response<>(false, true, "no free days");//todo not actually failed check its ok
+            }
+        }
+
         firstActivity.setEndActivity(currDateToInsert.toLocalDate().atTime(act1End));
         insertActivity(currDateToInsert, firstActivity);
         secondActivity.setEndActivity(currDateToInsert.toLocalDate().atTime(this.act2End));
