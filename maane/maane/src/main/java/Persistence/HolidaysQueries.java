@@ -17,7 +17,7 @@ public class HolidaysQueries {
         return HolidaysQueries.CreateSafeThreadSingleton.INSTANCE;
     }
 
-    public Response<Boolean> insertHolidaysDates(ArrayList<String[]> info, int year){
+    public Response<Boolean> insertHolidaysDates(ArrayList<String[]> info){
         Connect.createConnection();
         int rows = 0;
         String sql = "INSERT INTO \"Holidays\" (title, date, year) VALUES (?, ?, ?)";
@@ -27,6 +27,7 @@ public class HolidaysQueries {
             for (String[] entry : info) {
                 preparedStatement.setString(1, entry[0]);
                 preparedStatement.setString(2, entry[1]);
+                int year = Integer.parseInt(entry[1].substring(0,4));
                 preparedStatement.setInt(3, year);
                 rows += preparedStatement.executeUpdate();
             }
@@ -49,17 +50,37 @@ public class HolidaysQueries {
             statement.setInt(1, year);
             ResultSet result = statement.executeQuery();
 
-            if (result.next()) {
+            while (result.next()) {
                 String title = result.getString("title");
                 String date = result.getString("date");
-                String [] arr = {title, date};
+                String [] arr = {title, date, year+""};
                 output.add(arr);
-                Connect.closeConnection();
-            } else {
-                Connect.closeConnection();
             }
+
+            Connect.closeConnection();
+
         } catch (SQLException e) {e.printStackTrace();}
         return output;
+    }
+
+    public boolean holidaysForYearExists (int year){
+        Connect.createConnection();
+        String sql = "SELECT exists (SELECT 1 FROM \"Holidays\" WHERE year = ? LIMIT 1)";
+        PreparedStatement statement;
+        try {
+            statement = Connect.conn.prepareStatement(sql);
+            statement.setInt(1, year);
+            ResultSet result = statement.executeQuery();
+            if(result.next()) {
+                boolean found = result.getBoolean(1);
+                Connect.closeConnection();
+                return found;
+            }
+            Connect.closeConnection();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return false;
     }
 
 }

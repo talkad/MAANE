@@ -30,6 +30,7 @@ public class WorkPlan {
     protected LocalTime act1End;
     protected LocalTime act2Start;
     protected LocalTime act2End;
+    protected HolidaysHandler holidaysHandler;
 
     public WorkPlan(int year, int workDay, LocalTime act1Start, LocalTime act1End, LocalTime act2Start, LocalTime act2End) {
         this.year = year;
@@ -41,6 +42,7 @@ public class WorkPlan {
         this.currDateToInsert = findFirstWorkDayOfMonth(workDay, year);//LocalDate.of(year, 9, 1).atTime(0, 0);
         this.calendar = GenerateCalendarForYear(year);
         checkFridaySaturday();
+        this.holidaysHandler = new HolidaysHandler(year);
     }
 
     private LocalDateTime findFirstWorkDayOfMonth(int workDay, int year) {
@@ -109,7 +111,8 @@ public class WorkPlan {
     }*/
 
     private void insertActivity(LocalDateTime date, Activity activity) {
-        this.calendar.put(date, activity);
+        if(!holidaysHandler.dateHasHoliday(date))
+            this.calendar.put(date, activity);
     }
 
     // find the next avaliable date

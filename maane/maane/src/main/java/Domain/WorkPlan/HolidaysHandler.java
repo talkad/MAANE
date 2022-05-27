@@ -1,24 +1,45 @@
 package Domain.WorkPlan;
 
+import Persistence.Connect;
 import Persistence.HolidaysQueries;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class HolidaysHandler {
     int year;
-    String informationString;
+    String informationStringYear1;
+    String informationStringYear2;
     ArrayList<String[]> informationArray;
 
     public HolidaysHandler (int year){
         this.year = year;
-        informationString = fetchAPI(year);
         informationArray = new ArrayList<>();
-        writeToDb();
+        init(year);
+    }
+
+    private void init(int year){
+        if (holidaysForYearExists(year) & holidaysForYearExists(year + 1)){
+            informationArray = getHolidaysForYear(year);
+        }
+
+        else {
+            informationStringYear1 = fetchAPI(year);
+            informationStringYear2 = fetchAPI(year + 1);
+            fillArray(informationStringYear1);
+            fillArray(informationStringYear2);
+            writeToDb();
+        }
     }
 
     private String fetchAPI(int year) {
@@ -50,8 +71,8 @@ public class HolidaysHandler {
         return informationString.toString();
     }
 
-    private void fillArray(){
-        JsonObject gsonObj = new Gson().fromJson(informationString, JsonObject.class);
+    private void fillArray(String inputString){
+        JsonObject gsonObj = new Gson().fromJson(inputString, JsonObject.class);
         JsonArray jsonArray = gsonObj.getAsJsonArray("items");
         for (int i = 0; i < jsonArray.size(); i++) {
             String title = jsonArray.get(i).getAsJsonObject().get("title").getAsString();
@@ -65,14 +86,38 @@ public class HolidaysHandler {
     }
 
     private void writeToDb(){
-        fillArray();
-        HolidaysQueries.getInstance().insertHolidaysDates(informationArray, year);
+        HolidaysQueries.getInstance().insertHolidaysDates(informationArray);
+    }
+
+    public ArrayList<String[]> getHolidaysForYear(int year){
+        if (informationArray.isEmpty()){
+            informationArray = HolidaysQueries.getInstance().getHolidaysDates(year);
+            informationArray.addAll(HolidaysQueries.getInstance().getHolidaysDates(year + 1));
+        }
+        return informationArray;
     }
 
     public void printArray(){
         for (String[] entry : informationArray) {
             System.out.println(entry[0] + " on date: " + entry[1] + " and category " + entry[2]);
         }
+    }
+
+    // returns if database already contains holidays or year, and we don't need to fetch API
+    public boolean holidaysForYearExists (int year){
+        return HolidaysQueries.getInstance().holidaysForYearExists(year);
+    }
+
+    public boolean dateHasHoliday (LocalDateTime localDateTime){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String formattedDateTime = localDateTime.format(formatter);
+        for (String [] entry : informationArray) {
+            String date = entry[1].substring(0,10);
+            if (date.equals(formattedDateTime)){
+                return true;
+            }
+        }
+        return false;
     }
 
 
