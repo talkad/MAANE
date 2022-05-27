@@ -251,6 +251,7 @@ function App(){
     const [openBackdrop, setOpenBackdrop] = useState(false);
     const [name, setName] = useState('');
     const [schools, setSchools] = useState([])
+    const [schoolsLoaded, setSchoolsLoaded] = useState(false)
 
     // authentication related
     const [authAvailability, setAuthAvailability] = useState(false);
@@ -284,6 +285,14 @@ function App(){
         }
         else{
             setSchools(JSON.parse(window.sessionStorage.getItem('schools')))
+            setSchoolsLoaded(true)
+        }
+
+        // for the case of a guest who fills the survey
+        let url = window.location.href
+        if(url.includes('survey/getSurvey') &&
+            !(current_type === "INSTRUCTOR" || current_type === "SUPERVISOR" || current_type === "SYSTEM_MANAGER")){
+            setSchoolsLoaded(true)
         }
 
 
@@ -302,6 +311,7 @@ function App(){
             let schools_data = data.result.map(mapFunc);
             setSchools(schools_data)
             window.sessionStorage.setItem('schools', JSON.stringify(schools_data));
+            setSchoolsLoaded(true)
         }
     }
 
@@ -506,6 +516,7 @@ function App(){
                 <Space.Fill>
                     {/* routes to the different screens */}
                     <Routes>
+
                         <Route path="user">
                             <Route path="login" element={<Login type={type} setType={setType} setName={setName} setHideBars={setHideBars}/>}/>
 
@@ -542,14 +553,14 @@ function App(){
                         </Route>
 
                         {type === "SUPERVISOR" &&
-                                <Route path="survey">
+                            <Route path="survey">
                                     <Route path="menu" element={<SurveyMenu setAuthAvailability={setAuthAvailability} setAuthCallBack={setAuthCallback} setAuthCalleePage={setAuthCalleePage} setAuthGoToPage={setAuthGoToPage} setHideBars={setHideBars}/>}/>
                                     <Route path="createSurvey" element={<SurveyBuilder/>}/>
                                     <Route path="rules" element={<SurveyRulesEditor/>}/>
                                     <Route path={'surveyResults'} element={<SurveyGeneralResults/>}/>
                                     <Route path={"schoolSurveyAnswers"} element={<SurveySchoolResults/>}/>
-                                </Route>   
-                        }
+                            </Route>}
+
 
                         
                         <Route path="survey">
