@@ -66,11 +66,11 @@ public interface UserService {
 
     Response<UserDBDTO> getWorkHours(String instructor);
 
-    Response<Boolean> editActivity(String currUser, LocalDateTime currActStart, LocalDateTime newActStart, LocalDateTime newActEnd);
+    Response<Boolean> editActivity(String currUser, String currActStart, String newActStart, String newActEnd);
 
     Response<Boolean> addActivity(String currUser, String startAct, String schoolId, int goalId, String title, String endAct);
 
-    Response<Boolean> removeActivity(String currUser, LocalDateTime startAct);
+    Response<Boolean> removeActivity(String currUser, String startAct);
 
     Response<Boolean> changePasswordTester(String currUser, String newPassword);
 

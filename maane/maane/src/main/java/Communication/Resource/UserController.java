@@ -284,7 +284,7 @@ public class UserController {
     @PostMapping(value = "/editActivity") //    todo aviad
     public ResponseEntity<Response<Boolean>> editActivity(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object> body){
         return ResponseEntity.ok()
-                .body(service.editActivity(sessionHandler.getUsernameByToken(token).getResult(), (LocalDateTime)body.get("currActStart"), (LocalDateTime) body.get("newActStart"), (LocalDateTime) body.get("newActEnd")));
+                .body(service.editActivity(sessionHandler.getUsernameByToken(token).getResult(), (String)body.get("currActStart"), (String) body.get("newActStart"), (String) body.get("newActEnd")));
     }
 
     @PostMapping(value = "/addActivity") //todo aviad
@@ -296,7 +296,7 @@ public class UserController {
     @PostMapping(value = "/removeActivity") //todo aviad
     public ResponseEntity<Response<Boolean>> removeActivity(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object>  body){
         return ResponseEntity.ok()
-                .body(service.removeActivity(sessionHandler.getUsernameByToken(token).getResult(), (LocalDateTime) body.get("startAct")));
+                .body(service.removeActivity(sessionHandler.getUsernameByToken(token).getResult(), (String) body.get("startAct")));
     }
 
     @PostMapping(value = "/changePasswordTester") //todo aviad

@@ -1205,6 +1205,11 @@ public class UserController {
         }
     }
 
+    private LocalDateTime stringToDate(String dateString){
+        String[] dateArr = dateString.split("T");
+        return LocalDate.parse(dateArr[0]).atTime(LocalTime.parse(dateArr[1]));
+    }
+
     /**
      * edit the activity's schedule
      * @param currUser the instructor wishing to change the activity date
@@ -1213,12 +1218,16 @@ public class UserController {
      * @param newActEnd updated activity ending date
      * @return a response of the successfulness of the action
      */
-    public Response<Boolean> editActivity(String currUser, LocalDateTime currActStart, LocalDateTime newActStart, LocalDateTime newActEnd){ //todo test it
+    public Response<Boolean> editActivity(String currUser, String currActStart, String newActStart, String newActEnd){ //todo test it
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);//todo maybe verify the dao was generated
-            Response<Boolean> editActivityRes = user.editActivity(currActStart);//todo change active user info
+            LocalDateTime currActStartDate = stringToDate(currActStart);
+            LocalDateTime newActStartDate = stringToDate(newActStart);
+            LocalDateTime newActEndDate = stringToDate(newActEnd);
+
+            Response<Boolean> editActivityRes = user.editActivity(currActStartDate);//todo change active user info
             if(!editActivityRes.isFailure()){
-                return workPlanDAO.updateActivity(currUser, currActStart, newActStart, newActEnd);
+                return workPlanDAO.updateActivity(currUser, currActStartDate, newActStartDate, newActEndDate);
             }
             else{
                 return new Response<>(null, true, editActivityRes.getErrMsg() + " / colliding activity hours");
@@ -1233,13 +1242,11 @@ public class UserController {
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);//todo maybe verify the dao was generated
             System.out.println(startAct);
-            String[] startActArr = startAct.split("T");
-            String[] endActArr = endAct.split("T");
-            LocalDateTime startActDate = LocalDate.parse(startActArr[0]).atTime(LocalTime.parse(startActArr[1]));
-            LocalDateTime endActDate = LocalDate.parse(endActArr[0]).atTime(LocalTime.parse(endActArr[1]));
+
+            LocalDateTime startActDate = stringToDate(startAct);
+            LocalDateTime endActDate = stringToDate(endAct);
 
             ActivityDTO activity = new ActivityDTO(schoolId, goalId, title, endActDate);
-            activity.setEndActivity(endActDate);
             Response<Integer> addActivityRes = user.addActivity(startActDate, activity.getSchoolId());//todo change active user info
             if(!addActivityRes.isFailure()){
                 return workPlanDAO.addActivity(currUser, startActDate, activity, addActivityRes.getResult());
@@ -1252,12 +1259,13 @@ public class UserController {
             return new Response<>(null, true, "User not connected");
         }    }
 
-    public Response<Boolean> removeActivity(String currUser, LocalDateTime startAct) {
+    public Response<Boolean> removeActivity(String currUser, String startAct) {
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);//todo maybe verify the dao was generated
-            Response<Boolean> removeActivityRes = user.removeActivity(startAct);//todo change active user info
+            LocalDateTime startActDate = stringToDate(startAct);
+            Response<Boolean> removeActivityRes = user.removeActivity(startActDate);//todo change active user info
             if(!removeActivityRes.isFailure()){
-                return workPlanDAO.removeActivity(currUser, startAct);
+                return workPlanDAO.removeActivity(currUser, startActDate);
             }
             else{
                 return new Response<>(null, true, removeActivityRes.getErrMsg() + " / colliding activity hours");

@@ -267,7 +267,7 @@ public class ProxyBridgeUser implements UserService {
     }
 
     @Override
-    public Response<Boolean> editActivity(String currUser, LocalDateTime currActStart, LocalDateTime newActStart, LocalDateTime newActEnd) {
+    public Response<Boolean> editActivity(String currUser, String currActStart, String newActStart, String newActEnd) {
         if (real != null) {
             return real.editActivity(currUser, currActStart, newActStart, newActEnd);
         }
@@ -284,7 +284,7 @@ public class ProxyBridgeUser implements UserService {
         return new Response<>(null, true, "not implemented");    }
 
     @Override
-    public Response<Boolean> removeActivity(String currUser, LocalDateTime startAct) {
+    public Response<Boolean> removeActivity(String currUser, String startAct) {
         if (real != null) {
             return real.removeActivity(currUser, startAct);
         }

@@ -353,7 +353,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public Response<Boolean> editActivity(String currUser, LocalDateTime currActStart, LocalDateTime newActStart, LocalDateTime newActEnd) {
+    public Response<Boolean> editActivity(String currUser, String currActStart, String newActStart, String newActEnd) {
         Response<Boolean> res = UserController.getInstance().editActivity(currUser, currActStart, newActStart, newActEnd);
 
         if (res.isFailure())
@@ -378,7 +378,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public Response<Boolean> removeActivity(String currUser, LocalDateTime startAct) {
+    public Response<Boolean> removeActivity(String currUser, String startAct) {
         Response<Boolean> res = UserController.getInstance().removeActivity(currUser, startAct);
 
         if (res.isFailure())
