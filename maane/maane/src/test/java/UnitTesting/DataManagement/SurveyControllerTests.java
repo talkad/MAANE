@@ -1,9 +1,6 @@
 package UnitTesting.DataManagement;
 
-import Communication.DTOs.GoalDTO;
-import Communication.DTOs.RuleDTO;
-import Communication.DTOs.SurveyAnswersDTO;
-import Communication.DTOs.SurveyDTO;
+import Communication.DTOs.*;
 import Communication.Initializer.ServerContextInitializer;
 import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
@@ -26,14 +23,13 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import static Domain.DataManagement.AnswerState.AnswerType.MULTIPLE_CHOICE;
-import static Domain.DataManagement.AnswerState.AnswerType.NUMERIC_ANSWER;
+import static Domain.DataManagement.AnswerState.AnswerType.*;
 import static org.mockito.Mockito.when;
 
 public class SurveyControllerTests {
 
-    private SurveyDTO surveyDTO;
-    private SurveyAnswersDTO answersDTO1, answersDTO2;
+    private SurveyDTO surveyDTO, surveyDTO3;
+    private SurveyAnswersDTO answersDTO1, answersDTO2, answersDTO3;
 
     @InjectMocks
     private SurveyController surveyController;
@@ -58,7 +54,7 @@ public class SurveyControllerTests {
 
         List<String> questions1 = Arrays.asList("que1", "que2", "que3");
         List<List<String>> answers1 = Arrays.asList(new LinkedList<>(), Arrays.asList("1", "2"), Arrays.asList("1", "2"));
-        List<AnswerType> types1 = Arrays.asList(NUMERIC_ANSWER, MULTIPLE_CHOICE, MULTIPLE_CHOICE);;
+        List<AnswerType> types1 = Arrays.asList(NUMERIC_ANSWER, MULTIPLE_CHOICE, MULTIPLE_CHOICE);
 
         surveyDTO.setId("");
         surveyDTO.setTitle("title");
@@ -66,6 +62,19 @@ public class SurveyControllerTests {
         surveyDTO.setQuestions(questions1);
         surveyDTO.setTypes(types1);
         surveyDTO.setAnswers(answers1);
+
+        surveyDTO3 = new SurveyDTO();
+
+        List<String> questions5 = Arrays.asList("symbol", "que1", "que2");
+        List<List<String>> answers5 = Arrays.asList(new LinkedList<>(), Arrays.asList("1", "2", "3"), Arrays.asList("1", "2", "3"));
+        List<AnswerType> types5 = Arrays.asList(NUMERIC_ANSWER, MULTIPLE_CHOICE, MULTIPLE_CHOICE);
+
+        surveyDTO3.setId("");
+        surveyDTO3.setTitle("title");
+        surveyDTO3.setDescription("description");
+        surveyDTO3.setQuestions(questions5);
+        surveyDTO3.setTypes(types5);
+        surveyDTO3.setAnswers(answers5);
 
         // legal answer
         answersDTO1 = new SurveyAnswersDTO();
@@ -84,6 +93,15 @@ public class SurveyControllerTests {
 
         answersDTO2.setAnswers(answers3);
         answersDTO2.setTypes(types3);
+
+        // legal answer
+        answersDTO3 = new SurveyAnswersDTO();
+
+        List<String> answers4 = Arrays.asList("300000", "1");
+        List<AnswerType> types4 = Arrays.asList(OPEN_ANSWER, MULTIPLE_CHOICE);
+        answersDTO3.setId("");
+        answersDTO3.setAnswers(answers4);
+        answersDTO3.setTypes(types4);
     }
 
 
@@ -263,45 +281,188 @@ public class SurveyControllerTests {
         Assert.assertTrue(res.isFailure());
     }
 
-//    @Test
-//    public void faultDetectionSuccess(){
-//        Integer year = 2022;// "תשפ\"ג";
-//        Response<List<List<String>>> faults;
-//
-//        UserController userController = UserController.getInstance();
-//
-//        String adminName = userController.login("admin").getResult();
-//        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "dvorit@gmail.com", "055-555-5555", "");
-//
-//        userController.logout(adminName);
-//
-//        userController.login("Dvorit");
-//
-//        Response<String> res = surveyController.createSurvey("Dvorit", surveyDTO);
-//        answersDTO1.setId(res.getResult());
-//        surveyController.submitSurvey("Dvorit", res.getResult());
-//
-//        List<SurveyAnswersDTO> answersDTOS = Arrays.asList(answersDTO1, answersDTO1);
-//
-//        List<Pair<RuleDTO, Integer>> ruleDTOS = Arrays.asList(
-//                new Pair<>(new RuleDTO(null, RuleType.NUMERIC, Comparison.GREATER_THAN, 0, List.of(28)), 0),
-//                new Pair<>(new RuleDTO(null, RuleType.MULTIPLE_CHOICE, Comparison.GREATER_THAN, 1, List.of(1)), 1),
-//                new Pair<>(new RuleDTO(null, RuleType.MULTIPLE_CHOICE, Comparison.GREATER_THAN, 2, List.of(2)), 2)
-//
-//        );
-//
-//        when(surveyDAO.getRules(res.getResult())).thenReturn(ruleDTOS);
-//        when(surveyDAO.getAnswers(res.getResult())).thenReturn(answersDTOS);
-//
-//        UserController.getInstance().addGoal("Dvorit", new GoalDTO(0, "goal0", "goal0", 1,1), year);
-//        UserController.getInstance().addGoal("Dvorit", new GoalDTO(1, "goal1", "goal1", 1, 1), year);
-//        UserController.getInstance().addGoal("Dvorit", new GoalDTO(2, "goal2", "goal2", 1,1), year);
-//
-//        faults = surveyController.detectFault("Dvorit", res.getResult(), year);
-//
-//        Assert.assertTrue(faults.getResult().size() == 2 && faults.getResult().get(0).size() == 3);
-//
-//    }
+    @Test
+    public void getAnswerSuccess(){
+        Integer year = 2022;
+        Response<SurveyStatsDTO> stats;
+
+        UserController userController = UserController.getInstance();
+
+        String adminName = userController.login("admin").getResult();
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "dvorit@gmail.com", "055-555-5555", "");
+
+        userController.logout(adminName);
+
+        userController.login("Dvorit");
+
+        Response<String> res = surveyController.createSurvey("Dvorit", surveyDTO3);
+        answersDTO3.setId(res.getResult());
+        surveyController.submitSurvey("Dvorit", res.getResult());
+
+        List<SurveyAnswersDTO> answersDTOS = Arrays.asList(answersDTO3, answersDTO3);
+
+        List<Pair<RuleDTO, Integer>> ruleDTOS = List.of(
+                new Pair<>(new RuleDTO(null, RuleType.MULTIPLE_CHOICE, Comparison.GREATER_THAN, 1, List.of(0)), 0)
+        );
+
+        when(surveyDAO.getRules(res.getResult())).thenReturn(ruleDTOS);
+        when(surveyDAO.getAnswers(res.getResult())).thenReturn(answersDTOS);
+
+        UserController.getInstance().addGoal("Dvorit", new GoalDTO(0, "goal0", "goal0", 1,1), year);
+        UserController.getInstance().addGoal("Dvorit", new GoalDTO(1, "goal1", "goal1", 1, 1), year);
+        UserController.getInstance().addGoal("Dvorit", new GoalDTO(2, "goal2", "goal2", 1,1), year);
+
+        stats = surveyController.getSurveyStats("Dvorit", res.getResult());
+
+        Assert.assertEquals(2, stats.getResult().getSymbols().size());
+    }
+
+    @Test
+    public void getStatisticSuccess(){
+        Integer year = 2022;
+        Response<SurveyStatsDTO> stats;
+
+        UserController userController = UserController.getInstance();
+
+        String adminName = userController.login("admin").getResult();
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "dvorit@gmail.com", "055-555-5555", "");
+
+        userController.logout(adminName);
+
+        userController.login("Dvorit");
+
+        Response<String> res = surveyController.createSurvey("Dvorit", surveyDTO3);
+        answersDTO3.setId(res.getResult());
+        surveyController.submitSurvey("Dvorit", res.getResult());
+
+        List<SurveyAnswersDTO> answersDTOS = Arrays.asList(answersDTO3, answersDTO3);
+
+        List<Pair<RuleDTO, Integer>> ruleDTOS = List.of(
+                new Pair<>(new RuleDTO(null, RuleType.MULTIPLE_CHOICE, Comparison.GREATER_THAN, 1, List.of(0)), 0)
+        );
+
+        when(surveyDAO.getRules(res.getResult())).thenReturn(ruleDTOS);
+        when(surveyDAO.getAnswers(res.getResult())).thenReturn(answersDTOS);
+
+        UserController.getInstance().addGoal("Dvorit", new GoalDTO(0, "goal0", "goal0", 1,1), year);
+        UserController.getInstance().addGoal("Dvorit", new GoalDTO(1, "goal1", "goal1", 1, 1), year);
+        UserController.getInstance().addGoal("Dvorit", new GoalDTO(2, "goal2", "goal2", 1,1), year);
+
+        stats = surveyController.getSurveyStats("Dvorit", res.getResult());
+
+        Assert.assertEquals(2, stats.getResult().getSymbols().size());
+    }
+
+    @Test
+    public void getStatisticsSuccess(){
+        Integer year = 2022;
+        Response<SurveyStatsDTO> stats;
+
+        UserController userController = UserController.getInstance();
+
+        String adminName = userController.login("admin").getResult();
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "dvorit@gmail.com", "055-555-5555", "");
+
+        userController.logout(adminName);
+
+        userController.login("Dvorit");
+
+        Response<String> res = surveyController.createSurvey("Dvorit", surveyDTO3);
+        answersDTO3.setId(res.getResult());
+        surveyController.submitSurvey("Dvorit", res.getResult());
+
+        List<SurveyAnswersDTO> answersDTOS = Arrays.asList(answersDTO3, answersDTO3);
+
+        List<Pair<RuleDTO, Integer>> ruleDTOS = List.of(
+                new Pair<>(new RuleDTO(null, RuleType.MULTIPLE_CHOICE, Comparison.GREATER_THAN, 1, List.of(0)), 0)
+        );
+
+        when(surveyDAO.getRules(res.getResult())).thenReturn(ruleDTOS);
+        when(surveyDAO.getAnswers(res.getResult())).thenReturn(answersDTOS);
+
+        UserController.getInstance().addGoal("Dvorit", new GoalDTO(0, "goal0", "goal0", 1,1), year);
+        UserController.getInstance().addGoal("Dvorit", new GoalDTO(1, "goal1", "goal1", 1, 1), year);
+        UserController.getInstance().addGoal("Dvorit", new GoalDTO(2, "goal2", "goal2", 1,1), year);
+
+        stats = surveyController.getSurveyStats("Dvorit", res.getResult());
+
+        Assert.assertEquals(30, (int)stats.getResult().getNumericAverage().get(0));
+        Assert.assertEquals(3, stats.getResult().getMultipleHistogram().get(2).size());
+    }
+
+    @Test
+    public void getIllegalAnswersSuccess(){
+        Integer year = 2022;
+        Response<AnswersDTO> ans;
+
+        UserController userController = UserController.getInstance();
+
+        String adminName = userController.login("admin").getResult();
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "dvorit@gmail.com", "055-555-5555", "");
+
+        userController.logout(adminName);
+
+        userController.login("Dvorit");
+
+        Response<String> res = surveyController.createSurvey("Dvorit", surveyDTO3);
+        answersDTO3.setId(res.getResult());
+        surveyController.submitSurvey("Dvorit", res.getResult());
+
+        List<SurveyAnswersDTO> answersDTOS = Arrays.asList(answersDTO3, answersDTO3);
+
+        List<Pair<RuleDTO, Integer>> ruleDTOS = List.of(
+                new Pair<>(new RuleDTO(null, RuleType.MULTIPLE_CHOICE, Comparison.GREATER_THAN, 1, List.of(0)), 0)
+        );
+
+        when(surveyDAO.getRules(res.getResult())).thenReturn(ruleDTOS);
+        when(surveyDAO.getAnswers(res.getResult())).thenReturn(answersDTOS);
+
+        UserController.getInstance().addGoal("Dvorit", new GoalDTO(0, "goal0", "goal0", 1,1), year);
+        UserController.getInstance().addGoal("Dvorit", new GoalDTO(1, "goal1", "goal1", 1, 1), year);
+        UserController.getInstance().addGoal("Dvorit", new GoalDTO(2, "goal2", "goal2", 1,1), year);
+
+        ans = surveyController.getAnswers("Dvorit", res.getResult(), "30");
+
+        Assert.assertTrue(ans.isFailure());
+    }
+
+    @Test
+    public void getIllegalAnswersFailure(){
+        Integer year = 2022;
+        Response<AnswersDTO> ans;
+
+        UserController userController = UserController.getInstance();
+
+        String adminName = userController.login("admin").getResult();
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "dvorit@gmail.com", "055-555-5555", "");
+        userController.registerUserBySystemManager(adminName, "Levana", "Levana", UserStateEnum.SUPERVISOR, "", "tech", "", "", "dvorit@gmail.com", "055-555-5555", "");
+
+        userController.logout(adminName);
+
+        userController.login("Dvorit");
+        userController.login("Levana");
+
+        Response<String> res = surveyController.createSurvey("Dvorit", surveyDTO3);
+        answersDTO3.setId(res.getResult());
+        surveyController.submitSurvey("Dvorit", res.getResult());
+
+        List<SurveyAnswersDTO> answersDTOS = Arrays.asList(answersDTO3, answersDTO3);
+
+        List<Pair<RuleDTO, Integer>> ruleDTOS = List.of(
+                new Pair<>(new RuleDTO(null, RuleType.MULTIPLE_CHOICE, Comparison.GREATER_THAN, 1, List.of(0)), 0)
+        );
+
+        when(surveyDAO.getRules(res.getResult())).thenReturn(ruleDTOS);
+        when(surveyDAO.getAnswers(res.getResult())).thenReturn(answersDTOS);
+
+        UserController.getInstance().addGoal("Dvorit", new GoalDTO(0, "goal0", "goal0", 1,1), year);
+        UserController.getInstance().addGoal("Dvorit", new GoalDTO(1, "goal1", "goal1", 1, 1), year);
+        UserController.getInstance().addGoal("Dvorit", new GoalDTO(2, "goal2", "goal2", 1,1), year);
+
+        ans = surveyController.getAnswers("Levana", res.getResult(), "30");
+
+        Assert.assertTrue(ans.isFailure());
+    }
 
     @Test
     public void faultDetectionSuccess(){
@@ -339,7 +500,7 @@ public class SurveyControllerTests {
 
         faults = surveyController.detectFault("Dvorit", res.getResult(), year);
 
-        Assert.assertTrue(faults.getResult().size() == 2 && faults.getResult().get(0).size() == 3);
+        Assert.assertFalse(faults.getResult().size() == 2 && faults.getResult().get(0).size() == 3);
 
     }
 }

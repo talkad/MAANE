@@ -45,7 +45,7 @@ public class SurveyDAOMockAdapter {
     public List<SurveyAnswersDTO> getAnswers(String surveyId) {
         SurveyAnswersDTO answersDTO1 = new SurveyAnswersDTO();
 
-        List<String> answers2 = Arrays.asList("30", "1", "2");
+        List<String> answers2 = Arrays.asList("30", "0", "0");
         List<AnswerType> types2 = Arrays.asList(NUMERIC_ANSWER, MULTIPLE_CHOICE, MULTIPLE_CHOICE);
         answersDTO1.setId("");
         answersDTO1.setAnswers(answers2);

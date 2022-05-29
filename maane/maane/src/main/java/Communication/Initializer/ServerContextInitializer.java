@@ -48,6 +48,10 @@ public class ServerContextInitializer {
         this.testMode = true;
     }
 
+    public void setTestMode(boolean mode) {
+        this.testMode = mode;
+    }
+
     public void setMockMode(boolean mode) {this.mockMode = mode; }
 
     public boolean isMockMode(){
