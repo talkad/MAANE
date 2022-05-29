@@ -1,4 +1,5 @@
 package UnitTesting.WorkPlan;
+import Communication.DTOs.ActivityDTO;
 import Communication.Initializer.ServerContextInitializer;
 import Domain.CommonClasses.Pair;
 import Domain.WorkPlan.Goal;
@@ -11,6 +12,7 @@ import org.junit.Test;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
 public class HolidaysHandlerTests {
 
@@ -21,6 +23,12 @@ public class HolidaysHandlerTests {
         ServerContextInitializer.getInstance().setMockMode();
         HolidaysQueries.getInstance().clearHolidays();
         holidaysHandler = new HolidaysHandler(2022);
+    }
+
+    @Test
+    public void checkGetAsActivity(){
+        List<Pair<LocalDateTime, ActivityDTO>> check = holidaysHandler.getHolidaysAsActivity(2022, 4).getResult();
+        Assert.assertEquals(8, check.size());
     }
 
 //    @Test

@@ -1,10 +1,19 @@
 package Persistence;
+import Communication.DTOs.ActivityDTO;
+import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
 @Repository
 public class HolidaysQueries {
@@ -81,6 +90,34 @@ public class HolidaysQueries {
             throwables.printStackTrace();
         }
         return false;
+    }
+
+    public List<Pair<LocalDateTime, ActivityDTO>> getHolidaysAsActivity(int year, int month){
+        Connect.createConnection();
+        String sql = "SELECT * FROM \"Holidays\" WHERE year = ?";
+        PreparedStatement statement;
+        List<Pair<LocalDateTime, ActivityDTO>> output = new Vector<>();
+        LocalTime localTime = LocalTime.of(0,0);
+        try {
+            statement = Connect.conn.prepareStatement(sql);
+            statement.setInt(1, year);
+            ResultSet result = statement.executeQuery();
+
+            while (result.next()) {
+                String title = result.getString("title");
+                String date = result.getString("date");
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                LocalDate localDate = LocalDate.parse(date.substring(0, 10), formatter);
+                if(localDate.getMonthValue()==month){
+                    ActivityDTO activityDTO = new ActivityDTO("Holiday", 0, title, LocalDateTime.of(localDate, LocalTime.of(22,0)));
+                    Pair<LocalDateTime, ActivityDTO> pair = new Pair<>(LocalDateTime.of(localDate, LocalTime.of(6,0)), activityDTO);
+                    output.add(pair);
+                }
+            }
+            Connect.closeConnection();
+        } catch (SQLException e) {e.printStackTrace();}
+
+        return output;
     }
 
     public void clearHolidays(){
