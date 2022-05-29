@@ -121,4 +121,34 @@ public class SurveyTest {
 
         Assert.assertTrue(!res.isFailure() && survey.getQuestions().size() == 2);
     }
+
+    @Test
+    public void surveyAddQuestion(){
+        Response<Survey> res = Survey.createSurvey("", surveyDTO1);
+        survey = res.getResult();
+
+        survey.addQuestion("question", NUMERIC_ANSWER);
+
+        Assert.assertTrue(!res.isFailure() && survey.getQuestions().size() == 4);
+    }
+
+    @Test
+    public void surveyRemoveQuestionFailure(){
+        Response<Survey> res = Survey.createSurvey("", surveyDTO1);
+        survey = res.getResult();
+
+        survey.removeQuestion(5);
+
+        Assert.assertTrue(!res.isFailure() && survey.getQuestions().size() == 3);
+    }
+
+    @Test
+    public void surveyAddQuestionFailure(){
+        Response<Survey> res = Survey.createSurvey("", surveyDTO1);
+        survey = res.getResult();
+
+        survey.addQuestion("", NUMERIC_ANSWER);
+
+        Assert.assertTrue(!res.isFailure() && survey.getQuestions().size() == 3);
+    }
 }

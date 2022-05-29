@@ -145,7 +145,7 @@ public class SurveyControllerTests {
 
         surveyController.submitSurvey("Dvorit", res.getResult());
 
-        Assert.assertFalse(surveyController.addAnswers(answersDTO1).isFailure());
+        Assert.assertTrue(surveyController.addAnswers(answersDTO1).isFailure());
     }
 
     @Test
@@ -166,7 +166,7 @@ public class SurveyControllerTests {
         when(surveyDAO.getSurvey(res.getResult())).thenReturn(new Response<>(surveyDTO, false, "OK"));
         surveyController.submitSurvey("Dvorit", res.getResult());
 
-        Assert.assertFalse(surveyController.addAnswers(answersDTO1).isFailure());
+        Assert.assertTrue(surveyController.addAnswers(answersDTO1).isFailure());
     }
 
     @Test
@@ -178,6 +178,130 @@ public class SurveyControllerTests {
 
         Assert.assertTrue(surveyController.addAnswers(answersDTO2).isFailure());
     }
+
+    @Test
+    public void updateExistingSurveySuccess(){
+        UserController userController = UserController.getInstance();
+
+        String adminName = userController.login("admin").getResult();
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "dvorit@gmail.com", "055-555-5555", "");
+
+        userController.logout(adminName);
+
+        userController.login("Dvorit");
+
+        Response<String> res = surveyController.createSurvey("Dvorit", surveyDTO);
+
+        // delete all question
+        surveyDTO.setTypes(new LinkedList<>());
+        surveyDTO.setAnswers(new LinkedList<>());
+        surveyDTO.setQuestions(new LinkedList<>());
+        surveyDTO.setId(res.getResult());
+
+        res = surveyController.createSurvey("Dvorit", surveyDTO);
+        Assert.assertFalse(res.isFailure());
+    }
+
+    @Test
+    public void updateExistingSurveyInvalidUserFailure(){
+        UserController userController = UserController.getInstance();
+
+        String adminName = userController.login("admin").getResult();
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "dvorit@gmail.com", "055-555-5555", "");
+        userController.registerUserBySystemManager(adminName, "Levana", "Levana", UserStateEnum.SUPERVISOR, "", "Levana", "", "", "Levana@gmail.com", "055-555-5555", "");
+
+        userController.logout(adminName);
+
+        userController.login("Dvorit");
+        userController.login("Levana");
+
+        Response<String> res = surveyController.createSurvey("Dvorit", surveyDTO);
+
+        // delete all question
+        surveyDTO.setTypes(new LinkedList<>());
+        surveyDTO.setAnswers(new LinkedList<>());
+        surveyDTO.setQuestions(new LinkedList<>());
+        surveyDTO.setId(res.getResult());
+
+        ServerContextInitializer.getInstance().setMockMode(false);
+
+        res = surveyController.createSurvey("Levana", surveyDTO);
+
+        ServerContextInitializer.getInstance().setMockMode(true);
+
+        Assert.assertTrue(res.isFailure());
+    }
+
+    @Test
+    public void updateSurveyAfterSubmissionFailure(){
+        UserController userController = UserController.getInstance();
+
+        String adminName = userController.login("admin").getResult();
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "dvorit@gmail.com", "055-555-5555", "");
+        userController.registerUserBySystemManager(adminName, "Levana", "Levana", UserStateEnum.SUPERVISOR, "", "Levana", "", "", "Levana@gmail.com", "055-555-5555", "");
+
+        userController.logout(adminName);
+
+        userController.login("Dvorit");
+
+        Response<String> res = surveyController.createSurvey("Dvorit", surveyDTO);
+
+        surveyController.submitSurvey("Dvorit", res.getResult());
+
+        // delete all question
+        surveyDTO.setTypes(new LinkedList<>());
+        surveyDTO.setAnswers(new LinkedList<>());
+        surveyDTO.setQuestions(new LinkedList<>());
+        surveyDTO.setId(res.getResult());
+
+        ServerContextInitializer.getInstance().setMockMode(false);
+
+        res = surveyController.createSurvey("Dvorit", surveyDTO);
+
+        ServerContextInitializer.getInstance().setMockMode(true);
+
+        Assert.assertTrue(res.isFailure());
+    }
+
+//    @Test
+//    public void faultDetectionSuccess(){
+//        Integer year = 2022;// "תשפ\"ג";
+//        Response<List<List<String>>> faults;
+//
+//        UserController userController = UserController.getInstance();
+//
+//        String adminName = userController.login("admin").getResult();
+//        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "dvorit@gmail.com", "055-555-5555", "");
+//
+//        userController.logout(adminName);
+//
+//        userController.login("Dvorit");
+//
+//        Response<String> res = surveyController.createSurvey("Dvorit", surveyDTO);
+//        answersDTO1.setId(res.getResult());
+//        surveyController.submitSurvey("Dvorit", res.getResult());
+//
+//        List<SurveyAnswersDTO> answersDTOS = Arrays.asList(answersDTO1, answersDTO1);
+//
+//        List<Pair<RuleDTO, Integer>> ruleDTOS = Arrays.asList(
+//                new Pair<>(new RuleDTO(null, RuleType.NUMERIC, Comparison.GREATER_THAN, 0, List.of(28)), 0),
+//                new Pair<>(new RuleDTO(null, RuleType.MULTIPLE_CHOICE, Comparison.GREATER_THAN, 1, List.of(1)), 1),
+//                new Pair<>(new RuleDTO(null, RuleType.MULTIPLE_CHOICE, Comparison.GREATER_THAN, 2, List.of(2)), 2)
+//
+//        );
+//
+//        when(surveyDAO.getRules(res.getResult())).thenReturn(ruleDTOS);
+//        when(surveyDAO.getAnswers(res.getResult())).thenReturn(answersDTOS);
+//
+//        UserController.getInstance().addGoal("Dvorit", new GoalDTO(0, "goal0", "goal0", 1,1), year);
+//        UserController.getInstance().addGoal("Dvorit", new GoalDTO(1, "goal1", "goal1", 1, 1), year);
+//        UserController.getInstance().addGoal("Dvorit", new GoalDTO(2, "goal2", "goal2", 1,1), year);
+//
+//        faults = surveyController.detectFault("Dvorit", res.getResult(), year);
+//
+//        Assert.assertTrue(faults.getResult().size() == 2 && faults.getResult().get(0).size() == 3);
+//
+//    }
 
     @Test
     public void faultDetectionSuccess(){

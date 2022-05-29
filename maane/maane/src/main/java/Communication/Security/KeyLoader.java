@@ -29,11 +29,11 @@ public class KeyLoader {
     public KeyLoader(){
         password = "1234";
 
-        //filepath = ".\\src\\main\\resources\\store.keystore"; // other's path
-        filepath = "C:\\MAANE\\maane\\maane\\src\\main\\resources\\store.keystore";
+//        filepath = ".\\src\\main\\resources\\store.keystore"; // other's path
+//        filepath = "C:\\MAANE\\maane\\maane\\src\\main\\resources\\store.keystore";
 
 
-//        filepath = "maane\\src\\main\\resources\\store.keystore"; // other's path
+        filepath = "maane\\src\\main\\resources\\store.keystore"; // other's path
 
         encryptedText = "354132168465432";
     }
@@ -64,7 +64,7 @@ public class KeyLoader {
         }
     }
 
-    private SecretKey readKey(String key){
+    public SecretKey readKey(String key){
         try{
             KeyStore keystore = KeyStore.getInstance("JCEKS");
             InputStream readStream = new FileInputStream(filepath);
@@ -148,7 +148,7 @@ public class KeyLoader {
 
     public String getMailPassword()  {
         SecretKey key = KeyLoader.getInstance().readKey("auth_key");
-        byte[] encodedPassword = {44, -126, -20, -44, -18, 24, -68, 105, -40, -60, 101, -81, 117, -42, -1, 100};
+        byte[] encodedPassword = {52, 25, -2, 44, 120, 30, -111, -40, -113, 122, -128, -22, 19, -47, -18, -110, 34, 80, 34, -79, 38, -62, 66, 14, 63, -17, -112, 60, -9, -126, -76, 56};
 
         try {
             return new String(KeyLoader.getInstance().decryptKey(encodedPassword, key, Cipher.getInstance("AES")), StandardCharsets.UTF_8);

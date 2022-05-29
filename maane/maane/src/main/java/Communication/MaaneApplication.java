@@ -2,6 +2,7 @@ package Communication;
 
 import Communication.DTOs.*;
 import Communication.Initializer.ServerContextInitializer;
+import Communication.Security.KeyLoader;
 import Communication.Service.UserServiceImpl;
 import Domain.DataManagement.AnswerState.AnswerType;
 import Domain.DataManagement.DataController;
@@ -21,6 +22,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 
+import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.LinkedList;

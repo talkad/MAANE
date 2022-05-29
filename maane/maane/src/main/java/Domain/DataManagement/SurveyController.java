@@ -84,6 +84,9 @@ public class SurveyController {
         if(!legalAdd.getResult() && !ServerContextInitializer.getInstance().isMockMode())
             return new Response<>("", true, username + " does not create survey " + surveyDTO.getId());
 
+        if(surveyDAO.getSurveySubmission(surveyDTO.getId()).getResult())
+            return new Response<>("", true, "cannot add question to an already submitted survey");
+
         if(ServerContextInitializer.getInstance().isMockMode())
             UserController.getInstance().createSurvey(username, surveyDTO.getId());
 
