@@ -301,7 +301,8 @@ public class SurveyController {
             currentFaults = new LinkedList<>();
 
             for(Integer fault: faultDetector.detectFault(ans).getResult())
-                currentFaults.add(goals.get(fault).getTitle());
+                if(goals.size() > fault)
+                    currentFaults.add(goals.get(fault).getTitle());
 
             faults.add(currentFaults);
         }

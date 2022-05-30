@@ -215,4 +215,119 @@ public class SurveyIntegrationTests {
         Assert.assertTrue(res.isFailure());
     }
 
+    @Test
+    public void RemoveQuestionsExistingSurveySuccess(){
+        UserController userController = UserController.getInstance();
+
+        String adminName = userController.login("admin").getResult();
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "dvorit@gmail.com", "055-555-5555", "");
+
+        userController.logout(adminName);
+
+        userController.login("Dvorit");
+
+        Response<String> res = surveyController.createSurvey("Dvorit", surveyDTO);
+
+        // delete all question
+        surveyDTO.setTypes(new LinkedList<>());
+        surveyDTO.setAnswers(new LinkedList<>());
+        surveyDTO.setQuestions(new LinkedList<>());
+        surveyDTO.setId(res.getResult());
+
+        res = surveyController.createSurvey("Dvorit", surveyDTO);
+        Assert.assertFalse(res.isFailure());
+    }
+
+    @Test
+    public void AddQuestionsExistingSurveySuccess(){
+        UserController userController = UserController.getInstance();
+
+        String adminName = userController.login("admin").getResult();
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "dvorit@gmail.com", "055-555-5555", "");
+
+        userController.logout(adminName);
+
+        userController.login("Dvorit");
+
+        Response<String> res = surveyController.createSurvey("Dvorit", surveyDTO);
+
+        // add new question to survey
+        List<String> ques = new LinkedList<>(surveyDTO.getQuestions());
+        List<List<String>> ans = new LinkedList<>(surveyDTO.getAnswers());
+        List<AnswerType> types = new LinkedList<>(surveyDTO.getTypes());
+
+        ques.add("new question");
+        ans.add(new LinkedList<>());
+        types.add(NUMERIC_ANSWER);
+
+        // update survey questions
+        surveyDTO.setTypes(types);
+        surveyDTO.setAnswers(ans);
+        surveyDTO.setQuestions(ques);
+        surveyDTO.setId(res.getResult());
+
+        res = surveyController.createSurvey("Dvorit", surveyDTO);
+        Assert.assertFalse(res.isFailure());
+    }
+
+    @Test
+    public void updateExistingSurveyInvalidUserFailure(){
+        UserController userController = UserController.getInstance();
+
+        String adminName = userController.login("admin").getResult();
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "dvorit@gmail.com", "055-555-5555", "");
+        userController.registerUserBySystemManager(adminName, "Levana", "Levana", UserStateEnum.GENERAL_SUPERVISOR, "Dvorit", "Levana", "", "", "Levana@gmail.com", "055-555-5555", "");
+
+        userController.logout(adminName);
+
+        userController.login("Dvorit");
+        userController.login("Levana");
+
+        Response<String> res = surveyController.createSurvey("Dvorit", surveyDTO);
+
+        // delete all question
+        surveyDTO.setTypes(new LinkedList<>());
+        surveyDTO.setAnswers(new LinkedList<>());
+        surveyDTO.setQuestions(new LinkedList<>());
+        surveyDTO.setId(res.getResult());
+
+        ServerContextInitializer.getInstance().setMockMode(false);
+
+        res = surveyController.createSurvey("Levana", surveyDTO);
+
+        ServerContextInitializer.getInstance().setMockMode(true);
+
+        Assert.assertTrue(res.isFailure());
+    }
+
+    @Test
+    public void updateSurveyAfterSubmissionFailure(){
+        UserController userController = UserController.getInstance();
+
+        String adminName = userController.login("admin").getResult();
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "dvorit@gmail.com", "055-555-5555", "");
+
+        userController.logout(adminName);
+
+        userController.login("Dvorit");
+
+        Response<String> res = surveyController.createSurvey("Dvorit", surveyDTO);
+
+        surveyController.submitSurvey("Dvorit", res.getResult());
+
+        // delete all question
+        surveyDTO.setTypes(new LinkedList<>());
+        surveyDTO.setAnswers(new LinkedList<>());
+        surveyDTO.setQuestions(new LinkedList<>());
+        surveyDTO.setId(res.getResult());
+
+        ServerContextInitializer.getInstance().setMockMode(false);
+
+        res = surveyController.createSurvey("Dvorit", surveyDTO);
+
+        ServerContextInitializer.getInstance().setMockMode(true);
+
+        Assert.assertTrue(res.isFailure());
+    }
+
 }
