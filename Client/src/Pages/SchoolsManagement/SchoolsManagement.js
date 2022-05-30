@@ -485,7 +485,7 @@ export default function SchoolsManagement(props){
         //
         // }
 
-        new Connection().getUserSchools(arrangeSchoolCallback)
+        //new Connection().getUserSchools(arrangeSchoolCallback)
 
 
         if (props.userType === "SYSTEM_MANAGER"){
@@ -748,7 +748,7 @@ export default function SchoolsManagement(props){
                     onInputChange={(event, newInputValue) => {
                         setSearchText(newInputValue);
                     }}
-                    options={schools}
+                    options={props.schools}
                     renderInput={(params) => (
                         <TextField
                             id={'search_schools_text_field'}

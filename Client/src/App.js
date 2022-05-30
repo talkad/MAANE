@@ -524,7 +524,7 @@ function App(){
 
                             {(type !== "GUEST") && <Route path="profile" element={<ProfilePage userType={type}/>}/>}
 
-                            {(type !== "GUEST") && <Route path="schools" element={<SchoolsManagement userType={type}/>}/>}
+                            {(type !== "GUEST") && <Route path="schools" element={<SchoolsManagement userType={type} schools={schools}/>}/>}
 
                             {(type === 'SYSTEM_MANAGER' || type === "SUPERVISOR" || type === "INSTRUCTOR") &&
                                 <Route path="guidingBasketsSearch" element={<GuidingBaskets />}/>}

@@ -1226,7 +1226,7 @@ public class UserController {
             User user = connectedUsers.get(currUser);
             Response<Integer> workPlanResponse = user.getInstructorWorkPlan(instructor, year, month);
             if(!workPlanResponse.isFailure()){
-                Response<WorkPlanDTO> workPlanDTOResponse = workPlanDAO.getUserWorkPlanByYearAndMonth(currUser, workPlanResponse.getResult(), month);
+                Response<WorkPlanDTO> workPlanDTOResponse = workPlanDAO.getUserWorkPlanByYearAndMonth(instructor, workPlanResponse.getResult(), month);
                 if(!workPlanDTOResponse.isFailure()){
                     Response<List<Pair<LocalDateTime, ActivityDTO>>> holidaysRes = new HolidaysHandler(year).getHolidaysAsActivity(year, month);
                     if(!holidaysRes.isFailure()){

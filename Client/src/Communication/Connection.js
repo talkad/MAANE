@@ -615,10 +615,10 @@ class Connection{
      * @param callback a callback function to call once there's a response
      */
     assignSchoolToUser(assignedTo, schoolID, callback){
-        this.sendPOST('/user/assignSchoolsToUser',
+        this.sendPOST('/user/assignSchoolToUser',
             {
                 affectedUser: assignedTo,
-                schools: [schoolID]
+                school: schoolID
             },
             callback);
     }
@@ -630,10 +630,10 @@ class Connection{
      * @param callback a callback function to call once there's a response
      */
     removeSchoolFromUser(userToRemoveFrom, schoolID, callback){
-        this.sendPOST('/user/removeSchoolsFromUser',
+        this.sendPOST('/user/removeSchoolFromUser',
             {
                 affectedUser: userToRemoveFrom,
-                schools: [schoolID]
+                school: schoolID
             },
             callback)
     }

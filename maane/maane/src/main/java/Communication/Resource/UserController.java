@@ -141,7 +141,7 @@ public class UserController {
                 .body(service.viewWorkPlan(sessionHandler.getUsernameByToken(token).getResult(), year, month));
     }
 
-    @GetMapping(value = "/viewInstructorWorkPlan/instructor={instructor}&year={year}&month={month}")//todo aviad
+    @GetMapping(value = "/viewInstructorWorkPlan/instructor={instructor}&year={year}&month={month}")
     public ResponseEntity<Response<WorkPlanDTO>> viewInstructorWorkPlan(@RequestHeader(value = "Authorization") String token, @PathVariable("instructor") String instructor, @PathVariable("year") Integer year, @PathVariable("month") Integer month){
         return ResponseEntity.ok()
                 .body(service.viewInstructorWorkPlan(sessionHandler.getUsernameByToken(token).getResult(), instructor, year, month));
@@ -269,7 +269,7 @@ public class UserController {
                 .body(service.allWorkFields(sessionHandler.getUsernameByToken(token).getResult()));
     }
 
-    @PostMapping(value = "/setWorkingTime") //todo aviad
+    @PostMapping(value = "/setWorkingTime")
     public ResponseEntity<Response<Boolean>> setWorkingTime(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object>  body){
         return ResponseEntity.ok()
                 .body(service.setWorkingTime(sessionHandler.getUsernameByToken(token).getResult(), (int)body.get("workDay"), (String) body.get("act1Start"), (String) body.get("act1End"), (String) body.get("act2Start"), (String) body.get("act2End")));
@@ -281,19 +281,19 @@ public class UserController {
                 .body(service.getWorkHours(sessionHandler.getUsernameByToken(token).getResult()));
     }
 
-    @PostMapping(value = "/editActivity") //    todo aviad
+    @PostMapping(value = "/editActivity")
     public ResponseEntity<Response<Boolean>> editActivity(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object> body){
         return ResponseEntity.ok()
                 .body(service.editActivity(sessionHandler.getUsernameByToken(token).getResult(), (String)body.get("currActStart"), (String) body.get("newActStart"), (String) body.get("newActEnd")));
     }
 
-    @PostMapping(value = "/addActivity") //todo aviad
+    @PostMapping(value = "/addActivity")
     public ResponseEntity<Response<Boolean>> addActivity(@RequestHeader(value = "Authorization") String token, @RequestBody ActivityManageDTO activityManageDTO){
         return ResponseEntity.ok()
                 .body(service.addActivity(sessionHandler.getUsernameByToken(token).getResult(), activityManageDTO.getStartActivity(), activityManageDTO.getSchoolId(), activityManageDTO.getGoalId(), activityManageDTO.getTitle(), activityManageDTO.getEndActivity()));
     }
 
-    @PostMapping(value = "/removeActivity") //todo aviad
+    @PostMapping(value = "/removeActivity")
     public ResponseEntity<Response<Boolean>> removeActivity(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, Object>  body){
         return ResponseEntity.ok()
                 .body(service.removeActivity(sessionHandler.getUsernameByToken(token).getResult(), (String) body.get("startAct")));
