@@ -6,12 +6,14 @@ import Communication.DTOs.UserDTO;
 import Communication.DTOs.WorkPlanDTO;
 import Communication.Initializer.ServerContextInitializer;
 import Communication.Security.KeyLoader;
+import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.EmailManagement.EmailController;
 import Domain.UsersManagment.APIs.DTOs.UserActivityInfoDTO;
 import Domain.UsersManagment.APIs.DTOs.UserInfoDTO;
 import Domain.WorkPlan.GoalsManagement;
 import Persistence.DbDtos.UserDBDTO;
+import Persistence.HolidaysQueries;
 import Persistence.SurveyDAO;
 import Persistence.UserQueries;
 import Persistence.WorkPlanQueries;
@@ -1186,7 +1188,20 @@ public class UserController {
             User user = new User(userDAO.getFullUser(currUser).getResult());
             Response<Integer> workPlanResponse = user.getWorkPlanByYear(year, month);//todo causes problem
             if(!workPlanResponse.isFailure()){
-                return workPlanDAO.getUserWorkPlanByYearAndMonth(currUser, workPlanResponse.getResult(), month);
+                Response<WorkPlanDTO> workPlanDTOResponse = workPlanDAO.getUserWorkPlanByYearAndMonth(currUser, workPlanResponse.getResult(), month);
+                if(!workPlanDTOResponse.isFailure()){
+                    Response<List<Pair<LocalDateTime, ActivityDTO>>> holidaysRes = HolidaysQueries.getInstance().getHolidaysAsActivity(year, month);
+                    if(!holidaysRes.isFailure()){
+                        workPlanDTOResponse.getResult().getCalendar().addAll(holidaysRes.getResult());
+                        return workPlanDTOResponse;
+                    }
+                    else{
+                        return new Response<>(null, holidaysRes.isFailure(), holidaysRes.getErrMsg());
+                    }
+                }
+                else{
+                    return workPlanDTOResponse;
+                }
             }
             else{
                 return new Response<>(null, true, workPlanResponse.getErrMsg());

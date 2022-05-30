@@ -92,12 +92,11 @@ public class HolidaysQueries {
         return false;
     }
 
-    public List<Pair<LocalDateTime, ActivityDTO>> getHolidaysAsActivity(int year, int month){
+    public Response<List<Pair<LocalDateTime, ActivityDTO>>> getHolidaysAsActivity(int year, int month){
         Connect.createConnection();
         String sql = "SELECT * FROM \"Holidays\" WHERE year = ?";
         PreparedStatement statement;
         List<Pair<LocalDateTime, ActivityDTO>> output = new Vector<>();
-        LocalTime localTime = LocalTime.of(0,0);
         try {
             statement = Connect.conn.prepareStatement(sql);
             statement.setInt(1, year);
@@ -115,9 +114,10 @@ public class HolidaysQueries {
                 }
             }
             Connect.closeConnection();
+            return new Response<>(output, false, "successfully acquired holidays");
         } catch (SQLException e) {e.printStackTrace();}
 
-        return output;
+        return new Response<>(null, true, "failed to acquire holidays");
     }
 
     public void clearHolidays(){
