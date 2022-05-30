@@ -1,4 +1,5 @@
 package UnitTesting.WorkPlan;
+import Communication.DTOs.ActivityDTO;
 import Communication.Initializer.ServerContextInitializer;
 import Domain.CommonClasses.Pair;
 import Domain.WorkPlan.Goal;
@@ -11,6 +12,8 @@ import org.junit.Test;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class HolidaysHandlerTests {
 
@@ -23,13 +26,19 @@ public class HolidaysHandlerTests {
         holidaysHandler = new HolidaysHandler(2022);
     }
 
-//    @Test
-//    public void checkInsert() {
-//        ArrayList<String[]> holidays = holidaysHandler.getHolidaysForYear(2022);
-//        for (String[] entry : holidays) {
-//            System.out.println(entry[0] + " on date: " + entry[1] + " of year " + entry[2]);
-//        }
-//    }
+    @Test
+    public void checkGetAsActivity(){
+        List<Pair<LocalDateTime, ActivityDTO>> check = holidaysHandler.getHolidaysAsActivity(2022, 4).getResult();
+        Assert.assertEquals(8, check.size());
+    }
+
+    @Test
+    public void checkInsert() {
+        ArrayList<String[]> holidays = holidaysHandler.getHolidaysForYear(2022);
+        for (String[] entry : holidays) {
+            System.out.println(entry[0] + " on date: " + entry[1]);
+        }
+    }
 
     @Test
     public void checkHolidayExists() {

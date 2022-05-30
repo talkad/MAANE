@@ -1,5 +1,8 @@
 package Domain.WorkPlan;
 
+import Communication.DTOs.ActivityDTO;
+import Domain.CommonClasses.Pair;
+import Domain.CommonClasses.Response;
 import Persistence.HolidaysQueries;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -9,6 +12,7 @@ import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class HolidaysHandler {
@@ -121,5 +125,9 @@ public class HolidaysHandler {
             }
         }
         return false;
+    }
+
+    public Response<List<Pair<LocalDateTime, ActivityDTO>>> getHolidaysAsActivity(int year, int month){
+        return HolidaysQueries.getInstance().getHolidaysAsActivity(year, month);
     }
 }

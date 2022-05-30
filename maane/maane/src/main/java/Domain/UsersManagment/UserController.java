@@ -6,12 +6,15 @@ import Communication.DTOs.UserDTO;
 import Communication.DTOs.WorkPlanDTO;
 import Communication.Initializer.ServerContextInitializer;
 import Communication.Security.KeyLoader;
+import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import Domain.EmailManagement.EmailController;
 import Domain.UsersManagment.APIs.DTOs.UserActivityInfoDTO;
 import Domain.UsersManagment.APIs.DTOs.UserInfoDTO;
 import Domain.WorkPlan.GoalsManagement;
+import Domain.WorkPlan.HolidaysHandler;
 import Persistence.DbDtos.UserDBDTO;
+import Persistence.HolidaysQueries;
 import Persistence.SurveyDAO;
 import Persistence.UserQueries;
 import Persistence.WorkPlanQueries;
@@ -1184,9 +1187,22 @@ public class UserController {
     public Response<WorkPlanDTO> viewWorkPlan(String currUser, Integer year, Integer month){
         if(connectedUsers.containsKey(currUser)) {
             User user = new User(userDAO.getFullUser(currUser).getResult());
-            Response<Integer> workPlanResponse = user.getWorkPlanByYear(year, month);//todo causes problem
+            Response<Integer> workPlanResponse = user.getWorkPlanByYear(year, month);
             if(!workPlanResponse.isFailure()){
-                return workPlanDAO.getUserWorkPlanByYearAndMonth(currUser, workPlanResponse.getResult(), month);
+                Response<WorkPlanDTO> workPlanDTOResponse = workPlanDAO.getUserWorkPlanByYearAndMonth(currUser, workPlanResponse.getResult(), month);
+                if(!workPlanDTOResponse.isFailure()){
+                    Response<List<Pair<LocalDateTime, ActivityDTO>>> holidaysRes = new HolidaysHandler(year).getHolidaysAsActivity(year, month);
+                    if(!holidaysRes.isFailure()){
+                        workPlanDTOResponse.getResult().getCalendar().addAll(holidaysRes.getResult());
+                        return workPlanDTOResponse;
+                    }
+                    else{
+                        return new Response<>(null, holidaysRes.isFailure(), holidaysRes.getErrMsg());
+                    }
+                }
+                else{
+                    return workPlanDTOResponse;
+                }
             }
             else{
                 return new Response<>(null, true, workPlanResponse.getErrMsg());
@@ -1208,9 +1224,22 @@ public class UserController {
     public Response<WorkPlanDTO> viewInstructorWorkPlan(String currUser, String instructor, Integer year, Integer month) {//todo test it but should be fine
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
-            Response<Boolean> workPlanResponse = user.getInstructorWorkPlan(instructor);
+            Response<Integer> workPlanResponse = user.getInstructorWorkPlan(instructor, year, month);
             if(!workPlanResponse.isFailure()){
-                return workPlanDAO.getUserWorkPlanByYearAndMonth(instructor, year, month);
+                Response<WorkPlanDTO> workPlanDTOResponse = workPlanDAO.getUserWorkPlanByYearAndMonth(currUser, workPlanResponse.getResult(), month);
+                if(!workPlanDTOResponse.isFailure()){
+                    Response<List<Pair<LocalDateTime, ActivityDTO>>> holidaysRes = new HolidaysHandler(year).getHolidaysAsActivity(year, month);
+                    if(!holidaysRes.isFailure()){
+                        workPlanDTOResponse.getResult().getCalendar().addAll(holidaysRes.getResult());
+                        return workPlanDTOResponse;
+                    }
+                    else{
+                        return new Response<>(null, holidaysRes.isFailure(), holidaysRes.getErrMsg());
+                    }
+                }
+                else{
+                    return workPlanDTOResponse;
+                }
             }
             else{
                 return new Response<>(null, true, workPlanResponse.getErrMsg());
