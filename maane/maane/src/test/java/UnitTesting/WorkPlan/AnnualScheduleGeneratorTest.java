@@ -64,7 +64,7 @@ public class AnnualScheduleGeneratorTest {
         String workField = userController.getUser(supervisorName).getWorkField();
         AnnualScheduleGenerator.getInstance().algorithmMock(supervisorName, schoolsAndFaults, GoalsManagement.getInstance().getGoals(workField, year).getResult(), year);
         userController.login("ins1");
-        //userController.viewWorkPlan(instructorName, year, 9).getResult().printMe();
+        userController.viewWorkPlan(instructorName, year, 9).getResult().printMe();
         userController.addActivity("ins1", LocalDateTime.of(2023, 1, 2, 8, 0).toString(), "1", 1, "idc", LocalDateTime.of(2023, 1, 1, 10, 0).toString());
         userController.viewWorkPlan(instructorName, 2023, 1).getResult().printMe();
     }
