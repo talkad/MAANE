@@ -1,17 +1,16 @@
 package AcceptanceTesting.Tests;
 
 import AcceptanceTesting.Bridge.ProxyBridgeSurvey;
-import Communication.DTOs.QuestionDTO;
-import Communication.DTOs.RuleRequestDTO;
-import Communication.DTOs.SurveyAnswersDTO;
-import Communication.DTOs.SurveyDTO;
+import Communication.DTOs.*;
 import Communication.Initializer.ServerContextInitializer;
 import Communication.Service.SurveyServiceImpl;
 import Domain.CommonClasses.Response;
 import Domain.DataManagement.AnswerState.AnswerType;
+import Domain.DataManagement.DataController;
 import Domain.DataManagement.FaultDetector.Rules.*;
 import Domain.UsersManagment.UserController;
 import Domain.UsersManagment.UserStateEnum;
+import Persistence.DbDtos.SchoolDBDTO;
 import Persistence.SurveyDAO;
 import Persistence.SurveyPersistence;
 import Persistence.UserQueries;
@@ -45,6 +44,11 @@ public class DataManagementTests {
         UserQueries.getInstance().clearDB();
         UserController.getInstance().clearUsers();
 
+        DataController.getInstance().insertSchool(new SchoolDBDTO("111", "testing school", "beer sheva", "", "", "", "", "", "", "", "", 1000000, "", "", "", "", 30));
+        DataController.getInstance().insertSchool(new SchoolDBDTO("222", "testing school", "beer sheva", "", "", "", "", "", "", "", "", 1000000, "", "", "", "", 30));
+        DataController.getInstance().insertSchool(new SchoolDBDTO("333", "testing school", "beer sheva", "", "", "", "", "", "", "", "", 1000000, "", "", "", "", 30));
+        DataController.getInstance().insertSchool(new SchoolDBDTO("444", "testing school", "beer sheva", "", "", "", "", "", "", "", "", 1000000, "", "", "", "", 30));
+
         List<String> questions1 = Arrays.asList("que1", "que2", "que3");
         List<List<String>> answers1 = Arrays.asList(new LinkedList<>(), Arrays.asList("1", "2"), Arrays.asList("1", "2"));
         List<AnswerType> types1 = Arrays.asList(NUMERIC_ANSWER, MULTIPLE_CHOICE, MULTIPLE_CHOICE);
@@ -76,16 +80,24 @@ public class DataManagementTests {
         Response<Boolean> answerRes;
 
         UserController userController = UserController.getInstance();
+        DataController dataController = DataController.getInstance();
+
         String adminName = userController.login( "admin").getResult();
         userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "dvorit@gmail.com", "055-555-5555", "");
         userController.login("Dvorit");
+
+        // assign the coordinators
+        dataController.assignCoordinator("admin", "tech", "aviad", "shal", "aviad@gmail.com", "0555555555", "111");
+        dataController.assignCoordinator("admin", "tech", "tal", "kad", "talkad@gmail.com", "0555555555", "222");
+        dataController.assignCoordinator("admin", "tech", "almog", "davidi", "almda@gmail.com", "0555555555", "333");
+        dataController.assignCoordinator("admin", "tech", "shaked", "6", "sahked6@gmail.com", "0555555555", "444");
 
         // create legal survey
         Response<String> surveyRes = proxySurvey.createSurvey("Dvorit", surveyDTO);
 
         // answer the survey
         answerRes = proxySurvey.addAnswers(new SurveyAnswersDTO(surveyRes.getResult(),
-                new LinkedList<>(Arrays.asList("20", "0", "0")),
+                new LinkedList<>(Arrays.asList("111", "0", "0")),
                 new LinkedList<>(Arrays.asList(NUMERIC_ANSWER, MULTIPLE_CHOICE, MULTIPLE_CHOICE))));
 
         Assert.assertTrue(answerRes.isFailure());
@@ -95,7 +107,7 @@ public class DataManagementTests {
 
         // legal answer
         answerRes = proxySurvey.addAnswers(new SurveyAnswersDTO(surveyRes.getResult(),
-                new LinkedList<>(Arrays.asList("20", "0", "0")),
+                new LinkedList<>(Arrays.asList("222", "0", "0")),
                 new LinkedList<>(Arrays.asList(NUMERIC_ANSWER, MULTIPLE_CHOICE, MULTIPLE_CHOICE))));
 
         Assert.assertFalse(answerRes.isFailure());
@@ -109,8 +121,8 @@ public class DataManagementTests {
 
         // illegal answer - multiple choice index out of bounds
         answerRes = proxySurvey.addAnswers(new SurveyAnswersDTO(surveyRes.getResult(),
-                new LinkedList<>(Arrays.asList("hello hi", "0", "2")),
-                new LinkedList<>(Arrays.asList(NUMERIC_ANSWER, MULTIPLE_CHOICE, MULTIPLE_CHOICE))));
+                new LinkedList<>(Arrays.asList("444", "0", "2", "3")),
+                new LinkedList<>(Arrays.asList(NUMERIC_ANSWER, MULTIPLE_CHOICE, MULTIPLE_CHOICE, MULTIPLE_CHOICE))));
 
         Assert.assertTrue(answerRes.isFailure());
 
@@ -196,6 +208,60 @@ public class DataManagementTests {
     }
 
 
+    /**
+     * Supervisor create a survey, two coordinators respond to it.
+     * The supervisor tries to get the answers and the associated statistics
+     */
+    @Test
+    public void showSurveyStatisticsTests(){
+        Response<Boolean> answerRes;
 
+        UserController userController = UserController.getInstance();
+        DataController dataController = DataController.getInstance();
+
+        String adminName = userController.login( "admin").getResult();
+        userController.registerUserBySystemManager(adminName, "Dvorit", "Dvorit", UserStateEnum.SUPERVISOR, "", "tech", "", "", "dvorit@gmail.com", "055-555-5555", "");
+        userController.login("Dvorit");
+
+        // assign the coordinators
+        dataController.assignCoordinator("admin", "tech", "tal", "kad", "talkad@gmail.com", "0555555555", "222");
+
+        // create legal survey
+        Response<String> surveyRes = proxySurvey.createSurvey("Dvorit", surveyDTO);
+
+        // submit survey
+        proxySurvey.submitSurvey("Dvorit", surveyRes.getResult());
+
+        // legal answer
+        answerRes = proxySurvey.addAnswers(new SurveyAnswersDTO(surveyRes.getResult(),
+                new LinkedList<>(Arrays.asList("222", "0", "0")),
+                new LinkedList<>(Arrays.asList(NUMERIC_ANSWER, MULTIPLE_CHOICE, MULTIPLE_CHOICE))));
+
+        Assert.assertFalse(answerRes.isFailure());
+
+        // illegal answer - non-numeric answer
+        answerRes = proxySurvey.addAnswers(new SurveyAnswersDTO(surveyRes.getResult(),
+                new LinkedList<>(Arrays.asList("hello hi", "0", "0")),
+                new LinkedList<>(Arrays.asList(NUMERIC_ANSWER, MULTIPLE_CHOICE, MULTIPLE_CHOICE))));
+
+        Assert.assertTrue(answerRes.isFailure());
+
+        // no permission for receiving survey stats
+        Response<SurveyStatsDTO> stats = proxySurvey.getSurveyStats("Levana", surveyRes.getResult());
+        Assert.assertTrue(stats.isFailure());
+
+        // there is a permission for receiving survey stats
+        stats = proxySurvey.getSurveyStats("Dvorit", surveyRes.getResult());
+        Assert.assertFalse(stats.isFailure());
+        Assert.assertEquals(2, stats.getResult().getSymbols().size());
+
+        // get faults
+        Response<AnswersDTO> ans = proxySurvey.getAnswers("Dvorit", surveyRes.getResult(), "222");
+        Assert.assertFalse(ans.isFailure());
+        // all the answers are legal
+        Assert.assertTrue(ans.getResult().getIsLegal().get(0) && ans.getResult().getIsLegal().get(1) &&
+                                     ans.getResult().getIsLegal().get(2));
+
+    }
 
 }

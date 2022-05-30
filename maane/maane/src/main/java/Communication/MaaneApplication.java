@@ -35,7 +35,6 @@ import java.util.Vector;
 public class MaaneApplication {
 
 	public static void main(String[] args) {
-
 		ServerContextInitializer.getInstance().setMockMode();
 
 		SpringApplication.run(MaaneApplication.class, args);
