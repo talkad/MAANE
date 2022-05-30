@@ -12,6 +12,7 @@ import Domain.EmailManagement.EmailController;
 import Domain.UsersManagment.APIs.DTOs.UserActivityInfoDTO;
 import Domain.UsersManagment.APIs.DTOs.UserInfoDTO;
 import Domain.WorkPlan.GoalsManagement;
+import Domain.WorkPlan.HolidaysHandler;
 import Persistence.DbDtos.UserDBDTO;
 import Persistence.HolidaysQueries;
 import Persistence.SurveyDAO;
@@ -1186,11 +1187,11 @@ public class UserController {
     public Response<WorkPlanDTO> viewWorkPlan(String currUser, Integer year, Integer month){
         if(connectedUsers.containsKey(currUser)) {
             User user = new User(userDAO.getFullUser(currUser).getResult());
-            Response<Integer> workPlanResponse = user.getWorkPlanByYear(year, month);//todo causes problem
+            Response<Integer> workPlanResponse = user.getWorkPlanByYear(year, month);
             if(!workPlanResponse.isFailure()){
                 Response<WorkPlanDTO> workPlanDTOResponse = workPlanDAO.getUserWorkPlanByYearAndMonth(currUser, workPlanResponse.getResult(), month);
                 if(!workPlanDTOResponse.isFailure()){
-                    Response<List<Pair<LocalDateTime, ActivityDTO>>> holidaysRes = HolidaysQueries.getInstance().getHolidaysAsActivity(year, month);
+                    Response<List<Pair<LocalDateTime, ActivityDTO>>> holidaysRes = new HolidaysHandler(year).getHolidaysAsActivity(year, month);
                     if(!holidaysRes.isFailure()){
                         workPlanDTOResponse.getResult().getCalendar().addAll(holidaysRes.getResult());
                         return workPlanDTOResponse;
