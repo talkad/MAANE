@@ -129,8 +129,5 @@ public class HolidaysHandler {
 
     public Response<List<Pair<LocalDateTime, ActivityDTO>>> getHolidaysAsActivity(int year, int month){
         return HolidaysQueries.getInstance().getHolidaysAsActivity(year, month);
-        /*List<Pair<LocalDateTime, ActivityDTO>> output = HolidaysQueries.getInstance().getHolidaysAsActivity(year, month);
-        if(output == null) return new Response<>(null, true, "failed to get holidays as activity");
-        else return new Response<>(output, false, "");*/
     }
 }

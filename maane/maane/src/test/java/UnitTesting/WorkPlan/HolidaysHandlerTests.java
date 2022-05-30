@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class HolidaysHandlerTests {
@@ -31,13 +32,13 @@ public class HolidaysHandlerTests {
         Assert.assertEquals(8, check.size());
     }
 
-//    @Test
-//    public void checkInsert() {
-//        ArrayList<String[]> holidays = holidaysHandler.getHolidaysForYear(2022);
-//        for (String[] entry : holidays) {
-//            System.out.println(entry[0] + " on date: " + entry[1] + " of year " + entry[2]);
-//        }
-//    }
+    @Test
+    public void checkInsert() {
+        ArrayList<String[]> holidays = holidaysHandler.getHolidaysForYear(2022);
+        for (String[] entry : holidays) {
+            System.out.println(entry[0] + " on date: " + entry[1]);
+        }
+    }
 
     @Test
     public void checkHolidayExists() {

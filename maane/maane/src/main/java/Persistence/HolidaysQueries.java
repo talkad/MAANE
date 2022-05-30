@@ -4,15 +4,15 @@ import Domain.CommonClasses.Pair;
 import Domain.CommonClasses.Response;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+
+import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.Vector;
 
 @Repository
@@ -29,15 +29,13 @@ public class HolidaysQueries {
     public Response<Boolean> insertHolidaysDates(ArrayList<String[]> info){
         Connect.createConnection();
         int rows = 0;
-        String sql = "INSERT INTO \"Holidays\" (title, date, year) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO \"Holidays\" (title, date) VALUES (?, ?)";
         PreparedStatement preparedStatement = null;
         try {
             preparedStatement = Connect.conn.prepareStatement(sql);
             for (String[] entry : info) {
                 preparedStatement.setString(1, entry[0]);
-                preparedStatement.setString(2, entry[1]);
-                int year = Integer.parseInt(entry[1].substring(0,4));
-                preparedStatement.setInt(3, year);
+                preparedStatement.setTimestamp(2, Timestamp.valueOf(StringToDate(entry[1])));
                 rows += preparedStatement.executeUpdate();
             }
 
@@ -51,7 +49,7 @@ public class HolidaysQueries {
 
     public ArrayList<String[]> getHolidaysDates (int year) {
         Connect.createConnection();
-        String sql = "SELECT * FROM \"Holidays\" WHERE year = ?";
+        String sql = "SELECT * FROM \"Holidays\" WHERE EXTRACT(YEAR FROM date) = ?";
         PreparedStatement statement;
         ArrayList<String[]> output = new ArrayList<>();
         try {
@@ -61,8 +59,8 @@ public class HolidaysQueries {
 
             while (result.next()) {
                 String title = result.getString("title");
-                String date = result.getString("date");
-                String [] arr = {title, date, year+""};
+                LocalDateTime date = result.getTimestamp("date").toInstant().atZone(TimeZone.getTimeZone("Asia/Jerusalem").toZoneId()).toLocalDateTime();
+                String [] arr = {title, date.toString(), date.getYear()+""};
                 output.add(arr);
             }
 
@@ -74,7 +72,7 @@ public class HolidaysQueries {
 
     public boolean holidaysForYearExists (int year){
         Connect.createConnection();
-        String sql = "SELECT exists (SELECT 1 FROM \"Holidays\" WHERE year = ? LIMIT 1)";
+        String sql = "SELECT exists (SELECT 1 FROM \"Holidays\" WHERE EXTRACT(YEAR FROM date) = ? LIMIT 1)";
         PreparedStatement statement;
         try {
             statement = Connect.conn.prepareStatement(sql);
@@ -94,7 +92,7 @@ public class HolidaysQueries {
 
     public Response<List<Pair<LocalDateTime, ActivityDTO>>> getHolidaysAsActivity(int year, int month){
         Connect.createConnection();
-        String sql = "SELECT * FROM \"Holidays\" WHERE year = ?";
+        String sql = "SELECT * FROM \"Holidays\" WHERE EXTRACT(YEAR FROM date) = ?";
         PreparedStatement statement;
         List<Pair<LocalDateTime, ActivityDTO>> output = new Vector<>();
         try {
@@ -104,12 +102,10 @@ public class HolidaysQueries {
 
             while (result.next()) {
                 String title = result.getString("title");
-                String date = result.getString("date");
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                LocalDate localDate = LocalDate.parse(date.substring(0, 10), formatter);
-                if(localDate.getMonthValue()==month){
-                    ActivityDTO activityDTO = new ActivityDTO("Holiday", 0, title, LocalDateTime.of(localDate, LocalTime.of(22,0)));
-                    Pair<LocalDateTime, ActivityDTO> pair = new Pair<>(LocalDateTime.of(localDate, LocalTime.of(6,0)), activityDTO);
+                LocalDateTime date = result.getTimestamp("date").toInstant().atZone(TimeZone.getTimeZone("Asia/Jerusalem").toZoneId()).toLocalDateTime();
+                if(date.getMonthValue()==month){
+                    ActivityDTO activityDTO = new ActivityDTO("Holiday", 0, title, date.plusHours(16)); //to 22:00
+                    Pair<LocalDateTime, ActivityDTO> pair = new Pair<>(date, activityDTO);
                     output.add(pair);
                 }
             }
@@ -134,6 +130,12 @@ public class HolidaysQueries {
         catch (SQLException throwables) {
             throwables.printStackTrace();
         }
+    }
+
+    private LocalDateTime StringToDate(String date){
+        //DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate localDate = LocalDate.parse(date.substring(0,10));
+        return LocalDateTime.of(localDate, LocalTime.of(6,0));
     }
 
 }
