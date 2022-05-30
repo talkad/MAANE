@@ -445,6 +445,9 @@ public class SurveyController {
         if(surveyRes.isFailure())
             return new Response<>(null, true, surveyRes.getErrMsg());
 
+        if(!surveyRes.getResult().isPublished())
+            return new Response<>(null, true, "The survey is not published yet");
+
         List<SurveyAnswers> answers = answerConverter(surveyDAO.getAnswers(surveyID));
 
         return buildSurveyStats(answers, surveyRes.getResult());
