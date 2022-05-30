@@ -1224,9 +1224,22 @@ public class UserController {
     public Response<WorkPlanDTO> viewInstructorWorkPlan(String currUser, String instructor, Integer year, Integer month) {//todo test it but should be fine
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);
-            Response<Boolean> workPlanResponse = user.getInstructorWorkPlan(instructor);
+            Response<Integer> workPlanResponse = user.getInstructorWorkPlan(instructor, year, month);
             if(!workPlanResponse.isFailure()){
-                return workPlanDAO.getUserWorkPlanByYearAndMonth(instructor, year, month);
+                Response<WorkPlanDTO> workPlanDTOResponse = workPlanDAO.getUserWorkPlanByYearAndMonth(currUser, workPlanResponse.getResult(), month);
+                if(!workPlanDTOResponse.isFailure()){
+                    Response<List<Pair<LocalDateTime, ActivityDTO>>> holidaysRes = new HolidaysHandler(year).getHolidaysAsActivity(year, month);
+                    if(!holidaysRes.isFailure()){
+                        workPlanDTOResponse.getResult().getCalendar().addAll(holidaysRes.getResult());
+                        return workPlanDTOResponse;
+                    }
+                    else{
+                        return new Response<>(null, holidaysRes.isFailure(), holidaysRes.getErrMsg());
+                    }
+                }
+                else{
+                    return workPlanDTOResponse;
+                }
             }
             else{
                 return new Response<>(null, true, workPlanResponse.getErrMsg());

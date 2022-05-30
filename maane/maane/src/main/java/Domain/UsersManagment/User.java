@@ -753,9 +753,9 @@ public class User {
         }
     }
 
-    public Response<Boolean> getInstructorWorkPlan(String instructor) {
+    public Response<Integer> getInstructorWorkPlan(String instructor, int year, int month) {
         if(this.state.getStateEnum() == UserStateEnum.SUPERVISOR && this.appointments.contains(instructor)){
-            return new Response<>(true, false, "user allowed to view " + instructor + "'s work plan");
+            return new Response<>(extractProperYear(LocalDateTime.of(year, month, 1, 0, 0)), false, "user allowed to view " + instructor + "'s work plan");
         }
         else {
             return new Response<>(null, true, "user not allowed to view " + instructor + "'s work plan");
