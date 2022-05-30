@@ -211,8 +211,7 @@ alter table "WorkPlans"
 create table "Holidays"
 (
     title text,
-    date  text,
-    year  integer
+    date  timestamp
 );
 
 alter table "Holidays"
