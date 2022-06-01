@@ -605,7 +605,7 @@ public class UserQueries {
 
         String sql = "TRUNCATE \"Users\", \"UsersSchools\", \"UsersSurveys\", \"WorkPlans\", " +
                 "\"Appointments\", \"Answers\", \"MultiChoices\", \"Questions\"," +
-                " \"Surveys\", \"Rules\",  \"Goals\", \"Schools\"";
+                " \"Surveys\", \"Rules\",  \"Goals\", \"Schools\", \"Holidays\"";
         PreparedStatement preparedStatement;
         try {
             preparedStatement = Connect.conn.prepareStatement(sql);

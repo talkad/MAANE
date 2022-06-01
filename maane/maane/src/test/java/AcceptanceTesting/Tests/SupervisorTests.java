@@ -224,16 +224,16 @@ public class SupervisorTests extends AcceptanceTests{
         Assert.assertEquals(ins2Calendar.get(5).getFirst(), LocalDateTime.of(2022, 9, 18, 10, 0));
         Assert.assertEquals(3, (int) ins2Calendar.get(5).getSecond().getGoalId());
 
-        Assert.assertEquals(ins2Calendar.get(6).getFirst(), LocalDateTime.of(2022, 9, 25, 8, 0));
-        Assert.assertEquals(2, (int) ins2Calendar.get(6).getSecond().getGoalId());
-
-        Assert.assertEquals(ins2Calendar.get(7).getFirst(), LocalDateTime.of(2022, 9, 25, 10, 0));
-        Assert.assertEquals(1, (int) ins2Calendar.get(7).getSecond().getGoalId());
-
         Response<WorkPlanDTO> ins2WPOctoberRes = userBridge.viewWorkPlan(instructorName2, year, 10); //has 9 activities so 1 reached october
         List<Pair<LocalDateTime, ActivityDTO>> ins2CalendarOctober = ins2WPOctoberRes.getResult().getCalendar();
 
         Assert.assertEquals(ins2CalendarOctober.get(0).getFirst(), LocalDateTime.of(2022, 10, 2, 8, 0));
-        Assert.assertEquals(1, (int) ins2CalendarOctober.get(0).getSecond().getGoalId());
+        Assert.assertEquals(2, (int) ins2CalendarOctober.get(0).getSecond().getGoalId());
+
+        Assert.assertEquals(ins2CalendarOctober.get(1).getFirst(), LocalDateTime.of(2022, 10, 2, 10, 0));
+        Assert.assertEquals(1, (int) ins2CalendarOctober.get(1).getSecond().getGoalId());
+
+        Assert.assertEquals(ins2CalendarOctober.get(2).getFirst(), LocalDateTime.of(2022, 10, 23, 8, 0));
+        Assert.assertEquals(1, (int) ins2CalendarOctober.get(2).getSecond().getGoalId());
     }
 }

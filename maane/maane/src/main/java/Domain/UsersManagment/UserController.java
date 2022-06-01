@@ -14,7 +14,6 @@ import Domain.UsersManagment.APIs.DTOs.UserInfoDTO;
 import Domain.WorkPlan.GoalsManagement;
 import Domain.WorkPlan.HolidaysHandler;
 import Persistence.DbDtos.UserDBDTO;
-import Persistence.HolidaysQueries;
 import Persistence.SurveyDAO;
 import Persistence.UserQueries;
 import Persistence.WorkPlanQueries;
@@ -1296,7 +1295,6 @@ public class UserController {
     public Response<Boolean> addActivity(String currUser, String startAct, String schoolId, int goalId, String title, String endAct) {
         if(connectedUsers.containsKey(currUser)) {
             User user = connectedUsers.get(currUser);//todo maybe verify the dao was generated
-            System.out.println(startAct);
 
             LocalDateTime startActDate = stringToDate(startAct);
             LocalDateTime endActDate = stringToDate(endAct);

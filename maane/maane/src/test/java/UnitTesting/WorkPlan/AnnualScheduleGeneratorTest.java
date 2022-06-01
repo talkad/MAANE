@@ -23,7 +23,6 @@ public class AnnualScheduleGeneratorTest {
         ServerContextInitializer.getInstance().setMockMode();
         ServerContextInitializer.getInstance().setTestMode();
 
-
         userController = UserController.getInstance();
         userController.clearUsers();
         GoalsManagement.getInstance().clearGoals();//todo maybe call this from clearUsers
