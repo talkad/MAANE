@@ -40,6 +40,8 @@ describe('School management tests', () => {
             cy.url().should('include', '/user/home')
 
             cy.visit('/user/schools')
+
+            cy.wait(1000) // waiting a second
         })
     })
 

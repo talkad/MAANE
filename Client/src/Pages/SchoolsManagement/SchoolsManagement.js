@@ -571,7 +571,7 @@ export default function SchoolsManagement(props){
     const submitSchoolSearch = () => {
         // checks if the current input matches any school
         const findInSchools = (label) => {
-            return schools.find((ele) => ele.label === label) !== undefined
+            return props.schools.find((ele) => ele.label === label) !== undefined
         }
 
         if(!findInSchools(searchText)){

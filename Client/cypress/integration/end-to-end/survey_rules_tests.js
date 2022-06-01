@@ -531,12 +531,12 @@ describe('Survey rules tests', () => {
         cy.get('#survey_rules_submit_rules_button').click()
 
         // an error notification snackbar should appear
-        cy.get('#snackbar_alert_error').should('be.visible')
+        cy.get('#snackbar_alert_success').should('be.visible')
 
         // making sure the rules were not saved
         cy.reload()
         cy.wait(500)
-        cy.get('#no-rules-message').should('be.visible')
+        cy.get('#no-rules-message').should('not.be.visible')
     })
 
     it('Not picking a goal for a rule', () => {

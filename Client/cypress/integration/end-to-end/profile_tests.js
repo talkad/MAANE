@@ -109,7 +109,7 @@ describe('Profile page tests for editing info', () => {
         cy.get('#profile_edit_submit').click() // submitting
 
         // an error alert should pop up
-        cy.get('#profile_edit_alert').should('be.visible')
+        cy.get('#profile_edit_alert').should('exist')
 
         // upon reload everything should remain as it had been
         cy.reload()
@@ -141,7 +141,7 @@ describe('Profile page tests for editing info', () => {
         cy.get('#profile_edit_submit').click() // submitting
 
         // an error alert should pop up
-        cy.get('#profile_edit_alert').should('be.visible')
+        cy.get('#profile_edit_alert').should('exist')
 
         cy.reload()
 
@@ -173,7 +173,7 @@ describe('Profile page tests for editing info', () => {
         cy.get('#profile_edit_submit').click() // submitting
 
         // an error alert should pop up
-        cy.get('#profile_edit_alert').should('be.visible')
+        cy.get('#profile_edit_alert').should('exist')
 
         // upon reload everything should remain as it had been
         cy.reload()
@@ -206,7 +206,7 @@ describe('Profile page tests for editing info', () => {
         cy.get('#profile_edit_submit').click() // submitting
 
         // an error alert should pop up
-        cy.get('#profile_edit_alert').should('be.visible')
+        cy.get('#profile_edit_alert').should('exist')
 
         // upon reload everything should remain as it had been
         cy.reload()

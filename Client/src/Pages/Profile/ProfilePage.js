@@ -239,13 +239,14 @@ function InfoTabPanel(props){
                     </Button>
                 </Grid>
 
-                <Grid item xs={12}>
-                    <Collapse in={error}>
+                {error &&
+                    <Grid item xs={12}>
                         <Alert id={"profile_edit_alert"} severity={errorSeverity}>
                             {errorMessage}
                         </Alert>
-                    </Collapse>
-                </Grid>
+                    </Grid>
+                    }
+
 
                 {/*first name*/}
                 <Grid item xs={6}>
