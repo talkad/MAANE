@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import './WorkPlan.css'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 
@@ -368,11 +368,11 @@ export default function WorkPlan(props){
             var url = new URL(window.location.href);
             var instructor = url.searchParams.get("instructor");
             setCurrentInstructor(instructor)
-            new Connection().getWorkPlanOfInstructor(instructor, currentYear, currentMonth, arrangeActivities)
+            new Connection().getWorkPlanOfInstructor(instructor, currentYear, currentMonth+1, arrangeActivities)
         }
 
         if(props.userType === 'INSTRUCTOR'){
-            new Connection().getWorkPlan(currentYear, currentMonth, arrangeActivities);
+            new Connection().getWorkPlan(currentYear, currentMonth+1, arrangeActivities);
         }
     }, []);
 
@@ -397,9 +397,17 @@ export default function WorkPlan(props){
                     parsedEndDate.getHours(), parsedEndDate.getMinutes(), parsedEndDate.getSeconds())
 
                 // TODO: check what happens if an activity is showing in the current month
-                let schoolName = props.schools.filter((element => `${element.id}` === date.second.schoolId))[0].label
-
-                setEventList(eventList => [...eventList, {title: `${date.second.title} [${schoolName}]`, start: startAct, end: endAct}])
+                if(date.second.schoolId === 'Holiday'){
+                    console.log('hi')
+                    console.log(date.second.title)
+                    console.log(startAct)
+                    console.log(endAct)
+                    setEventList(eventList => [...eventList, {title: date.second.title, start: startAct, end: endAct, isDraggable: false}])
+                }
+                else{
+                    let schoolName = props.schools.filter((element => `${element.id}` === date.second.schoolId))[0].label
+                    setEventList(eventList => [...eventList, {title: `${date.second.title} [${schoolName}]`, start: startAct, end: endAct, isDraggable: true}])
+                }
             }
 
         }
@@ -445,6 +453,21 @@ export default function WorkPlan(props){
 
             // calling for new data to view
             new Connection().getWorkPlan(dataDate.getFullYear(), dataDate.getMonth()+1, arrangeActivities);
+        }
+    }
+
+    /**
+     * handler for setting the style of the event
+     * @param event the event to style
+     */
+    const eventPropGetter = (event) => {
+        var style = {
+            backgroundColor: event.isDraggable ? '#3174ad' : '#bed7ec',
+            color: event.isDraggable ? '#ffffff' : '#000000'
+        }
+
+        return {
+            style: style
         }
     }
 
@@ -570,6 +593,7 @@ export default function WorkPlan(props){
                     {/* the calendar for instructors (drag and drop*/}
                     {/*todo: for some reason when dragging on month view it's inverted*/}
                     {props.userType === 'INSTRUCTOR' && <DnDCalendar
+                        draggableAccessor="isDraggable"
                         date={viewingDate}
                         events={eventList}
                         messages={messages}
@@ -578,6 +602,7 @@ export default function WorkPlan(props){
                         onEventDrop={moveEvent}
                         onEventResize={resizeEvent}
                         onDoubleClickEvent={onDoubleClickEvent}
+                        eventPropGetter={eventPropGetter}
                         popup
                         resizable
                         rtl={true}

@@ -288,8 +288,7 @@ describe('User management tests as a supervisor', () => {
         cy.get('#school-search-alert').should('not.be.visible')
     })
 
-    it.only('Adding a school which is already assigned to the user', () => {
-        // TODO: not passing because of server
+    it('Adding a school which is already assigned to the user', () => {
         // waiting for the schools to load
         cy.wait(1000)
 

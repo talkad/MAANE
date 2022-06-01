@@ -1022,7 +1022,6 @@ export default function UsersManagement(props){
             setSnackbarSeverity('success');
             setSnackbarMessage('בית הספר הוסף בהצלחה למשתמש');
             setOpenSnackbar(true);
-            setOpenEditSchoolsDialog(false);
             refreshData();
         }
         else {
@@ -1040,6 +1039,7 @@ export default function UsersManagement(props){
      * @param schoolId the id of the school to assign to the selected user
      */
     const handleUserAddSchool = (username, schoolName, schoolId) => {
+        setOpenEditSchoolsDialog(false);
         new Connection().assignSchoolToUser(username, schoolId, userAddSchoolCallback)
     }
 
@@ -1068,6 +1068,7 @@ export default function UsersManagement(props){
      * @param schoolId the id of the school to remove from the selected user
      */
     const handleUserRemoveSchool = (username, schoolId) => {
+        setOpenEditSchoolsDialog(false);
         new Connection().removeSchoolFromUser(username, schoolId, userRemoveSchoolCallback)
     }
 
