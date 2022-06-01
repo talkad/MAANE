@@ -74,7 +74,7 @@ public class HolidaysHandler {
         JsonObject gsonObj = new Gson().fromJson(inputString, JsonObject.class);
         JsonArray jsonArray = gsonObj.getAsJsonArray("items");
         for (int i = 0; i < jsonArray.size(); i++) {
-            String title = jsonArray.get(i).getAsJsonObject().get("title").getAsString();
+            String title = jsonArray.get(i).getAsJsonObject().get("hebrew").getAsString();
             String date = jsonArray.get(i).getAsJsonObject().get("date").getAsString();
             String category = jsonArray.get(i).getAsJsonObject().get("category").getAsString();
             if (!isSpecificHoliday(title) && !category.equals("candles")){
@@ -83,12 +83,21 @@ public class HolidaysHandler {
         }
     }
 
+//    private boolean isSpecificHoliday(String title){
+//        return title.startsWith("Havdalah") || title.startsWith("Yom HaAliyah") ||
+//                title.startsWith("Yom HaShoah") || title.startsWith("Yom Yerushalayim") ||
+//                title.startsWith("Fast begins") | title.startsWith("Erev Tish'a B'Av") || title.startsWith("Tish'a B'Av (observed)") ||
+//                title.startsWith("Fast ends") || title.startsWith("Shmini Atzeret") ||
+//                title.startsWith("Sigd");//title.startsWith("Yom HaAliyah School Observance") |
+//
+//    }
+
     private boolean isSpecificHoliday(String title){
-        return title.startsWith("Havdalah") || title.startsWith("Yom HaAliyah") ||
-                title.startsWith("Yom HaShoah") || title.startsWith("Yom Yerushalayim") ||
-                title.startsWith("Fast begins") | title.startsWith("Erev Tish'a B'Av") || title.startsWith("Tish'a B'Av (observed)") ||
-                title.startsWith("Fast ends") || title.startsWith("Shmini Atzeret") ||
-                title.startsWith("Sigd");//title.startsWith("Yom HaAliyah School Observance") |
+        return title.startsWith("הבדלה") || title.startsWith("יום העליה") ||
+                title.startsWith("יום השואה") || title.startsWith("יום ירושלים") ||
+                title.startsWith("תחילת הצום") | title.startsWith("ערב תשעה באב") || title.startsWith("תשעה באב נדחה") ||
+                title.startsWith("סיום הצום") || title.startsWith("שמיני עצרת") ||
+                title.startsWith("סיגד");//title.startsWith("Yom HaAliyah School Observance") |
 
     }
 
