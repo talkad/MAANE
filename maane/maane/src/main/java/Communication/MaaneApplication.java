@@ -66,10 +66,12 @@ public class MaaneApplication {
 						"ronit", "newe", "ronit@gmail.com", "055-555-5555", "", null), "");
 
 				service.registerUserBySystemManager("admin", new UserDTO("admin", "tech", "tal", "1234abcd", UserStateEnum.INSTRUCTOR,
-						"tal", "kad", "tal@gmail.com", "055-555-5555", "", null), "ronit");
+						"tal", "kadosh", "tal@gmail.com", "055-555-5555", "", null), "ronit");
 
 				service.registerUserBySystemManager("admin", new UserDTO("admin", "tech", "shaked", "1234abcd", UserStateEnum.INSTRUCTOR,
-						"shaked", "ch", "shaked@gmail.com", "055-555-5555", "", null), "ronit");
+						"shaked", "cohen", "shaked@gmail.com", "055-555-5555", "", null), "ronit");
+
+				DataController.getInstance().loadSchoolsToDB();
 
 				DataController.getInstance().insertSchool(new SchoolDBDTO("1111111", "testing school", "beer sheva", "", "", "", "", "", "", "", "", 1000000, "", "", "", "", 30));
 

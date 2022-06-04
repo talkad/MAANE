@@ -445,8 +445,10 @@ public class SurveyPersistence {
             preparedStatement.executeUpdate();
 
             if(dto.getSubRules() != null) {
+                int parentID = getMaxRuleIndex();
+
                 for (RuleDTO rule : dto.getSubRules()) {
-                    insertSubRule(survey_id, goalID, rule, getMaxRuleIndex());
+                    insertSubRule(survey_id, goalID, rule, parentID);
                 }
             }
 
