@@ -63,18 +63,17 @@ public class MonthlyReportGenerator {
         if(activities.isFailure())
             return new Response<>(null, true, userInfo.getErrMsg());
 
-        return generateReportDoc(username, userInfo.getResult(), activities.getResult(), now, year, month);
+        return generateReportDoc(userInfo.getResult(), activities.getResult(), now, year, month);
 
     }
 
     /**
      * the actual document builder
-     * @param username the user wish to generate the file
      * @param userInfo the user information for first table
      * @param activities the activities for the second table
      * @return response of binary document representation on success
      */
-    private Response<byte[]> generateReportDoc(String username, UserInfoDTO userInfo, List<UserActivityInfoDTO> activities, LocalDateTime date, int year, int month) {
+    private Response<byte[]> generateReportDoc(UserInfoDTO userInfo, List<UserActivityInfoDTO> activities, LocalDateTime date, int year, int month) {
         Response<File> reportRes;
         byte[] binaryFile = null;
         FileInputStream fileInputStream;
@@ -85,7 +84,7 @@ public class MonthlyReportGenerator {
             activity.setUserCity(userInfo.getCity());
 
         // create the document
-        reportRes = writerService.createDoc("maane\\src\\main\\resources\\monthlyReport_" + username + ".docx", userInfo, activities, date, year, month);
+        reportRes = writerService.createDoc("maane\\src\\main\\resources\\monthlyReport.docx", userInfo, activities, date, year, month);
         file = reportRes.getResult();
 
         if(!reportRes.isFailure()) {
@@ -110,5 +109,10 @@ public class MonthlyReportGenerator {
         return new Response<>(binaryFile, reportRes.isFailure(), reportRes.getErrMsg());
     }
 
+//    public static void main(String[] args) {
+//        MonthlyReportGenerator gen = new MonthlyReportGenerator();
+//
+//        gen.generateReportDoc("tal", new UserInfoDTO("a", "b", "c", 3), new LinkedList<>(), LocalDateTime.now(), 2000, 5);
+//    }
 
 }
