@@ -11,7 +11,11 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.LinkedList;
 import java.util.List;
 
 @Slf4j
@@ -81,7 +85,7 @@ public class MonthlyReportGenerator {
             activity.setUserCity(userInfo.getCity());
 
         // create the document
-        reportRes = writerService.createDoc(".\\src\\main\\resources\\monthlyReport_" + username + ".docx", userInfo, activities, date, year, month);
+        reportRes = writerService.createDoc("maane\\src\\main\\resources\\monthlyReport_" + username + ".docx", userInfo, activities, date, year, month);
         file = reportRes.getResult();
 
         if(!reportRes.isFailure()) {
@@ -106,13 +110,5 @@ public class MonthlyReportGenerator {
         return new Response<>(binaryFile, reportRes.isFailure(), reportRes.getErrMsg());
     }
 
-
-//    public static void main(String[] args)  {
-//
-//        MonthlyReportGenerator generator = getInstance();
-//        generator.generateMonthlyReport("טל");
-//
-//
-//    }
 
 }

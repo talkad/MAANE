@@ -139,7 +139,7 @@ public class MSWordWriterService {
         writeIntoTableCell(table.getRow(1).getCell(5), ":נושא ההדרכה", "", true, ParagraphAlignment.RIGHT, 12);
 
         for(int i = 0; i < 6; i++)
-            writeIntoTableCell(table.getRow(1).getCell(22 - i), (char)('א' + 1)+"", i == workingDay? "X": "O", true, ParagraphAlignment.CENTER, 12);
+            writeIntoTableCell(table.getRow(1).getCell(22 - i), (char)('א' + i)+"", i == workingDay? "X": "O", true, ParagraphAlignment.CENTER, 12);
 
         mergeTableCellsHorizontal(table,1, 23, 27);
         writeIntoTableCell(table.getRow(1).getCell(23), "היום בשבוע", "(יש לסמן X)", true, ParagraphAlignment.CENTER, 12);
@@ -371,7 +371,13 @@ public class MSWordWriterService {
         end = userActivityInfoDTO.getActivityEnd();
         totalTime = ChronoUnit.MINUTES.between(start, end);
 
-        insertActivity(table.getRow(row).getCell(12),  (int)(totalTime / 60) + ":" + (int)(totalTime % 60));
+        String minutes = (int)(totalTime % 60) + "";
+        if(minutes.length() == 1)
+            minutes = "0"+minutes;
+        else
+            minutes = minutes.substring(0,2);
+
+        insertActivity(table.getRow(row).getCell(12),  (int)(totalTime / 60) + ":" + minutes);
 
         insertActivity(table.getRow(row).getCell(13), end.format(DateTimeFormatter.ofPattern("HH:mm")));
         insertActivity(table.getRow(row).getCell(14), start.format(DateTimeFormatter.ofPattern("HH:mm")));
