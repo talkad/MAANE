@@ -77,6 +77,8 @@ export default function Survey(){
 
     const [surveyComplete, setSurveyComplete] = useState(false);
 
+    const [refresh, setRefresh] = useState(true)
+
     // STRINGS
     const submit_survey_string = 'סיום מענה';
 
@@ -156,7 +158,11 @@ export default function Survey(){
      * @param value the new page to go to
      */
     const handlePageChange = (event, value) => {
+        console.log(questions.slice((page-1) * questionsPerPage, Math.min(page * questionsPerPage, questions.length)))
         setPage(value);
+        setRefresh(false)
+
+        setTimeout(() => setRefresh(true), 100)
     };
 
     /**
@@ -233,7 +239,7 @@ export default function Survey(){
                 </Paper>
 
                 {/*the question to the survey*/}
-                {questions.slice((page-1) * questionsPerPage, Math.min(page * questionsPerPage, questions.length)).map(question =>
+                {refresh && questions.slice((page-1) * questionsPerPage, Math.min(page * questionsPerPage, questions.length)).map(question =>
                     <SurveyQuestion id={question.id}
                                     questionString={question.question}
                                     choices={question.type === "MULTIPLE_CHOICE" ? question.choices : []}

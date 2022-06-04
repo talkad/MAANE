@@ -39,7 +39,11 @@ export default function SurveyRule(props){
     const chosen_rule_string = "הכלל שנבחר:";
 
     useEffect(() => {
-        console.log(props.id)
+        if(props.depth === 0){
+            console.log( props.goals);
+            console.log('hello there ' + props.goalSelection)
+        }
+
     },[])
 
     /**
@@ -188,7 +192,6 @@ export default function SurveyRule(props){
                 <Paper elevation={3} className={"Rule-paper"}
                        sx={{backgroundColor: props.colors[((props.depth % props.colors.length))]}}>
 
-                    {/*TODO: better titles*/}
                     {props.depth === 0 && <h1>{chosen_goal_string} {selectedGoalTitle()}</h1>}
                     {props.depth > 0 && <h1>{chosen_rule_string} {selectedQuestionTitle()}</h1>}
 

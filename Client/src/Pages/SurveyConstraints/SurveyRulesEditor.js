@@ -81,6 +81,7 @@ export default function SurveyRulesEditor(){
             const generateRules = function(rule){
 
                 if(rule.ruleDTO.subRules === null) {
+
                     if(rule.ruleDTO.type === 'MULTIPLE_CHOICE'){
                         return {id: rulesIndexer++, goalSelection: rule.goalID, children: [{id: rulesIndexer++, questionSelection: rule.ruleDTO.questionID, children: [],
                             constraint: {type: 'MULTIPLE_CHOICE', value: rule.ruleDTO.answers.map(ele => ele.toString())}}]}
@@ -110,8 +111,7 @@ export default function SurveyRulesEditor(){
 
                     return {id: rulesIndexer++, questionSelection: subRule.type, children: subRule.subRules.map(generateSubRules), constraint: {type: '', value: ''}}
                 }
-                
-            
+
                 return {id: rulesIndexer++, goalSelection: rule.goalID, children: [{id: rulesIndexer++, questionSelection: rule.ruleDTO.type, children: rule.ruleDTO.subRules.map(generateSubRules),
                     constraint: {type: '', value: ''}}]}
             }
@@ -133,11 +133,11 @@ export default function SurveyRulesEditor(){
         if(!data.failure){
             setGoals([])
 
-            const rulesMap = (element) => {
-                return {id: element.id, goalSelection: '', children: element.children}
-            }
-
-            setRules((rules) => rules.map(rulesMap))
+            // const rulesMap = (element) => {
+            //     return {id: element.id, goalSelection: '', children: element.children}
+            // }
+            //
+            // setRules((rules) => rules.map(rulesMap))
 
             for (const row of data.result){
                 setGoals(goals => [...goals, {value: row.goalId, description: row.title}]);
@@ -511,6 +511,7 @@ export default function SurveyRulesEditor(){
                 comparison: 'NONE', questionID: '-1', answers: []}
             }
 
+            console.log('what was selcted: ' + rules.goalSelection)
             return {goalID: rule.goalSelection, ruleDTO: rule.children.map(generateSubRules)[0]}
         }
 
