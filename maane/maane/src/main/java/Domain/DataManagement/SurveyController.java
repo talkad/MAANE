@@ -87,8 +87,8 @@ public class SurveyController {
         if(surveyDAO.getSurveySubmission(surveyDTO.getId()).getResult())
             return new Response<>("", true, "cannot add question to an already submitted survey");
 
-        if(ServerContextInitializer.getInstance().isMockMode())
-            UserController.getInstance().createSurvey(username, surveyDTO.getId());
+//        if(ServerContextInitializer.getInstance().isMockMode())
+//            UserController.getInstance().createSurvey(username, surveyDTO.getId());
 
         removalRes = surveyDAO.removeSurvey(surveyDTO.getId());
 

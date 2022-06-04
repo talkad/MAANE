@@ -31,8 +31,8 @@ public class KeyLoader {
 
         //filepath = ".\\src\\main\\resources\\store.keystore"; // other's path
 //        filepath = "C:\\MAANE\\maane\\maane\\src\\main\\resources\\store.keystore";
-        //filepath = ".\\src\\main\\resources\\store.keystore"; // other's path
-        filepath = "C:\\MAANE\\maane\\maane\\src\\main\\resources\\store.keystore";
+        filepath = "maane\\src\\main\\resources\\store.keystore"; // other's path
+//        filepath = "C:\\MAANE\\maane\\maane\\src\\main\\resources\\store.keystore";
 //        filepath = "C:\\Users\\User\\Desktop\\UpdatedMaane\\MAANE\\maane\\maane\\src\\main\\resources\\store.keystore";
 
 
