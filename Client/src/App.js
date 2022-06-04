@@ -48,6 +48,7 @@ import SurveyRulesEditor from "./Pages/SurveyConstraints/SurveyRulesEditor";
 import SurveyGeneralResults from "./Pages/SurveyResults/SurveyGeneralResults";
 import SurveySchoolResults from "./Pages/SurveyResults/SurveySchoolResults";
 import HelpIcon from '@mui/icons-material/Help';
+import {ReactComponent as OurLogo} from "./logo.svg";
 
 // TODO: what to do if the request for info from the server to show fails?
 // TODO: currently saving everything in local storage but IT IS NOT SAFE
@@ -449,25 +450,12 @@ function App(){
                             >
                                 <MenuIcon />
                             </IconButton>
+
                             {/*logo*/}
-                            <Typography
-                                variant="h6"
-                                noWrap
-                                component="div"
-                                onClick={() => navigate(`user/home`, {replace: false})}
-                            >
-                                מענ"ה
-                            </Typography>
-                            {/*todo: see about the logo*/}
-                            <Box
-                                component="img"
-                                sx={{
-                                    height: 64,
-                                }}
-                                alt="Your logo."
-                                src={"logo.svg"}
-                            />
-                            {/*profile button*/}
+                            <IconButton onClick={() => navigate(`user/home`, {replace: false})}>
+                                <OurLogo height={50} width={50}/>
+                            </IconButton>
+
                             <IconButton
                                 size="large"
                                 aria-label="account of current user"
