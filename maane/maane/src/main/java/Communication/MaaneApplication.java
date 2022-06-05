@@ -100,6 +100,7 @@ public class MaaneApplication {
 						Arrays.asList(AnswerType.NUMERIC_ANSWER, AnswerType.OPEN_ANSWER, AnswerType.NUMERIC_ANSWER, AnswerType.MULTIPLE_CHOICE), 2022);
 
 				SurveyController.getInstance().createSurvey("ronit", surveyDTO);
+				UserController.getInstance().createSurvey("ronit", surveyDTO.getId());
 
 				// create goals
 				GoalDTO goalDTO1 = new GoalDTO(1, "yahad1", "", 1,
@@ -138,6 +139,7 @@ public class MaaneApplication {
 						Arrays.asList(AnswerType.NUMERIC_ANSWER, AnswerType.OPEN_ANSWER, AnswerType.NUMERIC_ANSWER, AnswerType.MULTIPLE_CHOICE), 2022);
 
 				SurveyController.getInstance().createSurvey("ronit", surveyDTO);
+				UserController.getInstance().createSurvey("ronit", surveyDTO.getId());
 
 				userController.logout("ronit");
 

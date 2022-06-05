@@ -73,7 +73,7 @@ public class MonthlyReportGenerator {
      * @param activities the activities for the second table
      * @return response of binary document representation on success
      */
-    private Response<byte[]> generateReportDoc(UserInfoDTO userInfo, List<UserActivityInfoDTO> activities, LocalDateTime date, int year, int month) {
+    private synchronized Response<byte[]> generateReportDoc(UserInfoDTO userInfo, List<UserActivityInfoDTO> activities, LocalDateTime date, int year, int month) {
         Response<File> reportRes;
         byte[] binaryFile = null;
         FileInputStream fileInputStream;

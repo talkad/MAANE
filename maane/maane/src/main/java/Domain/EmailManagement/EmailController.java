@@ -91,7 +91,7 @@ public class EmailController {
             /* Step 1: Create MimeBodyPart and set content and its Mime Type */
             BodyPart mimeBody = new MimeBodyPart();
             try {
-                mimeBody.setContent("<h1></h1><br> <b>survey link: </b>" + surveyLink, "text/html");
+                mimeBody.setContent("<h1></h1><br> <b>survey link: \n </b>" + surveyLink, "text/html");
             } catch (MessagingException e) {
                 e.printStackTrace();
             }
