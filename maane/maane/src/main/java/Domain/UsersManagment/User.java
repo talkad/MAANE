@@ -40,9 +40,11 @@ public class User {
         this.baskets = new Vector<>();
     }
 
-    public User(String username, UserStateEnum userStateEnum) {
+    public User(String username, UserStateEnum userStateEnum) { //constructor for admin only
         this.state = inferUserType(userStateEnum);
         this.username = username;
+        this.firstName = "admin";
+        this.lastName = "admin";
         this.appointments = new Vector<>();
         this.schools = new Vector<>();
         this.surveys = new Vector<>();
