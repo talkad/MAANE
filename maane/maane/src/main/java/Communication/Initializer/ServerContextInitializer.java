@@ -34,7 +34,6 @@ public class ServerContextInitializer {
         this.dbConnection = "jdbc:postgresql://localhost:5432/maaneDBMock";
         this.dbUsername = "postgres";
         this.dbPassword = "1234";
-
     }
 
     public boolean isTestMode() {

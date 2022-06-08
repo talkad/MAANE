@@ -47,6 +47,7 @@ public class HolidaysHandler {
             URL url = new URL("https://www.hebcal.com/hebcal?v=1&cfg=json&maj=on&mod=on&year="+year+"&c=off&month=x&geonameid=293397");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
+            conn.setConnectTimeout(10000);
             conn.connect();
 
             //Check if connect is made
@@ -66,11 +67,12 @@ public class HolidaysHandler {
                 //Close the scanner
                 scanner.close();
             }
-        } catch (Exception e) {e.printStackTrace();}
+        } catch (Exception e) {return "Bad fetch";}
         return informationString.toString();
     }
 
     private void fillArray(String inputString){
+        if(informationStringYear1.equals("Bad fetch") | informationStringYear2.equals("Bad fetch"))return;
         JsonObject gsonObj = new Gson().fromJson(inputString, JsonObject.class);
         JsonArray jsonArray = gsonObj.getAsJsonArray("items");
         for (int i = 0; i < jsonArray.size(); i++) {
