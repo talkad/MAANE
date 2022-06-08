@@ -22,7 +22,7 @@ public class HolidaysHandlerTests {
     @Before
     public void setup(){
         ServerContextInitializer.getInstance().setMockMode();
-        HolidaysQueries.getInstance().clearHolidays();
+        //HolidaysQueries.getInstance().clearHolidays();
         holidaysHandler = new HolidaysHandler(2022);
     }
 
@@ -73,5 +73,12 @@ public class HolidaysHandlerTests {
         Assert.assertNotNull(workPlan.getCalendar().get(LocalDateTime.of(2022, 10, 18, 8, 0)));
         Assert.assertNotNull(workPlan.getCalendar().get(LocalDateTime.of(2022, 10, 25, 8, 0)));
         Assert.assertNotNull(workPlan.getCalendar().get(LocalDateTime.of(2022, 11, 1, 8, 0)));
+    }
+
+    @Test
+    public void checkTimeout() { //change to bad Url at holiday handler first
+        HolidaysHandler holidaysHandler = new HolidaysHandler(2027);
+        HolidaysQueries holidaysQueries = new HolidaysQueries();
+        Assert.assertFalse(holidaysQueries.holidaysForYearExists(2027));
     }
 }
