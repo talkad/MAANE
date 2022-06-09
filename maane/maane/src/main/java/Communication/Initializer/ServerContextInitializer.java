@@ -31,7 +31,7 @@ public class ServerContextInitializer {
 //        this.dbUsername = "postgres";
 //        this.dbPassword = "123456";
 
-        this.dbConnection = "jdbc:postgresql://localhost:5432/maaneDBMock";
+        this.dbConnection = "jdbc:postgresql://localhost:5432/MAANE";
         this.dbUsername = "postgres";
         this.dbPassword = "1234";
 

@@ -367,7 +367,7 @@ function App(){
                     <ListItemText primary="פרופיל"/>
                 </ListItem>}
                 {/*goals management button*/}
-                {(type === 'SUPERVISOR' || type === 'SYSTEM_MANAGER') && <ListItem button onClick={
+                {(type === 'SUPERVISOR') && <ListItem button onClick={
                     function () {
                         navigate(`user/goalsManagement`, {replace: false});
                         setOpenSidebar(false);
@@ -379,7 +379,7 @@ function App(){
                     <ListItemText primary='ניהול יעדים'/>
                 </ListItem>}
                 {/*survey button*/}
-                {(type === 'SUPERVISOR' || type === 'SYSTEM_MANAGER') &&<ListItem button onClick={
+                {(type === 'SUPERVISOR') &&<ListItem button onClick={
                     function () {
                         navigate(`survey/menu`, {replace: false});
                         setOpenSidebar(false);
