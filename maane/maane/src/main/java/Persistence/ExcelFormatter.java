@@ -20,7 +20,7 @@ public class ExcelFormatter {
     }
 
     private int getRowCount() throws IOException {
-        String projDir = System.getProperty("user.dir") + "\\maane";
+        String projDir = System.getProperty("user.dir");
         String exelPath = projDir + "\\Mosad.xlsx";
         XSSFWorkbook workbook = new XSSFWorkbook(exelPath);
         XSSFSheet sheet = workbook.getSheet("Mosad");
@@ -30,7 +30,7 @@ public class ExcelFormatter {
 
     public Response<Boolean> SchoolExcelToDb() {
         int rowCount;
-        String projDir = System.getProperty("user.dir") + "\\maane";
+        String projDir = System.getProperty("user.dir");
         String exelPath = projDir + "\\Mosad.xlsx";
         XSSFSheet sheet;
         XSSFWorkbook workbook;

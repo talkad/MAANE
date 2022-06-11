@@ -145,7 +145,9 @@ function Row(props) {
                                 {/*editing actions*/}
                                 <Grid item xs={1.5}><Button id={`change_password_${row.username}`} fullWidth onClick={() => props.handleOpenCPDialog(row.username, row.name)} color="secondary" variant="outlined">{change_password_button_string}</Button></Grid>
                                 <Grid item xs={1.5}><Button id={`edit_schools_${row.username}`} fullWidth onClick={() => props.handleOpenEditSchoolsDialog(row.username, row.name, row.schools)} color="secondary" variant="outlined">{edit_schools_button_string}</Button></Grid>
-                                <Grid item xs={1.5}><Button id={`view_work_plan_${row.username}`} fullWidth onClick={() => navigate(`../viewWorkPlan?instructor=${row.username}`, {replace: false})} color="secondary" variant="outlined">{view_work_plan_button_string}</Button></Grid>
+                                {props.supervisor === undefined && <Grid item xs={1.5}>
+                                    <Button id={`view_work_plan_${row.username}`} fullWidth onClick={() => navigate(`../viewWorkPlan?instructor=${row.username}`, {replace: false})} color="secondary" variant="outlined">{view_work_plan_button_string}</Button>
+                                </Grid>}
                                 {props.supervisor !== undefined && <Grid item xs={1.5}>
                                     <Button id={`transfer_supervision_to_${row.username}`} fullWidth onClick={() => props.handleOpenTransferSuperDialog(row.name, row.username, props.supervisorName, props.supervisor)} color="secondary" variant="outlined">{make_supervisor_button_string}</Button>
                                 </Grid>}
@@ -236,9 +238,6 @@ function SystemManagerRow(props) {
                                     <ListItemText primary={city} secondary={row.city} />
                                 </ListItem>
                                 <Divider component="li" />
-                                <ListItem>
-                                    <ListItemText primary={schools} secondary={row.schools.reduce((previous, current) => previous + `${current}, `, '')} />
-                                </ListItem>
                                 <Divider component="li" />
                                 <ListItem>
                                     <ListItemText primary={instructors_string} secondary={row.instructors.length === 0 ? empty_instructors_string : ""}/>
@@ -279,7 +278,6 @@ function SystemManagerRow(props) {
                             <Grid sx={{marginBottom: 1}} container spacing={1}>
                                 {/*editing actions*/}
                                 <Grid item xs={1.5}><Button id={`change_password_${row.username}`} fullWidth onClick={() => props.handleOpenCPDialog(row.username, row.name)} color="secondary" variant="outlined">{change_password_button_string}</Button></Grid>
-                                <Grid item xs={1.5}><Button fullWidth onClick={() => props.handleOpenEditSchoolsDialog(row.username, row.name, row.schools)} color="secondary" variant="outlined">{edit_schools_button_string}</Button></Grid>
                             </Grid>
                             <Grid container spacing={1}>
                                 {/*removing user*/}
