@@ -28,7 +28,7 @@ public class SchoolQueries {
         String sql = "INSERT INTO \"Schools\" (symbol, name, city, city_mail, address, school_address, principal," +
                 " manager, supervisor, phone, mail, zipcode, education_stage, education_type, supervisor_type, spector," +
                 " num_of_students ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        PreparedStatement preparedStatement = null;
+        PreparedStatement preparedStatement;
         try {
             preparedStatement = Connect.conn.prepareStatement(sql);
             preparedStatement.setString(1, school.getSymbol());
@@ -78,7 +78,7 @@ public class SchoolQueries {
         String sql = "UPDATE \"Schools\" SET symbol = ?, name = ?, city = ?, city_mail = ?," +
                 "address = ?, school_address = ?, principal = ?, manager = ?, supervisor = ?, " +
                 "phone = ?, mail = ?, zipcode = ?, education_stage = ?, education_type = ?, " +
-                "supervisor_type = ?, spector = ?, num_of_students WHERE symbol = ?";
+                "supervisor_type = ?, spector = ?, num_of_students = ? WHERE symbol = ?";
         PreparedStatement preparedStatement;
         try {
             preparedStatement = Connect.conn.prepareStatement(sql);
@@ -99,7 +99,7 @@ public class SchoolQueries {
             preparedStatement.setString(15, school.getSupervisor_type());
             preparedStatement.setString(16, school.getSpector());
             preparedStatement.setInt(17, school.getNum_of_students());
-            preparedStatement.setInt(18, Integer.getInteger(symbol));
+            preparedStatement.setString(18, symbol);
 
             preparedStatement.executeUpdate();
             Connect.closeConnection();

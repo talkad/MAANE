@@ -20,7 +20,6 @@ public abstract class AcceptanceTests {
             surveyBridge = Driver.getSurveyBridge();
             scheduleBridge = Driver.getScheduleBridge();
             dataBridge = Driver.getDataBridge();
-
         }
     }
 }

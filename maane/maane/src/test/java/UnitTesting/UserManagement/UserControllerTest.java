@@ -216,7 +216,7 @@ public class UserControllerTest {
 
     @Test
     public void removingGoalSuccess(){
-        Integer year = 2022;//"תשפ\"ג";
+        Integer year = 2022;
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "a@a.com", "0555555555", "");
         userController.logout(adminName);
