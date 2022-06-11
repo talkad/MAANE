@@ -86,6 +86,8 @@ public class UserManagementTests extends AcceptanceTests {
     @Test
     public void fullUserAssignmentAndDetailEditingTest(){
         dataBridge.insertSchool(new SchoolDBDTO("1", "testing school", "beer sheva", "", "", "", "", "", "", "", "", 1000000, "", "", "", "", 30));
+        dataBridge.insertSchool(new SchoolDBDTO("2", "testing school2", "beer sheva2", "2", "2", "2", "2", "2", "2", "", "", 1000000, "", "", "", "", 30));
+
         userBridge.login(adminName);
         userBridge.registerUserBySystemManager(adminName, new UserDTO(adminName, "tech", supervisorName, "1234abcd", UserStateEnum.SUPERVISOR,
                 "sup", "visor", "a@gmail.com", "055-555-5555", "Beer Sheva", null), "irrelevant");

@@ -8,9 +8,9 @@ public class SystemManager extends Registered{
         allowedFunctions.add(Permissions.REMOVE_USER);
         allowedFunctions.add(Permissions.REGISTER_USER);
         allowedFunctions.add(Permissions.CHANGE_PASSWORD_TO_USER);
-        allowedFunctions.add(Permissions.VIEW_USERS_INFO);//todo maybe remove
+        allowedFunctions.add(Permissions.VIEW_USERS_INFO);
         allowedFunctions.add(Permissions.VIEW_ALL_USERS_INFO);
-        allowedFunctions.add(Permissions.REGISTER_BY_ADMIN);//todo maybe useless
+        allowedFunctions.add(Permissions.REGISTER_BY_ADMIN);
         allowedFunctions.add(Permissions.REGISTER_COORDINATOR);
         allowedFunctions.add(Permissions.REMOVE_COORDINATOR);
         allowedFunctions.add(Permissions.TRANSFER_SUPERVISION);

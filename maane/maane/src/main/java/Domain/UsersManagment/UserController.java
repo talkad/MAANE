@@ -610,7 +610,7 @@ public class UserController {
             Response<Boolean> viewAllUsersRes = user.viewAllUsers();
             if (viewAllUsersRes.getResult()) {
                 List<UserDTO> users = new Vector<>();
-                for (String username : userDAO.getUsers()) {//todo check not null maybe
+                for (String username : userDAO.getUsers()) {
                     users.add(createUserDTOS(username));
                 }
                 return new Response<>(users, false, "");
@@ -1264,12 +1264,12 @@ public class UserController {
      */
     public Response<Boolean> editActivity(String currUser, String currActStart, String newActStart, String newActEnd){ //todo test it
         if(connectedUsers.containsKey(currUser)) {
-            User user = connectedUsers.get(currUser);//todo maybe verify the dao was generated
+            User user = connectedUsers.get(currUser);
             LocalDateTime currActStartDate = stringToDate(currActStart);
             LocalDateTime newActStartDate = stringToDate(newActStart);
             LocalDateTime newActEndDate = stringToDate(newActEnd);
 
-            Response<Boolean> editActivityRes = user.editActivity(currActStartDate);//todo change active user info
+            Response<Boolean> editActivityRes = user.editActivity(currActStartDate);
             if(!editActivityRes.isFailure()){
                 return workPlanDAO.updateActivity(currUser, currActStartDate, newActStartDate, newActEndDate);
             }
@@ -1294,13 +1294,13 @@ public class UserController {
      */
     public Response<Boolean> addActivity(String currUser, String startAct, String schoolId, int goalId, String title, String endAct) {
         if(connectedUsers.containsKey(currUser)) {
-            User user = connectedUsers.get(currUser);//todo maybe verify the dao was generated
+            User user = connectedUsers.get(currUser);
 
             LocalDateTime startActDate = stringToDate(startAct);
             LocalDateTime endActDate = stringToDate(endAct);
 
             ActivityDTO activity = new ActivityDTO(schoolId, goalId, title, endActDate);
-            Response<Integer> addActivityRes = user.addActivity(startActDate, activity.getSchoolId());//todo change active user info
+            Response<Integer> addActivityRes = user.addActivity(startActDate, activity.getSchoolId());
             if(!addActivityRes.isFailure()){
                 return workPlanDAO.addActivity(currUser, startActDate, activity, addActivityRes.getResult());
             }
@@ -1320,9 +1320,9 @@ public class UserController {
      */
     public Response<Boolean> removeActivity(String currUser, String startAct) {
         if(connectedUsers.containsKey(currUser)) {
-            User user = connectedUsers.get(currUser);//todo maybe verify the dao was generated
+            User user = connectedUsers.get(currUser);
             LocalDateTime startActDate = stringToDate(startAct);
-            Response<Boolean> removeActivityRes = user.removeActivity(startActDate);//todo change active user info
+            Response<Boolean> removeActivityRes = user.removeActivity(startActDate);
             if(!removeActivityRes.isFailure()){
                 return workPlanDAO.removeActivity(currUser, startActDate);
             }
@@ -1360,7 +1360,7 @@ public class UserController {
      */
     public Response<Boolean> canGenerateReport(String currUser) {
         if(connectedUsers.containsKey(currUser)) {
-            User user = connectedUsers.get(currUser);//todo maybe verify the dao was generated
+            User user = connectedUsers.get(currUser);
             return user.canGenerateReport();
         }
         else {
@@ -1375,7 +1375,7 @@ public class UserController {
      */
     public Response<UserInfoDTO> getUserReportInfo(String currUser) {
         if(connectedUsers.containsKey(currUser)) {
-            User user = connectedUsers.get(currUser);//todo maybe verify the dao was generated
+            User user = connectedUsers.get(currUser);
             Response<Boolean> canGenerateReportRes = user.canGenerateReport();
             if(!canGenerateReportRes.isFailure()){
                 return userDAO.getUserReportInfo(currUser);
@@ -1398,7 +1398,7 @@ public class UserController {
      */
     public Response<List<UserActivityInfoDTO>> getUserActivities(String currUser, int year, int month) {
         if(connectedUsers.containsKey(currUser)) {
-            User user = connectedUsers.get(currUser);//todo maybe verify the dao was generated
+            User user = connectedUsers.get(currUser);
             Response<Boolean> canGenerateReportRes = user.canGenerateReport();
             if(!canGenerateReportRes.isFailure()){
                 return userDAO.getUserActivities(currUser, year, month);
@@ -1425,7 +1425,7 @@ public class UserController {
      */
     public Response<Boolean> setWorkingTime(String currUser, int workDay, String act1Start, String act1End, String act2Start, String act2End){
         if(connectedUsers.containsKey(currUser)) {
-            User user = connectedUsers.get(currUser);//todo maybe verify the dao was generated
+            User user = connectedUsers.get(currUser);
             LocalTime act1StartTime = LocalTime.parse(act1Start);
             LocalTime act1EndTime = LocalTime.parse(act1End);
             LocalTime act2StartTime = LocalTime.parse(act2Start);
@@ -1476,9 +1476,9 @@ public class UserController {
     public Response<Boolean> isValidAnswer(String symbol, String surveyID) {
         Response<String> supervisorRes = userDAO.getSurveyCreator(surveyID);
         if(!supervisorRes.isFailure()){
-            Response<UserDBDTO> userDBDTOResponse = userDAO.getFullUser(supervisorRes.getResult());//todo probably shouldnt pull full user, just work field
-            if (!userDBDTOResponse.isFailure()) {
-                Response<UserDBDTO> coordinatorRes = userDAO.getCoordinator(symbol, userDBDTOResponse.getResult().getWorkField());
+            Response<String> userWorkFieldResponse = userDAO.getUserWorkField(supervisorRes.getResult());
+            if (!userWorkFieldResponse.isFailure()) {
+                Response<UserDBDTO> coordinatorRes = userDAO.getCoordinator(symbol, userWorkFieldResponse.getResult());
                 if(!coordinatorRes.isFailure() && !(coordinatorRes.getResult() == null)){
                     return new Response<>(true, false, coordinatorRes.getErrMsg());
                 }
@@ -1525,7 +1525,7 @@ public class UserController {
         User user = new User(userDAO.getFullUser(currUser).getResult());
         Response<String> response = user.removeCoordinator(school, workField);
         if(!response.isFailure()){
-            return userDAO.removeCoordinator(response.getResult(), school);//todo check not failed
+            return userDAO.removeCoordinator(response.getResult(), school);
         }
         else{
             return new Response<>(false, true, response.getErrMsg());

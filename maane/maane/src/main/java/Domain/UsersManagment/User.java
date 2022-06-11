@@ -596,8 +596,7 @@ public class User {
 
 
     public Response<Integer> getWorkPlanByYear(Integer year , Integer month) {
-        if (this.state.allowed(Permissions.VIEW_WORK_PLAN, this)) {//todo fix this
-            //return new Response<>(this.workPlanYears.contains(year), !this.workPlanYears.contains(year), "");
+        if (this.state.allowed(Permissions.VIEW_WORK_PLAN, this)) {
             return new Response<>(extractProperYear(LocalDateTime.of(year, month, 1, 0, 0)), false, "");
         }
         else {
@@ -747,7 +746,7 @@ public class User {
     }
 
     public Response<Boolean> editActivity(LocalDateTime date) {
-        if(this.state.getStateEnum() == UserStateEnum.INSTRUCTOR && this.workPlanYears.contains(extractProperYear(date))){//todo verify it works
+        if(this.state.getStateEnum() == UserStateEnum.INSTRUCTOR && this.workPlanYears.contains(extractProperYear(date))){
             return new Response<>(true, false, "user allowed to update working hours");
         }
         else {
