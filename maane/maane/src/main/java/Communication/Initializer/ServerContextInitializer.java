@@ -4,6 +4,7 @@ public class ServerContextInitializer {
 
     private boolean mockMode;
     private boolean testMode;
+    private boolean robustMode;
     private String dbConnection;
     private String dbUsername;
     private String dbPassword;
@@ -19,6 +20,7 @@ public class ServerContextInitializer {
     public ServerContextInitializer() {
         this.mockMode = false;
         this.testMode = false;
+
         this.dbConnection = "jdbc:postgresql://tai.db.elephantsql.com:5432/pxbghxfm";
         this.dbUsername = "pxbghxfm";
         this.dbPassword = "ogms2UJpzqjopRw29YcJ5Wau7wHQLkcJ";
@@ -44,14 +46,29 @@ public class ServerContextInitializer {
         this.testMode = true;
     }
 
+
     public void setTestMode(boolean mode) {
         this.testMode = mode;
     }
 
     public void setMockMode(boolean mode) {this.mockMode = mode; }
 
+    public void setRobustMode(boolean mode) {
+        this.robustMode = mode;
+        setMockMode(mode);
+    }
+
+    public void setRobustMode() {
+        this.robustMode = true;
+        setMockMode();
+    }
+
     public boolean isMockMode(){
         return this.mockMode;
+    }
+
+    public boolean isRobustMode() {
+        return this.robustMode;
     }
 
     public String getDbConnection() {

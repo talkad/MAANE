@@ -65,11 +65,11 @@ public class DataController {
                 .body(service.assignCoordinatorTester((String)body.get("school")));
     }
 
-//    @PostMapping(value = "/insertSchool")
-//    public ResponseEntity<Response<Boolean>> insertSchool(@RequestBody SchoolDBDTO school){
-//        return ResponseEntity.ok()
-//                .body(service.insertSchool(school));
-//    }
+    @PostMapping(value = "/insertSchool")
+    public ResponseEntity<Response<Boolean>> insertSchool(@RequestBody SchoolDBDTO school){
+        return ResponseEntity.ok()
+                .body(service.insertSchool(school));
+    }
 //
 //    @PostMapping(value = "/removeSchool")
 //    public ResponseEntity<Response<Boolean>> removeSchool(@RequestBody String symbol){

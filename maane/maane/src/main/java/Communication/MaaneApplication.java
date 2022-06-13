@@ -35,8 +35,8 @@ import java.util.Vector;
 public class MaaneApplication {
 
 	public static void main(String[] args) {
-		ServerContextInitializer.getInstance().setMockMode();
-
+		//ServerContextInitializer.getInstance().setMockMode();
+		ServerContextInitializer.getInstance().setRobustMode();
 		SpringApplication.run(MaaneApplication.class, args);
 	}
 
@@ -53,8 +53,27 @@ public class MaaneApplication {
 	@Bean
 	CommandLineRunner run(UserServiceImpl service){
 		return args -> {
+			if(ServerContextInitializer.getInstance().isRobustMode()){
+				System.out.println("Robust Mode is Activated!");
 
-			if(ServerContextInitializer.getInstance().isMockMode()){
+				UserQueries.getInstance().clearDB();
+
+				UserController userController = UserController.getInstance();
+				userController.login("admin");
+
+				service.registerUserBySystemManager("admin", new UserDTO("admin", "tech", "ronit", "1234abcd", UserStateEnum.SUPERVISOR,
+						"ronit", "newe", "ronit@gmail.com", "055-555-5555", "", null), "");
+
+				DataController.getInstance().loadSchoolsToDB();
+
+				DataController.getInstance().insertSchool(new SchoolDBDTO("1111111", "testing school", "beer sheva", "", "", "", "", "", "", "", "", 1000000, "", "", "", "", 30));
+				DataController.getInstance().insertSchool(new SchoolDBDTO("2222222", "testing school2", "beer sheva", "", "", "", "", "", "", "", "", 1000000, "", "", "", "", 31));
+				DataController.getInstance().insertSchool(new SchoolDBDTO("3333333", "testing school3", "beer sheva", "", "", "", "", "", "", "", "", 1000000, "", "", "", "", 32));
+
+				userController.logout("admin");
+				userController.login("ronit");
+			}
+			else if(ServerContextInitializer.getInstance().isMockMode()){
 				System.out.println("Mock Mode is Activated!");
 
 				UserQueries.getInstance().clearDB();

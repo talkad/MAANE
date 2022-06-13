@@ -12,7 +12,9 @@ import {} from "@mui/material/colors"
 
 import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
+/*
 import rtlPlugin from 'stylis-plugin-rtl';
+*/
 
 // for theming the website
 const theme = createTheme({
@@ -27,19 +29,23 @@ const theme = createTheme({
             main: '#0336FF'
         },
     },
+/*
     direction: 'rtl',
+*/
 })
 
 // for rtl
-const cacheRtl = createCache({
+/*const cacheRtl = createCache({
     key: "muirtl",
     stylisPlugins: [rtlPlugin]
-});
+});*/
 
 ReactDOM.render(
   <React.StrictMode>
       {/*wrapper for ltr*/}
+{/*
       <CacheProvider value={cacheRtl}>
+*/}
           {/*wrapper for theme*/}
           <ThemeProvider theme={theme}>
               <CssBaseline/>
@@ -47,7 +53,9 @@ ReactDOM.render(
                 <App/>
               </BrowserRouter>
           </ThemeProvider>
+{/*
       </CacheProvider>
+*/}
   </React.StrictMode>,
   document.getElementById('root')
 );

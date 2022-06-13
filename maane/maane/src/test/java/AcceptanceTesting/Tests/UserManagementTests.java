@@ -24,7 +24,6 @@ public class UserManagementTests extends AcceptanceTests {
     private PasswordEncoder passwordEncoder;
 
 
-
     @Before
     public void setUp(){
         ServerContextInitializer.getInstance().setMockMode();
@@ -115,5 +114,7 @@ public class UserManagementTests extends AcceptanceTests {
         Assert.assertEquals("new principal", usersSchool.getResult().getPrincipal());
         Assert.assertEquals("new manager", usersSchool.getResult().getManager());
     }
+
+
 
 }
