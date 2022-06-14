@@ -9,6 +9,9 @@ public class ServerContextInitializer {
     private String dbUsername;
     private String dbPassword;
 
+    private String supervisorToken;
+
+
     private static class CreateSafeThreadSingleton {
         private static final ServerContextInitializer INSTANCE = new ServerContextInitializer();
     }
@@ -24,6 +27,8 @@ public class ServerContextInitializer {
         this.dbConnection = "jdbc:postgresql://tai.db.elephantsql.com:5432/pxbghxfm";
         this.dbUsername = "pxbghxfm";
         this.dbPassword = "ogms2UJpzqjopRw29YcJ5Wau7wHQLkcJ";
+
+        this.supervisorToken = "";
     }
 
     public void setMockMode() {
@@ -81,5 +86,13 @@ public class ServerContextInitializer {
 
     public String getDbPassword() {
         return dbPassword;
+    }
+
+    public void setSupervisorToken(String accessToken) {
+        supervisorToken = accessToken;
+    }
+
+    public String getSupervisorToken() {
+        return supervisorToken;
     }
 }

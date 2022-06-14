@@ -1,6 +1,7 @@
 package Communication.Resource;
 
 import Communication.DTOs.*;
+import Communication.Initializer.ServerContextInitializer;
 import Communication.Security.KeyLoader;
 import Communication.Service.AnnualScheduleGeneratorServiceImpl;
 import Communication.Service.UserServiceImpl;
@@ -309,6 +310,11 @@ public class UserController {
     public ResponseEntity<Response<Boolean>> removeUserTester(@RequestBody Map<String, Object>  body){
         return ResponseEntity.ok()
                 .body(service.removeUserTester((String)body.get("currUser"), (String)body.get("userToRemove")));
+    }
+
+    @GetMapping("/getSupervisorToken")
+    public ResponseEntity<String> getSupervisorToken(){
+        return ResponseEntity.ok().body(ServerContextInitializer.getInstance().getSupervisorToken());
     }
 
 }

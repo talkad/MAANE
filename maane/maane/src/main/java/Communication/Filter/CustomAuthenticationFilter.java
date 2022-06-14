@@ -1,6 +1,7 @@
 package Communication.Filter;
 
 
+import Communication.Initializer.ServerContextInitializer;
 import Communication.Security.KeyLoader;
 import Domain.UsersManagment.UserController;
 import com.auth0.jwt.JWT;
@@ -74,12 +75,18 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 //        response.setHeader("access_token", accessToken);
 //        response.setHeader("refresh_token", refreshToken);
 
+        ServerContextInitializer context = ServerContextInitializer.getInstance();
+        String name = UserController.getInstance().getUser(user.getUsername()).getFirstName();
+
         Map<String, String> tokens = new HashMap<>();
         tokens.put("access_token", accessToken);
         tokens.put("refresh_token", refreshToken);
         tokens.put("failure", "false");
         tokens.put("permission", user.getAuthorities().iterator().next().getAuthority());
-        tokens.put("name", UserController.getInstance().getUser(user.getUsername()).getFirstName());
+        tokens.put("name", name);
+
+        if(context.isRobustMode() && name.equals("ronit"))
+            ServerContextInitializer.getInstance().setSupervisorToken(accessToken);
 
         response.setContentType(APPLICATION_JSON_VALUE);
         new ObjectMapper().writeValue(response.getOutputStream(), tokens);
