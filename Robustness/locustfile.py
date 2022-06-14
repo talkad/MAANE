@@ -12,7 +12,8 @@ from locust import TaskSet, task, HttpUser
 import string
 import random  # define the random module
 
-# S = 10  # number of characters in the string.
+
+S = 10  # number of characters in the string.
 # "username=admin&password=admin123"
 
 
@@ -21,9 +22,17 @@ class Testing(HttpUser):
     def login_test(self):
         headers = {"Accept": "application/json",
                    "Content-Type": "application/x-www-form-urlencoded"}
-        login_response = self.client.post("/user/login", data="username=admin&password=admin123", headers=headers)
-        print(login_response)
+        login_response = self.client.post("/user/login", data="username=ronit&password=1234abcd", headers=headers)
+        sup_access_token = login_response.json()["access_token"]
+        post_sup_headers = {'Authorization': "Bearer " + sup_access_token}
+        ins_username = ''.join(random.choices(string.ascii_uppercase + string.digits, k=S))
+        reg_ins_res = self.client.post("/user/registerUser",
+                                       data={"workField": "", "userToRegister": ins_username, "password": "1234abcd",
+                                             "userStateEnum": "INSTRUCTOR", "firstName": "name", "lastName": "last",
+                                             "email": "", "phoneNumber": "", "city": "city", "schools": []},
+                                       headers=post_sup_headers)
 
+        self.access_token = login_response.json()["access_token"]
 
     # @task
     # def view_schools(self):
