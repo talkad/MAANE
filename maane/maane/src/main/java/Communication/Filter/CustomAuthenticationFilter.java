@@ -85,9 +85,6 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         tokens.put("permission", user.getAuthorities().iterator().next().getAuthority());
         tokens.put("name", name);
 
-        if(context.isRobustMode() && name.equals("ronit"))
-            ServerContextInitializer.getInstance().setSupervisorToken(accessToken);
-
         response.setContentType(APPLICATION_JSON_VALUE);
         new ObjectMapper().writeValue(response.getOutputStream(), tokens);
     }

@@ -112,6 +112,7 @@ public class UserController {
 
     @PostMapping(value = "/registerUser")
     public ResponseEntity<Response<String>> registerUser(@RequestHeader(value = "Authorization") String token, @RequestBody UserDTO user) {
+        System.out.println(user.toString());
         return ResponseEntity.ok()
                 .body(service.registerUser(sessionHandler.getUsernameByToken(token).getResult(), user));
     }
@@ -310,11 +311,6 @@ public class UserController {
     public ResponseEntity<Response<Boolean>> removeUserTester(@RequestBody Map<String, Object>  body){
         return ResponseEntity.ok()
                 .body(service.removeUserTester((String)body.get("currUser"), (String)body.get("userToRemove")));
-    }
-
-    @GetMapping("/getSupervisorToken")
-    public ResponseEntity<String> getSupervisorToken(){
-        return ResponseEntity.ok().body(ServerContextInitializer.getInstance().getSupervisorToken());
     }
 
 }

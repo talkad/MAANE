@@ -254,6 +254,9 @@ public class UserController {
                                 if (appointmentRes.getResult()) {
                                     userDAO.insertUser(new UserDBDTO(result.getResult(), passwordEncoder.encode(password)));
                                     userDAO.addAppointment(supervisor.getUsername(), userToRegister);
+                                    if(connectedUsers.containsKey(optionalSupervisor)){
+                                        connectedUsers.get(optionalSupervisor).appointments.add(userToRegister);//todo add to the real thing
+                                    }
                                     return new Response<>(result.getResult().getUsername(), false, "Registration occurred");
                                 } else {
                                     return new Response<>(null, true, appointmentRes.getErrMsg());
