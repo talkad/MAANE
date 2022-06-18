@@ -26,6 +26,6 @@ public class SessionHandler {
 
         DecodedJWT decodedJWT = verifier.verify(token);
         return new Response<>(decodedJWT.getSubject(), false, "username found");
-
     }
+
 }

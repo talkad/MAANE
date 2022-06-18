@@ -1,6 +1,10 @@
 *.idea
-Server/target/
-maane/maane/target/
+maane/maane/target/classes/
+maane/maane/target/generated-sources/
+maane/maane/target/generated-test-sources/
+maane/maane/target/maven-archiver/
+maane/maane/target/maven-status/
+maane/maane/target/test-classes/
 
 # binary files
 *.class

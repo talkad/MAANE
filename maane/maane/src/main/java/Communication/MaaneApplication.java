@@ -35,8 +35,9 @@ import java.util.Vector;
 public class MaaneApplication {
 
 	public static void main(String[] args) {
-		//ServerContextInitializer.getInstance().setMockMode();
-		ServerContextInitializer.getInstance().setRobustMode();
+		ServerContextInitializer.getInstance().setMockMode();
+		//ServerContextInitializer.getInstance().setRobustMode();
+
 		SpringApplication.run(MaaneApplication.class, args);
 	}
 
@@ -80,9 +81,9 @@ public class MaaneApplication {
 
 				service.registerUserBySystemManager("admin", new UserDTO("admin", "tech", "shaked", "1234abcd", UserStateEnum.INSTRUCTOR,
 						"shaked", "cohen", "shaked@gmail.com", "055-555-5555", "", null), "ronit");
-//
+
 				DataController.getInstance().loadSchoolsToDB();
-//
+
 				DataController.getInstance().insertSchool(new SchoolDBDTO("1111111", "testing school", "beer sheva", "", "", "", "", "", "", "", "", 1000000, "", "", "", "", 30));
 
 				DataController.getInstance().insertSchool(new SchoolDBDTO("2222222", "testing school2", "beer sheva", "", "", "", "", "", "", "", "", 1000000, "", "", "", "", 31));
@@ -90,9 +91,9 @@ public class MaaneApplication {
 				DataController.getInstance().insertSchool(new SchoolDBDTO("3333333", "testing school3", "beer sheva", "", "", "", "", "", "", "", "", 1000000, "", "", "", "", 32));
 
 				DataController.getInstance().assignCoordinator("admin", "tech", "aviad", "shal", "aviad@gmail.com", "0555555555", "1111111");
-//
+
 				userController.logout("admin");
-//
+
 				userController.login("ronit");
 
 				String school1 = "1111111";
@@ -164,8 +165,8 @@ public class MaaneApplication {
 			else {
 				System.out.println("The server is running!");
 
-				// UserQueries.getInstance().clearDB();
-				DataController.getInstance().loadSchoolsToDB();
+//				UserQueries.getInstance().clearDB();
+//				DataController.getInstance().loadSchoolsToDB();
 			}
 		};
 	}
