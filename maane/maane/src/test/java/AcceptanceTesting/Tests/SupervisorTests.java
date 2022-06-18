@@ -131,6 +131,11 @@ public class SupervisorTests extends AcceptanceTests{
         }
     }
 
+    /**
+     * admin create a supervisor in 'tech' workfield
+     * supervisor creates new goals and survey answers
+     * generate a new workplan accordingly
+     */
     @Test
     public void workPlanTest(){
         Integer year = 2022;

@@ -65,23 +65,7 @@ public class UserManagementTests extends AcceptanceTests {
         Assert.assertEquals(UserStateEnum.SUPERVISOR, insUser.getResult().getStateEnum());
         Assert.assertEquals("coord", userBridge.getCoordinator(instructorName, "irrelevant", schoolSymbol).getResult().getFirstName());
     }
-
-
-    /**
-     * admin create a supervisor in 'tech' workfield
-     * create new goals and survey answers
-     * generate a new workplan accordingly
-     */
-    @Test
-    public void workPlanGeneratingTests(){
-        // ...
-    }
-
-    /**
-     * admin create a supervisor in 'tech' workField
-     * the supervisor registers an instructor
-     * the instructor updates its information, working hours, password and his assigned school information
-     */
+    
     @Test
     public void fullUserAssignmentAndDetailEditingTest(){
         dataBridge.insertSchool(new SchoolDBDTO("1", "testing school", "beer sheva", "", "", "", "", "", "", "", "", 1000000, "", "", "", "", 30));
