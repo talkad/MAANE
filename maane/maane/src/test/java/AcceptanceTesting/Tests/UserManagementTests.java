@@ -65,7 +65,7 @@ public class UserManagementTests extends AcceptanceTests {
         Assert.assertEquals(UserStateEnum.SUPERVISOR, insUser.getResult().getStateEnum());
         Assert.assertEquals("coord", userBridge.getCoordinator(instructorName, "irrelevant", schoolSymbol).getResult().getFirstName());
     }
-    
+
     @Test
     public void fullUserAssignmentAndDetailEditingTest(){
         dataBridge.insertSchool(new SchoolDBDTO("1", "testing school", "beer sheva", "", "", "", "", "", "", "", "", 1000000, "", "", "", "", 30));
