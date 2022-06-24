@@ -27,7 +27,7 @@ import static Domain.DataManagement.AnswerState.AnswerType.MULTIPLE_CHOICE;
 import static Domain.DataManagement.AnswerState.AnswerType.NUMERIC_ANSWER;
 import static org.mockito.Mockito.when;
 
-public class SurveyIntegrationTests {
+public class SurveyUserIntegrationTests {
 
     private SurveyDTO surveyDTO;
     private SurveyAnswersDTO answersDTO;

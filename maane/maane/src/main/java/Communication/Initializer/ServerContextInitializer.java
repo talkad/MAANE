@@ -36,11 +36,11 @@ public class ServerContextInitializer {
 
         this.dbConnection = "jdbc:postgresql://localhost:5432/maaneDBMock";
         this.dbUsername = "postgres";
-        this.dbPassword = "123456";
+        this.dbPassword = "1234";
 
-/*        this.dbConnection = "jdbc:postgresql://localhost:5432/MAANE";
-        this.dbUsername = "postgres";
-        this.dbPassword = "1234";*/
+//        this.dbConnection = "jdbc:postgresql://localhost:5432/Maane";
+//        this.dbUsername = "postgres";
+//        this.dbPassword = "1234";
     }
 
     public boolean isTestMode() {
