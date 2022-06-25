@@ -97,7 +97,7 @@ public class SurveyUserIntegrationTests {
     @Test
     public void faultDetectionSuccess(){
         Response<List<List<String>>> faults;
-        Integer year = 2022;// "תשפ\"ג";
+        Integer year = 2022;
 
         UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();
@@ -116,7 +116,7 @@ public class SurveyUserIntegrationTests {
     @Test
     public void faultDetectionWrongSupervisorFailure(){
         Response<List<List<String>>> faults;
-        Integer year = 2022;// "תשפ\"ג";
+        Integer year = 2022;
 
         UserController userController = UserController.getInstance();
         String adminName = userController.login("admin").getResult();

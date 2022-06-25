@@ -25,7 +25,7 @@ public class AnnualScheduleGeneratorTest {
 
         userController = UserController.getInstance();
         userController.clearUsers();
-        GoalsManagement.getInstance().clearGoals();//todo maybe call this from clearUsers
+        GoalsManagement.getInstance().clearGoals();
 
         String adminName = userController.login("admin").getResult();
         userController.registerUserBySystemManager(adminName, "sup1", "sup1", UserStateEnum.SUPERVISOR, "", "tech", "", "", "a@a.com", "0555555555", "");

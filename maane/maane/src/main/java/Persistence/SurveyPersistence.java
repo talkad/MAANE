@@ -69,9 +69,10 @@ public class SurveyPersistence {
 
     public Response<Integer> getSurveyYear(String surveyID) {
         int year = -1;
+        boolean submitted = false;
 
         Connect.createConnection();
-        String sqlSurvey = "SELECT year FROM \"Surveys\" WHERE id = ?";
+        String sqlSurvey = "SELECT year, submit FROM \"Surveys\" WHERE id = ?";
         try {
             PreparedStatement statement = Connect.conn.prepareStatement(sqlSurvey);
             statement.setString(1, surveyID);
@@ -79,12 +80,15 @@ public class SurveyPersistence {
 
             if (resultSurvey.next()) {
                 year = resultSurvey.getInt("year");
+                submitted = resultSurvey.getBoolean("submit");
                 Connect.closeConnection();
             } else {
                 Connect.closeConnection();
                 return new Response<>(year, true, "failed to get survey");
             }
-
+            if(!submitted){
+                return new Response<>(-1, true, "survey not submitted");
+            }
             return new Response<>(year, false, "survey loaded successfully");
         } catch(SQLException e) {
             return new Response<>(year, true, "Failed to get survey");
